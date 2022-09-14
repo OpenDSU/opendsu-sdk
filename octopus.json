@@ -1,0 +1,106 @@
+{
+    "workDir": ".",
+    "dependencies": [
+        {
+            "name": "bar",
+            "src": "https://github.com/opendsu/bar.git"
+        },
+        {
+            "name": "bar-fs-adapter",
+            "src": "https://github.com/opendsu/bar-fs-adapter.git"
+        },
+        {
+            "name": "buffer-crc32",
+            "src": "https://github.com/opendsu/buffer-crc32.git"
+        },
+        {
+            "name": "dsu-wizard",
+            "src": "https://github.com/opendsu/dsu-wizard.git"
+        },
+        {
+            "name": "double-check",
+            "src": "https://github.com/opendsu/double-check.git"
+        },
+        {
+            "name": "key-ssi-resolver",
+            "src": "https://github.com/opendsu/key-ssi-resolver.git"
+        },
+        {
+            "name": "node-fd-slicer",
+            "src": "https://github.com/opendsu/node-fd-slicer.git"
+        },
+        {
+            "name": "opendsu",
+            "src": "https://github.com/opendsu/opendsu-core.git"
+        },
+        {
+            "name": "overwrite-require",
+            "src": "https://github.com/opendsu/overwrite-require.git"
+        },
+        {
+            "name": "psk-bindable-model",
+            "src": "https://github.com/opendsu/psk-bindable-model.git"
+        },
+        {
+            "name": "pskbuffer",
+            "src": "https://github.com/opendsu/pskbuffer.git"
+        },
+        {
+            "name": "pskcrypto",
+            "src": "https://github.com/opendsu/pskcrypto.git"
+        },
+        {
+            "name": "pskdb",
+            "src": "https://github.com/opendsu/pskdb.git"
+        },
+        {
+            "name": "default-enclave",
+            "src": "https://github.com/opendsu/DefaultEnclave.git"
+        },
+        {
+            "name": "psklogger",
+            "src": "https://github.com/opendsu/psklogger.git"
+        },
+        {
+            "name": "psk-cache",
+            "src": "https://github.com/opendsu/psk-cache.git"
+        },
+        {
+            "name": "psk-security-context",
+            "src": "https://github.com/opendsu/psk-security-context.git"
+        },
+        {
+            "name": "soundpubsub",
+            "src": "https://github.com/opendsu/soundpubsub.git"
+        },
+        {
+            "name": "swarmutils",
+            "src": "https://github.com/opendsu/swarmutils.git"
+        },
+        {
+            "name": "syndicate",
+            "src": "https://github.com/opendsu/syndicate.git"
+        },
+        {
+            "name": "apihub",
+            "src": "https://github.com/opendsu/apihub.git"
+        },
+        {
+            "name": "psk-dbf",
+            "src": "https://github.com/opendsu/psk-dbf.git"
+        },
+        {
+            "name": "queue",
+            "src": "https://github.com/privatesky/queue.git"
+        },
+        {
+            "name": "cleanup any unnecessary files after dep installation",
+            "actions": [
+                {
+                    "type": "remove",
+                    "target": "latest-change-set.txt"
+                }
+            ]
+        }
+    ]
+}

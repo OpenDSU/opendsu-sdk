@@ -1,0 +1,10 @@
+{
+    "openDSU": {
+        "deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, bar, bar-fs-adapter, psk-cache",
+        "bundleExternal": false,
+        "sourceMap": false
+    },
+    "apiHub": {
+        "deps": "overwrite-require, pskcrypto, psk-cache, opendsu, bar, bar-fs-adapter, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, swarmutils, queue, soundpubsub, psk-security-context, dsu-wizard, default-enclave"
+    }
+}
