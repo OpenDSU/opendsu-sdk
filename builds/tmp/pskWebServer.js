@@ -2,7 +2,7 @@ if(typeof $$ === "undefined" || !$$.environmentType) {
     const or = require('overwrite-require');
     or.enableForEnvironment(or.constants.NODEJS_ENVIRONMENT_TYPE);
 } else {
-    console.log('Test environment detected!');
+    console.log('VirtualMQ running in test environment');
 }
 
-require("./apiHub_intermediar");
+require("./pskWebServer_intermediar");

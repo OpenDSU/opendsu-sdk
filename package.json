@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "This repo is meant to be used for opendsu sdk development.",
   "scripts": {
-    "dev-install": "node ./bin/scripts/mkDevEnv.js && node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"npm install --dev\"",
-    "postinstall": "node ./node_modules/octopus/scripts/run",
-    "build": "node ./bin/scripts/build.js --projectMap=./build/build.json --output=./build/output/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev-install": "node ./bin/scripts/mkDevEnv.js && npm install",
+    "postinstall": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run\"",
+    "update": "git pull && npm install",
+    "build": "node ./bin/scripts/pskbuild.js --projectMap=./builds/build.json",
+    "start": "node bin/scripts/serviceLauncher.js",
+    "tests": "echo 'no tests yet!!!'",
+    "freeze": "node ./node_modules/octopus/scripts/freeze",
+    "tag-freeze": "node ./node_modules/octopus/scripts/tagFreeze.js"
   },
   "repository": {
     "type": "git",

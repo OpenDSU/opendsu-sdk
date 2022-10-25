@@ -1,3 +1,8 @@
 env.json.devel
 *_intermediar.js
 output
+modules
+node_modules
+.idea
+builds/tmp/*_intermediar.js
+psknode/bundles

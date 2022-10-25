@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const browserify = require('browserify');
-const argumentsParser = require(path.join(__dirname, './utils/argumentsParserUtil'));
+const argumentsParser = require(path.join(__dirname, './argumentsParserUtil'));
 
 /** Arguments processing **/
 
@@ -12,8 +12,8 @@ const config = {
     only:undefined,
     projectMap: undefined,
     jsonInput: false,
-    input: path.join(process.cwd(), "build", "tmp"),
-    output: path.join(process.cwd(), "build", "output"),
+    input: path.join(process.cwd(), "builds", "tmp"),
+    output: path.join(process.cwd(), "psknode", "bundles"),
     source: [path.resolve(process.cwd(), "modules"), path.resolve(process.cwd(), "libraries")]
 };
 
@@ -40,8 +40,8 @@ config.isProduction = config.prod;
 config.skipShims = config.quick;
 
 if(!config.hasOwnProperty('projectMap')) {
-    console.log("Build script is meant to be used to create bundles based on the content specified in projectmap file.");
-    console.log(`Usage: build --projectMap=<projectmap> [--input=<inputPath>] [--output=<outputPath>] [--quick=<boolean>] [--prod=<boolean>]`);
+    console.log("pskbuild is used to build the runtime or the code for running a privatesky domain");
+    console.log(`Usage: pskbuild --projectMap=<projectmap> [--input=<inputPath>] [--output=<outputPath>] [--quick=<boolean>] [--prod=<boolean>]`);
     console.log("projectmap is a JSON file that contains the lists of targets and their dependencies that will be built.");
     console.log("Using default configuration, normally used for building a runtime");
 }

@@ -94,6 +94,42 @@
             "src": "https://github.com/privatesky/queue.git"
         },
         {
+            "name": "swarm-engine",
+            "src": "https://github.com/privatesky/swarm-engine.git"
+        },
+        {
+            "name": "callflow",
+            "src": "https://github.com/privatesky/callflow.git"
+        },
+        {
+            "name": "psk-http-client",
+            "src": "https://github.com/privatesky/psk-http-client.git"
+        },
+        {
+            "name": "blockchain",
+            "src": "https://github.com/privatesky/blockchain.git"
+        },
+        {
+            "name": "dossier",
+            "src": "https://github.com/privatesky/dossier.git"
+        },
+        {
+            "name": "zmq_adapter",
+            "src": "https://github.com/privatesky/zmq_adapter.git"
+        },
+        {
+            "name": "loki-enclave-facade",
+            "src": "https://github.com/OpenDSU/LokiEnclaveFacade.git"
+        },
+        {
+            "name": "bricksledger",
+            "src": "https://github.com/privatesky/bricksledger.git"
+        },
+        {
+            "name": "ssapp-middleware",
+            "src": "https://github.com/privatesky/ssapp-middleware.git"
+        },
+        {
             "name": "cleanup any unnecessary files after dep installation",
             "actions": [
                 {
