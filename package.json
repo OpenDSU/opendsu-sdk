@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "This repo is meant to be used for opendsu sdk development.",
   "scripts": {
-    "dev-install": "node ./bin/scripts/mkDevEnv.js && node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"npm install --dev\"",
-    "postinstall": "node ./node_modules/octopus/scripts/run",
+    "dev-install": "npm install --dev && npm run postDevinstall",
+    "postDevinstall": "node ./node_modules/octopus/scripts/run dependencies devmode",
     "build": "node ./bin/scripts/build.js --projectMap=./build/build.json --output=./build/output/",
+    "apihub": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node bin/scripts/apiHubLauncher.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
