@@ -67,7 +67,7 @@ module.exports.enableLifeLine = function(timeout){
         }, 0);
     }
 
-    const exceptionEvents = ["SIGINT", "SIGUSR1", "SIGUSR2", "uncaughtException", "SIGTERM", "SIGHUP"];
+    const exceptionEvents = ["SIGINT", "SIGUSR1", "SIGUSR2", "SIGTERM", "SIGHUP"];
     let killingSignal = false;
     for(let i=0; i<exceptionEvents.length; i++){
         process.on(exceptionEvents[i], (event, code)=>{
