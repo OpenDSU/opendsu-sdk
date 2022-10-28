@@ -2,12 +2,13 @@ const TAG = "API-HUB-LAUNCHER";
 
 let path = require("path");
 
-require("../../core/utils/pingpongFork").enableLifeLine();
+process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve(path.join(__dirname, "../../../"));
 require(path.join(__dirname, '../../bundles/pskWebServer.js'));
 
 path = require("swarmutils").path;
 const API_HUB = require('apihub');
 const fs = require('fs');
+
 if (!process.env.PSK_ROOT_INSTALATION_FOLDER) {
     process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve("." + __dirname + "/../..");
 }
