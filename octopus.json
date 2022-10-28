@@ -114,10 +114,6 @@
             "src": "https://github.com/privatesky/dossier.git"
         },
         {
-            "name": "zmq_adapter",
-            "src": "https://github.com/privatesky/zmq_adapter.git"
-        },
-        {
             "name": "loki-enclave-facade",
             "src": "https://github.com/OpenDSU/LokiEnclaveFacade.git"
         },
@@ -128,6 +124,10 @@
         {
             "name": "ssapp-middleware",
             "src": "https://github.com/privatesky/ssapp-middleware.git"
+        },
+        {
+            "name": "../tests",
+            "src": "https://github.com/OpenDSU/opendsu-sdk-tests.git"
         },
         {
             "name": "cleanup any unnecessary files after dep installation",
