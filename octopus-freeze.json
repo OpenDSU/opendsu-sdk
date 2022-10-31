@@ -8,7 +8,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "6d2d5f983d01c6a3b9a08b3700bb85a050a6a9db"
+                    "commit": "d6a3a5946fafe7edaf739456893164da2d6dd044",
+                    "tag": "v1.0.5"
                 }
             ]
         },
@@ -19,7 +20,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "ae84073bcb265a25037218573e0b98d8174c18df"
+                    "commit": "ae84073bcb265a25037218573e0b98d8174c18df",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -30,7 +32,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "47844dbc9ff5ae402a342cf9e9fd419ea3e93298"
+                    "commit": "47844dbc9ff5ae402a342cf9e9fd419ea3e93298",
+                    "tag": "v0.2.14"
                 }
             ]
         },
@@ -41,7 +44,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "a38155fff038abc396cec2a7fee8bc0b755e1ef4"
+                    "commit": "7f0f56aa244721c427fb84e12fd841d541dcd595",
+                    "tag": "v1.0.2"
                 }
             ]
         },
@@ -52,7 +56,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "66979ec49f5a995af749c68bb44dbba5e1c674bd"
+                    "commit": "66979ec49f5a995af749c68bb44dbba5e1c674bd",
+                    "tag": "v0.3.0"
                 }
             ]
         },
@@ -63,7 +68,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "3e41fca02aa0ead0c77b3775066ad9a25fe1061a"
+                    "commit": "6009a06f69b008cb41f7547bfda4f7bf06a7b1bf",
+                    "tag": "v1.0.4"
                 }
             ]
         },
@@ -74,7 +80,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "1d9b627eda3641c94d3449b89c6965cbc24c350c"
+                    "commit": "1d9b627eda3641c94d3449b89c6965cbc24c350c",
+                    "tag": "v1.1.0"
                 }
             ]
         },
@@ -85,7 +92,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "15d90cb8fb5a1dd61cd0a80f405548eeeed661d4"
+                    "commit": "15d90cb8fb5a1dd61cd0a80f405548eeeed661d4",
+                    "tag": "vv1.0.8"
                 }
             ]
         },
@@ -96,7 +104,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "442e2e504361ebbcb1c92498a3d855d19d9485db"
+                    "commit": "b40e82f034abd6271bf1f398705976560c9ee605",
+                    "tag": "v1.0.1"
                 }
             ]
         },
@@ -107,7 +116,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "21abd2a4e10967b13a435ac1be94428c4534c713"
+                    "commit": "21abd2a4e10967b13a435ac1be94428c4534c713",
+                    "tag": "v0.0.1"
                 }
             ]
         },
@@ -118,7 +128,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "bd1f9897667b8f54b1cc11d1987e6c6223d2cdc3"
+                    "commit": "bd1f9897667b8f54b1cc11d1987e6c6223d2cdc3",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -129,7 +140,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "f12e5184f342fc73aff402f9f497e76e788ff75b"
+                    "commit": "cc8b4e647a25263690f98b5a51e0d7f142cfc2d9",
+                    "tag": "v1.0.2"
                 }
             ]
         },
@@ -140,7 +152,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "6418a44d6af4c7458b9437c4e0477c11f1ac7ef5"
+                    "commit": "6418a44d6af4c7458b9437c4e0477c11f1ac7ef5",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -151,7 +164,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "f705bfc5fb89fbeb4b9ddf3c138a6974f541942d"
+                    "commit": "f705bfc5fb89fbeb4b9ddf3c138a6974f541942d",
+                    "tag": "v1.0.3"
                 }
             ]
         },
@@ -162,7 +176,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "10f1162924c1e926736d039ec7f1ca312abc32fe"
+                    "commit": "10f1162924c1e926736d039ec7f1ca312abc32fe",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -173,7 +188,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "f9fd86c8299e5d5b7b635d7d58a2502f805b0f1e"
+                    "commit": "f9fd86c8299e5d5b7b635d7d58a2502f805b0f1e",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -184,7 +200,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "341f7b830cc7b01b7c192716bf4aa1d458f868a2"
+                    "commit": "341f7b830cc7b01b7c192716bf4aa1d458f868a2",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -195,7 +212,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "123b7ff650985d7de9804553bf6316a922c24121"
+                    "commit": "123b7ff650985d7de9804553bf6316a922c24121",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -206,7 +224,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "516200884749f18c073ca060c3ee7b3a0b0f384b"
+                    "commit": "516200884749f18c073ca060c3ee7b3a0b0f384b",
+                    "tag": "v0.1.0"
                 }
             ]
         },
@@ -217,7 +236,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "a8653b3df3c918ca0d1a4b8420b6c7fbc463d827"
+                    "commit": "a8653b3df3c918ca0d1a4b8420b6c7fbc463d827",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -228,7 +248,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "09cc9edf4c64aacbf683e0dd05c750548a14f59b"
+                    "commit": "9e588e2d2c5142e8ab0cc1c66f77b6750945a1fa",
+                    "tag": "v1.0.29"
                 }
             ]
         },
@@ -239,7 +260,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "3964491ce47bee1204ec47dd6d02ad7638cf4a14"
+                    "commit": "3964491ce47bee1204ec47dd6d02ad7638cf4a14",
+                    "tag": "v0.1.0"
                 }
             ]
         },
@@ -250,18 +272,20 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "7afab16ac6e83b0383819f04f1149a50e97480d1"
+                    "commit": "7afab16ac6e83b0383819f04f1149a50e97480d1",
+                    "tag": "v1.0.0"
                 }
             ]
         },
         {
             "name": "swarm-engine",
-            "src": "https://github.com/privatesky/swarm-engine.git",
+            "src": "https://github.com/opendsu/swarm-engine.git",
             "actions": [
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "33cb6230be0765b6a08b8d1ae1da19c053de73eb"
+                    "commit": "4480af24e81740a2d76900777753623593575b90",
+                    "tag": "v1.0.4"
                 }
             ]
         },
@@ -272,7 +296,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "69ae8eb77493a81d200827a68ec62cf6cadc8c41"
+                    "commit": "69ae8eb77493a81d200827a68ec62cf6cadc8c41",
+                    "tag": "v0.9.0"
                 }
             ]
         },
@@ -283,7 +308,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "166237e4f59409d95a571ab947de59d9b07ccee3"
+                    "commit": "166237e4f59409d95a571ab947de59d9b07ccee3",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -294,7 +320,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "72134d8133e8488bac4f74b50fc371cf75da8b15"
+                    "commit": "72134d8133e8488bac4f74b50fc371cf75da8b15",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -305,7 +332,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "912a2d370ea486ed48b85c6aa23190a19aee2641"
+                    "commit": "912a2d370ea486ed48b85c6aa23190a19aee2641",
+                    "tag": "v1.0.0"
                 }
             ]
         },
@@ -316,7 +344,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "f705bfc5fb89fbeb4b9ddf3c138a6974f541942d"
+                    "commit": "f705bfc5fb89fbeb4b9ddf3c138a6974f541942d",
+                    "tag": "v1.0.3"
                 }
             ]
         },
@@ -327,18 +356,20 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "be60053dbd8ac1fdaa62a06ef8a6c82d6d0375f7"
+                    "commit": "be60053dbd8ac1fdaa62a06ef8a6c82d6d0375f7",
+                    "tag": "v1.0.0"
                 }
             ]
         },
         {
             "name": "ssapp-middleware",
-            "src": "https://github.com/privatesky/ssapp-middleware.git",
+            "src": "https://github.com/opendsu/ssapp-middleware.git",
             "actions": [
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "64198e28b08b931061848b985a551e178f7acff0"
+                    "commit": "64198e28b08b931061848b985a551e178f7acff0",
+                    "tag": "v0.3.0"
                 }
             ]
         },
@@ -349,7 +380,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "3658bad1f856ebbc870756588dfe8b608652db3e"
+                    "commit": "fb0eefb364163e2235ec94df4bc3345b38d60a1d",
+                    "tag": "v1.0.0"
                 }
             ]
         },

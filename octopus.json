@@ -95,7 +95,7 @@
         },
         {
             "name": "swarm-engine",
-            "src": "https://github.com/privatesky/swarm-engine.git"
+            "src": "https://github.com/opendsu/swarm-engine.git"
         },
         {
             "name": "callflow",
@@ -123,7 +123,7 @@
         },
         {
             "name": "ssapp-middleware",
-            "src": "https://github.com/privatesky/ssapp-middleware.git"
+            "src": "https://github.com/opendsu/ssapp-middleware.git"
         },
         {
             "name": "../tests",
