@@ -92,8 +92,8 @@
                 {
                     "type": "smartClone",
                     "target": "modules",
-                    "commit": "15d90cb8fb5a1dd61cd0a80f405548eeeed661d4",
-                    "tag": "vv1.0.8"
+                    "commit": "58dd900ca08b8b02d52ef10494ef8ee1cfdd7391",
+                    "tag": "v1.0.9"
                 }
             ]
         },
