@@ -1,0 +1,71 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Tests
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  # Triggers the workflow at the end of the day
+  schedule:
+    - cron: "0 0 * * 1-5"
+  # Allows other workflows to call this one
+  workflow_call:
+    inputs:
+      branch_name:
+        required: true
+        default: 'master'
+        type: string
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build_and_test:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    environment: github-actions-tests
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Setup Node version
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # install dependencies
+      - name: Install dependencies (dev-install)
+        run: npm run dev-install
+
+      # run tests
+      - name: Run tests
+        run: npm run tests
+        env:
+          DOUBLE_CHECK_POOL_SIZE: 2
+          DOUBLE_CHECK_TIMEOUT_FACTOR: 10
+
+      # Pushing results to test_reports branch
+      - name: Pushing results to test_reports branch
+        if: ${{ always() }}
+        run: |
+          git clone https://${GIT_TOKEN}@github.com/opendsu/opendsu.git ../results > /dev/null 2>&1
+          cd ../results
+          git config user.email "psk.build.track@gmail.com"
+          git config user.name "Build Tracker"
+          git checkout test_reports
+          git pull --all
+          cp ../opendsu/testReport.html testReport.html
+          git add -f testReport.html
+          git commit --message "Github Actions Tests Reports for run number $GITHUB_RUN_NUMBER"
+          git push origin test_reports
+          cd .. && rm -rf results
+        env:
+          GIT_TOKEN: ${{secrets.TOKEN}}
