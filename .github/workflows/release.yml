@@ -10,6 +10,41 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # In order to prepare the release we first of all run the testing workflow
-  run_tests:
+  build_and_test:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
     environment: github-actions-tests
-    uses: ./.github/workflows/tests.yml
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Setup Node version
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # install dependencies
+      - name: Install dependencies (dev-install)
+        run: npm run dev-install
+
+      # run tests
+      - name: Run tests
+        run: npm run tests
+        env:
+          DOUBLE_CHECK_POOL_SIZE: 2
+          DOUBLE_CHECK_TIMEOUT_FACTOR: 10
+      # Pushing results to test_reports branch
+      - name: Publishing bundles to master branch
+        if: ${{ always() }}
+        run: |
+          git config user.email "psk.build.track@gmail.com"
+          git config user.name "Build Tracker"
+          git switch master
+          git pull --all
+          git add -f psknode/bundles
+          git commit --message "Publishing new release bundles"
+          git push origin master
+        env:
+          GIT_TOKEN: ${{secrets.TOKEN}}
