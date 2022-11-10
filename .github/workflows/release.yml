@@ -9,10 +9,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  runs-on: ubuntu-latest
-  environment: github-actions-tests
   # In order to prepare the release we first of all run the testing workflow
   run_tests:
+    environment: github-actions-tests
     uses: ./.github/workflows/tests.yml
-env:
-  GIT_TOKEN: ${{secrets.TOKEN}}
