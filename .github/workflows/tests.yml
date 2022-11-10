@@ -60,7 +60,7 @@ jobs:
           cd ../results
           git config user.email "psk.build.track@gmail.com"
           git config user.name "Build Tracker"
-          git checkout test_reports
+          git switch test_reports
           git pull --all
           cp ../opendsu/testReport.html testReport.html
           git add -f testReport.html

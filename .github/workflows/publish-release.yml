@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Publish release bundles
+name: Publish-release-bundles
 
 # Controls when the action will run.
 on:
@@ -11,6 +11,6 @@ on:
 jobs:
   # In order to prepare the release we first of all run the testing workflow
   run_tests:
-    uses: .github/workflows/tests.yml@master
+    uses: ./.github/workflows/tests.yml
     with:
       branch_name: dev
