@@ -56,7 +56,7 @@ jobs:
       - name: Pushing results to test_reports branch
         if: ${{ always() }}
         run: |
-          git clone https://${GIT_TOKEN}@github.com/opendsu/opendsu.git ../results > /dev/null 2>&1
+          git clone https://${GIT_TOKEN}@github.com/opendsu/opendsu-sdk.git ../results > /dev/null 2>&1
           cd ../results
           git config user.email "psk.build.track@gmail.com"
           git config user.name "Build Tracker"
