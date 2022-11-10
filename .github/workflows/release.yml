@@ -12,5 +12,5 @@ jobs:
   # In order to prepare the release we first of all run the testing workflow
   run_tests:
     uses: ./.github/workflows/tests.yml
-    with:
-      branch_name: dev
+    secrets:
+      GIT_TOKEN: ${{secrets.TOKEN}}
