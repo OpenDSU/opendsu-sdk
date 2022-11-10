@@ -37,7 +37,7 @@ jobs:
           DOUBLE_CHECK_TIMEOUT_FACTOR: 10
       # Pushing results to test_reports branch
       - name: Publishing bundles to master branch
-        if: ${{ always() }}
+        if: ${{ success() }}
         run: |
           git config user.email "psk.build.track@gmail.com"
           git config user.name "Build Tracker"
