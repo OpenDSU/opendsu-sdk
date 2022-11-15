@@ -6,6 +6,17 @@ name: Release
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Enter the version number (e.g. x.y.z , default "patch")'
+        required: true
+        default: 'patch'
+        type: string
+      ignoreTests:
+          description: 'Ignore test success'
+          required: true
+          type: boolean
+          default: false
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -37,14 +48,22 @@ jobs:
           DOUBLE_CHECK_TIMEOUT_FACTOR: 10
       # Pushing results to test_reports branch
       - name: Publishing bundles to master branch
-        if: ${{ success() }}
+        if: ${{ github.event.inputs.ignoreTests == 'true' || success() }} 
         run: |
           git config user.email "psk.build.track@gmail.com"
           git config user.name "Build Tracker"
           git switch master
           git pull --all
           git add -f psknode/bundles
+          npm version ${{ github.event.inputs.version }} -no-git-tag-version --force
+          git add package.json
           git commit --message "Publishing new release bundles"
+          package_version=$(grep version package.json | awk -F \" '{print $4}')
+          git tag "v$package_version"
+          git tag -l
+          git log --name-status HEAD^..HEAD
+          exit 0
+          git push --tags origin
           git push origin master
         env:
           GIT_TOKEN: ${{secrets.TOKEN}}
