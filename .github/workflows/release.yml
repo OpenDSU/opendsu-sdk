@@ -62,7 +62,6 @@ jobs:
           git tag "v$package_version"
           git tag -l
           git log --name-status HEAD^..HEAD
-          exit 0
           git push --tags origin
           git push origin master
         env:
