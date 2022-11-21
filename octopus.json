@@ -137,6 +137,15 @@
                     "target": "latest-change-set.txt"
                 }
             ]
+        },
+        {
+            "name": "build opendsu-sdk",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "npm run build"
+                }
+            ]
         }
     ]
 }
