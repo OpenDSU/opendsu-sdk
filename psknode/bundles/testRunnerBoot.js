@@ -1588,7 +1588,7 @@ function enableForEnvironment(envType){
             return envType;
         },
         set: function (value) {
-            throw Error("Environment type already set!");
+            throw Error(`Trying to set env value: ${value}. Environment type already set!`);
         }
     });
 
@@ -1642,8 +1642,7 @@ function enableForEnvironment(envType){
     }
 
     function requireFromCache(request) {
-        const existingModule = $$.__runtimeModules[request];
-        return existingModule;
+        return $$.__runtimeModules[request];
     }
 
     $$.__registerModule = function (name, module) {
@@ -1709,7 +1708,7 @@ function enableForEnvironment(envType){
 
             } catch (err) {
                 if (err.type !== "PSKIgnorableError") {
-                    if(typeof err == "SyntaxError"){
+                    if(err instanceof SyntaxError){
                         console.error(err);
                     } else{
                         if(request === 'zeromq'){
@@ -1748,7 +1747,7 @@ function enableForEnvironment(envType){
 
     function makeIsolateRequire(){
         // require should be provided when code is loaded in browserify
-        const bundleRequire = require;
+        //const bundleRequire = require;
 
         $$.requireBundle('sandboxBase');
         // this should be set up by sandbox prior to
@@ -1834,10 +1833,6 @@ function enableForEnvironment(envType){
                     }
                 }
                 return res;
-            }
-
-            function currentFolderRequire(request) {
-                return
             }
 
             //[requireFromCache, wrapStep(pskruntimeRequire), wrapStep(domainRequire), originalRequire]

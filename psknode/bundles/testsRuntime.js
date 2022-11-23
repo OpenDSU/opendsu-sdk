@@ -4254,41 +4254,41 @@ module.exports = function(server){
     });
 }
 
-},{"./../../utils/middlewares/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","http":false,"https":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js":[function(require,module,exports){
-(function (Buffer){(function (){
+},{"./../../utils/middlewares/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","http":false,"https":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js":[function(require,module,exports){
 const fs = require("fs");
 const path = require("path");
+const config = require("../../config");
 
-function secrets(server) {
+function SecretsService(serverRootFolder) {
     const logger = $$.getLogger("secrets", "apihub/secrets");
-    const secretsFolderPath = path.join(server.rootFolder, "external-volume", "secrets");
-    server.get("/getSSOSecret/:appName", function (request, response) {
-        let userId = request.headers["user-id"];
-        let appName = request.params.appName;
-        const fileDir = path.join(secretsFolderPath, appName);
-        const filePath = path.join(fileDir, `${userId}.secret`);
-        fs.access(filePath, (err) => {
-            if (err) {
-                response.statusCode = 204;
-                response.end(JSON.stringify({error: `${userId} not found`}));
-                return;
-            }
+    const crypto = require("opendsu").loadAPI("crypto");
+    const createError = (code, message) => {
+        const err = Error(message);
+        err.code = code
 
-            fs.readFile(filePath, (err, fileData) => {
-                if (err) {
-                    response.statusCode = 404;
-                    response.end(JSON.stringify({error: `Couldn't find a secret for ${userId}`}));
-                    return
-                }
+        return err;
+    }
 
-                response.statusCode = 200;
-                response.end(JSON.stringify({secret: fileData.toString()}));
-            })
-        })
-    });
+    const encryptSecret = (secret) => {
+        const encryptionKeys = process.env.SSO_SECRETS_ENCRYPTION_KEY.split(",");
+        let latestEncryptionKey = encryptionKeys[0];
+        if (!$$.Buffer.isBuffer(latestEncryptionKey)) {
+            latestEncryptionKey = $$.Buffer.from(latestEncryptionKey, "base64");
+        }
 
-    function ensureFolderExists(folderPath, callback) {
-        fs.access(folderPath, (err)=>{
+        return crypto.encrypt(secret, latestEncryptionKey);
+    }
+
+    const writeSecrets = (appName, secrets, callback) => {
+        if (typeof secrets === "object") {
+            secrets = JSON.stringify(secrets);
+        }
+        const encryptedSecrets = encryptSecret(secrets);
+        fs.writeFile(getSecretFilePath(appName), encryptedSecrets, callback);
+    }
+
+    const ensureFolderExists = (folderPath, callback) => {
+        fs.access(folderPath, (err) => {
             if (err) {
                 fs.mkdir(folderPath, {recursive: true}, callback);
                 return;
@@ -4298,70 +4298,174 @@ function secrets(server) {
         })
     }
 
-    function writeSecret(filePath, secret, request, response) {
-        fs.access(filePath, (err)=>{
-            if (!err) {
-                logger.error("File Already exists");
-                response.statusCode = 403;
-                response.end(Error(`File ${filePath} already exists`));
+    const getStorageFolderPath = () => {
+        return path.join(serverRootFolder, config.getConfig("externalStorage"), "secrets");
+    }
+
+    const getSecretFilePath = (appName) => {
+        const folderPath = getStorageFolderPath(appName);
+        return path.join(folderPath, `${appName}.secret`);
+    }
+
+    const decryptSecret = (appName, encryptedSecret, callback) => {
+        const encryptionKeys = process.env.SSO_SECRETS_ENCRYPTION_KEY.split(",");
+        const latestEncryptionKey = encryptionKeys[0].trim();
+        let decryptedSecret;
+        const _decryptSecretRecursively = (index) => {
+            const encryptionKey = encryptionKeys[index].trim();
+            if (typeof encryptionKey === "undefined") {
+                logger.error(`Failed to decrypt secret. Invalid encryptionKey.`);
+                callback(createError(500, `Failed to decrypt secret`));
+                return;
+            }
+            let bufferEncryptionKey = encryptionKey;
+            if (!$$.Buffer.isBuffer(bufferEncryptionKey)) {
+                bufferEncryptionKey = $$.Buffer.from(bufferEncryptionKey, "base64");
+            }
+
+            try {
+                decryptedSecret = crypto.decrypt(encryptedSecret, bufferEncryptionKey);
+            } catch (e) {
+                _decryptSecretRecursively(index + 1);
                 return;
             }
 
-            fs.writeFile(filePath, secret, (err)=>{
+            if (latestEncryptionKey !== encryptionKey) {
+                writeSecrets(appName, decryptedSecret.toString(), err => {
+                    if (err) {
+                        return callback(err);
+                    }
+                    callback(undefined, decryptedSecret);
+                });
+
+                return;
+            }
+
+            callback(undefined, decryptedSecret);
+        }
+
+        _decryptSecretRecursively(0);
+    }
+
+    const getDecryptedSecrets = (appName, callback) => {
+        const filePath = getSecretFilePath(appName);
+        fs.readFile(filePath, (err, secrets) => {
+            if (err) {
+                logger.error(`Failed to read file ${filePath}`);
+                return callback(createError(500, `Failed to read file ${filePath}`));
+            }
+
+            decryptSecret(appName, secrets, (err, decryptedSecrets) => {
                 if (err) {
-                    logger.error("Error at writing file", err);
-                    response.statusCode = 500;
-                    response.end(err);
-                    return;
+                    return callback(err);
                 }
 
-                response.statusCode = 200;
-                response.end();
-            });
+                try {
+                    decryptedSecrets = JSON.parse(decryptedSecrets.toString());
+                } catch (e) {
+                    logger.error(`Failed to parse secrets`);
+                    return callback(createError(500, `Failed to parse secrets`));
+                }
+
+                callback(undefined, decryptedSecrets);
+            })
+        });
+    }
+
+    this.putSecret = (appName, userId, secret, callback) => {
+        if (typeof process.env.SSO_SECRETS_ENCRYPTION_KEY === "undefined") {
+            logger.warn(`The SSO_SECRETS_ENCRYPTION_KEY is missing from environment.`);
+            return callback(createError(500, `The SSO_SECRETS_ENCRYPTION_KEY is missing from environment.`));
+        }
+        const folderPath = getStorageFolderPath();
+        ensureFolderExists(folderPath, err => {
+            if (err) {
+                return callback(createError(500, `Failed to store secret for user ${userId}`));
+            }
+
+            getDecryptedSecrets(appName, (err, decryptedSecrets) => {
+                if (err) {
+                    decryptedSecrets = {};
+                }
+
+                decryptedSecrets[userId] = secret;
+                writeSecrets(appName, decryptedSecrets, callback);
+            })
         })
     }
 
-    server.put('/putSSOSecret/:appName', function (request, response) {
-        let userId = request.headers["user-id"];
-        let appName = request.params.appName;
-        let data = []
-
-        request.on('error', (err) => {
-            response.statusCode = 500;
-            response.end(err);
-        });
-
-        request.on('data', (chunk) => {
-            data.push(chunk);
-        });
-
-        request.on('end', async () => {
-            const fileDir = path.join(secretsFolderPath, appName);
-            const filePath = path.join(fileDir, `${userId}.secret`);
-            let body;
-            let msgToPersist;
-            try {
-                body = Buffer.concat(data).toString();
-                msgToPersist = JSON.parse(body).secret;
-            } catch (e) {
-                logger.error("Failed to parse body", data);
-                response.statusCode = 500;
-                response.end(e);
+    this.getSecret = (appName, userId, callback) => {
+        getDecryptedSecrets(appName, (err, decryptedSecrets) => {
+            if (err) {
+                return callback(err);
             }
 
-            ensureFolderExists(fileDir, (err)=>{
-                if (err) {
-                    response.statusCode = 500;
-                    response.end(err);
-                    return;
-                }
-
-                writeSecret(filePath, msgToPersist, request, response);
-            })
+            callback(undefined, JSON.stringify({secret: decryptedSecrets[userId]}));
         })
-    });
+    }
 
-    function getUserIdFromDID(did, appName) {
+    this.deleteSecret = (appName, userId, callback) => {
+        getDecryptedSecrets(appName, (err, decryptedSecrets) => {
+            if (err) {
+                return callback(err);
+            }
+
+            delete decryptedSecrets[userId];
+            writeSecrets(appName, decryptedSecrets, callback);
+        })
+    }
+}
+
+module.exports = SecretsService;
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","fs":false,"opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js":[function(require,module,exports){
+
+function secrets(server) {
+    const logger = $$.getLogger("secrets", "apihub/secrets");
+    const httpUtils = require("../../libs/http-wrapper/src/httpUtils");
+    const SecretsService = require("./SecretsService");
+    const secretsService = new SecretsService(server.rootFolder);
+
+    const getSSOSecret = (request, response) => {
+        let userId = request.headers["user-id"];
+        let appName = request.params.appName;
+        secretsService.getSecret(appName, userId, (err, secret)=>{
+            if (err) {
+                response.statusCode = err.code;
+                response.end(err.message);
+                return;
+            }
+
+            response.statusCode = 200;
+            response.end(secret);
+        })
+    }
+
+    const putSSOSecret = (request, response) => {
+        let userId = request.headers["user-id"];
+        let appName = request.params.appName;
+        let secret;
+        try {
+            secret = JSON.parse(request.body).secret;
+        } catch (e) {
+            logger.error("Failed to parse body", request.body);
+            response.statusCode = 500;
+            response.end(e);
+            return;
+        }
+
+        secretsService.putSecret(appName, userId, secret, err => {
+            if (err) {
+                response.statusCode = err.code;
+                response.end(err.message);
+                return;
+            }
+
+            response.statusCode = 200;
+            response.end();
+        });
+    };
+
+    const getUserIdFromDID = (did, appName) => {
         const crypto = require("opendsu").loadAPI("crypto");
         const decodedDID = crypto.decodeBase58(did);
         const splitDecodedDID = decodedDID.split(":");
@@ -4370,41 +4474,33 @@ function secrets(server) {
         return userId;
     }
 
-    function deleteSSOSecret(request, response) {
+    const deleteSSOSecret = (request, response) => {
         let did = request.params.did;
         let appName = request.params.appName;
-        const fileDir = path.join(secretsFolderPath, appName);
         let userId = getUserIdFromDID(did, appName);
-        const filePath = path.join(fileDir, `${userId}.secret`);
-        fs.access(filePath, (err) => {
+
+        secretsService.deleteSecret(appName, userId, err => {
             if (err) {
-                response.statusCode = 204;
-                response.end(JSON.stringify({error: `${userId} not found`}));
+                response.statusCode = err.code;
+                response.end(err.message);
                 return;
             }
 
-            fs.unlink(filePath, (err) => {
-                if (err) {
-                    response.statusCode = 404;
-                    response.end(JSON.stringify({error: `Couldn't find a secret for ${userId}`}));
-                    return
-                }
-
-                response.statusCode = 200;
-                response.end();
-            })
-        })
+            response.statusCode = 200;
+            response.end();
+        });
     }
 
+    server.put('/putSSOSecret/*', httpUtils.bodyParser);
+    server.get("/getSSOSecret/:appName", getSSOSecret);
+    server.put('/putSSOSecret/:appName', putSSOSecret);
     server.delete("/deactivateSSOSecret/:appName/:did", deleteSSOSecret);
     server.delete("/removeSSOSecret/:appName/:did", deleteSSOSecret);
 }
 
 module.exports = secrets;
 
-}).call(this)}).call(this,require("buffer").Buffer)
-
-},{"buffer":false,"fs":false,"opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js":[function(require,module,exports){
+},{"../../libs/http-wrapper/src/httpUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js","./SecretsService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js":[function(require,module,exports){
 function StaticServer(server) {
     const fs = require("fs");
     const path = require('swarmutils').path;
@@ -62562,7 +62658,7 @@ function enableForEnvironment(envType){
             return envType;
         },
         set: function (value) {
-            throw Error("Environment type already set!");
+            throw Error(`Trying to set env value: ${value}. Environment type already set!`);
         }
     });
 
@@ -62616,8 +62712,7 @@ function enableForEnvironment(envType){
     }
 
     function requireFromCache(request) {
-        const existingModule = $$.__runtimeModules[request];
-        return existingModule;
+        return $$.__runtimeModules[request];
     }
 
     $$.__registerModule = function (name, module) {
@@ -62683,7 +62778,7 @@ function enableForEnvironment(envType){
 
             } catch (err) {
                 if (err.type !== "PSKIgnorableError") {
-                    if(typeof err == "SyntaxError"){
+                    if(err instanceof SyntaxError){
                         console.error(err);
                     } else{
                         if(request === 'zeromq'){
@@ -62722,7 +62817,7 @@ function enableForEnvironment(envType){
 
     function makeIsolateRequire(){
         // require should be provided when code is loaded in browserify
-        const bundleRequire = require;
+        //const bundleRequire = require;
 
         $$.requireBundle('sandboxBase');
         // this should be set up by sandbox prior to
@@ -62808,10 +62903,6 @@ function enableForEnvironment(envType){
                     }
                 }
                 return res;
-            }
-
-            function currentFolderRequire(request) {
-                return
             }
 
             //[requireFromCache, wrapStep(pskruntimeRequire), wrapStep(domainRequire), originalRequire]
