@@ -11,7 +11,7 @@
         "tests": "npm run smoke-tests",
         "freeze": "node ./node_modules/octopus/scripts/freeze",
         "tag-freeze": "node ./node_modules/octopus/scripts/tagFreeze.js",
-        "smoke-tests": "npm run build && node ./psknode/bin/scripts/testrunner.js --config=./smoke-test-suites.json"
+        "smoke-tests": "npm run build && node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./psknode/bin/scripts/testrunner.js --config=./smoke-test-suites.json\""
     },
     "repository": {
         "type": "git",
