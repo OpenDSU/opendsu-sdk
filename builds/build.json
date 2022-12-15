@@ -21,7 +21,7 @@
     "bundleExternal": false,
     "exclude": "psklogger",
     "bare": true},
-  "testsRuntime": "overwrite-require, opendsu, pskcrypto, psk-cache, double-check, blockchain, swarmutils, queue, soundpubsub, dossier, swarm-engine, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, callflow, blockchain, syndicate, apihub, bricksledger, dsu-wizard",
+  "testsRuntime": "overwrite-require, opendsu, pskcrypto, psk-cache, double-check, blockchain, swarmutils, queue, soundpubsub, dossier, swarm-engine, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, callflow, blockchain, syndicate, apihub, bricksledger, dsu-wizard, loki-enclave-facade",
   "bindableModel": {"deps": "overwrite-require, queue, soundpubsub, psk-bindable-model","exportedEsModule": "psk-bindable-model" },
   "loaderBoot": {"deps": "overwrite-require, opendsu", "bare": false, "autoLoad": true, "bundleExternal":true},
   "swBoot": {"deps":"swarm-engine/bootScripts/browser/sw:sw, opendsu","autoLoad": true, "bundleExternal":true, "exclude": "psklogger"},
