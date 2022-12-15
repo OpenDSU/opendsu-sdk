@@ -51,7 +51,7 @@ const Tir = function () {
         if (!callback) {
             throw Error(`Invalid number of arguments`);
         }
-        config = {maxTries, rootFolder};
+        config = {maxTries, rootFolder, useWorker: true};
         const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
         apiHubTestNodeLauncher.launch((err, result) => {
             if (err) {
