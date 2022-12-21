@@ -1,9 +1,9 @@
-testsRuntimeRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/builds/tmp/testsRuntime.js":[function(require,module,exports){
+testsRuntimeRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testsRuntime.js":[function(require,module,exports){
 const or = require('overwrite-require');
 or.enableForEnvironment(or.constants.NODEJS_ENVIRONMENT_TYPE);
 require("./testsRuntime_intermediar");
 require("double-check");
-},{"./testsRuntime_intermediar":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/builds/tmp/testsRuntime_intermediar.js","double-check":"double-check","overwrite-require":"overwrite-require"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/builds/tmp/testsRuntime_intermediar.js":[function(require,module,exports){
+},{"./testsRuntime_intermediar":"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testsRuntime_intermediar.js","double-check":"double-check","overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testsRuntime_intermediar.js":[function(require,module,exports){
 (function (global){(function (){
 global.testsRuntimeLoadModules = function(){ 
 
@@ -90,6 +90,10 @@ global.testsRuntimeLoadModules = function(){
 	if(typeof $$.__runtimeModules["dsu-wizard"] === "undefined"){
 		$$.__runtimeModules["dsu-wizard"] = require("dsu-wizard");
 	}
+
+	if(typeof $$.__runtimeModules["loki-enclave-facade"] === "undefined"){
+		$$.__runtimeModules["loki-enclave-facade"] = require("loki-enclave-facade");
+	}
 };
 if (false) {
 	testsRuntimeLoadModules();
@@ -101,7 +105,7 @@ if (typeof $$ !== "undefined") {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"apihub":"apihub","bar":"bar","bar-fs-adapter":"bar-fs-adapter","blockchain":"blockchain","bricksledger":"bricksledger","buffer-crc32":"buffer-crc32","callflow":"callflow","dossier":"dossier","double-check":"double-check","dsu-wizard":"dsu-wizard","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache","pskcrypto":"pskcrypto","queue":"queue","soundpubsub":"soundpubsub","swarm-engine":"swarm-engine","swarmutils":"swarmutils","syndicate":"syndicate"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/admin/index.js":[function(require,module,exports){
+},{"apihub":"apihub","bar":"bar","bar-fs-adapter":"bar-fs-adapter","blockchain":"blockchain","bricksledger":"bricksledger","buffer-crc32":"buffer-crc32","callflow":"callflow","dossier":"dossier","double-check":"double-check","dsu-wizard":"dsu-wizard","key-ssi-resolver":"key-ssi-resolver","loki-enclave-facade":"loki-enclave-facade","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache","pskcrypto":"pskcrypto","queue":"queue","soundpubsub":"soundpubsub","swarm-engine":"swarm-engine","swarmutils":"swarmutils","syndicate":"syndicate"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js":[function(require,module,exports){
 const DATABASE_NAME = "adminEnclave";
 
 const DOMAINS_TABLE = "domains";
@@ -436,7 +440,7 @@ module.exports = {
     AdminComponentHandler,
     getAdminService
 };
-},{"./../../utils/middlewares/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","loki-enclave-facade":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/controllers/index.js":[function(require,module,exports){
+},{"./../../utils/middlewares/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","loki-enclave-facade":"loki-enclave-facade","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/controllers/index.js":[function(require,module,exports){
 const {ALIAS_SYNC_ERR_CODE} = require("../utils");
 const utils = require("../utils");
 const anchoringStrategies = require("../strategies");
@@ -513,7 +517,7 @@ async function updateAnchor(action, request, response) {
 function getReadingHandler(response) {
     return (err, result) => {
         if (err) {
-            logger.info(0x01, `Anchor not found`);
+            logger.info(0x01, `Anchor not found`, err);
             return response.send(404, "Anchor not found");
         }
 
@@ -580,7 +584,7 @@ module.exports = {
     dumpAnchors
 };
 
-},{"../strategies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/index.js":[function(require,module,exports){
+},{"../strategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/index.js":[function(require,module,exports){
 
 function Anchoring(server) {
     function requestServerMiddleware(request, response, next) {
@@ -623,7 +627,7 @@ function Anchoring(server) {
 
 module.exports = Anchoring;
 
-},{"../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./controllers":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/controllers/index.js","./strategies/oba/ethereumSyncService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/ethereumSyncService.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/contract/index.js":[function(require,module,exports){
+},{"../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./controllers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/controllers/index.js","./strategies/oba/ethereumSyncService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/ethereumSyncService.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/contract/index.js":[function(require,module,exports){
 const { getDomainFromKeySSI } = require("../../utils");
 
 class Contract {
@@ -718,7 +722,7 @@ class Contract {
 
 module.exports = Contract;
 
-},{"../../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/eth/index.js":[function(require,module,exports){
+},{"../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/eth/index.js":[function(require,module,exports){
 const {ALIAS_SYNC_ERR_CODE} = require("../../utils");
 
 function ETH(server, domainConfig, anchorId, newAnchorValue, jsonData) {
@@ -838,7 +842,7 @@ function ETH(server, domainConfig, anchorId, newAnchorValue, jsonData) {
 }
 
 module.exports = ETH;
-},{"../../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/filePersistence.js":[function(require,module,exports){
+},{"../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/filePersistence.js":[function(require,module,exports){
 function FilePersistenceStrategy(rootFolder, configuredPath) {
     const self = this;
     const fileOperations = new FileOperations();
@@ -1039,7 +1043,7 @@ module.exports = {
     FilePersistenceStrategy
 }
 
-},{"../utils/AnchorPathResolver":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/AnchorPathResolver.js","../utils/FSLock":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/FSLock.js","fs":false,"os":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/index.js":[function(require,module,exports){
+},{"../utils/AnchorPathResolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/AnchorPathResolver.js","../utils/FSLock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/FSLock.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/index.js":[function(require,module,exports){
 
 const openDSU = require("opendsu");
 
@@ -1093,7 +1097,7 @@ class FS{
 
 module.exports = FS;
 
-},{"./filePersistence":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/filePersistence.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js":[function(require,module,exports){
+},{"./filePersistence":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/filePersistence.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js":[function(require,module,exports){
 module.exports = {
     FS: require("./fs"),
     ETH: require("./eth"),
@@ -1101,7 +1105,7 @@ module.exports = {
     OBA: require("./oba")
 };
 
-},{"./contract":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/contract/index.js","./eth":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/eth/index.js","./fs":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/index.js","./oba":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/ethereumSyncService.js":[function(require,module,exports){
+},{"./contract":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/contract/index.js","./eth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/eth/index.js","./fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/index.js","./oba":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/ethereumSyncService.js":[function(require,module,exports){
 const {ALIAS_SYNC_ERR_CODE, ANCHOR_ALREADY_EXISTS_ERR_CODE} = require("../../utils");
 const {getLokiEnclaveFacade} = require("./lokiEnclaveFacadeSingleton");
 const {getLogFilePath} = require("./getLogFilePath");
@@ -1271,7 +1275,7 @@ const getEthereumSyncServiceSingleton = (server) => {
 module.exports = {
     getEthereumSyncServiceSingleton
 }
-},{"../../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js","../index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./getDBFilePath":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/getDBFilePath.js","./getLogFilePath":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/getLogFilePath.js","./lokiEnclaveFacadeSingleton":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/lokiEnclaveFacadeSingleton.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/getDBFilePath.js":[function(require,module,exports){
+},{"../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js","../index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./getDBFilePath":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/getDBFilePath.js","./getLogFilePath":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/getLogFilePath.js","./lokiEnclaveFacadeSingleton":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/lokiEnclaveFacadeSingleton.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/getDBFilePath.js":[function(require,module,exports){
 const path = require("path");
 
 const getDBFilePath = (server) => {
@@ -1284,7 +1288,7 @@ const getDBFilePath = (server) => {
 module.exports = {
     getDBFilePath
 }
-},{"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/getLogFilePath.js":[function(require,module,exports){
+},{"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/getLogFilePath.js":[function(require,module,exports){
 const path = require("path");
 
 const getLogFilePath = (server) => {
@@ -1297,7 +1301,7 @@ const getLogFilePath = (server) => {
 module.exports = {
     getLogFilePath
 }
-},{"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/index.js":[function(require,module,exports){
+},{"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/index.js":[function(require,module,exports){
 const {getEthereumSyncServiceSingleton} = require("./ethereumSyncService");
 const {getLogFilePath} = require("./getLogFilePath");
 
@@ -1418,7 +1422,7 @@ function OBA(server, domainConfig, anchorId, anchorValue, ...args) {
 
 module.exports = OBA;
 
-},{"../index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./ethereumSyncService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/ethereumSyncService.js","./getLogFilePath":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/getLogFilePath.js","os":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/lokiEnclaveFacadeSingleton.js":[function(require,module,exports){
+},{"../index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./ethereumSyncService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/ethereumSyncService.js","./getLogFilePath":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/getLogFilePath.js","os":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/oba/lokiEnclaveFacadeSingleton.js":[function(require,module,exports){
 const fs = require("fs");
 const path = require("path");
 
@@ -1440,7 +1444,7 @@ module.exports = {
     getLokiEnclaveFacade
 }
 
-},{"fs":false,"loki-enclave-facade":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/AnchorPathResolver.js":[function(require,module,exports){
+},{"fs":false,"loki-enclave-facade":"loki-enclave-facade","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/AnchorPathResolver.js":[function(require,module,exports){
 function AnchorPathResolver(rootFolder, configPath) {
     const path = require("path");
     const anchoringFolder = path.resolve(path.join(rootFolder, configPath));
@@ -1451,7 +1455,7 @@ function AnchorPathResolver(rootFolder, configPath) {
 }
 
 module.exports = AnchorPathResolver;
-},{"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/FSLock.js":[function(require,module,exports){
+},{"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/FSLock.js":[function(require,module,exports){
 const fs = require("fs");
 
 function FSLock(filePath, maxTimeMilliSeconds, forcedLockDelay) {
@@ -1545,7 +1549,7 @@ function FSLock(filePath, maxTimeMilliSeconds, forcedLockDelay) {
 }
 
 module.exports = FSLock;
-},{"fs":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js":[function(require,module,exports){
+},{"fs":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js":[function(require,module,exports){
 const { clone } = require("../../../utils");
 
 const getAnchoringDomainConfig = async (domain) => {
@@ -1591,7 +1595,7 @@ const ANCHOR_ALREADY_EXISTS_ERR_CODE = "anchor-already-exists";
 
 module.exports = { getAnchoringDomainConfig, getDomainFromKeySSI, ALIAS_SYNC_ERR_CODE, ANCHOR_ALREADY_EXISTS_ERR_CODE };
 
-},{"../../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/index.js","opendsu":"opendsu","path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bdns/index.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/index.js","opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bdns/index.js":[function(require,module,exports){
 function BDNS(server) {
     const logger = $$.getLogger("BDNS", "apihub/bdns");
 
@@ -1695,7 +1699,7 @@ function BDNS(server) {
 
 module.exports = BDNS;
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./../admin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/admin/index.js","fs":false,"opendsu":"opendsu","path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricking/controllers.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./../admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","fs":false,"opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/controllers.js":[function(require,module,exports){
 const { getBrickWithExternalProvidersFallbackAsync } = require("./utils");
 const logger = $$.getLogger("apihub", "bricking");
 
@@ -1765,7 +1769,7 @@ module.exports = {
     downloadMultipleBricks,
 };
 
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricking/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricking/index.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/index.js":[function(require,module,exports){
 function Bricks(server) {
     function requestServerMiddleware(request, response, next) {
         request.server = server;
@@ -1792,7 +1796,7 @@ function Bricks(server) {
 
 module.exports = Bricks;
 
-},{"../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./controllers":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricking/controllers.js","./middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricking/middlewares.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricking/middlewares.js":[function(require,module,exports){
+},{"../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./controllers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/controllers.js","./middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/middlewares.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/middlewares.js":[function(require,module,exports){
 async function requestFSBrickStorageMiddleware(request, response, next) {
     const { domain: domainName } = request.params;
     const logger = $$.getLogger("requestFSBrickStorageMiddleware", "apihub/bricking");
@@ -1817,7 +1821,7 @@ module.exports = {
     requestFSBrickStorageMiddleware
 };
 
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricking/utils.js","bricksledger":"bricksledger"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricking/utils.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/utils.js","bricksledger":"bricksledger"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/utils.js":[function(require,module,exports){
 const { clone } = require("../../utils");
 const { getLocalBdnsEntryListExcludingSelfAsync, getHeadersWithExcludedProvidersIncludingSelf } = require("../../utils/request-utils");
 const logger = $$.getLogger("bricking", "apihub/bricking")
@@ -1910,11 +1914,11 @@ module.exports = {
     getBrickWithExternalProvidersFallbackAsync,
 };
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/index.js","../../utils/request-utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/request-utils.js","opendsu":"opendsu","path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricksFabric/constants.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/index.js","../../utils/request-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/request-utils.js","opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/constants.js":[function(require,module,exports){
 const URL_PREFIX='/bricksFabric';
 
 module.exports = {URL_PREFIX};
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricksFabric/controllers.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/controllers.js":[function(require,module,exports){
 
 function createHandler(flow, server) {
 
@@ -1933,7 +1937,7 @@ function createHandler(flow, server) {
 
 
 module.exports = createHandler;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricksFabric/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/index.js":[function(require,module,exports){
 (function (global){(function (){
 
 
@@ -1994,7 +1998,7 @@ module.exports = BricksFabric;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./constants.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricksFabric/constants.js","./controllers":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricksFabric/controllers.js","./strategies/BrickStorage.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricksFabric/strategies/BrickStorage.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricksFabric/utils/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricksFabric/strategies/BrickStorage.js":[function(require,module,exports){
+},{"../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./constants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/constants.js","./controllers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/controllers.js","./strategies/BrickStorage.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/strategies/BrickStorage.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/strategies/BrickStorage.js":[function(require,module,exports){
 (function (global){(function (){
 const fs = require('fs');
 const path = require('swarmutils').path;
@@ -2126,7 +2130,7 @@ global["BrickStorage"] = BrickStorage;
 module.exports = { BRICKSFABRIC_ERROR_CODE};
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"fs":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricksFabric/utils/index.js":[function(require,module,exports){
+},{"fs":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/utils/index.js":[function(require,module,exports){
 const { clone } = require("../../../utils");
 
 const getBricksFabricStrategy = () => {
@@ -2164,18 +2168,21 @@ const getRootFolder = () => {
 module.exports.getBricksFabricStrategy = getBricksFabricStrategy;
 module.exports.getRootFolder = getRootFolder;
 
-},{"../../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/cloudWallet/controller.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/cloudWallet/controller.js":[function(require,module,exports){
 const http = require("http");
 const crypto = require("crypto");
 const worker_threads = "worker_threads";
 const { Worker } = require(worker_threads);
 const config = require("../../config");
+const { parseCookies, stringifyCookies } = require("../../utils/cookie-utils");
 const path = require("swarmutils").path;
 const logger = $$.getLogger("CloudWallet", "apihub/cloudWallet");
 let dsuBootPath;
 const dsuWorkers = {};
 
 let cacheContainerPath;
+
+const SSAPP_TOKEN_COOKIE_NAME = "SSAPP-TOKEN";
 
 const getElapsedTime = (timer) => {
     const elapsed = process.hrtime(timer)[1] / 1000000;
@@ -2199,7 +2206,7 @@ const INVALID_DSU_HTML_RESPONSE = `
     </html>
 `;
 
-function addDsuWorker(seed, cookie) {
+function addDsuWorker(seed, walletAnchorId, cookie) {
     const workerStartTime = process.hrtime();
     const dsuWorker = {
         port: null,
@@ -2220,6 +2227,7 @@ function addDsuWorker(seed, cookie) {
                         authorizationKey,
                         cookie,
                         cacheContainerPath,
+                        walletAnchorId
                     },
                 });
 
@@ -2276,12 +2284,12 @@ function forwardRequestToWorker(dsuWorker, req, res) {
         path: requestedPath,
         method,
         headers: {
-            authorization: dsuWorker.authorizationKey
+            authorization: dsuWorker.authorizationKey,
         },
     };
 
-    if(req.headers.cookie){
-        options.headers.cookie = req.headers.cookie
+    if (req.headers.cookie) {
+        options.headers.cookie = req.headers.cookie;
     }
 
     if (req.headers["content-type"]) {
@@ -2372,11 +2380,12 @@ function init(server) {
 }
 
 function handleCloudWalletRequest(request, response) {
-    const { keySSI } = request.params;
+    // use the keySSI set from the token middleware first (if present)
+    const keySSI = request.keySSI || request.params.keySSI;
 
     let dsuWorker = dsuWorkers[keySSI];
     if (!dsuWorker) {
-        dsuWorker = addDsuWorker(keySSI, request.headers.cookie);
+        dsuWorker = addDsuWorker(keySSI, request.walletAnchorId, request.headers.cookie);
     }
 
     dsuWorker.resolver
@@ -2391,27 +2400,104 @@ function handleCloudWalletRequest(request, response) {
         });
 }
 
+function getSSappTokenCookieValue(request) {
+    const cookies = parseCookies(request.headers.cookie);
+    let ssappTokenCookieValue = {};
+    if (cookies[SSAPP_TOKEN_COOKIE_NAME]) {
+        try {
+            ssappTokenCookieValue = JSON.parse(cookies[SSAPP_TOKEN_COOKIE_NAME]);
+            if (typeof ssappTokenCookieValue !== "object") {
+                logger.error(
+                    `Detected invalid ${SSAPP_TOKEN_COOKIE_NAME} cookie value (${cookies[SSAPP_TOKEN_COOKIE_NAME]}) parsed content`,
+                    ssappTokenCookieValue
+                );
+                ssappTokenCookieValue = {};
+            }
+        } catch (error) {
+            logger.error(`Failed to parse ${SSAPP_TOKEN_COOKIE_NAME} cookie value (${cookies[SSAPP_TOKEN_COOKIE_NAME]})`, error);
+            // reset cookie value since it has an invalid JSON content
+            ssappTokenCookieValue = {};
+        }
+    }
+    return ssappTokenCookieValue;
+}
+
+function setRequestKeySSIFromSSAppToken(request, response, next) {
+    const { keySSI } = request.params;
+    const ssappTokenCookieValue = getSSappTokenCookieValue(request);
+    if (ssappTokenCookieValue[keySSI]) {
+        logger.info(`Found match for walletAnchorId ${keySSI} to sReadSSI ${ssappTokenCookieValue[keySSI]}`);
+        request.keySSI = ssappTokenCookieValue[keySSI];
+        request.walletAnchorId = keySSI;
+    }
+    next();
+}
+
+function handleSetSSAppTokenRequest(request, response) {
+    const { walletAnchorId } = request.params;
+    const { sReadSSI } = request.body;
+
+    if (!sReadSSI) {
+        logger.error("Required sReadSSI body field not present");
+        response.statusCode = 400;
+        response.end();
+    }
+
+    const ssappTokenCookieValue = getSSappTokenCookieValue(request);
+    ssappTokenCookieValue[walletAnchorId] = sReadSSI;
+
+    const updatedTokenCookie = stringifyCookies({
+        name: SSAPP_TOKEN_COOKIE_NAME,
+        value: JSON.stringify(ssappTokenCookieValue),
+        httpOnly: true,
+        path: "/",
+        maxAge: 2147483647, // (2038-01-19 04:14:07) maximum value to avoid integer overflow on older browsers
+    });
+    response.setHeader("Set-Cookie", updatedTokenCookie);
+    response.statusCode = 200;
+    response.end();
+}
+
 module.exports = {
     init,
     handleCloudWalletRequest,
+    setRequestKeySSIFromSSAppToken,
+    handleSetSSAppTokenRequest,
 };
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","crypto":false,"http":false,"path":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/cloudWallet/index.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils/cookie-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/cookie-utils.js","crypto":false,"http":false,"path":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/cloudWallet/index.js":[function(require,module,exports){
 function Iframe(server) {
-    const { init, handleCloudWalletRequest } = require("./controller");
+    const {
+        init,
+        setRequestKeySSIFromSSAppToken,
+        handleSetSSAppTokenRequest,
+        handleCloudWalletRequest,
+    } = require("./controller");
+    const { requestBodyJSONMiddleware } = require("../../utils/middlewares");
+
     init(server);
 
+    server.put(`/cloud-wallet/setSSAPPToken/:walletAnchorId`, requestBodyJSONMiddleware);
+    server.put(`/cloud-wallet/setSSAPPToken/:walletAnchorId`, handleSetSSAppTokenRequest);
+
+    server.use(`/cloud-wallet/:keySSI/*`, setRequestKeySSIFromSSAppToken);
     server.use(`/cloud-wallet/:keySSI/*`, handleCloudWalletRequest);
+    server.use(`/:walletName/loader/cloud-wallet/:keySSI/*`, setRequestKeySSIFromSSAppToken);
     server.use(`/:walletName/loader/cloud-wallet/:keySSI/*`, handleCloudWalletRequest);
 
     // keep old URl style
+    server.put(`/iframe/setSSAPPToken/:walletAnchorId`, requestBodyJSONMiddleware);
+    server.put(`/iframe/setSSAPPToken/:walletAnchorId`, handleSetSSAppTokenRequest);
+
+    server.use(`/iframe/:keySSI/*`, setRequestKeySSIFromSSAppToken);
     server.use(`/iframe/:keySSI/*`, handleCloudWalletRequest);
+    server.use(`/:walletName/loader/iframe/:keySSI/*`, setRequestKeySSIFromSSAppToken);
     server.use(`/:walletName/loader/iframe/:keySSI/*`, handleCloudWalletRequest);
 }
 
 module.exports = Iframe;
 
-},{"./controller":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/cloudWallet/controller.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/config/index.js":[function(require,module,exports){
+},{"../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./controller":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/cloudWallet/controller.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/config/index.js":[function(require,module,exports){
 const config = require("../../config");
 
 function Config(server) {
@@ -2464,7 +2550,7 @@ function Config(server) {
 
 module.exports = Config;
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/contracts/boot.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/contracts/boot.js":[function(require,module,exports){
 async function boot(validatorDID, serverUrl, domain, domainConfig, rootFolder, storageFolder) {
     const logger = $$.getLogger("boot", "apihub/contracts");
     const logPrefix = `[contract-worker][${validatorDID}][domain]`;
@@ -2563,7 +2649,7 @@ async function boot(validatorDID, serverUrl, domain, domainConfig, rootFolder, s
 
 module.exports = boot;
 
-},{"bricksledger":"bricksledger"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/contracts/index.js":[function(require,module,exports){
+},{"bricksledger":"bricksledger"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/contracts/index.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {
     ensureContractConstitutionIsPresent,
@@ -2760,7 +2846,7 @@ module.exports = Contract;
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/contracts/utils.js","buffer":false,"path":false,"syndicate":"syndicate"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/contracts/utils.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/contracts/utils.js","buffer":false,"path":false,"syndicate":"syndicate"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/contracts/utils.js":[function(require,module,exports){
 (function (global,__dirname){(function (){
 const logger = $$.getLogger("utils", "contracts");
 
@@ -2851,7 +2937,7 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},"/modules/apihub/components/contracts")
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","./boot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/contracts/boot.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/debugLogger/controllers.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./boot":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/contracts/boot.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/debugLogger/controllers.js":[function(require,module,exports){
 const url = require('url');
 const fs = require('fs');
 const path = require('swarmutils').path;
@@ -2986,7 +3072,7 @@ function createHandlerReadFromLog(server) {
 
 module.exports = { createHandlerAppendToLog, createHandlerReadFromLog };
 
-},{"apihub":"apihub","fs":false,"swarmutils":"swarmutils","url":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/debugLogger/index.js":[function(require,module,exports){
+},{"apihub":"apihub","fs":false,"swarmutils":"swarmutils","url":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/debugLogger/index.js":[function(require,module,exports){
 function DebugLogger(server) {
   const { responseModifierMiddleware, requestBodyJSONMiddleware } = require('../../utils/middlewares');
   const { createHandlerAppendToLog, createHandlerReadFromLog } = require('./controllers');
@@ -3003,7 +3089,7 @@ function DebugLogger(server) {
 
 module.exports = DebugLogger;
 
-},{"../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./controllers":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/debugLogger/controllers.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/enclave/commands/LokiEnclaveFacade.js":[function(require,module,exports){
+},{"../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./controllers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/debugLogger/controllers.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/enclave/commands/LokiEnclaveFacade.js":[function(require,module,exports){
 const getLokiEnclaveFacade = (storageFolder) => {
     if (!$$.LokiEnclaveFacade) {
         const LokiEnclaveFacade = require("loki-enclave-facade");
@@ -3016,7 +3102,7 @@ const getLokiEnclaveFacade = (storageFolder) => {
 module.exports = {
     getLokiEnclaveFacade
 }
-},{"loki-enclave-facade":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/enclave/index.js":[function(require,module,exports){
+},{"loki-enclave-facade":"loki-enclave-facade"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/enclave/index.js":[function(require,module,exports){
 
 const openDSU = require("opendsu");
 const { getLokiEnclaveFacade } = require("./commands/LokiEnclaveFacade");
@@ -3085,7 +3171,7 @@ module.exports = {
     LokiEnclaveFacade
 };
 
-},{"./commands/LokiEnclaveFacade":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/enclave/commands/LokiEnclaveFacade.js","opendsu":"opendsu","path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/fileManager/controllers/downloadFile.js":[function(require,module,exports){
+},{"./commands/LokiEnclaveFacade":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/enclave/commands/LokiEnclaveFacade.js","opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/fileManager/controllers/downloadFile.js":[function(require,module,exports){
 function sendResult(resHandler, resultStream) {
     resHandler.statusCode = 200;
     resultStream.pipe(resHandler);
@@ -3135,7 +3221,7 @@ function download(req, res, callback) {
 
 module.exports = downloadFile;
 
-},{"../../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","fs":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/fileManager/controllers/uploadFile.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","fs":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/fileManager/controllers/uploadFile.js":[function(require,module,exports){
 function guid() {
     function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
@@ -3213,7 +3299,7 @@ function upload(req, callback) {
 
 module.exports =  uploadFile;
 
-},{"../../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","fs":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/fileManager/index.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","fs":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/fileManager/index.js":[function(require,module,exports){
 function filesManager(server) {
 
 	const uploadFile = require('./controllers/uploadFile');
@@ -3224,7 +3310,7 @@ function filesManager(server) {
 }
 
 module.exports = filesManager;
-},{"./controllers/downloadFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/fileManager/controllers/downloadFile.js","./controllers/uploadFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/fileManager/controllers/uploadFile.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/installation-details/index.js":[function(require,module,exports){
+},{"./controllers/downloadFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/fileManager/controllers/downloadFile.js","./controllers/uploadFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/fileManager/controllers/uploadFile.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/installation-details/index.js":[function(require,module,exports){
 function InstallationDetails(server){
 
 	function getLog(targetPath, callback){
@@ -3286,11 +3372,11 @@ function InstallationDetails(server){
 }
 
 module.exports = InstallationDetails;
-},{"child_process":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/keySsiNotifications/constants.js":[function(require,module,exports){
+},{"child_process":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/keySsiNotifications/constants.js":[function(require,module,exports){
 const URL_PREFIX = '/notifications';
 
 module.exports = { URL_PREFIX };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/keySsiNotifications/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/keySsiNotifications/index.js":[function(require,module,exports){
 function KeySSINotifications(server) {
 	const logger = $$.getLogger("KeySSINotifications", "apihub/keySsiNotifications");
 	let notificationManager;
@@ -3392,41 +3478,95 @@ function KeySSINotifications(server) {
 
 module.exports = KeySSINotifications;
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/index.js","./../../libs/Notifications":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/Notifications.js","./../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/keySsiNotifications/constants.js","path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mainDSU/controller.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/index.js","./../../libs/Notifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/Notifications.js","./../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/keySsiNotifications/constants.js","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mainDSU/controller.js":[function(require,module,exports){
+const path = require("path");
+const fs = require("fs");
 const config = require("../../config");
+const { parseCookies, stringifyCookies } = require("../../utils/cookie-utils");
+
 const logger = $$.getLogger("controller", "apihub/mainDSU");
 
-let mainDSUSeedSSI = null;
-let rootFolderPath;
-let mainDSUSeedSSIFilePath;
+const MAIN_DSU_VALUE_COOKIE_NAME = "MAIN-DSU-VALUE";
+const MAIN_DSU_VALUE_COOKIE_DEFAULT = "default";
 
-function init(server) {
-    logger.debug(`Registering MainDSU component`);
+// keep already loaded main DSUs KeySSI
+const cachedMainDSUSeedSSIs = {};
+
+let rootFolderPath;
+let mainDSUSeedSSIFolderPath;
+
+async function init(server) {
+    logger.debug(`[MainDSU] Registering MainDSU component`);
     rootFolderPath = server.rootFolder;
-    mainDSUSeedSSIFilePath = require("path").join(server.rootFolder, config.getConfig("externalStorage"), "maindsu");
+    mainDSUSeedSSIFolderPath = path.join(server.rootFolder, config.getConfig("externalStorage"), "maindsu");
+    logger.debug(`[MainDSU] Ensuring MainDSU seedSSI folder (${mainDSUSeedSSIFolderPath}) is created`);
+    try {
+        await $$.promisify(fs.mkdir)(mainDSUSeedSSIFolderPath, { recursive: true });
+    } catch (error) {
+        logger.error("[MainDSU] Failed to create MainDSU seedSSI folder", error);
+    }
 }
 
-function sendMainDSUSeedSSI(response) {
+function sendMainDSUSeedSSI(mainDSUFileName, response) {
     response.statusCode = 200;
-    response.write(mainDSUSeedSSI.getIdentifier());
+    response.write(cachedMainDSUSeedSSIs[mainDSUFileName].getIdentifier());
+    response.end();
+}
+
+function getMainDSUFileNameForRequest(request) {
+    const cookies = request.headers ? parseCookies(request.headers.cookie) : {};
+    const valueCookie = cookies[MAIN_DSU_VALUE_COOKIE_NAME];
+    if (valueCookie) {
+        const crypto = require("pskcrypto");
+        // we need to ensure some filename limit due to some OS filename size restrictions
+        const valueCookieHash = crypto.pskHash(valueCookie, "hex");
+        return valueCookieHash;
+    }
+    return MAIN_DSU_VALUE_COOKIE_DEFAULT;
+}
+
+async function handleSetSSIForMainDSUCookie(request, response) {
+    const { value } = request.body;
+
+    if (value == null) {
+        logger.error("Required value body field not present");
+        response.statusCode = 400;
+        response.end();
+    }
+
+    const cookie = stringifyCookies({
+        name: MAIN_DSU_VALUE_COOKIE_NAME,
+        value: value,
+        httpOnly: true,
+        path: "/",
+        maxAge: 2147483647, // (2038-01-19 04:14:07) maximum value to avoid integer overflow on older browsers
+    });
+    response.setHeader("Set-Cookie", cookie);
+    response.statusCode = 200;
     response.end();
 }
 
 async function handleDefaultMainDSURequest(request, response) {
-    if (mainDSUSeedSSI) {
-        return sendMainDSUSeedSSI(response);
+    const mainDSUFileName = getMainDSUFileNameForRequest(request);
+
+    if (cachedMainDSUSeedSSIs[mainDSUFileName]) {
+        return sendMainDSUSeedSSI(mainDSUFileName, response);
     }
+
+    const mainDSUSeedSSIFilePath = path.join(mainDSUSeedSSIFolderPath, mainDSUFileName);
 
     const fs = require("fs");
     const keySSISpace = require("opendsu").loadApi("keyssi");
     const resolver = require("opendsu").loadApi("resolver");
+    let mainDSUSeedSSI;
     let mainDSUAnchorId;
     try {
         const fileContent = await $$.promisify(fs.readFile)(mainDSUSeedSSIFilePath, { encoding: "utf-8" });
         mainDSUSeedSSI = keySSISpace.parse(fileContent);
+        cachedMainDSUSeedSSIs[mainDSUFileName] = mainDSUSeedSSI;
         mainDSUAnchorId = await $$.promisify(mainDSUSeedSSI.getAnchorId)();
         logger.debug(`[MainDSU] Read existing mainDSU from ${mainDSUSeedSSIFilePath}: ${mainDSUAnchorId}`);
-        return sendMainDSUSeedSSI(response);
+        return sendMainDSUSeedSSI(mainDSUFileName, response);
     } catch (error) {
         logger.error(`[MainDSU] Failed to read/parse keySSI from ${mainDSUSeedSSIFilePath}. Generating new keySSI...`, error);
     }
@@ -3434,23 +3574,24 @@ async function handleDefaultMainDSURequest(request, response) {
     try {
         const environmentJsPath = require("path").join(rootFolderPath, "environment.js");
         logger.debug(`[MainDSU] Loading environment.js config file from: ${environmentJsPath}`);
-        
+
         const environmentConfig = require(environmentJsPath);
-        
+
         const seedSSI = await $$.promisify(keySSISpace.createSeedSSI)(environmentConfig.vaultDomain);
         const mainDSU = await $$.promisify(resolver.createDSUForExistingSSI)(seedSSI);
-        
+
         logger.debug(`[MainDSU] Settings config for seed ${await $$.promisify(seedSSI.getAnchorId)()}`, environmentConfig);
         await $$.promisify(mainDSU.writeFile)("/environment.json", JSON.stringify(environmentConfig));
-        
+
         mainDSUSeedSSI = seedSSI;
+        cachedMainDSUSeedSSIs[mainDSUFileName] = mainDSUSeedSSI;
         mainDSUAnchorId = await $$.promisify(mainDSUSeedSSI.getAnchorId)();
         logger.debug("[MainDSU] Generated mainDSUSeedSSI: ", mainDSUAnchorId, mainDSUSeedSSI);
 
         logger.debug(`[MainDSU] Writing generated mainDSU to ${mainDSUSeedSSIFilePath}: ${mainDSUAnchorId}`);
         await $$.promisify(fs.writeFile)(mainDSUSeedSSIFilePath, mainDSUSeedSSI.getIdentifier(), "utf-8");
 
-        sendMainDSUSeedSSI(response);
+        sendMainDSUSeedSSI(mainDSUFileName, response);
     } catch (error) {
         logger.error("[MainDSU] Failed to create seedSSI", error);
         response.statusCode = 500;
@@ -3461,22 +3602,28 @@ async function handleDefaultMainDSURequest(request, response) {
 
 module.exports = {
     init,
+    handleSetSSIForMainDSUCookie,
     handleDefaultMainDSURequest,
 };
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","fs":false,"opendsu":"opendsu","path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mainDSU/index.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils/cookie-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/cookie-utils.js","fs":false,"opendsu":"opendsu","path":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mainDSU/index.js":[function(require,module,exports){
 function MainDSU(server) {
-    const { init, handleDefaultMainDSURequest } = require("./controller");
+    const { init, handleSetSSIForMainDSUCookie, handleDefaultMainDSURequest } = require("./controller");
+    const { requestBodyJSONMiddleware } = require("../../utils/middlewares");
+
     init(server);
+
+    server.put("/setSSIForMainDSUCookie", requestBodyJSONMiddleware);
+    server.put("/setSSIForMainDSUCookie", handleSetSSIForMainDSUCookie);
 
     // for mobile app, when it includes the expanded DSU content instead of the actual DSU;
     // this will return a static DSU in order to set it as a main context
-    server.use('/getSSIForMainDSU', handleDefaultMainDSURequest);
+    server.use("/getSSIForMainDSU", handleDefaultMainDSURequest);
 }
 
 module.exports = MainDSU;
 
-},{"./controller":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mainDSU/controller.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mqHub/adapters/localMQAdapter.js":[function(require,module,exports){
+},{"../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./controller":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mainDSU/controller.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/localMQAdapter.js":[function(require,module,exports){
 (function (Buffer){(function (){
 function LocalMQAdapter(server, prefix, domain, configuration) {
 	const logger = $$.getLogger("LocalMQAdapter", "apihub/mqHub");
@@ -3849,13 +3996,13 @@ function LocalMQAdapter(server, prefix, domain, configuration) {
 module.exports = LocalMQAdapter;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","./../../../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/index.js","buffer":false,"fs":false,"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mqHub/adapters/solaceMQAdapter.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./../../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/index.js","buffer":false,"fs":false,"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/solaceMQAdapter.js":[function(require,module,exports){
 function SolaceMQAdapter(configuration){
 	throw new Error("Not Implemented!!!");
 }
 
 module.exports = SolaceMQAdapter;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mqHub/auth/JWTIssuer.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/auth/JWTIssuer.js":[function(require,module,exports){
 const DOMAIN_NAME = "MQ_DOMAIN";
 const SEEDER_FILE_NAME = "mq_JWT_Auth_Seeder";
 
@@ -3992,7 +4139,7 @@ function JWTIssuer(workingDir) {
 }
 
 module.exports = JWTIssuer;
-},{"./../../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","fs":false,"opendsu":"opendsu","path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mqHub/index.js":[function(require,module,exports){
+},{"./../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","fs":false,"opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/index.js":[function(require,module,exports){
 const config = require("../../config");
 const URL_PREFIX = "/mq";
 //known implementations for the MQ adapters
@@ -4205,7 +4352,7 @@ module.exports = {
 	MQHub
 };
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","./../../components/admin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/admin/index.js","./../../config/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","./adapters/localMQAdapter.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mqHub/adapters/localMQAdapter.js","./adapters/solaceMQAdapter.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mqHub/adapters/solaceMQAdapter.js","./auth/JWTIssuer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mqHub/auth/JWTIssuer.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/requestForwarder/index.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./../../components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./../../config/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./adapters/localMQAdapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/localMQAdapter.js","./adapters/solaceMQAdapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/solaceMQAdapter.js","./auth/JWTIssuer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/auth/JWTIssuer.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/requestForwarder/index.js":[function(require,module,exports){
 const registeredUrl = "/forwardRequestForAuthenticatedClient";
 const logger = $$.getLogger("requestForwarder", "apihub/requestForwarder");
 module.exports = function(server){
@@ -4254,7 +4401,7 @@ module.exports = function(server){
     });
 }
 
-},{"./../../utils/middlewares/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","http":false,"https":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js":[function(require,module,exports){
+},{"./../../utils/middlewares/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","http":false,"https":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js":[function(require,module,exports){
 const fs = require("fs");
 const path = require("path");
 const config = require("../../config");
@@ -4422,7 +4569,7 @@ function SecretsService(serverRootFolder) {
 }
 
 module.exports = SecretsService;
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","fs":false,"opendsu":"opendsu","path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/secrets/index.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","fs":false,"opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js":[function(require,module,exports){
 
 function secrets(server) {
     const logger = $$.getLogger("secrets", "apihub/secrets");
@@ -4505,7 +4652,7 @@ function secrets(server) {
 
 module.exports = secrets;
 
-},{"../../libs/http-wrapper/src/httpUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js","./SecretsService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/staticServer/index.js":[function(require,module,exports){
+},{"../../libs/http-wrapper/src/httpUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js","./SecretsService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js":[function(require,module,exports){
 function StaticServer(server) {
     const fs = require("fs");
     const path = require('swarmutils').path;
@@ -4806,7 +4953,7 @@ function StaticServer(server) {
 
 module.exports = StaticServer;
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/index.js","./../admin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/admin/index.js","fs":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/stream/controller.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/index.js","./../admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","fs":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/controller.js":[function(require,module,exports){
 (function (global){(function (){
 const syndicate = require("syndicate");
 const logger = $$.getLogger("stream", "apihub/stream");
@@ -4942,7 +5089,7 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./worker-script":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/stream/worker-script.js","opendsu":"opendsu","pskcrypto":"pskcrypto","syndicate":"syndicate"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/stream/index.js":[function(require,module,exports){
+},{"./worker-script":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/worker-script.js","opendsu":"opendsu","pskcrypto":"pskcrypto","syndicate":"syndicate"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/index.js":[function(require,module,exports){
 function Iframe(server) {
     const { handleCreateWallet, handleStreamRequest } = require("./controller");
     server.put(`/stream/:domain/create-wallet/:userId`, handleCreateWallet);
@@ -4951,7 +5098,7 @@ function Iframe(server) {
 
 module.exports = Iframe;
 
-},{"./controller":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/stream/controller.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/stream/worker-script.js":[function(require,module,exports){
+},{"./controller":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/controller.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/worker-script.js":[function(require,module,exports){
 (function (Buffer){(function (){
 module.exports = async () => {
     const logger = $$.getLogger("worker-script", "apihub/stream");
@@ -5030,7 +5177,7 @@ module.exports = async () => {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"buffer":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/config-migrator.js":[function(require,module,exports){
+},{"buffer":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/config-migrator.js":[function(require,module,exports){
 const logger = $$.getLogger("config-migrator", "apihub/config");
 
 function removeConfigComponent(config) {
@@ -5201,7 +5348,7 @@ module.exports = {
     migrate,
 };
 
-},{"fs":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/default.js":[function(require,module,exports){
+},{"fs":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/default.js":[function(require,module,exports){
 
 const defaultConfig = {
     "storage":  require("swarmutils").path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "tmp"),
@@ -5329,7 +5476,7 @@ const defaultConfig = {
 
 module.exports = Object.freeze(defaultConfig);
 
-},{"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js":[function(require,module,exports){
+},{"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js":[function(require,module,exports){
 let apihubConfig;
 let tokenIssuers;
 let domainConfigs = {};
@@ -5599,7 +5746,7 @@ function updateDomainConfig(domain, config, callback) {
 
 module.exports = {getConfig, getTokenIssuers, getConfiguredDomains, getDomainConfig, getSafeDomainConfig, updateDomainConfig};
 
-},{"./../components/admin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/admin/index.js","./config-migrator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/config-migrator.js","./default":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/default.js","fs":false,"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/Notifications.js":[function(require,module,exports){
+},{"./../components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./config-migrator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/config-migrator.js","./default":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/default.js","fs":false,"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/Notifications.js":[function(require,module,exports){
 const stateStorageFileName = 'queues.json';
 
 function NotificationsManager(workingFolderPath, storageFolderPath) {
@@ -5916,7 +6063,7 @@ module.exports = {
 	}
 };
 
-},{"fs":false,"opendsu":"opendsu","path":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/TokenBucket.js":[function(require,module,exports){
+},{"fs":false,"opendsu":"opendsu","path":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/TokenBucket.js":[function(require,module,exports){
 /**
  * An implementation of the Token bucket algorithm
  * @param startTokens - maximum number of tokens possible to obtain and the default starting value
@@ -6035,7 +6182,7 @@ function TokenBucket(startTokens = config.getConfig('tokenBucket', 'startTokens'
 
 module.exports = TokenBucket;
 
-},{"./../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Client.js":[function(require,module,exports){
+},{"./../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Client.js":[function(require,module,exports){
 const http = require('http');
 const url = require('url');
 const stream = require('stream');
@@ -6248,7 +6395,7 @@ const handler = {
 module.exports = function () {
     return new Proxy(new Client(), handler);
 };
-},{"http":false,"stream":false,"url":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/MiddlewareRegistry.js":[function(require,module,exports){
+},{"http":false,"stream":false,"url":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/MiddlewareRegistry.js":[function(require,module,exports){
 const querystring = require('querystring');
 const logger = $$.getLogger("http-wrapper", "apihub/libs");
 
@@ -6430,7 +6577,7 @@ function MiddlewareRegistry() {
 
 module.exports = MiddlewareRegistry;
 
-},{"querystring":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Router.js":[function(require,module,exports){
+},{"querystring":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Router.js":[function(require,module,exports){
 function Router(server) {
     this.use = function use(url, callback) {
         callback(serverWrapper(url, server));
@@ -6466,7 +6613,7 @@ function serverWrapper(baseUrl, server) {
 
 module.exports = Router;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Server.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Server.js":[function(require,module,exports){
 const MiddlewareRegistry = require('./MiddlewareRegistry');
 const http = require('http');
 const https = require('https');
@@ -6616,7 +6763,7 @@ function Server(sslOptions) {
 }
 
 module.exports = Server;
-},{"./MiddlewareRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/MiddlewareRegistry.js","http":false,"https":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js":[function(require,module,exports){
+},{"./MiddlewareRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/MiddlewareRegistry.js","http":false,"https":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js":[function(require,module,exports){
 const logger = $$.getLogger("http-wrapper", "apihub/libs");
 
 function setDataHandler(request, callback) {
@@ -6698,7 +6845,7 @@ function serveStaticFile(baseFolder, ignorePath) {
 
 module.exports = {setDataHandler, setDataHandlerMiddleware, sendErrorResponse, bodyParser, serveStaticFile};
 
-},{"fs":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/index.js":[function(require,module,exports){
+},{"fs":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/index.js":[function(require,module,exports){
 const Client = require('./classes/Client');
 const Server = require('./classes/Server');
 const httpUtils = require('./httpUtils');
@@ -6707,7 +6854,7 @@ const Router = require('./classes/Router');
 module.exports = {Server, Client, httpUtils, Router};
 
 
-},{"./classes/Client":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Client.js","./classes/Router":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Router.js","./classes/Server":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Server.js","./httpUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/authorisation/index.js":[function(require,module,exports){
+},{"./classes/Client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Client.js","./classes/Router":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Router.js","./classes/Server":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/classes/Server.js","./httpUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/authorisation/index.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadApi("crypto");
 
@@ -6761,7 +6908,7 @@ function Authorisation(server) {
 
 module.exports = Authorisation;
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js":[function(require,module,exports){
 function setupGenericErrorMiddleware(server) {
     const constants = require("./../../moduleConstants");
     const logger = $$.getLogger("setupGenericErrorMiddleware", "apihub/genericErrorMiddleware");
@@ -6809,7 +6956,7 @@ function setupGenericErrorMiddleware(server) {
 
 module.exports = setupGenericErrorMiddleware;
 
-},{"./../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/logger/index.js":[function(require,module,exports){
+},{"./../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/logger/index.js":[function(require,module,exports){
 function Logger(server) {
     const logger = $$.getLogger("Logger", "apihub/logger");
     logger.debug(`Registering Logger middleware`);
@@ -6856,7 +7003,7 @@ function Logger(server) {
 
 module.exports = Logger;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/index.js":[function(require,module,exports){
 const config = require("../../config");
 
 const serverAuthentication = config.getConfig("serverAuthentication")
@@ -6867,7 +7014,7 @@ if (serverAuthentication) {
 }
 
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","./lib/AccessTokenValidator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/AccessTokenValidator.js","./lib/OauthMiddleware":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/OauthMiddleware.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/AccessTokenValidator.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./lib/AccessTokenValidator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/AccessTokenValidator.js","./lib/OauthMiddleware":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/OauthMiddleware.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/AccessTokenValidator.js":[function(require,module,exports){
 const {sendUnauthorizedResponse} = require("../../../utils/middlewares");
 const util = require("./util");
 const config = require("../../../config");
@@ -6911,7 +7058,7 @@ function AccessTokenValidator(server) {
 }
 
 module.exports = AccessTokenValidator;
-},{"../../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./util":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/OauthMiddleware.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./util":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/OauthMiddleware.js":[function(require,module,exports){
 const {sendUnauthorizedResponse} = require("../../../utils/middlewares");
 const util = require("./util");
 const urlModule = require("url");
@@ -7155,7 +7302,7 @@ function OAuthMiddleware(server) {
 
 module.exports = OAuthMiddleware;
 
-},{"../../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../../utils/middlewares":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./WebClient":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js","./errorMessages":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","./util":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","fs":false,"path":false,"url":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./WebClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js","./errorMessages":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","./util":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","fs":false,"path":false,"url":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const url = require('url');
 const util = require("./util");
@@ -7275,14 +7422,14 @@ function WebClient(oauthConfig) {
 module.exports = WebClient;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"./errorMessages":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","./util":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","buffer":false,"opendsu":"opendsu","url":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js":[function(require,module,exports){
+},{"./errorMessages":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","./util":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","buffer":false,"opendsu":"opendsu","url":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js":[function(require,module,exports){
 module.exports = {
     ACCESS_TOKEN_DECRYPTION_FAILED: "Failed to decrypt accessTokenCookie",
     REFRESH_TOKEN_DECRYPTION_FAILED: "Failed to decrypt refreshTokenCookie",
     REFRESH_TOKEN_UNDEFINED: "refreshTokenCookie is undefined",
     SESSION_EXPIRED:"Session expired"
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadAPI("crypto");
 const http = openDSU.loadAPI("http");
@@ -7726,7 +7873,7 @@ module.exports = {
     updateAccessTokenExpiration
 }
 
-},{"../../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","./errorMessages":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","fs":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./errorMessages":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","fs":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js":[function(require,module,exports){
 function setupRequestEnhancements(server) {
     const logger = $$.getLogger("setupRequestEnhancements", "apihub/requestEnhancements");
 
@@ -7750,7 +7897,7 @@ function setupRequestEnhancements(server) {
 
 module.exports = setupRequestEnhancements;
 
-},{"./../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/responseHeader/index.js":[function(require,module,exports){
+},{"./../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/responseHeader/index.js":[function(require,module,exports){
 function ResponseHeaders(server) {
     const logger = $$.getLogger("ResponseHeaders", "apihub/responseHeaders");
 
@@ -7773,7 +7920,7 @@ function ResponseHeaders(server) {
 
 module.exports = ResponseHeaders;
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/throttler/index.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/throttler/index.js":[function(require,module,exports){
 const TokenBucket = require("../../libs/TokenBucket");
 
 function Throttler(server){
@@ -7829,11 +7976,64 @@ function Throttler(server){
 }
 
 module.exports = Throttler;
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","../../libs/TokenBucket":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/TokenBucket.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/moduleConstants.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../libs/TokenBucket":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/TokenBucket.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/moduleConstants.js":[function(require,module,exports){
 module.exports = {
 	LOG_IDENTIFIER: "[API-HUB]"
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/cookie-utils.js":[function(require,module,exports){
+const COOKIE_REGEX = /([^;=\s]*)=([^;]*)/g;
+
+function parseCookies(str) {
+    let cookies = {};
+    if (!str) {
+        return cookies;
+    }
+    for (let m; (m = COOKIE_REGEX.exec(str)); ) {
+        cookies[m[1]] = decodeURIComponent(m[2]);
+    }
+    return cookies;
+}
+
+/**
+ * @param {Object} options
+ * @param {string} [options.name='']
+ * @param {string} [options.value='']
+ * @param {Date} [options.expires]
+ * @param {number} [options.maxAge]
+ * @param {string} [options.domain]
+ * @param {string} [options.path]
+ * @param {boolean} [options.secure]
+ * @param {boolean} [options.httpOnly]
+ * @param {'Strict'|'Lax'|'None'} [options.sameSite]
+ * @return {string}
+ */
+function createSetCookieEntry(options) {
+    return (
+        `${options.name || ""}=${encodeURIComponent(options.value || "")}` +
+        (options.expires != null ? `; Expires=${options.expires.toUTCString()}` : "") +
+        (options.maxAge != null ? `; Max-Age=${options.maxAge}` : "") +
+        (options.domain != null ? `; Domain=${options.domain}` : "") +
+        (options.path != null ? `; Path=${options.path}` : "") +
+        (options.secure ? "; Secure" : "") +
+        (options.httpOnly ? "; HttpOnly" : "") +
+        (options.sameSite != null ? `; SameSite=${options.sameSite}` : "")
+    );
+}
+
+function stringifyCookies(cookies) {
+    if (!Array.isArray(cookies)) {
+        cookies = [cookies];
+    }
+
+    return cookies.map(createSetCookieEntry).join("; ");
+}
+
+module.exports = {
+    parseCookies,
+    stringifyCookies,
+};
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/index.js":[function(require,module,exports){
 module.exports.clone = function(data) {
     return JSON.parse(JSON.stringify(data));
 }
@@ -7842,7 +8042,7 @@ module.exports.streams = require("./streams");
 module.exports.requests = require("./requests");
 module.exports.responseWrapper = require("./responseWrapper");
 module.exports.getMimeTypeFromExtension = require("./mimeType");
-},{"./mimeType":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/mimeType.js","./requests":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/requests.js","./responseWrapper":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/responseWrapper.js","./streams":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/streams.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/middlewares/index.js":[function(require,module,exports){
+},{"./mimeType":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/mimeType.js","./requests":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/requests.js","./responseWrapper":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/responseWrapper.js","./streams":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/streams.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const responseWrapper = require('../responseWrapper');
 const logger = $$.getLogger("middlewares", "apihub/utils");
@@ -7929,7 +8129,7 @@ module.exports = { requestBodyJSONMiddleware, responseModifierMiddleware, header
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../responseWrapper":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/responseWrapper.js","buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/mimeType.js":[function(require,module,exports){
+},{"../responseWrapper":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/responseWrapper.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/mimeType.js":[function(require,module,exports){
 const extensionsMimeTypes = {
     "aac": {
         name: "audio/aac",
@@ -8200,7 +8400,7 @@ module.exports = function (extension) {
     }
     return defaultMimeType;
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/request-utils.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/request-utils.js":[function(require,module,exports){
 const logger = $$.getLogger("request-utils", "apihub/utils");
 
 function getCurrentApiHubUrl(server) {
@@ -8279,7 +8479,7 @@ module.exports = {
     getHeadersWithExcludedProvidersIncludingSelf,
 };
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/requests.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/requests.js":[function(require,module,exports){
 
 const http = require("http");
 const https = require("https");
@@ -8344,7 +8544,7 @@ function getHeaders(data, headers) {
 
 module.exports = makeRequest;
 
-},{"http":false,"https":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/responseWrapper.js":[function(require,module,exports){
+},{"http":false,"https":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/responseWrapper.js":[function(require,module,exports){
 
 function responseWrapper(body) {
     if (typeof body === 'string') {
@@ -8356,7 +8556,7 @@ function responseWrapper(body) {
 
 module.exports = responseWrapper;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/utils/streams.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/streams.js":[function(require,module,exports){
 function readStringFromStream(stream, callback){
     let data = "";
     stream.on("data", (messagePart)=>{
@@ -8430,7 +8630,7 @@ module.exports = {
     readMessageBufferFromHTTPStream
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js":[function(require,module,exports){
 function FsAdapter() {
     const fsModule = "fs";
     const fs = require(fsModule);
@@ -8491,7 +8691,7 @@ function FsAdapter() {
 }
 
 module.exports = FsAdapter;
-},{"./PathAsyncIterator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js":[function(require,module,exports){
+},{"./PathAsyncIterator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js":[function(require,module,exports){
 function PathAsyncIterator(inputPath) {
     const fsModule = "fs";
     const fs = require(fsModule);
@@ -8616,7 +8816,7 @@ function PathAsyncIterator(inputPath) {
 }
 
 module.exports = PathAsyncIterator;
-},{"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/AnchorValidator.js":[function(require,module,exports){
+},{"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/AnchorValidator.js":[function(require,module,exports){
 'use strict'
 
 /**
@@ -8663,7 +8863,7 @@ function AnchorValidator(options) {
 }
 
 module.exports = AnchorValidator;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Archive.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Archive.js":[function(require,module,exports){
 const Brick = require('./Brick');
 const stream = require('stream');
 const BrickStorageService = require('./BrickStorageService').Service;
@@ -8713,7 +8913,8 @@ function Archive(archiveConfigurator) {
             brickMapController = new BrickMapController({
                 config: archiveConfigurator,
                 brickStorageService,
-                keySSI
+                keySSI,
+                ...archiveConfigurator.getOptions()
             });
 
             callback();
@@ -9037,18 +9238,7 @@ function Archive(archiveConfigurator) {
     };
 
     const _ingestData = (barPath, data, options, callback) => {
-        _fileIsEmbedded(barPath, (err, fileIsEmbedded) => {
-            if (err) {
-                return callback(err);
-            }
-
-            let ingestionMethod = "ingestData";
-            if (fileIsEmbedded) {
-                ingestionMethod = "createEmbedSSIFromData"
-            }
-
-            brickStorageService[ingestionMethod](data, options, callback)
-        });
+        brickStorageService.ingestData(data, options, callback)
     }
 
     const _embedFile = (barPath, data, options, callback) => {
@@ -9060,7 +9250,25 @@ function Archive(archiveConfigurator) {
             brickMapController.addFile(barPath, result, callback);
         })
     }
-    
+
+    const embedOrCreateBricks = (barPath, data, options, callback) => {
+        if (options.embed) {
+            return brickMapController.embedData(barPath, data, options, callback);
+        }
+
+        _fileIsEmbedded(barPath, (err, fileIsEmbedded) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (fileIsEmbedded) {
+                return brickMapController.embedData(barPath, data, options, callback);
+            }
+
+            _ingestData(barPath, data, options, callback);
+        });
+    }
+
     /**
      * @param {string} barPath
      * @param {string|$$.Buffer|stream.ReadableStream} data
@@ -9074,24 +9282,52 @@ function Archive(archiveConfigurator) {
             return _createFile(barPath, callback);
         }
 
-        _ingestData(barPath, data, options, (err, result) => {
+        if (options.embed) {
+            return brickMapController.embedData(barPath, data, options, callback);
+        }
+
+        _fileIsEmbedded(barPath, (err, fileIsEmbedded) => {
             if (err) {
                 return callback(err);
             }
 
-            brickMapController.addFile(barPath, result, callback);
-        })
+            if (fileIsEmbedded) {
+                return brickMapController.embedData(barPath, data, options, callback);
+            }
+
+            _ingestData(barPath, data, options, (err, result) => {
+                if (err) {
+                    return callback(err);
+                }
+                brickMapController.addFile(barPath, result, callback);
+
+            });
+        });
     };
 
     const _appendToFile = (barPath, data, options, callback) => {
         barPath = pskPth.normalize(barPath);
 
-        _ingestData(barPath, data, options, (err, result) => {
+        if (options.embed) {
+            return brickMapController.appendToEmbeddedFile(barPath, data, options, callback);
+        }
+
+        _fileIsEmbedded(barPath, (err, fileIsEmbedded) => {
             if (err) {
-                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to append data to file " + barPath, err));
+                return callback(err);
             }
 
-            brickMapController.appendToFile(barPath, result, callback);
+            if (fileIsEmbedded) {
+                return brickMapController.appendToEmbeddedFile(barPath, data, options, callback);
+            }
+
+            _ingestData(barPath, data, options, (err, result) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                brickMapController.appendToFile(barPath, result, callback);
+            });
         });
     };
 
@@ -9189,6 +9425,16 @@ function Archive(archiveConfigurator) {
         barPath = pskPth.normalize(barPath);
 
         let bricksMeta;
+        let embeddedData;
+        try {
+            embeddedData = brickMapController.getEmbeddedFile(barPath);
+        } catch (e) {
+            return callback(e);
+        }
+
+        if (typeof embeddedData !== "undefined") {
+            return callback(undefined, embeddedData);
+        }
 
         try {
             bricksMeta = brickMapController.getBricksMeta(barPath);
@@ -9899,7 +10145,7 @@ function Archive(archiveConfigurator) {
 
     this.writeFile = (path, data, options, callback) => {
         waitIfDSUIsRefreshing(() => {
-            const defaultOpts = {encrypt: true, ignoreMounts: false};
+            const defaultOpts = {encrypt: true, ignoreMounts: false, embed: false};
             if (typeof data === "function") {
                 callback = data;
                 data = undefined;
@@ -9907,20 +10153,19 @@ function Archive(archiveConfigurator) {
             }
             if (typeof options === "function") {
                 callback = options;
-                options = {
-                    encrypt: true
-                };
+                options = defaultOpts;
             }
             if (typeof options === "undefined") {
-                options = {
-                    encrypt: true
-                };
+                options = defaultOpts;
             }
 
             callback = $$.makeSaneCallback(callback);
 
             Object.assign(defaultOpts, options);
             options = defaultOpts;
+            if (options.embed) {
+                options.encrypt = false;
+            }
 
             if (options.ignoreMounts === true) {
                 _writeFile(path, data, options, callback);
@@ -10998,17 +11243,17 @@ function Archive(archiveConfigurator) {
 
 module.exports = Archive;
 
-},{"./Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMapController":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapController.js","./BrickStorageService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./Manifest":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Manifest.js","opendsu":"opendsu","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js":[function(require,module,exports){
+},{"./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMapController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js","./BrickStorageService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./Manifest":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Manifest.js","opendsu":"opendsu","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js":[function(require,module,exports){
 const storageProviders = {};
 const fsAdapters = {};
 
-function ArchiveConfigurator() {
+function ArchiveConfigurator(options) {
     const config = {};
     let dsuCaching = true;
     let cache;
     let keySSI;
 
-    this.getCreationSSI = function(plain){
+    this.getCreationSSI = function (plain) {
         return config.keySSI.getIdentifier(plain);
     }
 
@@ -11185,6 +11430,10 @@ function ArchiveConfigurator() {
     this.dsuCachingEnabled = () => {
         return dsuCaching;
     }
+
+    this.getOptions = () => {
+        return options;
+    }
 }
 
 // @TODO: obsolete
@@ -11198,7 +11447,7 @@ ArchiveConfigurator.prototype.registerFsAdapter = (fsAdapterName, factory) => {
 
 module.exports = ArchiveConfigurator;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadApi("crypto");
 const keySSISpace = openDSU.loadApi("keyssi");
@@ -11399,7 +11648,7 @@ function Brick(options) {
 
 module.exports = Brick;
 
-},{"./brick-transforms":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js":[function(require,module,exports){
+},{"./brick-transforms":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js":[function(require,module,exports){
 const BrickMapMixin = require('./BrickMapMixin');
 
 /**
@@ -11441,9 +11690,9 @@ const BrickMapMixin = require('./BrickMapMixin');
  * @param {object|undefined} header
  */
 
-function BrickMap(header) {
+function BrickMap(header, options) {
     Object.assign(this, BrickMapMixin);
-    this.initialize(header);
+    this.initialize(header, options);
 
     /**
      * Clone object/array
@@ -11582,7 +11831,8 @@ function BrickMap(header) {
             }
         };
         merge(this.header.items, changes.header.items);
-        this.updateMetadata('/', 'updatedAt', this.getTimestamp());
+        merge(this.header.embedded, changes.header.embedded);
+        this.updateTimeMetadata('/', 'updatedAt', this.getTimestamp());
     }
 
     /**
@@ -11612,11 +11862,24 @@ function BrickMap(header) {
             }
         }
 
+        let embedClone = {};
+        if(brickMap.header.embedded){
+            embedClone = JSON.parse(JSON.stringify(brickMap.header.embedded));
+            let embeddedSrc = this.header.embedded;
+            for (let f in embeddedSrc) {
+                if (embedClone[f] === embeddedSrc[f]) {
+                    delete embedClone[f];
+                }
+            }
+        }
+
+
         const brickMapDiff = new this.constructor({
             metadata: {
                 createdAt: this.getTimestamp()
             },
-            items: changes
+            items: changes,
+            embedded: embedClone
         });
         return brickMapDiff;
     }
@@ -11635,41 +11898,45 @@ function BrickMap(header) {
         switch (op) {
             case 'add':
                 this.appendBricksToFile(path, data);
-                this.setMetadata(path, {
-                    updatedAt: timestamp
-                });
+                this.updateTimeMetadata(path, 'updatedAt', timestamp);
                 break;
             case 'truncate':
                 this.emptyList(path);
-                this.updateMetadata(path, 'updatedAt', timestamp);
+                this.updateTimeMetadata(path, 'updatedAt', timestamp);
                 break;
             case 'delete':
                 this.delete(path);
-                this.updateMetadata(path, 'deletedAt', timestamp);
+                this.updateTimeMetadata(path, 'deletedAt', timestamp);
                 break;
             case 'copy':
                 const dstPath = data;
                 this.copy(path, dstPath);
-                this.updateMetadata(dstPath, 'createdAt', timestamp);
+                this.updateTimeMetadata(dstPath, 'createdAt', timestamp);
                 break;
             case 'createFolder':
                 this.createFolder(path);
-                this.updateMetadata(path, 'createdAt', timestamp);
+                this.updateTimeMetadata(path, 'createdAt', timestamp);
                 break;
             case 'createFile':
                 this.createFile(path);
-                this.updateMetadata(path, 'createdAt', timestamp);
+                this.updateTimeMetadata(path, 'createdAt', timestamp);
                 break;
             case 'replaceFirstBrick':
                 this.replaceFirstBrick(path, data);
-                this.updateMetadata(path, 'updatedAt', timestamp);
+                this.updateTimeMetadata(path, 'updatedAt', timestamp);
                 break;
             case 'replaceLastBrick':
                 this.replaceLastBrick(path, data);
-                this.updateMetadata(path, 'updatedAt', timestamp);
+                this.updateTimeMetadata(path, 'updatedAt', timestamp);
+                break;
+            case 'embed':
+                this.putEmbeddedFile(path, data);
+                break;
+            case 'appendToEmbed':
+                this.appendToEmbedded(path, data);
                 break;
             default:
-                throw new Error(`Unknown operation <${operation}>`);
+                throw new Error(`Unknown operation <${JSON.stringify(operation)}>`);
         }
     }
 
@@ -11698,7 +11965,7 @@ function BrickMap(header) {
         for (const operation of operationsLog) {
             this.replayOperation(operation, brickMap);
         }
-        this.updateMetadata('/', 'updatedAt', this.getTimestamp());
+        this.updateTimeMetadata('/', 'updatedAt', this.getTimestamp());
         this.header.metadata.prevDiffHashLink = metadata.prevDiffHashLink;
     }
 
@@ -11773,7 +12040,7 @@ function BrickMap(header) {
 }
 module.exports = BrickMap;
 
-},{"./BrickMapMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapController.js":[function(require,module,exports){
+},{"./BrickMapMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js":[function(require,module,exports){
 'use strict';
 
 // HTTP error code returned by the anchoring middleware
@@ -12043,7 +12310,7 @@ function BrickMapController(options) {
         strategy.setBrickMapState(state);
         strategy.setValidator(validator);
 
-        const brickMap = new BrickMap();
+        const brickMap = new BrickMap(undefined, options);
         const brickMapProperties = Object.getOwnPropertyNames(brickMap);
         for (const propertyName of brickMapProperties) {
             if (typeof brickMap[propertyName] !== 'function' || propertyName === 'load') {
@@ -12539,14 +12806,40 @@ function BrickMapController(options) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to retrieve current diffBrickMap`, err));
             }
 
-            try {
-                const hashList = this.getHashList(path);
-                const embedSSI = keySSISpace.parse(hashList[0]);
-                callback(undefined, embedSSI.isEmbed());
-            } catch (e) {
-                return callback(undefined, false);
-            }
+            const embeddedFile = this.getEmbeddedFile(path);
+            callback(undefined, !!embeddedFile);
         })
+    }
+
+    this.embedData = (path, data, options, callback) => {
+        getCurrentDiffBrickMap((err, _brickMap) => {
+            if (err) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to retrieve current diffBrickMap`, err));
+            }
+
+            try {
+                this.putEmbeddedFile(path, data);
+            } catch (e) {
+                return callback(e);
+            }
+
+            this.attemptAnchoring(callback);
+        });
+    }
+
+    this.appendToEmbeddedFile = (path, data, options, callback) => {
+        getCurrentDiffBrickMap((err, _brickMap) => {
+            if (err) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to retrieve current diffBrickMap`, err));
+            }
+            try {
+                this.appendToEmbedded(path, data);
+            } catch (e) {
+                return callback(e);
+            }
+
+            this.attemptAnchoring(callback);
+        });
     }
 
     /**
@@ -12657,6 +12950,30 @@ function BrickMapController(options) {
     }
 
     /**
+     * Proxy for BrickMap.putEmbeddedFile()
+     *
+     * @param {string} path
+     * @param {string} data
+     */
+    this.putEmbeddedFileProxyHandler = (path, data) => {
+        const dirtyBrickMap = state.getDirtyBrickMap();
+        dirtyBrickMap.putEmbeddedFile(path, data);
+        state.getCurrentDiff().putEmbeddedFile(path, data);
+    }
+
+    /**
+     * Proxy for BrickMap.appendToEmbedded()
+     *
+     * @param {string} path
+     * @param {string} data
+     */
+    this.appendToEmbeddedProxyHandler = (path, data) => {
+        const dirtyBrickMap = state.getDirtyBrickMap();
+        dirtyBrickMap.appendToEmbedded(path, data);
+        state.getCurrentDiff().appendToEmbedded(path, data);
+    }
+
+    /**
      * Persists a BrickMap Brick
      *
      * @param {BrickMap} brickMap
@@ -12664,6 +12981,7 @@ function BrickMapController(options) {
      */
     this.saveBrickMap = (domain, brickMap, callback) => {
         const brickMapBrick = brickMap.toBrick();
+
         brickMapBrick.setKeySSI(brickMap.getBrickEncryptionKeySSI());
         brickMapBrick.getTransformedData((err, brickData) => {
             if (err) {
@@ -12684,7 +13002,7 @@ function BrickMapController(options) {
             brick = undefined;
         }
 
-        const brickMap = new BrickMap(brick);
+        const brickMap = new BrickMap(brick, options);
         this.configureBrickMap(brickMap, (err => callback(err, brickMap)));
     }
 
@@ -12774,63 +13092,67 @@ function BrickMapController(options) {
                     return endAnchoring(listener, anchoringStatus.PERSIST_BRICKMAP_ERR, err);
                 }
 
-
-                const __storeAnchor = (anchorValue) => {
-                    //signedHashLink should not contain any hint because is not trusted
-
-                    const updateAnchorCallback = (err) => {
-                        if (err) {
-                            // In case of any errors, the compacted BrickMapDiff objects
-                            // are put back into the "pending anchoring" state in case
-                            // we need to retry the anchoring process
-                            state.rollback(mergedDiffs);
-
-                            // The anchoring middleware detected that we were trying
-                            // to anchor outdated changes. In order to finish the anchoring
-                            // process the conflict must be first resolved
-                            if (isAliasSyncError(err)) {
-                                return this.handleAnchoringConflict(listener);
-                            }
-
-                            return endAnchoring(listener, anchoringStatus.ANCHOR_VERSION_ERR, err);
-                        }
-
-                        // After the alias is updated, the strategy is tasked
-                        // with updating our anchored BrickMap with the new changes
-                        strategy.afterBrickMapAnchoring(brickMap, anchorValue, (err, hashLink) => {
-                            if (err) {
-                                return endAnchoring(listener, anchoringStatus.BRICKMAP_UPDATE_ERR, err);
-                            }
-
-                            endAnchoring(listener, anchoringStatus.OK, hashLink);
-
-                            if (anchoringRequestExists()) {
-                                // Another anchoring was requested during the time this one
-                                // was in progress, as such, we start the process again
-                                this.anchorChanges(listener);
-                            }
-                        });
+                keySSI.getAnchorId((err, anchorId) => {
+                    if (err) {
+                        return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to get anchorId for keySSI ${keySSI.getIdentifier()}`, err));
                     }
 
-                    const currentAnchoredHashLink = state.getCurrentAnchoredHashLink();
-                    /*if (!currentAnchoredHashLink) {
-                        anchoring.createAnchor(keySSI, (err) => {
+                    const __storeAnchor = (anchorValue) => {
+                        //signedHashLink should not contain any hint because is not trusted
+
+                        const updateAnchorCallback = (err) => {
                             if (err) {
-                                return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to create anchor`, err));
+                                // In case of any errors, the compacted BrickMapDiff objects
+                                // are put back into the "pending anchoring" state in case
+                                // we need to retry the anchoring process
+                                state.rollback(mergedDiffs);
+
+                                // The anchoring middleware detected that we were trying
+                                // to anchor outdated changes. In order to finish the anchoring
+                                // process the conflict must be first resolved
+                                if (isAliasSyncError(err)) {
+                                    return this.handleAnchoringConflict(listener);
+                                }
+
+                                return endAnchoring(listener, anchoringStatus.ANCHOR_VERSION_ERR, err);
                             }
 
-                            anchoring.appendToAnchor(keySSI, signedHashLink, '', updateAnchorCallback);
-                        });
-                    } else {
-                        anchoring.appendToAnchor(keySSI, signedHashLink, currentAnchoredHashLink, updateAnchorCallback);
-                    }*/
-                    keySSI.getAnchorId((err, anchorId) => {
-                        if (err) {
-                            return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to get anchorId for keySSI ${keySSI.getIdentifier()}`, err));
+                            // After the alias is updated, the strategy is tasked
+                            // with updating our anchored BrickMap with the new changes
+                            strategy.afterBrickMapAnchoring(brickMap, anchorValue, (err, hashLink) => {
+                                if (err) {
+                                    return endAnchoring(listener, anchoringStatus.BRICKMAP_UPDATE_ERR, err);
+                                }
+
+                                endAnchoring(listener, anchoringStatus.OK, hashLink);
+
+                                if (anchoringRequestExists()) {
+                                    // Another anchoring was requested during the time this one
+                                    // was in progress, as such, we start the process again
+                                    this.anchorChanges(listener);
+                                }
+                            });
                         }
+
+                        const currentAnchoredHashLink = state.getCurrentAnchoredHashLink();
+                        /*if (!currentAnchoredHashLink) {
+                            anchoring.createAnchor(keySSI, (err) => {
+                                if (err) {
+                                    return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to create anchor`, err));
+                                }
+
+                                anchoring.appendToAnchor(keySSI, signedHashLink, '', updateAnchorCallback);
+                            });
+                        } else {
+                            anchoring.appendToAnchor(keySSI, signedHashLink, currentAnchoredHashLink, updateAnchorCallback);
+                        }*/
 
                         //TODO: update the smart contract and after that uncomment the above code and eliminate the following if statement
                         if (!currentAnchoredHashLink) {
+                            if (anchoringx.testIfRecoveryActiveFor(anchorId) && !keySSI.canAppend()) {
+                                //if we are in recovery mode, and we are const keyssi type then we don't create the anchor
+                                return updateAnchorCallback();
+                            }
                             anchoringx.getLastVersion(keySSI, (err, version) => {
                                 if (err) {
                                     // return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to retrieve versions of anchor`, err));
@@ -12844,28 +13166,51 @@ function BrickMapController(options) {
                                     return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to retrieve last anchor version`, err));
                                 }
 
-                                if (version.getIdentifier() !== currentAnchoredHashLink.getIdentifier()) {
+                                if (!anchoringx.testIfRecoveryActiveFor(anchorId) && version.getIdentifier() !== currentAnchoredHashLink.getIdentifier()) {
                                     return updateAnchorCallback({statusCode: 428, message: "Versions out of sync"})
                                 }
-
 
                                 anchoringx.appendAnchor(anchorId, anchorValue, updateAnchorCallback);
                             });
                         }
-                    });
-                }
-
-                let lastEntryInAnchor;
-                if (state.getCurrentAnchoredHashLink()) {
-                    lastEntryInAnchor = state.getCurrentAnchoredHashLink().getIdentifier();
-                }
-                keySSI.createAnchorValue(hash, lastEntryInAnchor, (err, anchorValue) => {
-                    if (err) {
-                        return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`The SSI type does not have write access`, err));
                     }
 
-                    __storeAnchor(anchorValue);
+                    let lastEntryInAnchor;
+                    let getCurrentHashLink = (callback) => {
+                        callback(undefined, state.getCurrentAnchoredHashLink());
+                    }
+
+                    if (anchoringx.testIfRecoveryActiveFor(anchorId)) {
+                        getCurrentHashLink = (callback) => {
+                            return anchoringx.getLastVersion(anchorId, callback);
+                        }
+                    }
+
+                    let proceed = (lastEntryInAnchor) => {
+                        keySSI.createAnchorValue(hash, lastEntryInAnchor, (err, anchorValue) => {
+                            if (err) {
+                                return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`The SSI type does not have write access`, err));
+                            }
+
+                            __storeAnchor(anchorValue);
+                        });
+                    }
+
+                    if (state.getCurrentAnchoredHashLink()) {
+                        return getCurrentHashLink((err, lastHashLink) => {
+                            if (err) {
+                                //ignorable error. can't happen
+                            }
+                            if (typeof lastHashLink === "string") {
+                                lastHashLink = keySSISpace.parse(lastHashLink);
+                            }
+                            lastEntryInAnchor = lastHashLink.getIdentifier();
+                            proceed(lastEntryInAnchor);
+                        })
+                    }
+                    proceed(lastEntryInAnchor);
                 });
+
             })
         });
     }
@@ -12963,7 +13308,7 @@ function BrickMapController(options) {
 
 module.exports = BrickMapController;
 
-},{"./AnchorValidator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/AnchorValidator.js","./Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapDiff":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapDiff.js":[function(require,module,exports){
+},{"./AnchorValidator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/AnchorValidator.js","./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js":[function(require,module,exports){
 'use strict';
 
 const BrickMapMixin = require('./BrickMapMixin');
@@ -13117,10 +13462,18 @@ function BrickMapDiff(header) {
     this.replaceLastBrick = function (filePath, brick) {
         this.log('replaceLastBrick', filePath, brick);
     }
+
+    this.putEmbeddedFile = function(filePath, data) {
+        this.log('embed', filePath, data);
+    }
+
+    this.appendToEmbedded = function(filePath, data){
+        this.log('appendToEmbed', filePath, data);
+    }
 }
 module.exports = BrickMapDiff;
 
-},{"./BrickMapMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapMixin.js":[function(require,module,exports){
+},{"./BrickMapMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapMixin.js":[function(require,module,exports){
 'use strict';
 
 const Brick = require("./Brick");
@@ -13143,17 +13496,45 @@ const BrickMapMixin = {
     /**
      * @param {Brick|string|object} header
      */
-    initialize: function (header) {
+    initialize: function (header, options) {
+        options = options || {};
         this.header = header;
         if (this.header) {
+            if(typeof this.header === "object" && !this.header.embedded){
+                //for backwards compatibility reasons
+                this.header.embedded = {};
+            }
             return;
         }
 
         this.header = {
+            v: 1,
             items: {},
-            metadata: {
-                createdAt: this.getTimestamp()
+            metadata: {},
+            embedded: {}
+        }
+
+        if (!options.disableTimeMetadata) {
+            this.header.metadata.createdAt = this.getTimestamp();
+        }
+    },
+
+    updateTimeMetadata: function (target, prop, timestamp) {
+        if (typeof target === "string") {
+            target = this.getDeepestNode(target);
+        }
+
+        if(!target){
+            return ;
+        }
+
+        prop = prop || "updatedAt";
+        timestamp = timestamp || this.getTimestamp();
+        if (this.header.metadata.createdAt) {
+            if (!target.metadata) {
+                target.metadata = {};
             }
+            target.metadata[prop] = timestamp;
         }
     },
 
@@ -13161,7 +13542,7 @@ const BrickMapMixin = {
      * @return {boolean}
      */
     hasItems: function () {
-        return Object.keys(this.header.items).length > 0;
+        return Object.keys(this.header.items).length > 0 || (this.header.embedded && Object.keys(this.header.embedded).length > 0);
     },
 
     /**
@@ -13176,7 +13557,7 @@ const BrickMapMixin = {
      * @param {object} brick
      */
     appendBrick: function (node, brick) {
-        node.metadata.updatedAt = this.getTimestamp();
+        this.updateTimeMetadata(node);
         node.hashLinks.push(brick);
     },
 
@@ -13204,7 +13585,7 @@ const BrickMapMixin = {
      */
     replaceFirstBrick: function (filePath, brick) {
         const node = this.getNodeFromPath(filePath);
-        node.metadata.updatedAt = this.getTimestamp();
+        this.updateTimeMetadata(node);
         if (node.hashLinks.length > 0) {
             node.hashLinks[0] = brick;
         }
@@ -13216,7 +13597,7 @@ const BrickMapMixin = {
      */
     replaceLastBrick: function (filePath, brick) {
         const node = this.getNodeFromPath(filePath);
-        node.metadata.updatedAt = this.getTimestamp();
+        this.updateTimeMetadata(node);
         if (node.hashLinks.length > 0) {
             node.hashLinks[node.hashLinks.length - 1] = brick;
         }
@@ -13227,12 +13608,12 @@ const BrickMapMixin = {
      * @param {string} name
      */
     createFileNode: function (parent, name) {
-        parent.items[name] = {
+        const node = {
             hashLinks: [],
-            metadata: {
-                createdAt: this.getTimestamp()
-            }
-        }
+            metadata: {}
+        };
+        parent.items[name] = node;
+        this.updateTimeMetadata(node, "createdAt");
     },
 
     /**
@@ -13240,12 +13621,12 @@ const BrickMapMixin = {
      * @param {string} name
      */
     createDirectoryNode: function (root, name) {
-        root.items[name] = {
-            metadata: {
-                createdAt: this.getTimestamp()
-            },
+        const node = {
+            metadata: {},
             items: {}
         }
+        root.items[name] = node;
+        this.updateTimeMetadata(node, "createdAt");
     },
 
     /**
@@ -13344,7 +13725,7 @@ const BrickMapMixin = {
      * @param {object} node
      */
     deleteNode: function (node) {
-        node.metadata.deletedAt = this.getTimestamp();
+        this.updateTimeMetadata(node, "deletedAt");
         if (this.nodeIsDirectory(node)) {
             node.items = {};
             return;
@@ -13358,7 +13739,7 @@ const BrickMapMixin = {
      */
     truncateNode: function (node) {
         delete node.metadata.deletedAt;
-        node.metadata.updatedAt = this.getTimestamp();
+        this.updateTimeMetadata(node);
         if (this.nodeIsDirectory(node)) {
             node.items = {};
         }
@@ -13493,13 +13874,26 @@ const BrickMapMixin = {
         barPath = pskPath.normalize(barPath);
         const childNode = this.getDeepestNode(barPath);
         if (!childNode) {
-            throw new Error(`Unable to delete <${barPath}>. File or directory not found.`);
+            return;
         }
         if (this.nodeIsDeleted(childNode)) {
-            throw new Error(`Unable to delete <${barPath}>. File or directory already deleted.`);
+            return;
         }
 
         this.deleteNode(childNode);
+
+        let deleteEmbedded = ()=>{
+            if(this.header && this.header.embedded){
+                let embeddedFiles = Object.keys(this.header.embedded);
+                for(let filepath of embeddedFiles){
+                    if(filepath.startsWith(barPath)){
+                        delete this.header.embedded[filepath];
+                    }
+                }
+            }
+        }
+
+        deleteEmbedded();
     },
 
     createNode: function (barPath, options) {
@@ -13585,6 +13979,51 @@ const BrickMapMixin = {
         return hashes;
     },
 
+    getEmbeddedFile: function (filePath) {
+        if (filePath === "") {
+            throw Error(`File path must not be empty.`);
+        }
+
+        let data;
+        if (this.header.embedded && this.header.embedded[filePath]) {
+            data = this.header.embedded[filePath].content;
+        }
+
+        return data;
+    },
+
+    putEmbeddedFile:  function (filePath, data) {
+        if (filePath === "") {
+            throw Error(`File path must not be empty.`);
+        }
+
+        if (!this.header.embedded) {
+            this.header.embedded = {};
+        }
+
+        let embeddedFile = this.header.embedded[filePath];
+        if(!embeddedFile){
+            embeddedFile = {
+                content: data,
+                metadata:{}
+            };
+            this.header.embedded[filePath] = embeddedFile;
+            this.updateTimeMetadata(embeddedFile, 'createdAt');
+            return;
+        }
+
+        embeddedFile.content = data;
+        this.updateTimeMetadata(embeddedFile);
+    },
+
+    appendToEmbedded: function (filePath, data) {
+        let existingData = this.getEmbeddedFile(filePath);
+        if (!existingData) {
+            existingData = "";
+        }
+
+        this.putEmbeddedFile(filePath, existingData + data);
+},
     /**
      * @param {string} filePath
      * @return {boolean}
@@ -13663,7 +14102,12 @@ const BrickMapMixin = {
      * @return {Brick}
      */
     toBrick: function () {
-        const brick = new Brick({templateKeySSI: this.templateKeySSI, brickMap: true});
+        let brickOptions = {templateKeySSI: this.templateKeySSI, brickMap: true};
+        let hint = this.templateKeySSI.getHint();
+        if(hint && hint.get("avoidRandom")){
+            brickOptions.avoidRandom = true;
+        }
+        const brick = new Brick(brickOptions);
         brick.setKeySSI(this.templateKeySSI);
         brick.setRawData($$.Buffer.from(JSON.stringify(this.header)));
         return brick;
@@ -13676,12 +14120,40 @@ const BrickMapMixin = {
      * @return {Array<string>}
      */
     getFileList: function (folderBarPath, recursive) {
+        let listEmbeddedFiles = ()=>{
+            let files = [];
+            if(this.header.embedded){
+                if(recursive){
+                    let embeddedFiles = Object.keys(this.header.embedded);
+                    for(let filePath of embeddedFiles){
+                        if(filePath.startsWith(folderBarPath)){
+                            files.push(filePath.replace(folderBarPath, ""));
+                        }
+                    }
+                }else{
+                    let embeddedFiles = Object.keys(this.header.embedded);
+                    for(let filePath of embeddedFiles){
+                        if(filePath.startsWith(folderBarPath)){
+                            let relativePath = filePath.replace(folderBarPath, "");
+                            if(relativePath.indexOf("/")===-1){
+                                files.push(relativePath);
+                            }else{
+                                //we skip this file because seems to be a directory (contains at least one more / character)
+                            }
+                        }
+                    }
+                }
+            }
+            return files;
+        }
+
         if (typeof recursive === "undefined") {
             recursive = true;
         }
         const node = this.getDeepestNode(folderBarPath);
         if (!node) {
-            return [];
+            let embeddedFiles = listEmbeddedFiles();
+            return embeddedFiles;
         }
 
         const findFiles = (nodes, currentPath) => {
@@ -13707,7 +14179,9 @@ const BrickMapMixin = {
         }
 
         const files = findFiles(node.items);
-        return files;
+        const embeddedFiles = listEmbeddedFiles(files);
+
+        return files.concat(embeddedFiles);
     },
 
     /**
@@ -13909,7 +14383,7 @@ const BrickMapMixin = {
 
 module.exports = BrickMapMixin;
 
-},{"./Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js":[function(require,module,exports){
+},{"./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js":[function(require,module,exports){
 const BrickMapStrategyMixin = {
     brickMapController: null,
     brickMapState: null,
@@ -14241,7 +14715,7 @@ const BrickMapStrategyMixin = {
 
 module.exports = BrickMapStrategyMixin;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js":[function(require,module,exports){
 'use strict';
 
 const BrickMapDiff = require('../../lib/BrickMapDiff');
@@ -14556,7 +15030,7 @@ function DiffStrategy(options) {
 
 module.exports = DiffStrategy;
 
-},{"../../lib/Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","../../lib/BrickMapDiff":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","../BrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapStrategyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js":[function(require,module,exports){
+},{"../../lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../../lib/BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js":[function(require,module,exports){
 'use strict';
 
 const BrickMapDiff = require('../BrickMapDiff');
@@ -14877,7 +15351,7 @@ function LatestVersionStrategy(options) {
 
 module.exports = LatestVersionStrategy;
 
-},{"../../lib/Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js","../BrickMapDiff":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js":[function(require,module,exports){
+},{"../../lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","../BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js":[function(require,module,exports){
 module.exports = {
     DIFF: 'Diff',
     LATEST_VERSION: 'LatestVersion',
@@ -14885,7 +15359,7 @@ module.exports = {
     //DEFAULT_BRICK_MAP_STRATEGY: 'Diff'
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js":[function(require,module,exports){
 /**
  * @param {object} options
  */
@@ -14954,7 +15428,7 @@ function BrickMapStrategyFactory(options) {
 
 module.exports = BrickMapStrategyFactory;
 
-},{"./DiffStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js","./LatestVersionStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js","./builtinBrickMapStrategies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js":[function(require,module,exports){
+},{"./DiffStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js","./LatestVersionStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js","./builtinBrickMapStrategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js":[function(require,module,exports){
 'use strict';
 
 
@@ -15653,19 +16127,7 @@ function Service(options) {
 
         ingestFilesRecursive(files, callback);
     };
-
-    this.createEmbedSSIFromData = (data, options, callback) => {
-        if (typeof options === "function") {
-            callback = options;
-            options = undefined;
-        }
-        try {
-            const embedSSI = SSIKeys.createEmbedSSI(this.keySSI.getDLDomain(), data);
-            callback(undefined, {hashLink: embedSSI.getIdentifier()})
-        } catch (e) {
-            callback(e);
-        }
-    }
+    
     /**
      * Copy the contents of folder into a single brick
      *
@@ -16085,14 +16547,14 @@ function Service(options) {
 
 module.exports = Service;
 
-},{"../../utils/isStream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/utils/isStream.js","../Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","opendsu":"opendsu","overwrite-require":"overwrite-require","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js":[function(require,module,exports){
+},{"../../utils/isStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/isStream.js","../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","opendsu":"opendsu","overwrite-require":"overwrite-require","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js":[function(require,module,exports){
 'use strict'
 
 module.exports = {
     Service: require('./Service')
 };
 
-},{"./Service":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Manifest.js":[function(require,module,exports){
+},{"./Service":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Manifest.js":[function(require,module,exports){
 const MANIFEST_PATH = "/manifest";
 
 function Manifest(archive, options, callback) {
@@ -16244,7 +16706,7 @@ function Manifest(archive, options, callback) {
     }
 
     function persist(callback) {
-        archive.writeFile(MANIFEST_PATH, JSON.stringify(manifest), callback);
+        archive.writeFile(MANIFEST_PATH, JSON.stringify(manifest), {embed: true}, callback);
     }
 
     function init(callback) {
@@ -16271,7 +16733,7 @@ module.exports.getManifest = function getManifest(archive, options, callback) {
 };
 
 
-},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js":[function(require,module,exports){
 const zlib = require("zlib");
 
 function CompressionTransformation(config) {
@@ -16325,11 +16787,11 @@ function CompressionTransformation(config) {
 module.exports = CompressionTransformation;
 
 
-},{"zlib":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js":[function(require,module,exports){
+},{"zlib":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadApi("crypto");
 
-function EncryptionTransformation() {
+function EncryptionTransformation(options) {
     this.do = (keySSI, data, callback) => {
         const encrypt = crypto.getCryptoFunctionForKeySSI(keySSI, "encryption");
         let encryptedData;
@@ -16338,7 +16800,7 @@ function EncryptionTransformation() {
                 return callback(err);
             }
             try {
-                encryptedData = encrypt(data, encryptionKey);
+                encryptedData = encrypt(data, encryptionKey, options);
             } catch (e) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to encrypt data`, e));
             }
@@ -16364,13 +16826,13 @@ function EncryptionTransformation() {
 }
 
 module.exports = EncryptionTransformation;
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/index.js":[function(require,module,exports){
 const CompressionTransformation = require("./CompressionTransformation");
 const EncryptionTransformation = require("./EncryptionTransformation");
 
 const createBrickTransformation = (options) => {
     options = options || {};
-    return new EncryptionTransformation();
+    return new EncryptionTransformation(options);
 };
 
 
@@ -16379,7 +16841,7 @@ module.exports = {
 };
 
 
-},{"./CompressionTransformation":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js","./EncryptionTransformation":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/constants.js":[function(require,module,exports){
+},{"./CompressionTransformation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js","./EncryptionTransformation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/constants.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -16394,7 +16856,7 @@ module.exports = {
     }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js":[function(require,module,exports){
 const Brick = require("../Brick");
 const util = require("../../utils/utilities");
 const pathModule = "path";
@@ -16529,7 +16991,7 @@ function FileBrickMap(header) {
 
 module.exports = FileBrickMap;
 
-},{"../../utils/utilities":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js":[function(require,module,exports){
+},{"../../utils/utilities":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js":[function(require,module,exports){
 function FileBrickStorage(filePath) {
     const fsModuleName = "fs";
     const fs = require(fsModuleName);
@@ -16748,7 +17210,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/utilities":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","./FileBrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js":[function(require,module,exports){
+},{"../../utils/utilities":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./FileBrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js":[function(require,module,exports){
 const BrickMap = require("../BrickMap");
 const Brick = require("../Brick");
 
@@ -16848,7 +17310,7 @@ module.exports = {
     }
 };
 
-},{"../Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js","fs":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/utils/isStream.js":[function(require,module,exports){
+},{"../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","fs":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/isStream.js":[function(require,module,exports){
 function isStream(stream){
     return stream !== null && typeof stream === 'object' && typeof stream.pipe === 'function';
 }
@@ -16880,7 +17342,7 @@ module.exports = {
     isDuplex
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/utils/utilities.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/utilities.js":[function(require,module,exports){
 const OFFSET_SIZE = 8;
 
 function getBrickMapOffsetSize() {
@@ -16899,7 +17361,7 @@ function ensureFileDoesNotExist(filePath, callback) {
 }
 
 module.exports = {getBrickMapOffsetSize, ensureFileDoesNotExist};
-},{"fs":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/OBFTImplementation.js":[function(require,module,exports){
+},{"fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/OBFTImplementation.js":[function(require,module,exports){
 let pskcrypto = require("pskcrypto");
 let fs = require("fs");
 
@@ -17058,7 +17520,7 @@ exports.createConsensusManager = function (delegatedAgentName, communicationOutl
     return instance;
 }
 
-},{"./transactionsUtil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","fs":false,"pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/PulseUtil.js":[function(require,module,exports){
+},{"./transactionsUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","fs":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/PulseUtil.js":[function(require,module,exports){
 function PulseUtil(signer, currentPulseNumber, block, newTransactions, vsd, top, last) {
     this.signer         = signer;               //a.k.a. delegatedAgentName
     this.currentPulse   = currentPulseNumber;
@@ -17082,7 +17544,7 @@ function PulseHistory(){
 module.exports.createPulseHistory = function () {
     return new PulseHistory();
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js":[function(require,module,exports){
 /*
 consensus helper functions when working with transactions
 */
@@ -17110,7 +17572,7 @@ module.exports.orderCRTransactions = function (pset) { //order in place the pset
     return arr;
 }
 
-},{"pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/asset_swarm_template.js":[function(require,module,exports){
+},{"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/asset_swarm_template.js":[function(require,module,exports){
 var CNST = require("../moduleConstants");
 
 exports.createForObject = function(valueObject, thisObject, localId){
@@ -17157,7 +17619,7 @@ exports.createForObject = function(valueObject, thisObject, localId){
 
 	return ret;
 };
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js","callflow":"callflow"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/transaction_swarm_template.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js","callflow":"callflow"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/transaction_swarm_template.js":[function(require,module,exports){
 let CNST = require("../moduleConstants");
 
 exports.createForObject = function(valueObject, thisObject, localId){
@@ -17204,7 +17666,7 @@ exports.createForObject = function(valueObject, thisObject, localId){
 
 	return ret;
 };
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js","callflow":"callflow"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/ACLScope.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js","callflow":"callflow"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/ACLScope.js":[function(require,module,exports){
 
 $$.asset.describe("ACLScope", {
     public:{
@@ -17227,7 +17689,7 @@ $$.asset.describe("ACLScope", {
         return true;
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Agent.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Agent.js":[function(require,module,exports){
 
 $$.asset.describe("Agent", {
     public:{
@@ -17253,7 +17715,7 @@ $$.asset.describe("Agent", {
 
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Backup.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Backup.js":[function(require,module,exports){
 
 $$.asset.describe("Backup", {
     public:{
@@ -17267,7 +17729,7 @@ $$.asset.describe("Backup", {
     }
 });
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/BarAnchor.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/BarAnchor.js":[function(require,module,exports){
 $$.asset.describe("BarAnchor", {
     public: {
         alias: "string",
@@ -17294,7 +17756,7 @@ $$.asset.describe("BarAnchor", {
         this.writeList.push(agentId);
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/CSBMeta.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/CSBMeta.js":[function(require,module,exports){
 
 $$.asset.describe("CSBMeta", {
 	public:{
@@ -17317,7 +17779,7 @@ $$.asset.describe("CSBMeta", {
 
 });
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainConfig.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainConfig.js":[function(require,module,exports){
 
 $$.asset.describe("DomainConfig", {
     public:{
@@ -17359,7 +17821,7 @@ $$.asset.describe("DomainConfig", {
         this.workerStrategy = workerStrategy;
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainReference.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainReference.js":[function(require,module,exports){
 
 $$.asset.describe("DomainReference", {
     public:{
@@ -17385,7 +17847,7 @@ $$.asset.describe("DomainReference", {
         return this.workspace;
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/FileAnchor.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/FileAnchor.js":[function(require,module,exports){
 $$.asset.describe("FileAnchor", {
     public: {
         alias: "string",
@@ -17404,7 +17866,7 @@ $$.asset.describe("FileAnchor", {
 });
 
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Key.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Key.js":[function(require,module,exports){
 
 $$.asset.describe("key", {
     public:{
@@ -17418,7 +17880,7 @@ $$.asset.describe("key", {
         this.value = value;
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/index.js":[function(require,module,exports){
 module.exports = $$.library(function(){
     require("./DomainReference");
     require("./DomainConfig");
@@ -17431,7 +17893,7 @@ module.exports = $$.library(function(){
     require("./FileAnchor");
     require('./CSBMeta');
 });
-},{"../transactions/transactions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/transactions.js","./ACLScope":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/ACLScope.js","./Agent":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Agent.js","./Backup":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Backup.js","./BarAnchor":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/BarAnchor.js","./CSBMeta":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/CSBMeta.js","./DomainConfig":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainConfig.js","./DomainReference":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainReference.js","./FileAnchor":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/FileAnchor.js","./Key":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Key.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/swarms/index.js":[function(require,module,exports){
+},{"../transactions/transactions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/transactions.js","./ACLScope":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/ACLScope.js","./Agent":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Agent.js","./Backup":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Backup.js","./BarAnchor":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/BarAnchor.js","./CSBMeta":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/CSBMeta.js","./DomainConfig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainConfig.js","./DomainReference":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainReference.js","./FileAnchor":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/FileAnchor.js","./Key":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Key.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/swarms/index.js":[function(require,module,exports){
 if($$.swarms){
     $$.swarms.describe("transactionHandler", {
         start: function (identity, transactionName, methodName, ...args) {
@@ -17443,7 +17905,7 @@ if($$.swarms){
     });
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/agentTransaction.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/agentTransaction.js":[function(require,module,exports){
 const sharedPhases = require('./sharedPhases');
 
 $$.transaction.describe("Agents", {
@@ -17464,7 +17926,7 @@ $$.transaction.describe("Agents", {
     getAgents: sharedPhases.getAllAssetsFactory('global.Agent')
 });
 
-},{"./sharedPhases":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainConfigTransaction.js":[function(require,module,exports){
+},{"./sharedPhases":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainConfigTransaction.js":[function(require,module,exports){
 const sharedPhases = require('./sharedPhases');
 
 $$.transaction.describe("DomainConfigTransaction", {
@@ -17498,7 +17960,7 @@ $$.transaction.describe("DomainConfigTransaction", {
     getDomains: sharedPhases.getAllAssetsFactory('global.DomainConfig')
 });
 
-},{"./sharedPhases":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainTransaction.js":[function(require,module,exports){
+},{"./sharedPhases":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainTransaction.js":[function(require,module,exports){
 const sharedPhases = require('./sharedPhases');
 
 $$.transaction.describe("Domain", {
@@ -17601,7 +18063,7 @@ $$.transaction.describe("Domain", {
     getDomains: sharedPhases.getAllAssetsFactory('global.DomainReference')
 });
 
-},{"./sharedPhases":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/firstTransactionWorkaroundDeleteThis.js":[function(require,module,exports){
+},{"./sharedPhases":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/firstTransactionWorkaroundDeleteThis.js":[function(require,module,exports){
 /**
  * FIXME
  * The first block in the blockchain is 0.
@@ -17621,13 +18083,13 @@ $$.transaction.describe("TooShortBlockChainWorkaroundDeleteThis", {
         this.commit();
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/index.js":[function(require,module,exports){
 require('./domainTransaction');
 require('./agentTransaction');
 require('./standardCSBTransactions');
 require('./domainConfigTransaction');
 require('./firstTransactionWorkaroundDeleteThis');
-},{"./agentTransaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/agentTransaction.js","./domainConfigTransaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainConfigTransaction.js","./domainTransaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainTransaction.js","./firstTransactionWorkaroundDeleteThis":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/firstTransactionWorkaroundDeleteThis.js","./standardCSBTransactions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/standardCSBTransactions.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js":[function(require,module,exports){
+},{"./agentTransaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/agentTransaction.js","./domainConfigTransaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainConfigTransaction.js","./domainTransaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainTransaction.js","./firstTransactionWorkaroundDeleteThis":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/firstTransactionWorkaroundDeleteThis.js","./standardCSBTransactions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/standardCSBTransactions.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js":[function(require,module,exports){
 module.exports = {
     getAssetFactory: function(assetType) {
         return function(alias) {
@@ -17651,7 +18113,7 @@ module.exports = {
         };
     }
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/standardCSBTransactions.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/standardCSBTransactions.js":[function(require,module,exports){
 $$.transaction.describe("StandardCSBTransactions", {
     addBarAnchor: function (mountPoint, brickMapDigest) {
         this.transaction.createAsset("BarAnchor", "init", mountPoint, brickMapDigest);
@@ -17696,7 +18158,7 @@ $$.transaction.describe("StandardCSBTransactions", {
         }
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/transactions.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/transactions.js":[function(require,module,exports){
 $$.transaction.describe("transactions", {
     updateKey: function (key, value) {
         var transaction = $$.blockchain.beginTransaction(this);
@@ -17753,7 +18215,7 @@ usages:
 
  */
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js":[function(require,module,exports){
 module.exports = {
     ALIAS:"alias",
     ALIASES : '/aliases',
@@ -17768,7 +18230,7 @@ module.exports = {
     SWARMID:"swarmId",
     SWARMTYPE:"swarmTypeName"
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleExports.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleExports.js":[function(require,module,exports){
 module.exports = {
     createBlockchain:function(worldStateCache, historyStorage, consensusAlgorithm, signatureProvider, loadDefaultConstitution, forcedBoot){
         return require("./pskdb").startDefaultDB(worldStateCache, historyStorage, consensusAlgorithm, signatureProvider, loadDefaultConstitution, forcedBoot);
@@ -17825,7 +18287,7 @@ module.exports = {
         return require("./strategies/votingStrategies/votingStrategiesRegistry").createVotingStrategy(name,...args);
     }
 }
-},{"./pskdb":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/index.js","./strategies/consensusAlgortims/consensusAlgoritmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/consensusAlgortims/consensusAlgoritmsRegistry.js","./strategies/historyStorages/historyStoragesRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/historyStoragesRegistry.js","./strategies/networkCommunication/networkCommunicationStrategiesRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/networkCommunication/networkCommunicationStrategiesRegistry.js","./strategies/signatureProvidersRegistry/signatureProvidersRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/signatureProvidersRegistry/signatureProvidersRegistry.js","./strategies/votingStrategies/votingStrategiesRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/votingStrategies/votingStrategiesRegistry.js","./strategies/worldStateCaches/worldStateCacheRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/worldStateCaches/worldStateCacheRegistry.js","pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/Blockchain.js":[function(require,module,exports){
+},{"./pskdb":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/index.js","./strategies/consensusAlgortims/consensusAlgoritmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/consensusAlgortims/consensusAlgoritmsRegistry.js","./strategies/historyStorages/historyStoragesRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/historyStoragesRegistry.js","./strategies/networkCommunication/networkCommunicationStrategiesRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/networkCommunication/networkCommunicationStrategiesRegistry.js","./strategies/signatureProvidersRegistry/signatureProvidersRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/signatureProvidersRegistry/signatureProvidersRegistry.js","./strategies/votingStrategies/votingStrategiesRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/votingStrategies/votingStrategiesRegistry.js","./strategies/worldStateCaches/worldStateCacheRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/worldStateCaches/worldStateCacheRegistry.js","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/Blockchain.js":[function(require,module,exports){
 const bm = require('../moduleExports');
 var CNST = require("../moduleConstants");
 
@@ -18028,7 +18490,7 @@ function Transaction(blockchain, pdsHandler, transactionSwarm, worldStateCache, 
 }
 
 module.exports = Blockchain;
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js","../moduleExports":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleExports.js","./securityParadigms/securityParadigmRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/securityParadigmRegistry.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js","../moduleExports":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleExports.js","./securityParadigms/securityParadigmRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/securityParadigmRegistry.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/index.js":[function(require,module,exports){
 const Blockchain = require('./Blockchain');
 
 module.exports = {
@@ -18057,7 +18519,7 @@ module.exports = {
     }
 };
 
-},{"../defaultConstitution/assets/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/index.js","../defaultConstitution/swarms/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/swarms/index.js","../defaultConstitution/transactions/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/index.js","./Blockchain":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/Blockchain.js","./pskdb":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/pskdb.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/pskdb.js":[function(require,module,exports){
+},{"../defaultConstitution/assets/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/index.js","../defaultConstitution/swarms/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/swarms/index.js","../defaultConstitution/transactions/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/index.js","./Blockchain":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/Blockchain.js","./pskdb":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/pskdb.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/pskdb.js":[function(require,module,exports){
 let CNST = require("../moduleConstants");
 let cutil = require("../OBFT/transactionsUtil");
 // let bm = require("../moduleExports");
@@ -18451,7 +18913,7 @@ function VerificationKeySpaceHandler(parentStorage, worldStateCache, blockchain)
 exports.newPSKDB = function (worldStateCache, historyStorage) {
     return new PSKDB(worldStateCache, historyStorage);
 };
-},{"../OBFT/transactionsUtil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js","./securityParadigms/localExecutionCache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/localExecutionCache.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/localExecutionCache.js":[function(require,module,exports){
+},{"../OBFT/transactionsUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js","./securityParadigms/localExecutionCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/localExecutionCache.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/localExecutionCache.js":[function(require,module,exports){
 let CNST=require("../../moduleConstants");
 let cache = {};
 
@@ -18526,7 +18988,7 @@ module.exports = {
     }
 };
 
-},{"../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/securityParadigmRegistry.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/securityParadigmRegistry.js":[function(require,module,exports){
 
 var CNST = require("../../moduleConstants");
 
@@ -18634,7 +19096,7 @@ module.exports = {
         return new Registry();
     }
 }
-},{"../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/signsensus/SignSensusImplementation.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/signsensus/SignSensusImplementation.js":[function(require,module,exports){
 let pskcrypto = require("pskcrypto");
 let fs = require("fs");
 
@@ -18869,7 +19331,7 @@ exports.createConsensusManager = function (delegatedAgentName, communicationOutl
     return instance;
 }
 
-},{"../OBFT/transactionsUtil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","fs":false,"pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/consensusAlgortims/consensusAlgoritmsRegistry.js":[function(require,module,exports){
+},{"../OBFT/transactionsUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","fs":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/consensusAlgortims/consensusAlgoritmsRegistry.js":[function(require,module,exports){
 var mod = require("../../moduleExports");
 
 function DirectCommitAlgorithm() {
@@ -18946,7 +19408,7 @@ module.exports = {
         }
     }
 };
-},{"../../OBFT/OBFTImplementation":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/OBFTImplementation.js","../../moduleExports":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleExports.js","../../signsensus/SignSensusImplementation":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/signsensus/SignSensusImplementation.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/BarHistoryStorage.js":[function(require,module,exports){
+},{"../../OBFT/OBFTImplementation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/OBFTImplementation.js","../../moduleExports":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleExports.js","../../signsensus/SignSensusImplementation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/signsensus/SignSensusImplementation.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/BarHistoryStorage.js":[function(require,module,exports){
 const LatestHashTracker = require("./LatestHashTracker");
 
 function BarHistoryStorage(archive) {
@@ -19019,7 +19481,7 @@ function BarHistoryStorage(archive) {
 }
 
 module.exports = BarHistoryStorage;
-},{"./LatestHashTracker":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/FsHistoryStorage.js":[function(require,module,exports){
+},{"./LatestHashTracker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/FsHistoryStorage.js":[function(require,module,exports){
 const LatestHashTracker = require("./LatestHashTracker");
 
 function FsHistoryStorage(folder) {
@@ -19124,7 +19586,7 @@ function FsHistoryStorage(folder) {
 
 module.exports = FsHistoryStorage;
 
-},{"./LatestHashTracker":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js","fs":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js":[function(require,module,exports){
+},{"./LatestHashTracker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js","fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js":[function(require,module,exports){
 function LatestHashTracker() {
     let hlb = "none";
     let maxBlockNumber = 0;
@@ -19141,7 +19603,7 @@ function LatestHashTracker() {
 }
 
 module.exports = LatestHashTracker;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/MemoryHistoryStorage.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/MemoryHistoryStorage.js":[function(require,module,exports){
 const LatestHashTracker = require("./LatestHashTracker");
 
 function MemoryHistoryStorage() {
@@ -19168,7 +19630,7 @@ function MemoryHistoryStorage() {
 }
 
 module.exports = MemoryHistoryStorage;
-},{"./LatestHashTracker":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/historyStoragesRegistry.js":[function(require,module,exports){
+},{"./LatestHashTracker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/historyStoragesRegistry.js":[function(require,module,exports){
 const FsHistoryStorage = require("./FsHistoryStorage");
 const MemoryHistoryStorage = require("./MemoryHistoryStorage");
 const BarHistoryStorage = require("./BarHistoryStorage");
@@ -19187,7 +19649,7 @@ module.exports = {
         }
     }
 };
-},{"./BarHistoryStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/BarHistoryStorage.js","./FsHistoryStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/FsHistoryStorage.js","./MemoryHistoryStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/MemoryHistoryStorage.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/networkCommunication/networkCommunicationStrategiesRegistry.js":[function(require,module,exports){
+},{"./BarHistoryStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/BarHistoryStorage.js","./FsHistoryStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/FsHistoryStorage.js","./MemoryHistoryStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/MemoryHistoryStorage.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/networkCommunication/networkCommunicationStrategiesRegistry.js":[function(require,module,exports){
 const mc = require("../../moduleConstants");
 let pulseUtil = require("../../OBFT/PulseUtil");
 
@@ -19250,7 +19712,7 @@ module.exports = {
         }
     }
 }
-},{"../../OBFT/PulseUtil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/PulseUtil.js","../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/signatureProvidersRegistry/signatureProvidersRegistry.js":[function(require,module,exports){
+},{"../../OBFT/PulseUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/PulseUtil.js","../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/signatureProvidersRegistry/signatureProvidersRegistry.js":[function(require,module,exports){
 function PermissiveSignatureProvider(){
     /*
     return a signature of message ms for agent agentId
@@ -19277,7 +19739,7 @@ module.exports = {
     }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/votingStrategies/votingStrategiesRegistry.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/votingStrategies/votingStrategiesRegistry.js":[function(require,module,exports){
 
 function SimpleMajoritarianStrategy(shareHoldersCounter){
     this.refreshShares = function(){
@@ -19327,7 +19789,7 @@ module.exports = {
         }
     }
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/worldStateCaches/worldStateCacheRegistry.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/worldStateCaches/worldStateCacheRegistry.js":[function(require,module,exports){
 (function (setImmediate){(function (){
 const mc = require("../../moduleConstants");
 
@@ -19485,7 +19947,7 @@ module.exports = {
 };
 }).call(this)}).call(this,require("timers").setImmediate)
 
-},{"../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js","fs":false,"timers":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Block.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js","fs":false,"timers":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Block.js":[function(require,module,exports){
 class Block {
     constructor(block) {
         if (!block) {
@@ -19507,7 +19969,7 @@ class Block {
 
 module.exports = Block;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Broadcaster/PBlockAddedMessage.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Broadcaster/PBlockAddedMessage.js":[function(require,module,exports){
 (function (Buffer){(function (){
 class PBlockAddedMessage {
     constructor(body) {
@@ -19583,7 +20045,7 @@ module.exports = PBlockAddedMessage;
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"buffer":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Broadcaster/ValidatorNonInclusionMessage.js":[function(require,module,exports){
+},{"buffer":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Broadcaster/ValidatorNonInclusionMessage.js":[function(require,module,exports){
 class ValidatorNonInclusionMessage {
     constructor(body) {
         if (!body) {
@@ -19649,7 +20111,7 @@ class ValidatorNonInclusionMessage {
 
 module.exports = ValidatorNonInclusionMessage;
 
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Broadcaster/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Broadcaster/index.js":[function(require,module,exports){
 const Logger = require("../Logger");
 const PBlockAddedMessage = require("./PBlockAddedMessage");
 const ValidatorNonInclusionMessage = require("./ValidatorNonInclusionMessage");
@@ -19730,7 +20192,7 @@ module.exports = {
     create,
 };
 
-},{"../Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Logger.js","../utils/bdns-utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/utils/bdns-utils.js","./PBlockAddedMessage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Broadcaster/PBlockAddedMessage.js","./ValidatorNonInclusionMessage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Broadcaster/ValidatorNonInclusionMessage.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Command.js":[function(require,module,exports){
+},{"../Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Logger.js","../utils/bdns-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/utils/bdns-utils.js","./PBlockAddedMessage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Broadcaster/PBlockAddedMessage.js","./ValidatorNonInclusionMessage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Broadcaster/ValidatorNonInclusionMessage.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Command.js":[function(require,module,exports){
 (function (Buffer){(function (){
 class Command {
     constructor(command) {
@@ -19802,7 +20264,7 @@ module.exports = Command;
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"buffer":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/CommandHistoryStorage.js":[function(require,module,exports){
+},{"buffer":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/CommandHistoryStorage.js":[function(require,module,exports){
 const { ensurePathExists } = require("./utils/fs-utils");
 
 class CommandHistoryStorage {
@@ -19895,7 +20357,7 @@ module.exports = {
     create,
 };
 
-},{"./utils/fs-utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/utils/fs-utils.js","fs":false,"os":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/PendingBlock.js":[function(require,module,exports){
+},{"./utils/fs-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/utils/fs-utils.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/PendingBlock.js":[function(require,module,exports){
 const { CONSENSUS_PHASES, areNonInclusionListsEqual } = require("./utils");
 const Logger = require("../Logger");
 const Block = require("../Block");
@@ -20262,7 +20724,7 @@ class PendingBlock {
 
 module.exports = PendingBlock;
 
-},{"../Block":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Block.js","../Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Logger.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorContractExecutor.js":[function(require,module,exports){
+},{"../Block":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Block.js","../Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Logger.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorContractExecutor.js":[function(require,module,exports){
 const Block = require("../Block");
 const Command = require("../Command");
 const Logger = require("../Logger");
@@ -20361,7 +20823,7 @@ class ValidatorContractExecutor {
 
 module.exports = ValidatorContractExecutor;
 
-},{"../Block":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Block.js","../Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Command.js","../Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Logger.js","../PBlock":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/PBlock.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorContractExecutorFactory.js":[function(require,module,exports){
+},{"../Block":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Block.js","../Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Command.js","../Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Logger.js","../PBlock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/PBlock.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorContractExecutorFactory.js":[function(require,module,exports){
 const ValidatorContractExecutor = require("./ValidatorContractExecutor");
 
 function create(...params) {
@@ -20371,7 +20833,7 @@ function create(...params) {
 module.exports = {
     create
 }
-},{"./ValidatorContractExecutor":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorContractExecutor.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorSynchronizer.js":[function(require,module,exports){
+},{"./ValidatorContractExecutor":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorContractExecutor.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorSynchronizer.js":[function(require,module,exports){
 const Logger = require("../Logger");
 const Block = require("../Block");
 function getHashFromHashLinkSSI(hashLinkSSI) {
@@ -20590,7 +21052,7 @@ class ValidatorSynchronizer {
 
 module.exports = ValidatorSynchronizer;
 
-},{"../Block":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Block.js","../Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Logger.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/index.js":[function(require,module,exports){
+},{"../Block":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Block.js","../Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Logger.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/index.js":[function(require,module,exports){
 /*
 A configurable consensus core that can have 3 consensus strategies
  - SVBC - Single Validator BrickLedger Consensus:  Only one node is accepting commands and propose BrickBlocks. A block has only one BrickBlock.
@@ -21162,7 +21624,7 @@ module.exports = {
     create,
 };
 
-},{"../Broadcaster/PBlockAddedMessage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Broadcaster/PBlockAddedMessage.js","../Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Logger.js","../PBlock":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/PBlock.js","../utils/object-utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/utils/object-utils.js","./PendingBlock":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/PendingBlock.js","./ValidatorContractExecutorFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorContractExecutorFactory.js","./ValidatorSynchronizer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorSynchronizer.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/utils.js":[function(require,module,exports){
+},{"../Broadcaster/PBlockAddedMessage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Broadcaster/PBlockAddedMessage.js","../Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Logger.js","../PBlock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/PBlock.js","../utils/object-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/utils/object-utils.js","./PendingBlock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/PendingBlock.js","./ValidatorContractExecutorFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorContractExecutorFactory.js","./ValidatorSynchronizer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/ValidatorSynchronizer.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/utils.js":[function(require,module,exports){
 const { checkIfPathExists, ensurePathExists } = require("../utils/fs-utils");
 const { getValidatorsForCurrentDomain } = require("../utils/bdns-utils");
 
@@ -21311,7 +21773,7 @@ module.exports = {
     areNonInclusionListsEqual,
 };
 
-},{"../utils/bdns-utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/utils/bdns-utils.js","../utils/fs-utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/utils/fs-utils.js","fs":false,"opendsu":"opendsu","os":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ExecutionEngine/index.js":[function(require,module,exports){
+},{"../utils/bdns-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/utils/bdns-utils.js","../utils/fs-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/utils/fs-utils.js","fs":false,"opendsu":"opendsu","os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ExecutionEngine/index.js":[function(require,module,exports){
 const Logger = require("../Logger");
 const {
     getContractMethodExecutionPromise,
@@ -21470,7 +21932,7 @@ module.exports = {
     create,
 };
 
-},{"../Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Logger.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ExecutionEngine/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ExecutionEngine/utils.js":[function(require,module,exports){
+},{"../Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Logger.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ExecutionEngine/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ExecutionEngine/utils.js":[function(require,module,exports){
 async function validateNoncedCommandExecution(command, commandHistoryStorage, isValidatedMode) {
     // check if this nonced command has already been executed
     const commandHash = command.getHash();
@@ -21706,7 +22168,7 @@ module.exports = {
     validateNoncedCommandExecution,
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/FSBrickStorage/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/FSBrickStorage/index.js":[function(require,module,exports){
 class FSBrickPathsManager {
     constructor() {
         this.brickPaths = {};
@@ -21820,7 +22282,7 @@ function create(...params) {
 module.exports = {
     create
 };
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/FSBrickStorage/utils.js","fs":false,"opendsu":"opendsu","path":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/FSBrickStorage/utils.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/FSBrickStorage/utils.js","fs":false,"opendsu":"opendsu","path":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/FSBrickStorage/utils.js":[function(require,module,exports){
 /** @deprecated */
 process.env.FOLDER_NAME_SIZE;
 
@@ -21840,7 +22302,7 @@ module.exports = {
     HASH_MAX_SIZE,
     verifyBrickHash
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/FSKeyValueStorage/StorageValue.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/FSKeyValueStorage/StorageValue.js":[function(require,module,exports){
 class StorageValue {
     constructor(stringValue) {
         this.value = stringValue
@@ -21889,7 +22351,7 @@ class StorageValue {
 
 module.exports = StorageValue;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/FSKeyValueStorage/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/FSKeyValueStorage/index.js":[function(require,module,exports){
 const StorageValue = require("./StorageValue");
 
 class FSKeyValueStorage {
@@ -21993,7 +22455,7 @@ module.exports = {
     create,
 };
 
-},{"./StorageValue":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/FSKeyValueStorage/StorageValue.js","fs":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Logger.js":[function(require,module,exports){
+},{"./StorageValue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/FSKeyValueStorage/StorageValue.js","fs":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Logger.js":[function(require,module,exports){
 const ENABLE_DEBUG = false;
 
 class Logger {
@@ -22026,7 +22488,7 @@ class Logger {
 
 module.exports = Logger;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Notifier.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Notifier.js":[function(require,module,exports){
 const Logger = require("./Logger");
 
 class Notifier {
@@ -22070,7 +22532,7 @@ module.exports = {
     create,
 };
 
-},{"./Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Logger.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/PBlock.js":[function(require,module,exports){
+},{"./Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Logger.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/PBlock.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const Command = require("./Command");
 
@@ -22170,7 +22632,7 @@ module.exports = PBlock;
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Command.js","buffer":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/PBlocksFactory.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Command.js","buffer":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/PBlocksFactory.js":[function(require,module,exports){
 const Logger = require("./Logger");
 const PBlock = require("./PBlock");
 
@@ -22555,7 +23017,7 @@ module.exports = {
     create,
 };
 
-},{"./Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Logger.js","./PBlock":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/PBlock.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/utils/bdns-utils.js":[function(require,module,exports){
+},{"./Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Logger.js","./PBlock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/PBlock.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/utils/bdns-utils.js":[function(require,module,exports){
 async function getValidatorsForCurrentDomain(executionEngine) {
     const { contracts } = executionEngine;
     const domainInfo = await $$.promisify(contracts.bdns.getDomainInfo.bind(contracts.bdns))();
@@ -22566,7 +23028,7 @@ module.exports = {
     getValidatorsForCurrentDomain,
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/utils/fs-utils.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/utils/fs-utils.js":[function(require,module,exports){
 async function checkIfPathExists(path) {
     try {
         const fs = require("fs");
@@ -22590,7 +23052,7 @@ module.exports = {
     ensurePathExists,
 };
 
-},{"fs":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/utils/object-utils.js":[function(require,module,exports){
+},{"fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/utils/object-utils.js":[function(require,module,exports){
 function clone(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
@@ -22599,7 +23061,7 @@ module.exports = {
     clone,
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/constants.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/constants.js":[function(require,module,exports){
 $$.CONSTANTS = {
     SWARM_FOR_EXECUTION:"swarm_for_execution",//TODO: remove
     INBOUND:"inbound",//TODO: remove
@@ -22621,7 +23083,7 @@ $$.CONSTANTS.mixIn = function(otherConstants){
     }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/InterceptorRegistry.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/InterceptorRegistry.js":[function(require,module,exports){
 (function (global){(function (){
 // related to: SwarmSpace.SwarmDescription.createPhase()
 
@@ -22816,7 +23278,7 @@ exports.createInterceptorRegistry = function () {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/loadLibrary.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/loadLibrary.js":[function(require,module,exports){
 /*
 Initial License: (c) Axiologic Research & Alboaie Sînică.
 Contributors: Axiologic Research , PrivateSky project
@@ -22920,7 +23382,7 @@ exports.loadLibrary = function(prefixName, folder){
 }
 
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js":[function(require,module,exports){
 
 var globalJoinCounter = 0;
 
@@ -23057,7 +23519,7 @@ exports.createJoinPoint = function(swarm, callback, args){
     jp.__setProxyObject(p);
     return p;
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js":[function(require,module,exports){
 
 var joinCounter = 0;
 
@@ -23182,7 +23644,7 @@ exports.createSerialJoinPoint = function(swarm, callback, args){
     jp.setProxyObject(p);
     return p;
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/swarmDescription.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/swarmDescription.js":[function(require,module,exports){
 const swarmDescriptionsRegistry = {};
 let currentInlineCounter = 0;
 
@@ -23547,7 +24009,7 @@ exports.createSwarmEngine = function(swarmType, utils){
 };
 
 
-},{"./utilityFunctions/callflow":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/callflow.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/SwarmDebug.js":[function(require,module,exports){
+},{"./utilityFunctions/callflow":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/callflow.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/SwarmDebug.js":[function(require,module,exports){
 (function (global){(function (){
 /*
  Initial License: (c) Axiologic Research & Alboaie Sînică.
@@ -23746,7 +24208,7 @@ function localLog (logType, message, err) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"fs":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js":[function(require,module,exports){
+},{"fs":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js":[function(require,module,exports){
 exports.createForObject = function(valueObject, thisObject, localId){
 	var swarmDebug = require("./SwarmDebug");
 	let ret = {};
@@ -23875,19 +24337,19 @@ exports.createForObject = function(valueObject, thisObject, localId){
 
 };
 
-},{"../parallelJoinPoint":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js","../serialJoinPoint":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js","./SwarmDebug":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/SwarmDebug.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/callflow.js":[function(require,module,exports){
+},{"../parallelJoinPoint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js","../serialJoinPoint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js","./SwarmDebug":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/SwarmDebug.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/callflow.js":[function(require,module,exports){
 exports.createForObject = function(valueObject, thisObject, localId){
 	var ret = require("./base").createForObject(valueObject, thisObject, localId);
 	return ret;
 };
-},{"./base":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dossier/lib/RawDossier.js":[function(require,module,exports){
+},{"./base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dossier/lib/RawDossier.js":[function(require,module,exports){
 function RawDossier(bar) {
     Object.assign(this, bar);
 }
 
 module.exports = RawDossier;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/runner.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/runner.js":[function(require,module,exports){
 (function (__dirname){(function (){
 const fs = require("fs");
 const path = require("path");
@@ -24443,7 +24905,7 @@ exports.init = function(sf) {
 
 }).call(this)}).call(this,"/modules/double-check/lib")
 
-},{"./utils/glob-to-regexp":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/utils/glob-to-regexp.js","child_process":false,"fs":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/standardAsserts.js":[function(require,module,exports){
+},{"./utils/glob-to-regexp":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/utils/glob-to-regexp.js","child_process":false,"fs":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/standardAsserts.js":[function(require,module,exports){
 (function (global){(function (){
 module.exports.init = function (sf, logger) {
     /**
@@ -25042,7 +25504,7 @@ module.exports.init = function (sf, logger) {
 };
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/standardChecks.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/standardChecks.js":[function(require,module,exports){
 /*
     checks are like asserts but are intended to be used in production code to help debugging and signaling wrong behaviours
 
@@ -25212,7 +25674,7 @@ exports.init = function(sf){
 
 
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/standardExceptions.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/standardExceptions.js":[function(require,module,exports){
 exports.init = function(sf){
     /**
      * Registering unknown exception handler.
@@ -25257,7 +25719,7 @@ exports.init = function(sf){
         throw(message);
     });
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/standardLogs.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/standardLogs.js":[function(require,module,exports){
 const LOG_LEVELS = {
     HARD_ERROR: 0,  // system level critical error: hardError
     ERROR: 1,  // potentially causing user's data loosing error: error
@@ -25547,7 +26009,7 @@ exports.init = function (sf) {
 ;
 
 
-},{"whys":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/utils/glob-to-regexp.js":[function(require,module,exports){
+},{"whys":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/utils/glob-to-regexp.js":[function(require,module,exports){
 
 // globToRegExp turns a UNIX glob expression into a RegEx expression.
 //  Supports all simple glob patterns. Examples: *.ext, /foo/*, ../../path, ^foo.*
@@ -25597,7 +26059,7 @@ var globToRegExp = function (globExp) {
 };
 
 module.exports = globToRegExp;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/utils/AsyncDispatcher.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/utils/AsyncDispatcher.js":[function(require,module,exports){
 
 function AsyncDispatcher(finalCallback) {
 	let results = [];
@@ -25647,7 +26109,7 @@ function AsyncDispatcher(finalCallback) {
 }
 
 module.exports = AsyncDispatcher;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js":[function(require,module,exports){
 function CommandRegistry(server){
 	const URL_PREFIX = require("./constants").URL_PREFIX;
 
@@ -25683,7 +26145,7 @@ module.exports = {
 		return new CommandRegistry(server);
 	}
 };
-},{"./TransactionManager":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/TransactionManager.js","./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/constants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/TransactionManager.js":[function(require,module,exports){
+},{"./TransactionManager":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/TransactionManager.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/constants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/TransactionManager.js":[function(require,module,exports){
 function TransactionsManager(){
 	const serverConfig = require("apihub").getServerConfig();
 	const config = serverConfig.componentsConfig["dsu-wizard"];
@@ -25758,7 +26220,7 @@ function TransactionsManager(){
 
 module.exports = new TransactionsManager();
 
-},{"./TransactionUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/TransactionUtils.js","./WorkerPoolManager.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/WorkerPoolManager.js","./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/constants.js","apihub":"apihub","pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/TransactionUtils.js":[function(require,module,exports){
+},{"./TransactionUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/TransactionUtils.js","./WorkerPoolManager.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/WorkerPoolManager.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/constants.js","apihub":"apihub","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/TransactionUtils.js":[function(require,module,exports){
 const serverConfig = require("apihub").getServerConfig();
 const config = serverConfig.componentsConfig["dsu-wizard"];
 
@@ -25992,7 +26454,7 @@ function getWorkerScript(){
 
 module.exports = {getTransaction, getFileForTransaction, clearTransaction, persistTransaction, getWorkerScript};
 
-},{"apihub":"apihub","fs":false,"opendsu":"opendsu","path":false,"worker_threads":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/WorkerPoolManager.js":[function(require,module,exports){
+},{"apihub":"apihub","fs":false,"opendsu":"opendsu","path":false,"worker_threads":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/WorkerPoolManager.js":[function(require,module,exports){
 const workers = {};
 const busyWorkers = {};
 const retryIntervalTimeout = 1000;
@@ -26094,7 +26556,7 @@ function WorkerPoolManager(script, workerLimit = 5){
 }
 
 module.exports = WorkerPoolManager;
-},{"worker_threads":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/addFile.js":[function(require,module,exports){
+},{"worker_threads":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/addFile.js":[function(require,module,exports){
 function AddFile(server){
 	const pathName = "path";
 	const path = require(pathName);
@@ -26164,7 +26626,7 @@ function AddFile(server){
 }
 
 module.exports = AddFile;
-},{"../CommandRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/utils.js","fs":false,"pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/copy.js":[function(require,module,exports){
+},{"../CommandRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/utils.js","fs":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/copy.js":[function(require,module,exports){
 function Copy(server) {
     function createCopyCommand(src, dest) {
         const command = {
@@ -26192,7 +26654,7 @@ function Copy(server) {
 }
 
 module.exports = Copy;
-},{"../CommandRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/dummyCommand.js":[function(require,module,exports){
+},{"../CommandRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/dummyCommand.js":[function(require,module,exports){
 module.exports.create = function(name){
 	function createExecutableCommand(){
 		const command = {
@@ -26210,7 +26672,7 @@ module.exports.create = function(name){
 	}
 	return cmd;
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/index.js":[function(require,module,exports){
 const addFile = require("./addFile");
 const mount = require("./mount");
 const setKeySSI = require("./setKeySSI");
@@ -26222,7 +26684,7 @@ module.exports = {
 	setKeySSI,
 	copy
 }
-},{"./addFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/addFile.js","./copy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/copy.js","./mount":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/mount.js","./setKeySSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/setKeySSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/mount.js":[function(require,module,exports){
+},{"./addFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/addFile.js","./copy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/copy.js","./mount":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/mount.js","./setKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/setKeySSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/mount.js":[function(require,module,exports){
 function mount(server){
 	const commandRegistry = require("../CommandRegistry").getRegistry(server);
 
@@ -26254,7 +26716,7 @@ function mount(server){
 }
 
 module.exports = mount;
-},{"../CommandRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/setKeySSI.js":[function(require,module,exports){
+},{"../CommandRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/setKeySSI.js":[function(require,module,exports){
 
 
 function setKeySSI(server){
@@ -26289,12 +26751,12 @@ function setKeySSI(server){
 }
 
 module.exports = setKeySSI;
-},{"../CommandRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js","../TransactionManager":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/TransactionManager.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/utils.js","./dummyCommand":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/dummyCommand.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/constants.js":[function(require,module,exports){
+},{"../CommandRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js","../TransactionManager":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/TransactionManager.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/utils.js","./dummyCommand":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/dummyCommand.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/constants.js":[function(require,module,exports){
 const URL_PREFIX = '/dsu-wizard';
 const transactionIdLength = 32;
 
 module.exports = { URL_PREFIX, transactionIdLength};
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/utils.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/utils.js":[function(require,module,exports){
 function bodyParser(req, callback) {
     let bodyContent = '';
 
@@ -26438,7 +26900,7 @@ module.exports = {
     redirect
 }
 
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/constants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/constants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js":[function(require,module,exports){
 function CryptoAlgorithmsMixin(target) {
     target = target || {};
     const crypto = require("pskcrypto");
@@ -26552,7 +27014,7 @@ function CryptoAlgorithmsMixin(target) {
 
 module.exports = CryptoAlgorithmsMixin;
 
-},{"pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js":[function(require,module,exports){
+},{"pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js":[function(require,module,exports){
 const SSITypes = require("../KeySSIs/SSITypes");
 const CryptoFunctionTypes = require("./CryptoFunctionTypes");
 const CryptoAlgorithmsMixin = require("./CryptoAlgorithmsMixin");
@@ -26673,7 +27135,7 @@ CryptoAlgorithmsRegistry.prototype.registerCryptoInterface(SSITypes.CONSENSUS_SS
 CryptoAlgorithmsRegistry.prototype.registerCryptoInterface(SSITypes.PUBLIC_KEY_SSI, 'v0', new CryptoAlgorithmsMixin());
 
 
-},{"../KeySSIs/SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CryptoAlgorithmsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./CryptoFunctionTypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./SeedSSICryptoAlgorithms":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js":[function(require,module,exports){
+},{"../KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CryptoAlgorithmsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./CryptoFunctionTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./SeedSSICryptoAlgorithms":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js":[function(require,module,exports){
 module.exports = {
     HASH: "hash",
     ENCRYPTION: "encryption",
@@ -26699,7 +27161,7 @@ module.exports = {
     SET_IES_CONFIG: "setConfigForIES",
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js":[function(require,module,exports){
 function SeedSSICryptoAlgorithms() {
     const crypto = require("pskcrypto");
     const CryptoAlgorithmsMixin = require("./CryptoAlgorithmsMixin");
@@ -26729,7 +27191,7 @@ function SeedSSICryptoAlgorithms() {
 
 module.exports = SeedSSICryptoAlgorithms;
 
-},{"./CryptoAlgorithmsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js":[function(require,module,exports){
+},{"./CryptoAlgorithmsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -26799,7 +27261,7 @@ function ConsensusDSUFactory(options) {
 
 module.exports = ConsensusDSUFactory;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -26834,6 +27296,7 @@ function ConstDSUFactory(options) {
         //preventing default mechanism that forces an anchor at the dsu creation
         options.addLog = false;
         //testing if a constDSU already exists in order to prevent new instances
+        options.disableTimeMetadata = true;
         this.barFactory.load(keySSI, options, (err, loadedInstance)=>{
             if(!err){
                 return callback(new Error("ConstDSU already exists! Can't be created again."));
@@ -26864,6 +27327,11 @@ function ConstDSUFactory(options) {
             options = {};
         }
 
+        if (typeof options === "undefined") {
+            options = {};
+        }
+
+        options.disableTimeMetadata = true;
         // enable options.validationRules.preWrite to stop content update
         this.barFactory.load(keySSI, options, callback);
     };
@@ -26871,13 +27339,13 @@ function ConstDSUFactory(options) {
 
 module.exports = ConstDSUFactory;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
  * @param {BrickMapStrategyFactory} options.brickMapStrategyFactory
  */
-const cache = require('psk-cache').factory();
+const cache = require('psk-cache').getDefaultInstance();
 
 function DSUFactory(options) {
     const barModule = require('bar');
@@ -26904,9 +27372,6 @@ function DSUFactory(options) {
         return ssi;
     }
 
-    let forcedArchiveSingletonsCache = {};
-
-
     ////////////////////////////////////////////////////////////
     // Private methods
     ////////////////////////////////////////////////////////////
@@ -26928,14 +27393,10 @@ function DSUFactory(options) {
         let bar;
         try {
             let identifier = keySSI;
-            if (typeof identifier == "string") {
-                let bar = forcedArchiveSingletonsCache[identifier];
-                if (bar) return bar;
-            }
 
             const ArchiveConfigurator = barModule.ArchiveConfigurator;
             ArchiveConfigurator.prototype.registerFsAdapter("FsAdapter", fsAdapter.createFsAdapter);
-            const archiveConfigurator = new ArchiveConfigurator();
+            const archiveConfigurator = new ArchiveConfigurator(options);
             archiveConfigurator.setCache(cache);
             const envTypes = require("overwrite-require").constants;
             if ($$.environmentType !== envTypes.BROWSER_ENVIRONMENT_TYPE &&
@@ -26962,7 +27423,6 @@ function DSUFactory(options) {
             bar = barModule.createArchive(archiveConfigurator);
             const DSUBase = require("./mixins/DSUBase");
             DSUBase(bar);
-            forcedArchiveSingletonsCache[identifier] = bar;
 
         } catch (err) {
             return callback(err);
@@ -27091,7 +27551,7 @@ function DSUFactory(options) {
 
 module.exports = DSUFactory;
 
-},{"../KeySSIs/KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./mixins/DSUBase":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js":[function(require,module,exports){
+},{"../KeySSIs/KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./mixins/DSUBase":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -27161,7 +27621,7 @@ function OwnershipDSUFactory(options) {
 
 module.exports = OwnershipDSUFactory;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -27334,7 +27794,7 @@ function WalletFactory(options) {
 
 module.exports = WalletFactory;
 
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js":[function(require,module,exports){
 const BarFactory = require('./DSUFactory');
 const SSITypes = require("../KeySSIs/SSITypes");
 /**
@@ -27470,7 +27930,7 @@ Registry.prototype.getDSUFactory = (dsuType) => {
 
 module.exports = Registry;
 
-},{"../KeySSIs/SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConsensusDSUFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js","./ConstDSUFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js","./DSUFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js","./OwnershipDSUFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js","./WalletFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js":[function(require,module,exports){
+},{"../KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConsensusDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js","./ConstDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js","./DSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js","./OwnershipDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js","./WalletFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js":[function(require,module,exports){
 module.exports = function(archive){
 	archive.call = (functionName, ...args) => {
 		if(args.length === 0){
@@ -27531,7 +27991,7 @@ module.exports = function(archive){
 	return archive;
 }
 
-},{"overwrite-require":"overwrite-require"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js":[function(require,module,exports){
+},{"overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js":[function(require,module,exports){
 /**
  * @param {BrickMapStrategyFactory} options.brickMapStrategyFactory
  * @param {DSUFactory} options.dsuFactory
@@ -27621,7 +28081,7 @@ function KeySSIResolver(options) {
 
 module.exports = KeySSIResolver;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js":[function(require,module,exports){
 function ArraySSI(enclave, identifier) {
     if (typeof enclave === "string") {
         identifier = enclave;
@@ -27691,7 +28151,7 @@ module.exports = {
     createArraySSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -27731,7 +28191,7 @@ module.exports = {
     createCZaSSI
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const CZaSSI = require("./CZaSSI");
 const SSITypes = require("../SSITypes");
@@ -27798,7 +28258,7 @@ module.exports = {
     createConstSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ConstSSI = require("./ConstSSI");
 const SSITypes = require("../SSITypes");
@@ -27846,7 +28306,7 @@ module.exports = {
     createPasswordSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -27871,13 +28331,13 @@ module.exports = {
     createConsensusSSI,
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js":[function(require,module,exports){
 const DSURepresentationNames = {
     "seed": "RawDossier"
 }
 
 module.exports = DSURepresentationNames;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const {createHashLinkSSI} = require("../OtherKeySSIs/HashLinkSSI");
 const SSITypes = require("../SSITypes");
@@ -27970,7 +28430,7 @@ module.exports = {
     createSignedHashLinkSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../OtherKeySSIs/HashLinkSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../OtherKeySSIs/HashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js":[function(require,module,exports){
 const constants = require("./constants");
 
 function Hint(hintSerialisation) {
@@ -28045,7 +28505,7 @@ function Hint(hintSerialisation) {
 
 module.exports = Hint;
 
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js":[function(require,module,exports){
 const createSecretSSI = require("./SecretSSIs/SecretSSI").createSecretSSI;
 const createAnchorSSI = require("./SecretSSIs/AnchorSSI").createAnchorSSI;
 const createReadSSI = require("./SecretSSIs/ReadSSI").createReadSSI;
@@ -28267,7 +28727,7 @@ KeySSIFactory.prototype.registerFactory(SSITypes.SIZE_SSI, 'v0', undefined, crea
 
 module.exports = new KeySSIFactory();
 
-},{"./ConstSSIs/ArraySSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js","./ConstSSIs/CZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js","./ConstSSIs/ConstSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js","./ConstSSIs/PasswordSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js","./ContractSSIs/ConsensusSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js","./HashLinkSSIs/SignedHashLinkSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js","./KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./OtherKeySSIs/AliasSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js","./OtherKeySSIs/EmbedSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js","./OtherKeySSIs/HashLinkSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js","./OtherKeySSIs/PublicKeySSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js","./OtherKeySSIs/SizeSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js","./OtherKeySSIs/SymmetricalEncryptionSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js","./OtherKeySSIs/WalletSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js","./OwnershipSSIs/OReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js","./OwnershipSSIs/OwnershipSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js","./OwnershipSSIs/ZATSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js","./SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SecretSSIs/AnchorSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js","./SecretSSIs/PublicSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js","./SecretSSIs/ReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js","./SecretSSIs/SecretSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js","./SecretSSIs/ZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js","./SeedSSIs/PathKeySSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js","./SeedSSIs/SReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js","./SeedSSIs/SZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js","./SeedSSIs/SeedSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","./TokenSSIs/TokenSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js","./TransferSSIs/TransferSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js":[function(require,module,exports){
+},{"./ConstSSIs/ArraySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js","./ConstSSIs/CZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js","./ConstSSIs/ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js","./ConstSSIs/PasswordSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js","./ContractSSIs/ConsensusSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js","./HashLinkSSIs/SignedHashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js","./KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./OtherKeySSIs/AliasSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js","./OtherKeySSIs/EmbedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js","./OtherKeySSIs/HashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js","./OtherKeySSIs/PublicKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js","./OtherKeySSIs/SizeSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js","./OtherKeySSIs/SymmetricalEncryptionSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js","./OtherKeySSIs/WalletSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js","./OwnershipSSIs/OReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js","./OwnershipSSIs/OwnershipSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js","./OwnershipSSIs/ZATSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js","./SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SecretSSIs/AnchorSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js","./SecretSSIs/PublicSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js","./SecretSSIs/ReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js","./SecretSSIs/SecretSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js","./SecretSSIs/ZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js","./SeedSSIs/PathKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js","./SeedSSIs/SReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js","./SeedSSIs/SZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js","./SeedSSIs/SeedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","./TokenSSIs/TokenSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js","./TransferSSIs/TransferSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js":[function(require,module,exports){
 const cryptoRegistry = require("../CryptoAlgorithms/CryptoAlgorithmsRegistry");
 const pskCrypto = require("pskcrypto");
 const SSITypes = require("./SSITypes");
@@ -28602,7 +29062,7 @@ function keySSIMixin(target, enclave) {
 
 module.exports = keySSIMixin;
 
-},{"../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./DSURepresentationNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js","./Hint":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js","./KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu","pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js":[function(require,module,exports){
+},{"../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./DSURepresentationNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js","./Hint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js","./KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js":[function(require,module,exports){
 const SSITypes = require("../SSITypes");
 
 function AliasSSI(enclave, identifier) {
@@ -28669,7 +29129,7 @@ const createAliasSSI = (enclave, identifier) => {
 module.exports = {
     createAliasSSI
 };
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -28721,7 +29181,7 @@ module.exports = {
     createEmbedSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -28766,7 +29226,7 @@ module.exports = {
     createHashLinkSSI
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -28819,7 +29279,7 @@ module.exports = {
     createPublicKeySSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js":[function(require,module,exports){
 const SSITypes = require("../SSITypes");
 const KeySSIMixin = require("../KeySSIMixin");
 
@@ -28879,7 +29339,7 @@ module.exports = {
     createSizeSSI,
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -28930,7 +29390,7 @@ module.exports = {
     createSymmetricalEncryptionSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js":[function(require,module,exports){
 const ArraySSI = require("./../ConstSSIs/ArraySSI");
 const SSITypes = require("../SSITypes");
 
@@ -28953,7 +29413,7 @@ module.exports = {
     createWalletSSI
 }
 
-},{"../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./../ConstSSIs/ArraySSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js":[function(require,module,exports){
+},{"../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./../ConstSSIs/ArraySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ZATSSI = require("./ZATSSI");
 const SSITypes = require("../SSITypes");
@@ -29027,7 +29487,7 @@ module.exports = {
     createOReadSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZATSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZATSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const OReadSSI = require("./OReadSSI");
 const SSITypes = require("../SSITypes");
@@ -29194,7 +29654,7 @@ module.exports = {
     createOwnershipSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./OReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./OReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -29227,7 +29687,7 @@ module.exports = {
     createZATSSI
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js":[function(require,module,exports){
 module.exports = {
     DEFAULT: "default",
     SECRET_SSI: "secret",
@@ -29259,7 +29719,7 @@ module.exports = {
     EMBED_SSI: "embed"
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ReadSSI = require("./ReadSSI");
 const SSITypes = require("../SSITypes");
@@ -29294,7 +29754,7 @@ module.exports = {
     createAnchorSSI
 }
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ZaSSI = require("./ZaSSI");
 const SSITypes = require("../SSITypes");
@@ -29323,7 +29783,7 @@ module.exports = {
     createPublicSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const PublicSSI = require("./PublicSSI");
 const SSITypes = require("../SSITypes");
@@ -29352,7 +29812,7 @@ module.exports = {
     createReadSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./PublicSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./PublicSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const AnchorSSI = require("./AnchorSSI");
 const SSITypes = require("../SSITypes");
@@ -29380,7 +29840,7 @@ module.exports = {
     createSecretSSI
 }
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./AnchorSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./AnchorSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 function ZaSSI(identifier) {
     KeySSIMixin(this);
@@ -29401,7 +29861,7 @@ function createZaSSI(identifier) {
 module.exports = {
     createZaSSI
 };
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SeedSSI = require("./SeedSSI");
 const SSITypes = require("../SSITypes");
@@ -29531,7 +29991,7 @@ module.exports = {
     createPathKeySSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SeedSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SeedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SZaSSI = require("./SZaSSI");
 const SSITypes = require("../SSITypes");
@@ -29584,7 +30044,7 @@ module.exports = {
     createSReadSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -29627,7 +30087,7 @@ module.exports = {
     createSZaSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SReadSSI = require("./SReadSSI");
 const SSITypes = require("../SSITypes");
@@ -29757,7 +30217,7 @@ module.exports = {
     createSeedSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -29825,7 +30285,7 @@ module.exports = {
     createTokenSSI
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -29925,17 +30385,8505 @@ module.exports = {
     createTransferSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js":[function(require,module,exports){
 module.exports = {
     DSU_VERSION_KEY: "dsuVersion",
     EMBEDDED_DATA_KEY: "embedded"
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/loki-enclave-facade/lib/lokijs/src/loki-fs-sync-adapter.js":[function(require,module,exports){
+/*
+  A synchronous version of the Loki Filesystem adapter for node.js
+
+  Intended for diagnostics or environments where synchronous i/o is required.
+
+  This adapter will perform worse than the default LokiFsAdapter but 
+  is provided for quick adaptation to synchronous code.
+*/
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD
+        define([], factory);
+    } else if (typeof exports === 'object') {
+        // Node, CommonJS-like
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        root.LokiFsSyncAdapter = factory();
+    }
+}(this, function () {
+  return (function() {
+    'use strict';
+
+    /**
+     * A loki persistence adapter which persists using node fs module
+     * @constructor LokiFsSyncAdapter
+     */
+    function LokiFsSyncAdapter() {
+      this.fs = require('fs');
+    }
+
+    /**
+     * loadDatabase() - Load data from file, will throw an error if the file does not exist
+     * @param {string} dbname - the filename of the database to load
+     * @param {function} callback - the callback to handle the result
+     * @memberof LokiFsSyncAdapter
+     */
+    LokiFsSyncAdapter.prototype.loadDatabase = function loadDatabase(dbname, callback) {
+      var self = this;
+      var contents;
+
+      try {
+        var stats = this.fs.statSync(dbname);
+        if (stats.isFile()) {
+          contents = self.fs.readFileSync(dbname, {
+            encoding: 'utf8'
+          });
+          
+          callback(contents);
+        }
+        else {
+          callback(null);
+        }
+      }
+      catch (err) {
+        // first autoload when file doesn't exist yet
+        // should not throw error but leave default
+        // blank database.
+        if (err.code === "ENOENT") {
+          callback(null);
+        }
+        
+        callback(err);
+      }
+    };
+
+    /**
+     * saveDatabase() - save data to file, will throw an error if the file can't be saved
+     * might want to expand this to avoid dataloss on partial save
+     * @param {string} dbname - the filename of the database to load
+     * @param {function} callback - the callback to handle the result
+     * @memberof LokiFsSyncAdapter
+     */
+    LokiFsSyncAdapter.prototype.saveDatabase = function saveDatabase(dbname, dbstring, callback) {
+      try {
+        this.fs.writeFileSync(dbname, dbstring);
+        callback();
+      }
+      catch (err) {
+        callback(err);
+      }
+    };
+
+    /**
+     * deleteDatabase() - delete the database file, will throw an error if the
+     * file can't be deleted
+     * @param {string} dbname - the filename of the database to delete
+     * @param {function} callback - the callback to handle the result
+     * @memberof LokiFsSyncAdapter
+     */
+    LokiFsSyncAdapter.prototype.deleteDatabase = function deleteDatabase(dbname, callback) {
+      try {
+        this.fs.unlinkSync(dbname);
+        callback();
+      }
+      catch (err) {
+        callback(err);
+      }
+    };
+
+    return LokiFsSyncAdapter;
+
+  }());
+}));
+
+},{"fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/loki-enclave-facade/lib/lokijs/src/loki-indexed-adapter.js":[function(require,module,exports){
+/*
+  Loki IndexedDb Adapter (need to include this script to use it)
+
+  Console Usage can be used for management/diagnostic, here are a few examples :
+  adapter.getDatabaseList(); // with no callback passed, this method will log results to console
+  adapter.saveDatabase('UserDatabase', JSON.stringify(myDb));
+  adapter.loadDatabase('UserDatabase'); // will log the serialized db to console
+  adapter.deleteDatabase('UserDatabase');
+*/
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD
+        define([], factory);
+    } else if (typeof exports === 'object') {
+        // Node, CommonJS-like
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        root.LokiIndexedAdapter = factory();
+    }
+}(this, function () {
+  return (function() {
+
+    /**
+     * Loki persistence adapter class for indexedDb.
+     *     This class fulfills abstract adapter interface which can be applied to other storage methods.
+     *     Utilizes the included LokiCatalog app/key/value database for actual database persistence.
+     *     Indexeddb is highly async, but this adapter has been made 'console-friendly' as well.
+     *     Anywhere a callback is omitted, it should return results (if applicable) to console.
+     *     IndexedDb storage is provided per-domain, so we implement app/key/value database to
+     *     allow separate contexts for separate apps within a domain.
+     *
+     * @example
+     * var idbAdapter = new LokiIndexedAdapter('finance');
+     *
+     * @constructor LokiIndexedAdapter
+     *
+     * @param {string} appname - (Optional) Application name context can be used to distinguish subdomains, 'loki' by default
+     * @param {object=} options Configuration options for the adapter
+     * @param {boolean} options.closeAfterSave Whether the indexedDB database should be closed after saving.
+     */
+    function LokiIndexedAdapter(appname, options)
+    {
+      this.app = 'loki';
+      this.options = options || {};
+
+      if (typeof (appname) !== 'undefined')
+      {
+        this.app = appname;
+      }
+
+      // keep reference to catalog class for base AKV operations
+      this.catalog = null;
+
+      if (!this.checkAvailability()) {
+        throw new Error('indexedDB does not seem to be supported for your environment');
+      }
+    }
+
+    /**
+     * Used for closing the indexeddb database.
+     */
+    LokiIndexedAdapter.prototype.closeDatabase = function ()
+    {
+      if (this.catalog && this.catalog.db) {
+        this.catalog.db.close();
+        this.catalog.db = null;
+      }
+    };
+
+    /**
+     * Used to check if adapter is available
+     *
+     * @returns {boolean} true if indexeddb is available, false if not.
+     * @memberof LokiIndexedAdapter
+     */
+    LokiIndexedAdapter.prototype.checkAvailability = function()
+    {
+      if (typeof indexedDB !== 'undefined' && indexedDB) return true;
+
+      return false;
+    };
+
+    /**
+     * Retrieves a serialized db string from the catalog.
+     *
+     * @example
+     * // LOAD
+     * var idbAdapter = new LokiIndexedAdapter('finance');
+     * var db = new loki('test', { adapter: idbAdapter });
+     *   db.loadDatabase(function(result) {
+     *   console.log('done');
+     * });
+     *
+     * @param {string} dbname - the name of the database to retrieve.
+     * @param {function} callback - callback should accept string param containing serialized db string.
+     * @memberof LokiIndexedAdapter
+     */
+    LokiIndexedAdapter.prototype.loadDatabase = function(dbname, callback)
+    {
+      var appName = this.app;
+      var adapter = this;
+
+      // lazy open/create db reference so dont -need- callback in constructor
+      if (this.catalog === null || this.catalog.db === null) {
+        this.catalog = new LokiCatalog(function(cat) {
+          adapter.catalog = cat;
+
+          adapter.loadDatabase(dbname, callback);
+        });
+
+        return;
+      }
+
+      // lookup up db string in AKV db
+      this.catalog.getAppKey(appName, dbname, function(result) {
+        if (typeof (callback) === 'function') {
+          if (result.id === 0) {
+            callback(null);
+            return;
+          }
+          callback(result.val);
+        }
+        else {
+          // support console use of api
+          console.log(result.val);
+        }
+      });
+    };
+
+    // alias
+    LokiIndexedAdapter.prototype.loadKey = LokiIndexedAdapter.prototype.loadDatabase;
+
+    /**
+     * Saves a serialized db to the catalog.
+     *
+     * @example
+     * // SAVE : will save App/Key/Val as 'finance'/'test'/{serializedDb}
+     * var idbAdapter = new LokiIndexedAdapter('finance');
+     * var db = new loki('test', { adapter: idbAdapter });
+     * var coll = db.addCollection('testColl');
+     * coll.insert({test: 'val'});
+     * db.saveDatabase();  // could pass callback if needed for async complete
+     *
+     * @param {string} dbname - the name to give the serialized database within the catalog.
+     * @param {string} dbstring - the serialized db string to save.
+     * @param {function} callback - (Optional) callback passed obj.success with true or false
+     * @memberof LokiIndexedAdapter
+     */
+    LokiIndexedAdapter.prototype.saveDatabase = function(dbname, dbstring, callback)
+    {
+      var appName = this.app;
+      var adapter = this;
+
+      function saveCallback(result) {
+        if (result && result.success === true) {
+          callback(null);
+        }
+        else {
+          callback(new Error("Error saving database"));
+        }
+
+        if (adapter.options.closeAfterSave) {
+          adapter.closeDatabase();
+        }
+      }
+
+      // lazy open/create db reference so dont -need- callback in constructor
+      if (this.catalog === null || this.catalog.db === null) {
+        this.catalog = new LokiCatalog(function(cat) {
+          adapter.saveDatabase(dbname, dbstring, saveCallback);
+        });
+
+        return;
+      }
+
+      // set (add/update) entry to AKV database
+      this.catalog.setAppKey(appName, dbname, dbstring, saveCallback);
+    };
+
+    // alias
+    LokiIndexedAdapter.prototype.saveKey = LokiIndexedAdapter.prototype.saveDatabase;
+
+    /**
+     * Deletes a serialized db from the catalog.
+     *
+     * @example
+     * // DELETE DATABASE
+     * // delete 'finance'/'test' value from catalog
+     * idbAdapter.deleteDatabase('test', function {
+     *   // database deleted
+     * });
+     *
+     * @param {string} dbname - the name of the database to delete from the catalog.
+     * @param {function=} callback - (Optional) executed on database delete
+     * @memberof LokiIndexedAdapter
+     */
+    LokiIndexedAdapter.prototype.deleteDatabase = function(dbname, callback)
+    {
+      var appName = this.app;
+      var adapter = this;
+
+      // lazy open/create db reference and pass callback ahead
+      if (this.catalog === null || this.catalog.db === null) {
+        this.catalog = new LokiCatalog(function(cat) {
+          adapter.catalog = cat;
+
+          adapter.deleteDatabase(dbname, callback);
+        });
+
+        return;
+      }
+
+      // catalog was already initialized, so just lookup object and delete by id
+      this.catalog.getAppKey(appName, dbname, function(result) {
+        var id = result.id;
+
+        if (id !== 0) {
+          adapter.catalog.deleteAppKey(id, callback);
+        } else if (typeof (callback) === 'function') {
+          callback({ success: true });
+        }
+      });
+    };
+
+    // alias
+    LokiIndexedAdapter.prototype.deleteKey = LokiIndexedAdapter.prototype.deleteDatabase;
+
+    /**
+     * Removes all database partitions and pages with the base filename passed in.
+     * This utility method does not (yet) guarantee async deletions will be completed before returning
+     *
+     * @param {string} dbname - the base filename which container, partitions, or pages are derived
+     * @memberof LokiIndexedAdapter
+     */
+    LokiIndexedAdapter.prototype.deleteDatabasePartitions = function(dbname) {
+      var self=this;
+      this.getDatabaseList(function(result) {
+        result.forEach(function(str) {
+          if (str.startsWith(dbname)) {
+            self.deleteDatabase(str);
+          }
+        });
+      });
+    };
+
+    /**
+     * Retrieves object array of catalog entries for current app.
+     *
+     * @example
+     * idbAdapter.getDatabaseList(function(result) {
+     *   // result is array of string names for that appcontext ('finance')
+     *   result.forEach(function(str) {
+     *     console.log(str);
+     *   });
+     * });
+     *
+     * @param {function} callback - should accept array of database names in the catalog for current app.
+     * @memberof LokiIndexedAdapter
+     */
+    LokiIndexedAdapter.prototype.getDatabaseList = function(callback)
+    {
+      var appName = this.app;
+      var adapter = this;
+
+      // lazy open/create db reference so dont -need- callback in constructor
+      if (this.catalog === null || this.catalog.db === null) {
+        this.catalog = new LokiCatalog(function(cat) {
+          adapter.catalog = cat;
+
+          adapter.getDatabaseList(callback);
+        });
+
+        return;
+      }
+
+      // catalog already initialized
+      // get all keys for current appName, and transpose results so just string array
+      this.catalog.getAppKeys(appName, function(results) {
+        var names = [];
+
+        for(var idx = 0; idx < results.length; idx++) {
+          names.push(results[idx].key);
+        }
+
+        if (typeof (callback) === 'function') {
+          callback(names);
+        }
+        else {
+          names.forEach(function(obj) {
+            console.log(obj);
+          });
+        }
+      });
+    };
+
+    // alias
+    LokiIndexedAdapter.prototype.getKeyList = LokiIndexedAdapter.prototype.getDatabaseList;
+
+    /**
+     * Allows retrieval of list of all keys in catalog along with size
+     *
+     * @param {function} callback - (Optional) callback to accept result array.
+     * @memberof LokiIndexedAdapter
+     */
+    LokiIndexedAdapter.prototype.getCatalogSummary = function(callback)
+    {
+      var appName = this.app;
+      var adapter = this;
+
+      // lazy open/create db reference
+      if (this.catalog === null || this.catalog.db === null) {
+        this.catalog = new LokiCatalog(function(cat) {
+          adapter.catalog = cat;
+
+          adapter.getCatalogSummary(callback);
+        });
+
+        return;
+      }
+
+      // catalog already initialized
+      // get all keys for current appName, and transpose results so just string array
+      this.catalog.getAllKeys(function(results) {
+        var entries = [];
+        var obj,
+          size,
+          oapp,
+          okey,
+          oval;
+
+        for(var idx = 0; idx < results.length; idx++) {
+          obj = results[idx];
+          oapp = obj.app || '';
+          okey = obj.key || '';
+          oval = obj.val || '';
+
+          // app and key are composited into an appkey column so we will mult by 2
+          size = oapp.length * 2 + okey.length * 2 + oval.length + 1;
+
+          entries.push({ "app": obj.app, "key": obj.key, "size": size });
+        }
+
+        if (typeof (callback) === 'function') {
+          callback(entries);
+        }
+        else {
+          entries.forEach(function(obj) {
+            console.log(obj);
+          });
+        }
+      });
+    };
+
+    /**
+     * LokiCatalog - underlying App/Key/Value catalog persistence
+     *    This non-interface class implements the actual persistence.
+     *    Used by the IndexedAdapter class.
+     */
+    function LokiCatalog(callback)
+    {
+      this.db = null;
+      this.initializeLokiCatalog(callback);
+    }
+
+    LokiCatalog.prototype.initializeLokiCatalog = function(callback) {
+      var openRequest = indexedDB.open('LokiCatalog', 1);
+      var cat = this;
+
+      // If database doesn't exist yet or its version is lower than our version specified above (2nd param in line above)
+      openRequest.onupgradeneeded = function(e) {
+        var thisDB = e.target.result;
+        if (thisDB.objectStoreNames.contains('LokiAKV')) {
+          thisDB.deleteObjectStore('LokiAKV');
+        }
+
+        if(!thisDB.objectStoreNames.contains('LokiAKV')) {
+          var objectStore = thisDB.createObjectStore('LokiAKV', { keyPath: 'id', autoIncrement:true });
+          objectStore.createIndex('app', 'app', {unique:false});
+          objectStore.createIndex('key', 'key', {unique:false});
+          // hack to simulate composite key since overhead is low (main size should be in val field)
+          // user (me) required to duplicate the app and key into comma delimited appkey field off object
+          // This will allow retrieving single record with that composite key as well as
+          // still supporting opening cursors on app or key alone
+          objectStore.createIndex('appkey', 'appkey', {unique:true});
+        }
+      };
+
+      openRequest.onsuccess = function(e) {
+        cat.db = e.target.result;
+
+        if (typeof (callback) === 'function') callback(cat);
+      };
+
+      openRequest.onerror = function(e) {
+        throw e;
+      };
+    };
+
+    LokiCatalog.prototype.getAppKey = function(app, key, callback) {
+      var transaction = this.db.transaction(['LokiAKV'], 'readonly');
+      var store = transaction.objectStore('LokiAKV');
+      var index = store.index('appkey');
+      var appkey = app + "," + key;
+      var request = index.get(appkey);
+
+      request.onsuccess = (function(usercallback) {
+        return function(e) {
+          var lres = e.target.result;
+
+          if (lres === null || typeof(lres) === 'undefined') {
+            lres = {
+              id: 0,
+              success: false
+            };
+          }
+
+          if (typeof(usercallback) === 'function') {
+            usercallback(lres);
+          }
+          else {
+            console.log(lres);
+          }
+        };
+      })(callback);
+
+      request.onerror = (function(usercallback) {
+        return function(e) {
+          if (typeof(usercallback) === 'function') {
+            usercallback({ id: 0, success: false });
+          }
+          else {
+            throw e;
+          }
+        };
+      })(callback);
+    };
+
+    LokiCatalog.prototype.getAppKeyById = function (id, callback, data) {
+      var transaction = this.db.transaction(['LokiAKV'], 'readonly');
+      var store = transaction.objectStore('LokiAKV');
+      var request = store.get(id);
+
+      request.onsuccess = (function(data, usercallback){
+        return function(e) {
+          if (typeof(usercallback) === 'function') {
+            usercallback(e.target.result, data);
+          }
+          else {
+            console.log(e.target.result);
+          }
+        };
+      })(data, callback);
+    };
+
+    LokiCatalog.prototype.setAppKey = function (app, key, val, callback) {
+      var transaction = this.db.transaction(['LokiAKV'], 'readwrite');
+      var store = transaction.objectStore('LokiAKV');
+      var index = store.index('appkey');
+      var appkey = app + "," + key;
+      var request = index.get(appkey);
+
+      // first try to retrieve an existing object by that key
+      // need to do this because to update an object you need to have id in object, otherwise it will append id with new autocounter and clash the unique index appkey
+      request.onsuccess = function(e) {
+        var res = e.target.result;
+
+        if (res === null || res === undefined) {
+          res = {
+            app:app,
+            key:key,
+            appkey: app + ',' + key,
+            val:val
+          };
+        }
+        else {
+          res.val = val;
+        }
+
+        var requestPut = store.put(res);
+
+        requestPut.onerror = (function(usercallback) {
+          return function(e) {
+            if (typeof(usercallback) === 'function') {
+              usercallback({ success: false });
+            }
+            else {
+              console.error('LokiCatalog.setAppKey (set) onerror');
+              console.error(request.error);
+            }
+          };
+
+        })(callback);
+
+        requestPut.onsuccess = (function(usercallback) {
+          return function(e) {
+            if (typeof(usercallback) === 'function') {
+              usercallback({ success: true });
+            }
+          };
+        })(callback);
+      };
+
+      request.onerror = (function(usercallback) {
+        return function(e) {
+          if (typeof(usercallback) === 'function') {
+            usercallback({ success: false });
+          }
+          else {
+            console.error('LokiCatalog.setAppKey (get) onerror');
+            console.error(request.error);
+          }
+        };
+      })(callback);
+    };
+
+    LokiCatalog.prototype.deleteAppKey = function (id, callback) {
+      var transaction = this.db.transaction(['LokiAKV'], 'readwrite');
+      var store = transaction.objectStore('LokiAKV');
+      var request = store.delete(id);
+
+      request.onsuccess = (function(usercallback) {
+        return function(evt) {
+          if (typeof(usercallback) === 'function') usercallback({ success: true });
+        };
+      })(callback);
+
+      request.onerror = (function(usercallback) {
+        return function(evt) {
+          if (typeof(usercallback) === 'function') {
+            usercallback({ success: false });
+          }
+          else {
+            console.error('LokiCatalog.deleteAppKey raised onerror');
+            console.error(request.error);
+          }
+        };
+      })(callback);
+    };
+
+    LokiCatalog.prototype.getAppKeys = function(app, callback) {
+      var transaction = this.db.transaction(['LokiAKV'], 'readonly');
+      var store = transaction.objectStore('LokiAKV');
+      var index = store.index('app');
+
+      // We want cursor to all values matching our (single) app param
+      var singleKeyRange = IDBKeyRange.only(app);
+
+      // To use one of the key ranges, pass it in as the first argument of openCursor()/openKeyCursor()
+      var cursor = index.openCursor(singleKeyRange);
+
+      // cursor internally, pushing results into this.data[] and return
+      // this.data[] when done (similar to service)
+      var localdata = [];
+
+      cursor.onsuccess = (function(data, callback) {
+        return function(e) {
+          var cursor = e.target.result;
+          if (cursor) {
+            var currObject = cursor.value;
+
+            data.push(currObject);
+
+            cursor.continue();
+          }
+          else {
+            if (typeof(callback) === 'function') {
+              callback(data);
+            }
+            else {
+              console.log(data);
+            }
+          }
+        };
+      })(localdata, callback);
+
+      cursor.onerror = (function(usercallback) {
+        return function(e) {
+          if (typeof(usercallback) === 'function') {
+            usercallback(null);
+          }
+          else {
+            console.error('LokiCatalog.getAppKeys raised onerror');
+            console.error(e);
+          }
+        };
+      })(callback);
+
+    };
+
+    // Hide 'cursoring' and return array of { id: id, key: key }
+    LokiCatalog.prototype.getAllKeys = function (callback) {
+      var transaction = this.db.transaction(['LokiAKV'], 'readonly');
+      var store = transaction.objectStore('LokiAKV');
+      var cursor = store.openCursor();
+
+      var localdata = [];
+
+      cursor.onsuccess = (function(data, callback) {
+        return function(e) {
+          var cursor = e.target.result;
+          if (cursor) {
+            var currObject = cursor.value;
+
+            data.push(currObject);
+
+            cursor.continue();
+          }
+          else {
+            if (typeof(callback) === 'function') {
+              callback(data);
+            }
+            else {
+              console.log(data);
+            }
+          }
+        };
+      })(localdata, callback);
+
+      cursor.onerror = (function(usercallback) {
+        return function(e) {
+          if (typeof(usercallback) === 'function') usercallback(null);
+        };
+      })(callback);
+
+    };
+
+    return LokiIndexedAdapter;
+
+  }());
+}));
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/loki-enclave-facade/lib/lokijs/src/lokijs.js":[function(require,module,exports){
+(function (global){(function (){
+/**
+ * LokiJS
+ * @author Joe Minichino <joe.minichino@gmail.com>
+ *
+ * A lightweight document oriented javascript database
+ */
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD
+    define([], factory);
+  } else if (typeof exports === 'object') {
+    // CommonJS
+    module.exports = factory();
+  } else {
+    // Browser globals
+    root.loki = factory();
+  }
+}(this, function () {
+
+  return (function () {
+    'use strict';
+
+    var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+    function deepFreeze(obj) {
+      var prop, i;
+      if (Array.isArray(obj)) {
+        for (i = 0; i < obj.length; i++) {
+          deepFreeze(obj[i]);
+        }
+        freeze(obj);
+      } else if (obj !== null && (typeof obj === 'object')) {
+        for (prop in obj) {
+          if (obj.hasOwnProperty(prop)) {
+            deepFreeze(obj[prop]);
+          }
+        }
+        freeze(obj);
+      }
+    }
+
+    function freeze(obj) {
+      if (!Object.isFrozen(obj)) {
+        Object.freeze(obj);
+      }
+    }
+
+    function unFreeze(obj) {
+      if (!Object.isFrozen(obj)) {
+        return obj;
+      }
+      return clone(obj, 'shallow');
+    }
+
+    var Utils = {
+      copyProperties: function (src, dest) {
+        var prop;
+        for (prop in src) {
+          dest[prop] = src[prop];
+        }
+      },
+      // used to recursively scan hierarchical transform step object for param substitution
+      resolveTransformObject: function (subObj, params, depth) {
+        var prop,
+          pname;
+
+        if (typeof depth !== 'number') {
+          depth = 0;
+        }
+
+        if (++depth >= 10) return subObj;
+
+        for (prop in subObj) {
+          if (typeof subObj[prop] === 'string' && subObj[prop].indexOf("[%lktxp]") === 0) {
+            pname = subObj[prop].substring(8);
+            if (params.hasOwnProperty(pname)) {
+              subObj[prop] = params[pname];
+            }
+          } else if (typeof subObj[prop] === "object") {
+            subObj[prop] = Utils.resolveTransformObject(subObj[prop], params, depth);
+          }
+        }
+
+        return subObj;
+      },
+      // top level utility to resolve an entire (single) transform (array of steps) for parameter substitution
+      resolveTransformParams: function (transform, params) {
+        var idx,
+          clonedStep,
+          resolvedTransform = [];
+
+        if (typeof params === 'undefined') return transform;
+
+        // iterate all steps in the transform array
+        for (idx = 0; idx < transform.length; idx++) {
+          // clone transform so our scan/replace can operate directly on cloned transform
+          clonedStep = clone(transform[idx], "shallow-recurse-objects");
+          resolvedTransform.push(Utils.resolveTransformObject(clonedStep, params));
+        }
+
+        return resolvedTransform;
+      },
+
+      // By default (if usingDotNotation is false), looks up path in
+      // object via `object[path]`
+      //
+      // If `usingDotNotation` is true, then the path is assumed to
+      // represent a nested path. It can be in the form of an array of
+      // field names, or a period delimited string. The function will
+      // look up the value of object[path[0]], and then call
+      // result[path[1]] on the result, etc etc.
+      //
+      // If `usingDotNotation` is true, this function still supports
+      // non nested fields.
+      //
+      // `usingDotNotation` is a performance optimization. The caller
+      // may know that a path is *not* nested. In which case, this
+      // function avoids a costly string.split('.')
+      //
+      // examples:
+      // getIn({a: 1}, "a") => 1
+      // getIn({a: 1}, "a", true) => 1
+      // getIn({a: {b: 1}}, ["a", "b"], true) => 1
+      // getIn({a: {b: 1}}, "a.b", true) => 1
+      getIn: function (object, path, usingDotNotation) {
+        if (object == null) {
+          return undefined;
+        }
+        if (!usingDotNotation) {
+          return object[path];
+        }
+
+        if (typeof (path) === "string") {
+          path = path.split(".");
+        }
+
+        if (!Array.isArray(path)) {
+          throw new Error("path must be a string or array. Found " + typeof (path));
+        }
+
+        var index = 0,
+          length = path.length;
+
+        while (object != null && index < length) {
+          object = object[path[index++]];
+        }
+        return (index && index == length) ? object : undefined;
+      }
+    };
+
+    // wrapping in object to expose to default export for potential user override.
+    // warning: overriding these methods will override behavior for all loki db instances in memory.
+    // warning: if you use binary indices these comparators should be the same for all inserts/updates/removes.
+    var Comparators = {
+      aeq: aeqHelper,
+      lt: ltHelper,
+      gt: gtHelper
+    };
+
+    /** Helper function for determining 'loki' abstract equality which is a little more abstract than ==
+     *     aeqHelper(5, '5') === true
+     *     aeqHelper(5.0, '5') === true
+     *     aeqHelper(new Date("1/1/2011"), new Date("1/1/2011")) === true
+     *     aeqHelper({a:1}, {z:4}) === true (all objects sorted equally)
+     *     aeqHelper([1, 2, 3], [1, 3]) === false
+     *     aeqHelper([1, 2, 3], [1, 2, 3]) === true
+     *     aeqHelper(undefined, null) === true
+     */
+    function aeqHelper(prop1, prop2) {
+      var cv1, cv2, t1, t2;
+
+      if (prop1 === prop2) return true;
+
+      // 'falsy' and Boolean handling
+      if (!prop1 || !prop2 || prop1 === true || prop2 === true || prop1 !== prop1 || prop2 !== prop2) {
+        // dates and NaN conditions (typed dates before serialization)
+        switch (prop1) {
+          case undefined: t1 = 1; break;
+          case null: t1 = 1; break;
+          case false: t1 = 3; break;
+          case true: t1 = 4; break;
+          case "": t1 = 5; break;
+          default: t1 = (prop1 === prop1) ? 9 : 0; break;
+        }
+
+        switch (prop2) {
+          case undefined: t2 = 1; break;
+          case null: t2 = 1; break;
+          case false: t2 = 3; break;
+          case true: t2 = 4; break;
+          case "": t2 = 5; break;
+          default: t2 = (prop2 === prop2) ? 9 : 0; break;
+        }
+
+        // one or both is edge case
+        if (t1 !== 9 || t2 !== 9) {
+          return (t1 === t2);
+        }
+      }
+
+      // Handle 'Number-like' comparisons
+      cv1 = Number(prop1);
+      cv2 = Number(prop2);
+
+      // if one or both are 'number-like'...
+      if (cv1 === cv1 || cv2 === cv2) {
+        return (cv1 === cv2);
+      }
+
+      // not strict equal nor less than nor gt so must be mixed types, convert to string and use that to compare
+      cv1 = prop1.toString();
+      cv2 = prop2.toString();
+
+      return (cv1 == cv2);
+    }
+
+    /** Helper function for determining 'less-than' conditions for ops, sorting, and binary indices.
+     *     In the future we might want $lt and $gt ops to use their own functionality/helper.
+     *     Since binary indices on a property might need to index [12, NaN, new Date(), Infinity], we
+     *     need this function (as well as gtHelper) to always ensure one value is LT, GT, or EQ to another.
+     */
+    function ltHelper(prop1, prop2, equal) {
+      var cv1, cv2, t1, t2;
+
+      // if one of the params is falsy or strictly true or not equal to itself
+      // 0, 0.0, "", NaN, null, undefined, not defined, false, true
+      if (!prop1 || !prop2 || prop1 === true || prop2 === true || prop1 !== prop1 || prop2 !== prop2) {
+        switch (prop1) {
+          case undefined: t1 = 1; break;
+          case null: t1 = 1; break;
+          case false: t1 = 3; break;
+          case true: t1 = 4; break;
+          case "": t1 = 5; break;
+          // if strict equal probably 0 so sort higher, otherwise probably NaN so sort lower than even null
+          default: t1 = (prop1 === prop1) ? 9 : 0; break;
+        }
+
+        switch (prop2) {
+          case undefined: t2 = 1; break;
+          case null: t2 = 1; break;
+          case false: t2 = 3; break;
+          case true: t2 = 4; break;
+          case "": t2 = 5; break;
+          default: t2 = (prop2 === prop2) ? 9 : 0; break;
+        }
+
+        // one or both is edge case
+        if (t1 !== 9 || t2 !== 9) {
+          return (t1 === t2) ? equal : (t1 < t2);
+        }
+      }
+
+      // if both are numbers (string encoded or not), compare as numbers
+      cv1 = Number(prop1);
+      cv2 = Number(prop2);
+
+      if (cv1 === cv1 && cv2 === cv2) {
+        if (cv1 < cv2) return true;
+        if (cv1 > cv2) return false;
+        return equal;
+      }
+
+      if (cv1 === cv1 && cv2 !== cv2) {
+        return true;
+      }
+
+      if (cv2 === cv2 && cv1 !== cv1) {
+        return false;
+      }
+
+      if (prop1 < prop2) return true;
+      if (prop1 > prop2) return false;
+      if (prop1 == prop2) return equal;
+
+      // not strict equal nor less than nor gt so must be mixed types, convert to string and use that to compare
+      cv1 = prop1.toString();
+      cv2 = prop2.toString();
+
+      if (cv1 < cv2) {
+        return true;
+      }
+
+      if (cv1 == cv2) {
+        return equal;
+      }
+
+      return false;
+    }
+
+    function gtHelper(prop1, prop2, equal) {
+      var cv1, cv2, t1, t2;
+
+      // 'falsy' and Boolean handling
+      if (!prop1 || !prop2 || prop1 === true || prop2 === true || prop1 !== prop1 || prop2 !== prop2) {
+        switch (prop1) {
+          case undefined: t1 = 1; break;
+          case null: t1 = 1; break;
+          case false: t1 = 3; break;
+          case true: t1 = 4; break;
+          case "": t1 = 5; break;
+          // NaN 0
+          default: t1 = (prop1 === prop1) ? 9 : 0; break;
+        }
+
+        switch (prop2) {
+          case undefined: t2 = 1; break;
+          case null: t2 = 1; break;
+          case false: t2 = 3; break;
+          case true: t2 = 4; break;
+          case "": t2 = 5; break;
+          default: t2 = (prop2 === prop2) ? 9 : 0; break;
+        }
+
+        // one or both is edge case
+        if (t1 !== 9 || t2 !== 9) {
+          return (t1 === t2) ? equal : (t1 > t2);
+        }
+      }
+
+      // if both are numbers (string encoded or not), compare as numbers
+      cv1 = Number(prop1);
+      cv2 = Number(prop2);
+      if (cv1 === cv1 && cv2 === cv2) {
+        if (cv1 > cv2) return true;
+        if (cv1 < cv2) return false;
+        return equal;
+      }
+
+      if (cv1 === cv1 && cv2 !== cv2) {
+        return false;
+      }
+
+      if (cv2 === cv2 && cv1 !== cv1) {
+        return true;
+      }
+
+      if (prop1 > prop2) return true;
+      if (prop1 < prop2) return false;
+      if (prop1 == prop2) return equal;
+
+      // not strict equal nor less than nor gt so must be dates or mixed types
+      // convert to string and use that to compare
+      cv1 = prop1.toString();
+      cv2 = prop2.toString();
+
+      if (cv1 > cv2) {
+        return true;
+      }
+
+      if (cv1 == cv2) {
+        return equal;
+      }
+
+      return false;
+    }
+
+    function sortHelper(prop1, prop2, desc) {
+      if (Comparators.aeq(prop1, prop2)) return 0;
+
+      if (Comparators.lt(prop1, prop2, false)) {
+        return (desc) ? (1) : (-1);
+      }
+
+      if (Comparators.gt(prop1, prop2, false)) {
+        return (desc) ? (-1) : (1);
+      }
+
+      // not lt, not gt so implied equality-- date compatible
+      return 0;
+    }
+
+    /**
+     * compoundeval() - helper function for compoundsort(), performing individual object comparisons
+     *
+     * @param {array} properties - array of property names, in order, by which to evaluate sort order
+     * @param {object} obj1 - first object to compare
+     * @param {object} obj2 - second object to compare
+     * @returns {integer} 0, -1, or 1 to designate if identical (sortwise) or which should be first
+     */
+    function compoundeval(properties, obj1, obj2) {
+      var res = 0;
+      var prop, field, val1, val2, arr, path;
+      for (var i = 0, len = properties.length; i < len; i++) {
+        prop = properties[i];
+        field = prop[0];
+        if (~field.indexOf('.')) {
+          arr = field.split('.');
+          val1 = Utils.getIn(obj1, arr, true);
+          val2 = Utils.getIn(obj2, arr, true);
+        } else {
+          val1 = obj1[field];
+          val2 = obj2[field];
+        }
+        res = sortHelper(val1, val2, prop[1]);
+        if (res !== 0) {
+          return res;
+        }
+      }
+      return 0;
+    }
+
+    /**
+     * dotSubScan - helper function used for dot notation queries.
+     *
+     * @param {object} root - object to traverse
+     * @param {array} paths - array of properties to drill into
+     * @param {function} fun - evaluation function to test with
+     * @param {any} value - comparative value to also pass to (compare) fun
+     * @param {any} extra - extra arg to also pass to compare fun
+     * @param {number} poffset - index of the item in 'paths' to start the sub-scan from
+     */
+    function dotSubScan(root, paths, fun, value, extra, poffset) {
+      var pathOffset = poffset || 0;
+      var path = paths[pathOffset];
+
+      var valueFound = false;
+      var element;
+      if (typeof root === 'object' && path in root) {
+        element = root[path];
+      }
+      if (pathOffset + 1 >= paths.length) {
+        // if we have already expanded out the dot notation,
+        // then just evaluate the test function and value on the element
+        valueFound = fun(element, value, extra);
+      } else if (Array.isArray(element)) {
+        for (var index = 0, len = element.length; index < len; index += 1) {
+          valueFound = dotSubScan(element[index], paths, fun, value, extra, pathOffset + 1);
+          if (valueFound === true) {
+            break;
+          }
+        }
+      } else {
+        valueFound = dotSubScan(element, paths, fun, value, extra, pathOffset + 1);
+      }
+
+      return valueFound;
+    }
+
+    function containsCheckFn(a) {
+      if (typeof a === 'string' || Array.isArray(a)) {
+        return function (b) {
+          return a.indexOf(b) !== -1;
+        };
+      } else if (typeof a === 'object' && a !== null) {
+        return function (b) {
+          return hasOwnProperty.call(a, b);
+        };
+      }
+      return null;
+    }
+
+    function doQueryOp(val, op, record) {
+      for (var p in op) {
+        if (hasOwnProperty.call(op, p)) {
+          return LokiOps[p](val, op[p], record);
+        }
+      }
+      return false;
+    }
+
+    var LokiOps = {
+      // comparison operators
+      // a is the value in the collection
+      // b is the query value
+      $eq: function (a, b) {
+        return a === b;
+      },
+
+      // abstract/loose equality
+      $aeq: function (a, b) {
+        return a == b;
+      },
+
+      $ne: function (a, b) {
+        // ecma 5 safe test for NaN
+        if (b !== b) {
+          // ecma 5 test value is not NaN
+          return (a === a);
+        }
+
+        return a !== b;
+      },
+      // date equality / loki abstract equality test
+      $dteq: function (a, b) {
+        return Comparators.aeq(a, b);
+      },
+
+      // loki comparisons: return identical unindexed results as indexed comparisons
+      $gt: function (a, b) {
+        return Comparators.gt(a, b, false);
+      },
+
+      $gte: function (a, b) {
+        return Comparators.gt(a, b, true);
+      },
+
+      $lt: function (a, b) {
+        return Comparators.lt(a, b, false);
+      },
+
+      $lte: function (a, b) {
+        return Comparators.lt(a, b, true);
+      },
+
+      // lightweight javascript comparisons
+      $jgt: function (a, b) {
+        return a > b;
+      },
+
+      $jgte: function (a, b) {
+        return a >= b;
+      },
+
+      $jlt: function (a, b) {
+        return a < b;
+      },
+
+      $jlte: function (a, b) {
+        return a <= b;
+      },
+
+      // ex : coll.find({'orderCount': {$between: [10, 50]}});
+      $between: function (a, vals) {
+        if (a === undefined || a === null) return false;
+        return (Comparators.gt(a, vals[0], true) && Comparators.lt(a, vals[1], true));
+      },
+
+      $jbetween: function (a, vals) {
+        if (a === undefined || a === null) return false;
+        return (a >= vals[0] && a <= vals[1]);
+      },
+
+      $in: function (a, b) {
+        return b.indexOf(a) !== -1;
+      },
+
+      $inSet: function(a, b) {
+        return b.has(a);
+      },
+
+      $nin: function (a, b) {
+        return b.indexOf(a) === -1;
+      },
+
+      $keyin: function (a, b) {
+        return a in b;
+      },
+
+      $nkeyin: function (a, b) {
+        return !(a in b);
+      },
+
+      $definedin: function (a, b) {
+        return b[a] !== undefined;
+      },
+
+      $undefinedin: function (a, b) {
+        return b[a] === undefined;
+      },
+
+      $regex: function (a, b) {
+        return b.test(a);
+      },
+
+      $containsString: function (a, b) {
+        return (typeof a === 'string') && (a.indexOf(b) !== -1);
+      },
+
+      $containsNone: function (a, b) {
+        return !LokiOps.$containsAny(a, b);
+      },
+
+      $containsAny: function (a, b) {
+        var checkFn = containsCheckFn(a);
+        if (checkFn !== null) {
+          return (Array.isArray(b)) ? (b.some(checkFn)) : (checkFn(b));
+        }
+        return false;
+      },
+
+      $contains: function (a, b) {
+        var checkFn = containsCheckFn(a);
+        if (checkFn !== null) {
+          return (Array.isArray(b)) ? (b.every(checkFn)) : (checkFn(b));
+        }
+        return false;
+      },
+
+      $elemMatch: function (a, b) {
+        if (Array.isArray(a)) {
+          return a.some(function (item) {
+            return Object.keys(b).every(function (property) {
+              var filter = b[property];
+              if (!(typeof filter === 'object' && filter)) {
+                filter = { $eq: filter };
+              }
+
+              if (property.indexOf('.') !== -1) {
+                return dotSubScan(item, property.split('.'), doQueryOp, b[property], item);
+              }
+              return doQueryOp(item[property], filter, item);
+            });
+          });
+        }
+        return false;
+      },
+
+      $type: function (a, b, record) {
+        var type = typeof a;
+        if (type === 'object') {
+          if (Array.isArray(a)) {
+            type = 'array';
+          } else if (a instanceof Date) {
+            type = 'date';
+          }
+        }
+        return (typeof b !== 'object') ? (type === b) : doQueryOp(type, b, record);
+      },
+
+      $finite: function (a, b) {
+        return (b === isFinite(a));
+      },
+
+      $size: function (a, b, record) {
+        if (Array.isArray(a)) {
+          return (typeof b !== 'object') ? (a.length === b) : doQueryOp(a.length, b, record);
+        }
+        return false;
+      },
+
+      $len: function (a, b, record) {
+        if (typeof a === 'string') {
+          return (typeof b !== 'object') ? (a.length === b) : doQueryOp(a.length, b, record);
+        }
+        return false;
+      },
+
+      $where: function (a, b) {
+        return b(a) === true;
+      },
+
+      // field-level logical operators
+      // a is the value in the collection
+      // b is the nested query operation (for '$not')
+      //   or an array of nested query operations (for '$and' and '$or')
+      $not: function (a, b, record) {
+        return !doQueryOp(a, b, record);
+      },
+
+      $and: function (a, b, record) {
+        for (var idx = 0, len = b.length; idx < len; idx += 1) {
+          if (!doQueryOp(a, b[idx], record)) {
+            return false;
+          }
+        }
+        return true;
+      },
+
+      $or: function (a, b, record) {
+        for (var idx = 0, len = b.length; idx < len; idx += 1) {
+          if (doQueryOp(a, b[idx], record)) {
+            return true;
+          }
+        }
+        return false;
+      },
+
+      $exists: function (a, b) {
+        if (b) {
+          return a !== undefined;
+        } else {
+          return a === undefined;
+        }
+      }
+    };
+
+    // ops that can be used with { $$op: 'column-name' } syntax
+    var valueLevelOps = ['$eq', '$aeq', '$ne', '$dteq', '$gt', '$gte', '$lt', '$lte', '$jgt', '$jgte', '$jlt', '$jlte', '$type'];
+    valueLevelOps.forEach(function (op) {
+      var fun = LokiOps[op];
+      LokiOps['$' + op] = function (a, spec, record) {
+        if (typeof spec === 'string') {
+          return fun(a, record[spec]);
+        } else if (typeof spec === 'function') {
+          return fun(a, spec(record));
+        } else {
+          throw new Error('Invalid argument to $$ matcher');
+        }
+      };
+    });
+
+    // if an op is registered in this object, our 'calculateRange' can use it with our binary indices.
+    // if the op is registered to a function, we will run that function/op as a 2nd pass filter on results.
+    // those 2nd pass filter functions should be similar to LokiOps functions, accepting 2 vals to compare.
+    var indexedOps = {
+      $eq: LokiOps.$eq,
+      $aeq: true,
+      $dteq: true,
+      $gt: true,
+      $gte: true,
+      $lt: true,
+      $lte: true,
+      $in: true,
+      $between: true
+    };
+
+    function clone(data, method) {
+      if (data === null || data === undefined) {
+        return null;
+      }
+
+      var cloneMethod = method || 'parse-stringify',
+        cloned;
+
+      switch (cloneMethod) {
+        case "parse-stringify":
+          cloned = JSON.parse(JSON.stringify(data));
+          break;
+        case "jquery-extend-deep":
+          cloned = jQuery.extend(true, {}, data);
+          break;
+        case "shallow":
+          // more compatible method for older browsers
+          cloned = Object.create(data.constructor.prototype);
+          Object.keys(data).map(function (i) {
+            cloned[i] = data[i];
+          });
+          break;
+        case "shallow-assign":
+          // should be supported by newer environments/browsers
+          cloned = Object.create(data.constructor.prototype);
+          Object.assign(cloned, data);
+          break;
+        case "shallow-recurse-objects":
+          // shallow clone top level properties
+          cloned = clone(data, "shallow");
+          var keys = Object.keys(data);
+          // for each of the top level properties which are object literals, recursively shallow copy
+          keys.forEach(function (key) {
+            if (typeof data[key] === "object" && data[key].constructor.name === "Object") {
+              cloned[key] = clone(data[key], "shallow-recurse-objects");
+            } else if (Array.isArray(data[key])) {
+              cloned[key] = cloneObjectArray(data[key], "shallow-recurse-objects");
+            }
+          });
+          break;
+        default:
+          break;
+      }
+
+      return cloned;
+    }
+
+    function cloneObjectArray(objarray, method) {
+      if (method == "parse-stringify") {
+        return clone(objarray, method);
+      }
+      var result = [];
+      for (var i = 0, len = objarray.length; i < len; i++) {
+        result[i] = clone(objarray[i], method);
+      }
+      return result;
+    }
+
+    function localStorageAvailable() {
+      try {
+        return (window && window.localStorage !== undefined && window.localStorage !== null);
+      } catch (e) {
+        return false;
+      }
+    }
+
+
+    /**
+     * LokiEventEmitter is a minimalist version of EventEmitter. It enables any
+     * constructor that inherits EventEmitter to emit events and trigger
+     * listeners that have been added to the event through the on(event, callback) method
+     *
+     * @constructor LokiEventEmitter
+     */
+    function LokiEventEmitter() { }
+
+    /**
+     * @prop {hashmap} events - a hashmap, with each property being an array of callbacks
+     * @memberof LokiEventEmitter
+     */
+    LokiEventEmitter.prototype.events = {};
+
+    /**
+     * @prop {boolean} asyncListeners - boolean determines whether or not the callbacks associated with each event
+     * should happen in an async fashion or not
+     * Default is false, which means events are synchronous
+     * @memberof LokiEventEmitter
+     */
+    LokiEventEmitter.prototype.asyncListeners = false;
+
+    /**
+     * on(eventName, listener) - adds a listener to the queue of callbacks associated to an event
+     * @param {string|string[]} eventName - the name(s) of the event(s) to listen to
+     * @param {function} listener - callback function of listener to attach
+     * @returns {int} the index of the callback in the array of listeners for a particular event
+     * @memberof LokiEventEmitter
+     */
+    LokiEventEmitter.prototype.on = function (eventName, listener) {
+      var event;
+      var self = this;
+
+      if (Array.isArray(eventName)) {
+        eventName.forEach(function (currentEventName) {
+          self.on(currentEventName, listener);
+        });
+        return listener;
+      }
+
+      event = this.events[eventName];
+      if (!event) {
+        event = this.events[eventName] = [];
+      }
+      event.push(listener);
+      return listener;
+    };
+
+    /**
+     * emit(eventName, data) - emits a particular event
+     * with the option of passing optional parameters which are going to be processed by the callback
+     * provided signatures match (i.e. if passing emit(event, arg0, arg1) the listener should take two parameters)
+     * @param {string} eventName - the name of the event
+     * @param {object=} data - optional object passed with the event
+     * @memberof LokiEventEmitter
+     */
+    LokiEventEmitter.prototype.emit = function (eventName) {
+      var self = this;
+      var selfArgs;
+      if (eventName && this.events[eventName]) {
+        if (this.events[eventName].length) {
+          selfArgs = Array.prototype.slice.call(arguments, 1);
+          this.events[eventName].forEach(function (listener) {
+            if (self.asyncListeners) {
+              setTimeout(function () {
+                listener.apply(self, selfArgs);
+              }, 1);
+            } else {
+              listener.apply(self, selfArgs);
+            }
+          });
+        }
+      } else {
+        throw new Error('No event ' + eventName + ' defined');
+      }
+    };
+
+    /**
+     * Alias of LokiEventEmitter.prototype.on
+     * addListener(eventName, listener) - adds a listener to the queue of callbacks associated to an event
+     * @param {string|string[]} eventName - the name(s) of the event(s) to listen to
+     * @param {function} listener - callback function of listener to attach
+     * @returns {int} the index of the callback in the array of listeners for a particular event
+     * @memberof LokiEventEmitter
+     */
+    LokiEventEmitter.prototype.addListener = LokiEventEmitter.prototype.on;
+
+    /**
+     * removeListener() - removes the listener at position 'index' from the event 'eventName'
+     * @param {string|string[]} eventName - the name(s) of the event(s) which the listener is attached to
+     * @param {function} listener - the listener callback function to remove from emitter
+     * @memberof LokiEventEmitter
+     */
+    LokiEventEmitter.prototype.removeListener = function (eventName, listener) {
+      var self = this;
+
+      if (Array.isArray(eventName)) {
+        eventName.forEach(function (currentEventName) {
+          self.removeListener(currentEventName, listener);
+        });
+
+        return;
+      }
+
+      if (this.events[eventName]) {
+        var listeners = this.events[eventName];
+        listeners.splice(listeners.indexOf(listener), 1);
+      }
+    };
+
+    /**
+     * Loki: The main database class
+     * @constructor Loki
+     * @implements LokiEventEmitter
+     * @param {string} filename - name of the file to be saved to
+     * @param {object=} options - (Optional) config options object
+     * @param {string} options.env - override environment detection as 'NODEJS', 'BROWSER', 'CORDOVA'
+     * @param {boolean} [options.verbose=false] - enable console output
+     * @param {boolean} [options.autosave=false] - enables autosave
+     * @param {int} [options.autosaveInterval=5000] - time interval (in milliseconds) between saves (if dirty)
+     * @param {boolean} [options.autoload=false] - enables autoload on loki instantiation
+     * @param {function} options.autoloadCallback - user callback called after database load
+     * @param {adapter} options.adapter - an instance of a loki persistence adapter
+     * @param {string} [options.serializationMethod='normal'] - ['normal', 'pretty', 'destructured']
+     * @param {string} options.destructureDelimiter - string delimiter used for destructured serialization
+     * @param {boolean} [options.throttledSaves=true] - debounces multiple calls to to saveDatabase reducing number of disk I/O operations
+                                                and guaranteeing proper serialization of the calls.
+     */
+    function Loki(filename, options) {
+      this.filename = filename || 'loki.db';
+      this.collections = [];
+
+      // persist version of code which created the database to the database.
+      // could use for upgrade scenarios
+      this.databaseVersion = 1.5;
+      this.engineVersion = 1.5;
+
+      // autosave support (disabled by default)
+      // pass autosave: true, autosaveInterval: 6000 in options to set 6 second autosave
+      this.autosave = false;
+      this.autosaveInterval = 5000;
+      this.autosaveHandle = null;
+      this.throttledSaves = true;
+
+      this.options = {};
+
+      // currently keeping persistenceMethod and persistenceAdapter as loki level properties that
+      // will not or cannot be deserialized.  You are required to configure persistence every time
+      // you instantiate a loki object (or use default environment detection) in order to load the database anyways.
+
+      // persistenceMethod could be 'fs', 'localStorage', or 'adapter'
+      // this is optional option param, otherwise environment detection will be used
+      // if user passes their own adapter we will force this method to 'adapter' later, so no need to pass method option.
+      this.persistenceMethod = null;
+
+      // retain reference to optional (non-serializable) persistenceAdapter 'instance'
+      this.persistenceAdapter = null;
+
+      // flags used to throttle saves
+      this.throttledSavePending = false;
+      this.throttledCallbacks = [];
+
+      // enable console output if verbose flag is set (disabled by default)
+      this.verbose = options && options.hasOwnProperty('verbose') ? options.verbose : false;
+
+      this.events = {
+        'init': [],
+        'loaded': [],
+        'flushChanges': [],
+        'close': [],
+        'changes': [],
+        'warning': []
+      };
+
+      var getENV = function () {
+        if (typeof global !== 'undefined' && (global.android || global.NSObject)) {
+          // If no adapter assume nativescript which needs adapter to be passed manually
+          return 'NATIVESCRIPT'; //nativescript
+        }
+
+        if (typeof window === 'undefined') {
+          return 'NODEJS';
+        }
+
+        if (typeof global !== 'undefined' && global.window && typeof process !== 'undefined') {
+          return 'NODEJS'; //node-webkit
+        }
+
+        if (typeof document !== 'undefined') {
+          if (document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1) {
+            return 'CORDOVA';
+          }
+          return 'BROWSER';
+        }
+        return 'CORDOVA';
+      };
+
+      // refactored environment detection due to invalid detection for browser environments.
+      // if they do not specify an options.env we want to detect env rather than default to nodejs.
+      // currently keeping two properties for similar thing (options.env and options.persistenceMethod)
+      //   might want to review whether we can consolidate.
+      if (options && options.hasOwnProperty('env')) {
+        this.ENV = options.env;
+      } else {
+        this.ENV = getENV();
+      }
+
+      // not sure if this is necessary now that i have refactored the line above
+      if (this.ENV === 'undefined') {
+        this.ENV = 'NODEJS';
+      }
+
+      this.configureOptions(options, true);
+
+      this.on('init', this.clearChanges);
+
+    }
+
+    // db class is an EventEmitter
+    Loki.prototype = new LokiEventEmitter();
+    Loki.prototype.constructor = Loki;
+
+    // experimental support for browserify's abstract syntax scan to pick up dependency of indexed adapter.
+    // Hopefully, once this hits npm a browserify require of lokijs should scan the main file and detect this indexed adapter reference.
+    Loki.prototype.getIndexedAdapter = function () {
+      var adapter;
+
+      if (typeof require === 'function') {
+        adapter = require("./loki-indexed-adapter.js");
+      }
+
+      return adapter;
+    };
+
+
+    /**
+     * Allows reconfiguring database options
+     *
+     * @param {object} options - configuration options to apply to loki db object
+     * @param {string} options.env - override environment detection as 'NODEJS', 'BROWSER', 'CORDOVA'
+     * @param {boolean} options.verbose - enable console output (default is 'false')
+     * @param {boolean} options.autosave - enables autosave
+     * @param {int} options.autosaveInterval - time interval (in milliseconds) between saves (if dirty)
+     * @param {boolean} options.autoload - enables autoload on loki instantiation
+     * @param {function} options.autoloadCallback - user callback called after database load
+     * @param {adapter} options.adapter - an instance of a loki persistence adapter
+     * @param {string} options.serializationMethod - ['normal', 'pretty', 'destructured']
+     * @param {string} options.destructureDelimiter - string delimiter used for destructured serialization
+     * @param {boolean} initialConfig - (internal) true is passed when loki ctor is invoking
+     * @memberof Loki
+     */
+    Loki.prototype.configureOptions = function (options, initialConfig) {
+      var defaultPersistence = {
+        'NODEJS': 'fs',
+        'BROWSER': 'localStorage',
+        'CORDOVA': 'localStorage',
+        'MEMORY': 'memory'
+      },
+        persistenceMethods = {
+          'fs': LokiFsAdapter,
+          'localStorage': LokiLocalStorageAdapter,
+          'memory': LokiMemoryAdapter
+        };
+
+      this.options = {};
+
+      this.persistenceMethod = null;
+      // retain reference to optional persistence adapter 'instance'
+      // currently keeping outside options because it can't be serialized
+      this.persistenceAdapter = null;
+
+      // process the options
+      if (typeof (options) !== 'undefined') {
+        this.options = options;
+
+        if (this.options.hasOwnProperty('persistenceMethod')) {
+          // check if the specified persistence method is known
+          if (typeof (persistenceMethods[options.persistenceMethod]) == 'function') {
+            this.persistenceMethod = options.persistenceMethod;
+            this.persistenceAdapter = new persistenceMethods[options.persistenceMethod]();
+          }
+          // should be throw an error here, or just fall back to defaults ??
+        }
+
+        // if user passes adapter, set persistence mode to adapter and retain persistence adapter instance
+        if (this.options.hasOwnProperty('adapter')) {
+          this.persistenceMethod = 'adapter';
+          this.persistenceAdapter = options.adapter;
+          this.options.adapter = null;
+
+          // if true, will keep track of dirty ids
+          this.isIncremental = this.persistenceAdapter.mode === 'incremental';
+        }
+
+
+        // if they want to load database on loki instantiation, now is a good time to load... after adapter set and before possible autosave initiation
+        if (options.autoload && initialConfig) {
+          // for autoload, let the constructor complete before firing callback
+          var self = this;
+          setTimeout(function () {
+            self.loadDatabase(options, options.autoloadCallback);
+          }, 1);
+        }
+
+        if (this.options.hasOwnProperty('autosaveInterval')) {
+          this.autosaveDisable();
+          this.autosaveInterval = parseInt(this.options.autosaveInterval, 10);
+        }
+
+        if (this.options.hasOwnProperty('autosave') && this.options.autosave) {
+          this.autosaveDisable();
+          this.autosave = true;
+
+          if (this.options.hasOwnProperty('autosaveCallback')) {
+            this.autosaveEnable(options, options.autosaveCallback);
+          } else {
+            this.autosaveEnable();
+          }
+        }
+
+        if (this.options.hasOwnProperty('throttledSaves')) {
+          this.throttledSaves = this.options.throttledSaves;
+        }
+      } // end of options processing
+
+      // ensure defaults exists for options which were not set
+      if (!this.options.hasOwnProperty('serializationMethod')) {
+        this.options.serializationMethod = 'normal';
+      }
+
+      // ensure passed or default option exists
+      if (!this.options.hasOwnProperty('destructureDelimiter')) {
+        this.options.destructureDelimiter = '$<\n';
+      }
+
+      // if by now there is no adapter specified by user nor derived from persistenceMethod: use sensible defaults
+      if (this.persistenceAdapter === null) {
+        this.persistenceMethod = defaultPersistence[this.ENV];
+        if (this.persistenceMethod) {
+          this.persistenceAdapter = new persistenceMethods[this.persistenceMethod]();
+        }
+      }
+
+    };
+
+    /**
+     * Copies 'this' database into a new Loki instance. Object references are shared to make lightweight.
+     *
+     * @param {object} options - apply or override collection level settings
+     * @param {bool} options.removeNonSerializable - nulls properties not safe for serialization.
+     * @memberof Loki
+     */
+    Loki.prototype.copy = function (options) {
+      // in case running in an environment without accurate environment detection, pass 'NA'
+      var databaseCopy = new Loki(this.filename, { env: "NA" });
+      var clen, idx;
+
+      options = options || {};
+
+      // currently inverting and letting loadJSONObject do most of the work
+      databaseCopy.loadJSONObject(this, { retainDirtyFlags: true });
+
+      // since our JSON serializeReplacer is not invoked for reference database adapters, this will let us mimic
+      if (options.hasOwnProperty("removeNonSerializable") && options.removeNonSerializable === true) {
+        databaseCopy.autosaveHandle = null;
+        databaseCopy.persistenceAdapter = null;
+
+        clen = databaseCopy.collections.length;
+        for (idx = 0; idx < clen; idx++) {
+          databaseCopy.collections[idx].constraints = null;
+          databaseCopy.collections[idx].ttl = null;
+        }
+      }
+
+      return databaseCopy;
+    };
+
+    /**
+     * Adds a collection to the database.
+     * @param {string} name - name of collection to add
+     * @param {object=} options - (optional) options to configure collection with.
+     * @param {array=} [options.unique=[]] - array of property names to define unique constraints for
+     * @param {array=} [options.exact=[]] - array of property names to define exact constraints for
+     * @param {array=} [options.indices=[]] - array property names to define binary indexes for
+     * @param {boolean} [options.asyncListeners=false] - whether listeners are called asynchronously
+     * @param {boolean} [options.disableMeta=false] - set to true to disable meta property on documents
+     * @param {boolean} [options.disableChangesApi=true] - set to false to enable Changes Api
+     * @param {boolean} [options.disableDeltaChangesApi=true] - set to false to enable Delta Changes API (requires Changes API, forces cloning)
+     * @param {boolean} [options.autoupdate=false] - use Object.observe to update objects automatically
+     * @param {boolean} [options.clone=false] - specify whether inserts and queries clone to/from user
+     * @param {string} [options.cloneMethod='parse-stringify'] - 'parse-stringify', 'jquery-extend-deep', 'shallow, 'shallow-assign'
+     * @param {int=} options.ttl - age of document (in ms.) before document is considered aged/stale.
+     * @param {int=} options.ttlInterval - time interval for clearing out 'aged' documents; not set by default.
+     * @returns {Collection} a reference to the collection which was just added
+     * @memberof Loki
+     */
+    Loki.prototype.addCollection = function (name, options) {
+      var i,
+        len = this.collections.length;
+
+      if (options && options.disableMeta === true) {
+        if (options.disableChangesApi === false) {
+          throw new Error("disableMeta option cannot be passed as true when disableChangesApi is passed as false");
+        }
+        if (options.disableDeltaChangesApi === false) {
+          throw new Error("disableMeta option cannot be passed as true when disableDeltaChangesApi is passed as false");
+        }
+        if (typeof options.ttl === "number" && options.ttl > 0) {
+          throw new Error("disableMeta option cannot be passed as true when ttl is enabled");
+        }
+      }
+
+      for (i = 0; i < len; i += 1) {
+        if (this.collections[i].name === name) {
+          return this.collections[i];
+        }
+      }
+
+      var collection = new Collection(name, options);
+      collection.isIncremental = this.isIncremental;
+      this.collections.push(collection);
+
+      if (this.verbose)
+        collection.lokiConsoleWrapper = console;
+
+      return collection;
+    };
+
+    Loki.prototype.loadCollection = function (collection) {
+      if (!collection.name) {
+        throw new Error('Collection must have a name property to be loaded');
+      }
+      this.collections.push(collection);
+    };
+
+    /**
+     * Retrieves reference to a collection by name.
+     * @param {string} collectionName - name of collection to look up
+     * @returns {Collection} Reference to collection in database by that name, or null if not found
+     * @memberof Loki
+     */
+    Loki.prototype.getCollection = function (collectionName) {
+      var i,
+        len = this.collections.length;
+
+      for (i = 0; i < len; i += 1) {
+        if (this.collections[i].name === collectionName) {
+          return this.collections[i];
+        }
+      }
+
+      // no such collection
+      this.emit('warning', 'collection ' + collectionName + ' not found');
+      return null;
+    };
+
+    /**
+     * Renames an existing loki collection
+     * @param {string} oldName - name of collection to rename
+     * @param {string} newName - new name of collection
+     * @returns {Collection} reference to the newly renamed collection
+     * @memberof Loki
+     */
+    Loki.prototype.renameCollection = function (oldName, newName) {
+      var c = this.getCollection(oldName);
+
+      if (c) {
+        c.name = newName;
+      }
+
+      return c;
+    };
+
+    /**
+     * Returns a list of collections in the database.
+     * @returns {object[]} array of objects containing 'name', 'type', and 'count' properties.
+     * @memberof Loki
+     */
+    Loki.prototype.listCollections = function () {
+
+      var i = this.collections.length,
+        colls = [];
+
+      while (i--) {
+        colls.push({
+          name: this.collections[i].name,
+          type: this.collections[i].objType,
+          count: this.collections[i].data.length
+        });
+      }
+      return colls;
+    };
+
+    /**
+     * Removes a collection from the database.
+     * @param {string} collectionName - name of collection to remove
+     * @memberof Loki
+     */
+    Loki.prototype.removeCollection = function (collectionName) {
+      var i,
+        len = this.collections.length;
+
+      for (i = 0; i < len; i += 1) {
+        if (this.collections[i].name === collectionName) {
+          var tmpcol = new Collection(collectionName, {});
+          var curcol = this.collections[i];
+          for (var prop in curcol) {
+            if (curcol.hasOwnProperty(prop) && tmpcol.hasOwnProperty(prop)) {
+              curcol[prop] = tmpcol[prop];
+            }
+          }
+          this.collections.splice(i, 1);
+          return;
+        }
+      }
+    };
+
+    Loki.prototype.getName = function () {
+      return this.name;
+    };
+
+    /**
+     * serializeReplacer - used to prevent certain properties from being serialized
+     *
+     */
+    Loki.prototype.serializeReplacer = function (key, value) {
+      switch (key) {
+        case 'autosaveHandle':
+        case 'persistenceAdapter':
+        case 'constraints':
+        case 'ttl':
+          return null;
+        case 'throttledSavePending':
+        case 'throttledCallbacks':
+          return undefined;
+        case 'lokiConsoleWrapper':
+          return null;
+        default:
+          return value;
+      }
+    };
+
+    /**
+     * Serialize database to a string which can be loaded via {@link Loki#loadJSON}
+     *
+     * @returns {string} Stringified representation of the loki database.
+     * @memberof Loki
+     */
+    Loki.prototype.serialize = function (options) {
+      options = options || {};
+
+      if (!options.hasOwnProperty("serializationMethod")) {
+        options.serializationMethod = this.options.serializationMethod;
+      }
+
+      switch (options.serializationMethod) {
+        case "normal": return JSON.stringify(this, this.serializeReplacer);
+        case "pretty": return JSON.stringify(this, this.serializeReplacer, 2);
+        case "destructured": return this.serializeDestructured(); // use default options
+        default: return JSON.stringify(this, this.serializeReplacer);
+      }
+    };
+
+    // alias of serialize
+    Loki.prototype.toJson = Loki.prototype.serialize;
+
+    /**
+     * Database level destructured JSON serialization routine to allow alternate serialization methods.
+     * Internally, Loki supports destructuring via loki "serializationMethod' option and
+     * the optional LokiPartitioningAdapter class. It is also available if you wish to do
+     * your own structured persistence or data exchange.
+     *
+     * @param {object=} options - output format options for use externally to loki
+     * @param {bool=} options.partitioned - (default: false) whether db and each collection are separate
+     * @param {int=} options.partition - can be used to only output an individual collection or db (-1)
+     * @param {bool=} options.delimited - (default: true) whether subitems are delimited or subarrays
+     * @param {string=} options.delimiter - override default delimiter
+     *
+     * @returns {string|array} A custom, restructured aggregation of independent serializations.
+     * @memberof Loki
+     */
+    Loki.prototype.serializeDestructured = function (options) {
+      var idx, sidx, result, resultlen;
+      var reconstruct = [];
+      var dbcopy;
+
+      options = options || {};
+
+      if (!options.hasOwnProperty("partitioned")) {
+        options.partitioned = false;
+      }
+
+      if (!options.hasOwnProperty("delimited")) {
+        options.delimited = true;
+      }
+
+      if (!options.hasOwnProperty("delimiter")) {
+        options.delimiter = this.options.destructureDelimiter;
+      }
+
+      // 'partitioned' along with 'partition' of 0 or greater is a request for single collection serialization
+      if (options.partitioned === true && options.hasOwnProperty("partition") && options.partition >= 0) {
+        return this.serializeCollection({
+          delimited: options.delimited,
+          delimiter: options.delimiter,
+          collectionIndex: options.partition
+        });
+      }
+
+      // not just an individual collection, so we will need to serialize db container via shallow copy
+      dbcopy = new Loki(this.filename);
+      dbcopy.loadJSONObject(this);
+
+      for (idx = 0; idx < dbcopy.collections.length; idx++) {
+        dbcopy.collections[idx].data = [];
+      }
+
+      // if we -only- wanted the db container portion, return it now
+      if (options.partitioned === true && options.partition === -1) {
+        // since we are deconstructing, override serializationMethod to normal for here
+        return dbcopy.serialize({
+          serializationMethod: "normal"
+        });
+      }
+
+      // at this point we must be deconstructing the entire database
+      // start by pushing db serialization into first array element
+      reconstruct.push(dbcopy.serialize({
+        serializationMethod: "normal"
+      }));
+
+      dbcopy = null;
+
+      // push collection data into subsequent elements
+      for (idx = 0; idx < this.collections.length; idx++) {
+        result = this.serializeCollection({
+          delimited: options.delimited,
+          delimiter: options.delimiter,
+          collectionIndex: idx
+        });
+
+        // NDA : Non-Delimited Array : one iterable concatenated array with empty string collection partitions
+        if (options.partitioned === false && options.delimited === false) {
+          if (!Array.isArray(result)) {
+            throw new Error("a nondelimited, non partitioned collection serialization did not return an expected array");
+          }
+
+          // Array.concat would probably duplicate memory overhead for copying strings.
+          // Instead copy each individually, and clear old value after each copy.
+          // Hopefully this will allow g.c. to reduce memory pressure, if needed.
+          resultlen = result.length;
+
+          for (sidx = 0; sidx < resultlen; sidx++) {
+            reconstruct.push(result[sidx]);
+            result[sidx] = null;
+          }
+
+          reconstruct.push("");
+        }
+        else {
+          reconstruct.push(result);
+        }
+      }
+
+      // Reconstruct / present results according to four combinations : D, DA, NDA, NDAA
+      if (options.partitioned) {
+        // DA : Delimited Array of strings [0] db [1] collection [n] collection { partitioned: true, delimited: true }
+        // useful for simple future adaptations of existing persistence adapters to save collections separately
+        if (options.delimited) {
+          return reconstruct;
+        }
+        // NDAA : Non-Delimited Array with subArrays. db at [0] and collection subarrays at [n] { partitioned: true, delimited : false }
+        // This format might be the most versatile for 'rolling your own' partitioned sync or save.
+        // Memory overhead can be reduced by specifying a specific partition, but at this code path they did not, so its all.
+        else {
+          return reconstruct;
+        }
+      }
+      else {
+        // D : one big Delimited string { partitioned: false, delimited : true }
+        // This is the method Loki will use internally if 'destructured'.
+        // Little memory overhead improvements but does not require multiple asynchronous adapter call scheduling
+        if (options.delimited) {
+          // indicate no more collections
+          reconstruct.push("");
+
+          return reconstruct.join(options.delimiter);
+        }
+        // NDA : Non-Delimited Array : one iterable array with empty string collection partitions { partitioned: false, delimited: false }
+        // This format might be best candidate for custom synchronous syncs or saves
+        else {
+          // indicate no more collections
+          reconstruct.push("");
+
+          return reconstruct;
+        }
+      }
+
+      reconstruct.push("");
+
+      return reconstruct.join(delim);
+    };
+
+    /**
+     * Collection level utility method to serialize a collection in a 'destructured' format
+     *
+     * @param {object=} options - used to determine output of method
+     * @param {int} options.delimited - whether to return single delimited string or an array
+     * @param {string} options.delimiter - (optional) if delimited, this is delimiter to use
+     * @param {int} options.collectionIndex -  specify which collection to serialize data for
+     *
+     * @returns {string|array} A custom, restructured aggregation of independent serializations for a single collection.
+     * @memberof Loki
+     */
+    Loki.prototype.serializeCollection = function (options) {
+      var doccount,
+        docidx,
+        resultlines = [];
+
+      options = options || {};
+
+      if (!options.hasOwnProperty("delimited")) {
+        options.delimited = true;
+      }
+
+      if (!options.hasOwnProperty("collectionIndex")) {
+        throw new Error("serializeCollection called without 'collectionIndex' option");
+      }
+
+      doccount = this.collections[options.collectionIndex].data.length;
+
+      resultlines = [];
+
+      for (docidx = 0; docidx < doccount; docidx++) {
+        resultlines.push(JSON.stringify(this.collections[options.collectionIndex].data[docidx]));
+      }
+
+      // D and DA
+      if (options.delimited) {
+        // indicate no more documents in collection (via empty delimited string)
+        resultlines.push("");
+
+        return resultlines.join(options.delimiter);
+      }
+      else {
+        // NDAA and NDA
+        return resultlines;
+      }
+    };
+
+    /**
+     * Database level destructured JSON deserialization routine to minimize memory overhead.
+     * Internally, Loki supports destructuring via loki "serializationMethod' option and
+     * the optional LokiPartitioningAdapter class. It is also available if you wish to do
+     * your own structured persistence or data exchange.
+     *
+     * @param {string|array} destructuredSource - destructured json or array to deserialize from
+     * @param {object=} options - source format options
+     * @param {bool=} [options.partitioned=false] - whether db and each collection are separate
+     * @param {int=} options.partition - can be used to deserialize only a single partition
+     * @param {bool=} [options.delimited=true] - whether subitems are delimited or subarrays
+     * @param {string=} options.delimiter - override default delimiter
+     *
+     * @returns {object|array} An object representation of the deserialized database, not yet applied to 'this' db or document array
+     * @memberof Loki
+     */
+    Loki.prototype.deserializeDestructured = function (destructuredSource, options) {
+      var workarray = [];
+      var len, cdb;
+      var idx, collIndex = 0, collCount, lineIndex = 1, done = false;
+      var currLine, currObject;
+
+      options = options || {};
+
+      if (!options.hasOwnProperty("partitioned")) {
+        options.partitioned = false;
+      }
+
+      if (!options.hasOwnProperty("delimited")) {
+        options.delimited = true;
+      }
+
+      if (!options.hasOwnProperty("delimiter")) {
+        options.delimiter = this.options.destructureDelimiter;
+      }
+
+      // Partitioned
+      // DA : Delimited Array of strings [0] db [1] collection [n] collection { partitioned: true, delimited: true }
+      // NDAA : Non-Delimited Array with subArrays. db at [0] and collection subarrays at [n] { partitioned: true, delimited : false }
+      // -or- single partition
+      if (options.partitioned) {
+        // handle single partition
+        if (options.hasOwnProperty('partition')) {
+          // db only
+          if (options.partition === -1) {
+            cdb = JSON.parse(destructuredSource[0]);
+
+            return cdb;
+          }
+
+          // single collection, return doc array
+          return this.deserializeCollection(destructuredSource[options.partition + 1], options);
+        }
+
+        // Otherwise we are restoring an entire partitioned db
+        cdb = JSON.parse(destructuredSource[0]);
+        collCount = cdb.collections.length;
+        for (collIndex = 0; collIndex < collCount; collIndex++) {
+          // attach each collection docarray to container collection data, add 1 to collection array index since db is at 0
+          cdb.collections[collIndex].data = this.deserializeCollection(destructuredSource[collIndex + 1], options);
+        }
+
+        return cdb;
+      }
+
+      // Non-Partitioned
+      // D : one big Delimited string { partitioned: false, delimited : true }
+      // NDA : Non-Delimited Array : one iterable array with empty string collection partitions { partitioned: false, delimited: false }
+
+      // D
+      if (options.delimited) {
+        workarray = destructuredSource.split(options.delimiter);
+        destructuredSource = null; // lower memory pressure
+        len = workarray.length;
+
+        if (len === 0) {
+          return null;
+        }
+      }
+      // NDA
+      else {
+        workarray = destructuredSource;
+      }
+
+      // first line is database and collection shells
+      cdb = JSON.parse(workarray[0]);
+      collCount = cdb.collections.length;
+      workarray[0] = null;
+
+      while (!done) {
+        currLine = workarray[lineIndex];
+
+        // empty string indicates either end of collection or end of file
+        if (workarray[lineIndex] === "") {
+          // if no more collections to load into, we are done
+          if (++collIndex > collCount) {
+            done = true;
+          }
+        }
+        else {
+          currObject = JSON.parse(workarray[lineIndex]);
+          cdb.collections[collIndex].data.push(currObject);
+        }
+
+        // lower memory pressure and advance iterator
+        workarray[lineIndex++] = null;
+      }
+
+      return cdb;
+    };
+
+    /**
+     * Collection level utility function to deserializes a destructured collection.
+     *
+     * @param {string|array} destructuredSource - destructured representation of collection to inflate
+     * @param {object=} options - used to describe format of destructuredSource input
+     * @param {int=} [options.delimited=false] - whether source is delimited string or an array
+     * @param {string=} options.delimiter - if delimited, this is delimiter to use (if other than default)
+     *
+     * @returns {array} an array of documents to attach to collection.data.
+     * @memberof Loki
+     */
+    Loki.prototype.deserializeCollection = function (destructuredSource, options) {
+      var workarray = [];
+      var idx, len;
+
+      options = options || {};
+
+      if (!options.hasOwnProperty("partitioned")) {
+        options.partitioned = false;
+      }
+
+      if (!options.hasOwnProperty("delimited")) {
+        options.delimited = true;
+      }
+
+      if (!options.hasOwnProperty("delimiter")) {
+        options.delimiter = this.options.destructureDelimiter;
+      }
+
+      if (options.delimited) {
+        workarray = destructuredSource.split(options.delimiter);
+        workarray.pop();
+      }
+      else {
+        workarray = destructuredSource;
+      }
+
+      len = workarray.length;
+      for (idx = 0; idx < len; idx++) {
+        workarray[idx] = JSON.parse(workarray[idx]);
+      }
+
+      return workarray;
+    };
+
+    /**
+     * Inflates a loki database from a serialized JSON string
+     *
+     * @param {string} serializedDb - a serialized loki database string
+     * @param {object=} options - apply or override collection level settings
+     * @param {bool} options.retainDirtyFlags - whether collection dirty flags will be preserved
+     * @memberof Loki
+     */
+    Loki.prototype.loadJSON = function (serializedDb, options) {
+      var dbObject;
+      if (serializedDb.length === 0) {
+        dbObject = {};
+      } else {
+
+        // using option defined in instantiated db not what was in serialized db
+        switch (this.options.serializationMethod) {
+          case "normal":
+          case "pretty": dbObject = JSON.parse(serializedDb); break;
+          case "destructured": dbObject = this.deserializeDestructured(serializedDb); break;
+          default: dbObject = JSON.parse(serializedDb); break;
+        }
+      }
+
+      this.loadJSONObject(dbObject, options);
+    };
+
+    /**
+     * Inflates a loki database from a JS object
+     *
+     * @param {object} dbObject - a serialized loki database string
+     * @param {object=} options - apply or override collection level settings
+     * @param {bool} options.retainDirtyFlags - whether collection dirty flags will be preserved
+     * @memberof Loki
+     */
+    Loki.prototype.loadJSONObject = function (dbObject, options) {
+      var i = 0,
+        len = dbObject.collections ? dbObject.collections.length : 0,
+        coll,
+        copyColl,
+        clen,
+        j,
+        loader,
+        collObj;
+
+      this.name = dbObject.name;
+
+      // restore save throttled boolean only if not defined in options
+      if (dbObject.hasOwnProperty('throttledSaves') && options && !options.hasOwnProperty('throttledSaves')) {
+        this.throttledSaves = dbObject.throttledSaves;
+      }
+
+      this.collections = [];
+
+      function makeLoader(coll) {
+        var collOptions = options[coll.name];
+        var inflater;
+
+        if (collOptions.proto) {
+          inflater = collOptions.inflate || Utils.copyProperties;
+
+          return function (data) {
+            var collObj = new (collOptions.proto)();
+            inflater(data, collObj);
+            return collObj;
+          };
+        }
+
+        return collOptions.inflate;
+      }
+
+      for (i; i < len; i += 1) {
+        coll = dbObject.collections[i];
+
+        copyColl = this.addCollection(coll.name, {
+          disableChangesApi: coll.disableChangesApi,
+          disableDeltaChangesApi: coll.disableDeltaChangesApi,
+          disableMeta: coll.disableMeta,
+          disableFreeze: coll.hasOwnProperty('disableFreeze') ? coll.disableFreeze : true
+        });
+
+        copyColl.adaptiveBinaryIndices = coll.hasOwnProperty('adaptiveBinaryIndices') ? (coll.adaptiveBinaryIndices === true) : false;
+        copyColl.transactional = coll.transactional;
+        copyColl.asyncListeners = coll.asyncListeners;
+        copyColl.cloneObjects = coll.cloneObjects;
+        copyColl.cloneMethod = coll.cloneMethod || "parse-stringify";
+        copyColl.autoupdate = coll.autoupdate;
+        copyColl.changes = coll.changes;
+        copyColl.dirtyIds = coll.dirtyIds || [];
+
+        if (options && options.retainDirtyFlags === true) {
+          copyColl.dirty = coll.dirty;
+        }
+        else {
+          copyColl.dirty = false;
+        }
+
+        // load each element individually
+        clen = coll.data.length;
+        j = 0;
+        if (options && options.hasOwnProperty(coll.name)) {
+          loader = makeLoader(coll);
+
+          for (j; j < clen; j++) {
+            collObj = loader(coll.data[j]);
+            copyColl.data[j] = collObj;
+            copyColl.addAutoUpdateObserver(collObj);
+            if (!copyColl.disableFreeze) {
+              deepFreeze(copyColl.data[j]);
+            }
+          }
+        } else {
+
+          for (j; j < clen; j++) {
+            copyColl.data[j] = coll.data[j];
+            copyColl.addAutoUpdateObserver(copyColl.data[j]);
+            if (!copyColl.disableFreeze) {
+              deepFreeze(copyColl.data[j]);
+            }
+          }
+        }
+
+        copyColl.maxId = (typeof coll.maxId === 'undefined') ? 0 : coll.maxId;
+        if (typeof (coll.binaryIndices) !== 'undefined') {
+          copyColl.binaryIndices = coll.binaryIndices;
+        }
+        if (typeof coll.transforms !== 'undefined') {
+          copyColl.transforms = coll.transforms;
+        }
+
+        // regenerate unique indexes
+        copyColl.uniqueNames = [];
+        if (coll.hasOwnProperty("uniqueNames")) {
+          copyColl.uniqueNames = coll.uniqueNames;
+        }
+
+        // in case they are loading a database created before we added dynamic views, handle undefined
+        if (typeof (coll.DynamicViews) === 'undefined') continue;
+
+        // reinflate DynamicViews and attached Resultsets
+        for (var idx = 0; idx < coll.DynamicViews.length; idx++) {
+          var colldv = coll.DynamicViews[idx];
+
+          var dv = copyColl.addDynamicView(colldv.name, colldv.options);
+          dv.resultdata = colldv.resultdata;
+          dv.resultsdirty = colldv.resultsdirty;
+          dv.filterPipeline = colldv.filterPipeline;
+          dv.sortCriteriaSimple = colldv.sortCriteriaSimple;
+          dv.sortCriteria = colldv.sortCriteria;
+          dv.sortFunction = null;
+          dv.sortDirty = colldv.sortDirty;
+          if (!copyColl.disableFreeze) {
+            deepFreeze(dv.filterPipeline);
+            if (dv.sortCriteriaSimple) {
+              deepFreeze(dv.sortCriteriaSimple);
+            } else if (dv.sortCriteria) {
+              deepFreeze(dv.sortCriteria);
+            }
+          }
+          dv.resultset.filteredrows = colldv.resultset.filteredrows;
+          dv.resultset.filterInitialized = colldv.resultset.filterInitialized;
+
+          dv.rematerialize({
+            removeWhereFilters: true
+          });
+        }
+
+        // Upgrade Logic for binary index refactoring at version 1.5
+        if (dbObject.databaseVersion < 1.5) {
+          // rebuild all indices
+          copyColl.ensureAllIndexes(true);
+          copyColl.dirty = true;
+        }
+      }
+    };
+
+    /**
+     * Emits the close event. In autosave scenarios, if the database is dirty, this will save and disable timer.
+     * Does not actually destroy the db.
+     *
+     * @param {function=} callback - (Optional) if supplied will be registered with close event before emitting.
+     * @memberof Loki
+     */
+    Loki.prototype.close = function (callback) {
+      // for autosave scenarios, we will let close perform final save (if dirty)
+      // For web use, you might call from window.onbeforeunload to shutdown database, saving pending changes
+      if (this.autosave) {
+        this.autosaveDisable();
+        if (this.autosaveDirty()) {
+          this.saveDatabase(callback);
+          callback = undefined;
+        }
+      }
+
+      if (callback) {
+        this.on('close', callback);
+      }
+      this.emit('close');
+    };
+
+    /**-------------------------+
+    | Changes API               |
+    +--------------------------*/
+
+    /**
+     * The Changes API enables the tracking the changes occurred in the collections since the beginning of the session,
+     * so it's possible to create a differential dataset for synchronization purposes (possibly to a remote db)
+     */
+
+    /**
+     * (Changes API) : takes all the changes stored in each
+     * collection and creates a single array for the entire database. If an array of names
+     * of collections is passed then only the included collections will be tracked.
+     *
+     * @param {array=} optional array of collection names. No arg means all collections are processed.
+     * @returns {array} array of changes
+     * @see private method createChange() in Collection
+     * @memberof Loki
+     */
+    Loki.prototype.generateChangesNotification = function (arrayOfCollectionNames) {
+      function getCollName(coll) {
+        return coll.name;
+      }
+      var changes = [],
+        selectedCollections = arrayOfCollectionNames || this.collections.map(getCollName);
+
+      this.collections.forEach(function (coll) {
+        if (selectedCollections.indexOf(getCollName(coll)) !== -1) {
+          changes = changes.concat(coll.getChanges());
+        }
+      });
+      return changes;
+    };
+
+    /**
+     * (Changes API) - stringify changes for network transmission
+     * @returns {string} string representation of the changes
+     * @memberof Loki
+     */
+    Loki.prototype.serializeChanges = function (collectionNamesArray) {
+      return JSON.stringify(this.generateChangesNotification(collectionNamesArray));
+    };
+
+    /**
+     * (Changes API) : clears all the changes in all collections.
+     * @memberof Loki
+     */
+    Loki.prototype.clearChanges = function () {
+      this.collections.forEach(function (coll) {
+        if (coll.flushChanges) {
+          coll.flushChanges();
+        }
+      });
+    };
+
+    /*------------------+
+    | PERSISTENCE       |
+    -------------------*/
+
+    /** there are two build in persistence adapters for internal use
+     * fs             for use in Nodejs type environments
+     * localStorage   for use in browser environment
+     * defined as helper classes here so its easy and clean to use
+     */
+
+    /**
+     * In in-memory persistence adapter for an in-memory database.
+     * This simple 'key/value' adapter is intended for unit testing and diagnostics.
+     *
+     * @param {object=} options - memory adapter options
+     * @param {boolean} [options.asyncResponses=false] - whether callbacks are invoked asynchronously
+     * @param {int} [options.asyncTimeout=50] - timeout in ms to queue callbacks
+     * @constructor LokiMemoryAdapter
+     */
+    function LokiMemoryAdapter(options) {
+      this.hashStore = {};
+      this.options = options || {};
+
+      if (!this.options.hasOwnProperty('asyncResponses')) {
+        this.options.asyncResponses = false;
+      }
+
+      if (!this.options.hasOwnProperty('asyncTimeout')) {
+        this.options.asyncTimeout = 50; // 50 ms default
+      }
+    }
+
+    /**
+     * Loads a serialized database from its in-memory store.
+     * (Loki persistence adapter interface function)
+     *
+     * @param {string} dbname - name of the database (filename/keyname)
+     * @param {function} callback - adapter callback to return load result to caller
+     * @memberof LokiMemoryAdapter
+     */
+    LokiMemoryAdapter.prototype.loadDatabase = function (dbname, callback) {
+      var self = this;
+
+      if (this.options.asyncResponses) {
+        setTimeout(function () {
+          if (self.hashStore.hasOwnProperty(dbname)) {
+            callback(self.hashStore[dbname].value);
+          }
+          else {
+            // database doesn't exist, return falsy
+            callback(null);
+          }
+        }, this.options.asyncTimeout);
+      }
+      else {
+        if (this.hashStore.hasOwnProperty(dbname)) {
+          // database doesn't exist, return falsy
+          callback(this.hashStore[dbname].value);
+        }
+        else {
+          callback(null);
+        }
+      }
+    };
+
+    /**
+     * Saves a serialized database to its in-memory store.
+     * (Loki persistence adapter interface function)
+     *
+     * @param {string} dbname - name of the database (filename/keyname)
+     * @param {function} callback - adapter callback to return load result to caller
+     * @memberof LokiMemoryAdapter
+     */
+    LokiMemoryAdapter.prototype.saveDatabase = function (dbname, dbstring, callback) {
+      var self = this;
+      var saveCount;
+
+      if (this.options.asyncResponses) {
+        setTimeout(function () {
+          saveCount = (self.hashStore.hasOwnProperty(dbname) ? self.hashStore[dbname].savecount : 0);
+
+          self.hashStore[dbname] = {
+            savecount: saveCount + 1,
+            lastsave: new Date(),
+            value: dbstring
+          };
+
+          callback();
+        }, this.options.asyncTimeout);
+      }
+      else {
+        saveCount = (this.hashStore.hasOwnProperty(dbname) ? this.hashStore[dbname].savecount : 0);
+
+        this.hashStore[dbname] = {
+          savecount: saveCount + 1,
+          lastsave: new Date(),
+          value: dbstring
+        };
+
+        callback();
+      }
+    };
+
+    /**
+     * Deletes a database from its in-memory store.
+     *
+     * @param {string} dbname - name of the database (filename/keyname)
+     * @param {function} callback - function to call when done
+     * @memberof LokiMemoryAdapter
+     */
+    LokiMemoryAdapter.prototype.deleteDatabase = function (dbname, callback) {
+      if (this.hashStore.hasOwnProperty(dbname)) {
+        delete this.hashStore[dbname];
+      }
+
+      if (typeof callback === "function") {
+        callback();
+      }
+    };
+
+    /**
+     * An adapter for adapters.  Converts a non reference mode adapter into a reference mode adapter
+     * which can perform destructuring and partioning.  Each collection will be stored in its own key/save and
+     * only dirty collections will be saved.  If you  turn on paging with default page size of 25megs and save
+     * a 75 meg collection it should use up roughly 3 save slots (key/value pairs sent to inner adapter).
+     * A dirty collection that spans three pages will save all three pages again
+     * Paging mode was added mainly because Chrome has issues saving 'too large' of a string within a
+     * single indexeddb row.  If a single document update causes the collection to be flagged as dirty, all
+     * of that collection's pages will be written on next save.
+     *
+     * @param {object} adapter - reference to a 'non-reference' mode loki adapter instance.
+     * @param {object=} options - configuration options for partitioning and paging
+     * @param {bool} options.paging - (default: false) set to true to enable paging collection data.
+     * @param {int} options.pageSize - (default : 25MB) you can use this to limit size of strings passed to inner adapter.
+     * @param {string} options.delimiter - allows you to override the default delimeter
+     * @constructor LokiPartitioningAdapter
+     */
+    function LokiPartitioningAdapter(adapter, options) {
+      this.mode = "reference";
+      this.adapter = null;
+      this.options = options || {};
+      this.dbref = null;
+      this.dbname = "";
+      this.pageIterator = {};
+
+      // verify user passed an appropriate adapter
+      if (adapter) {
+        if (adapter.mode === "reference") {
+          throw new Error("LokiPartitioningAdapter cannot be instantiated with a reference mode adapter");
+        }
+        else {
+          this.adapter = adapter;
+        }
+      }
+      else {
+        throw new Error("LokiPartitioningAdapter requires a (non-reference mode) adapter on construction");
+      }
+
+      // set collection paging defaults
+      if (!this.options.hasOwnProperty("paging")) {
+        this.options.paging = false;
+      }
+
+      // default to page size of 25 megs (can be up to your largest serialized object size larger than this)
+      if (!this.options.hasOwnProperty("pageSize")) {
+        this.options.pageSize = 25 * 1024 * 1024;
+      }
+
+      if (!this.options.hasOwnProperty("delimiter")) {
+        this.options.delimiter = '$<\n';
+      }
+    }
+
+    /**
+     * Loads a database which was partitioned into several key/value saves.
+     * (Loki persistence adapter interface function)
+     *
+     * @param {string} dbname - name of the database (filename/keyname)
+     * @param {function} callback - adapter callback to return load result to caller
+     * @memberof LokiPartitioningAdapter
+     */
+    LokiPartitioningAdapter.prototype.loadDatabase = function (dbname, callback) {
+      var self = this;
+      this.dbname = dbname;
+      this.dbref = new Loki(dbname);
+
+      // load the db container (without data)
+      this.adapter.loadDatabase(dbname, function (result) {
+        // empty database condition is for inner adapter return null/undefined/falsy
+        if (!result) {
+          // partition 0 not found so new database, no need to try to load other partitions.
+          // return same falsy result to loadDatabase to signify no database exists (yet)
+          callback(result);
+          return;
+        }
+
+        if (typeof result !== "string") {
+          callback(new Error("LokiPartitioningAdapter received an unexpected response from inner adapter loadDatabase()"));
+        }
+
+        // I will want to use loki destructuring helper methods so i will inflate into typed instance
+        var db = JSON.parse(result);
+        self.dbref.loadJSONObject(db);
+        db = null;
+
+        var clen = self.dbref.collections.length;
+
+        if (self.dbref.collections.length === 0) {
+          callback(self.dbref);
+          return;
+        }
+
+        self.pageIterator = {
+          collection: 0,
+          pageIndex: 0
+        };
+
+        self.loadNextPartition(0, function () {
+          callback(self.dbref);
+        });
+      });
+    };
+
+    /**
+     * Used to sequentially load each collection partition, one at a time.
+     *
+     * @param {int} partition - ordinal collection position to load next
+     * @param {function} callback - adapter callback to return load result to caller
+     */
+    LokiPartitioningAdapter.prototype.loadNextPartition = function (partition, callback) {
+      var keyname = this.dbname + "." + partition;
+      var self = this;
+
+      if (this.options.paging === true) {
+        this.pageIterator.pageIndex = 0;
+        this.loadNextPage(callback);
+        return;
+      }
+
+      this.adapter.loadDatabase(keyname, function (result) {
+        var data = self.dbref.deserializeCollection(result, { delimited: true, collectionIndex: partition });
+        self.dbref.collections[partition].data = data;
+
+        if (++partition < self.dbref.collections.length) {
+          self.loadNextPartition(partition, callback);
+        }
+        else {
+          callback();
+        }
+      });
+    };
+
+    /**
+     * Used to sequentially load the next page of collection partition, one at a time.
+     *
+     * @param {function} callback - adapter callback to return load result to caller
+     */
+    LokiPartitioningAdapter.prototype.loadNextPage = function (callback) {
+      // calculate name for next saved page in sequence
+      var keyname = this.dbname + "." + this.pageIterator.collection + "." + this.pageIterator.pageIndex;
+      var self = this;
+
+      // load whatever page is next in sequence
+      this.adapter.loadDatabase(keyname, function (result) {
+        var data = result.split(self.options.delimiter);
+        result = ""; // free up memory now that we have split it into array
+        var dlen = data.length;
+        var idx;
+
+        // detect if last page by presence of final empty string element and remove it if so
+        var isLastPage = (data[dlen - 1] === "");
+        if (isLastPage) {
+          data.pop();
+          dlen = data.length;
+          // empty collections are just a delimiter meaning two blank items
+          if (data[dlen - 1] === "" && dlen === 1) {
+            data.pop();
+            dlen = data.length;
+          }
+        }
+
+        // convert stringified array elements to object instances and push to collection data
+        for (idx = 0; idx < dlen; idx++) {
+          self.dbref.collections[self.pageIterator.collection].data.push(JSON.parse(data[idx]));
+          data[idx] = null;
+        }
+        data = [];
+
+        // if last page, we are done with this partition
+        if (isLastPage) {
+
+          // if there are more partitions, kick off next partition load
+          if (++self.pageIterator.collection < self.dbref.collections.length) {
+            self.loadNextPartition(self.pageIterator.collection, callback);
+          }
+          else {
+            callback();
+          }
+        }
+        else {
+          self.pageIterator.pageIndex++;
+          self.loadNextPage(callback);
+        }
+      });
+    };
+
+    /**
+     * Saves a database by partioning into separate key/value saves.
+     * (Loki 'reference mode' persistence adapter interface function)
+     *
+     * @param {string} dbname - name of the database (filename/keyname)
+     * @param {object} dbref - reference to database which we will partition and save.
+     * @param {function} callback - adapter callback to return load result to caller
+     *
+     * @memberof LokiPartitioningAdapter
+     */
+    LokiPartitioningAdapter.prototype.exportDatabase = function (dbname, dbref, callback) {
+      var self = this;
+      var idx, clen = dbref.collections.length;
+
+      this.dbref = dbref;
+      this.dbname = dbname;
+
+      // queue up dirty partitions to be saved
+      this.dirtyPartitions = [-1];
+      for (idx = 0; idx < clen; idx++) {
+        if (dbref.collections[idx].dirty) {
+          this.dirtyPartitions.push(idx);
+        }
+      }
+
+      this.saveNextPartition(function (err) {
+        callback(err);
+      });
+    };
+
+    /**
+     * Helper method used internally to save each dirty collection, one at a time.
+     *
+     * @param {function} callback - adapter callback to return load result to caller
+     */
+    LokiPartitioningAdapter.prototype.saveNextPartition = function (callback) {
+      var self = this;
+      var partition = this.dirtyPartitions.shift();
+      var keyname = this.dbname + ((partition === -1) ? "" : ("." + partition));
+
+      // if we are doing paging and this is collection partition
+      if (this.options.paging && partition !== -1) {
+        this.pageIterator = {
+          collection: partition,
+          docIndex: 0,
+          pageIndex: 0
+        };
+
+        // since saveNextPage recursively calls itself until done, our callback means this whole paged partition is finished
+        this.saveNextPage(function (err) {
+          if (self.dirtyPartitions.length === 0) {
+            callback(err);
+          }
+          else {
+            self.saveNextPartition(callback);
+          }
+        });
+        return;
+      }
+
+      // otherwise this is 'non-paged' partioning...
+      var result = this.dbref.serializeDestructured({
+        partitioned: true,
+        delimited: true,
+        partition: partition
+      });
+
+      this.adapter.saveDatabase(keyname, result, function (err) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        if (self.dirtyPartitions.length === 0) {
+          callback(null);
+        }
+        else {
+          self.saveNextPartition(callback);
+        }
+      });
+    };
+
+    /**
+     * Helper method used internally to generate and save the next page of the current (dirty) partition.
+     *
+     * @param {function} callback - adapter callback to return load result to caller
+     */
+    LokiPartitioningAdapter.prototype.saveNextPage = function (callback) {
+      var self = this;
+      var coll = this.dbref.collections[this.pageIterator.collection];
+      var keyname = this.dbname + "." + this.pageIterator.collection + "." + this.pageIterator.pageIndex;
+      var pageLen = 0,
+        cdlen = coll.data.length,
+        delimlen = this.options.delimiter.length;
+      var serializedObject = "",
+        pageBuilder = "";
+      var doneWithPartition = false,
+        doneWithPage = false;
+
+      var pageSaveCallback = function (err) {
+        pageBuilder = "";
+
+        if (err) {
+          callback(err);
+        }
+
+        // update meta properties then continue process by invoking callback
+        if (doneWithPartition) {
+          callback(null);
+        }
+        else {
+          self.pageIterator.pageIndex++;
+          self.saveNextPage(callback);
+        }
+      };
+
+      if (coll.data.length === 0) {
+        doneWithPartition = true;
+      }
+
+      while (true) {
+        if (!doneWithPartition) {
+          // serialize object
+          serializedObject = JSON.stringify(coll.data[this.pageIterator.docIndex]);
+          pageBuilder += serializedObject;
+          pageLen += serializedObject.length;
+
+          // if no more documents in collection to add, we are done with partition
+          if (++this.pageIterator.docIndex >= cdlen) doneWithPartition = true;
+        }
+        // if our current page is bigger than defined pageSize, we are done with page
+        if (pageLen >= this.options.pageSize) doneWithPage = true;
+
+        // if not done with current page, need delimiter before next item
+        // if done with partition we also want a delmiter to indicate 'end of pages' final empty row
+        if (!doneWithPage || doneWithPartition) {
+          pageBuilder += this.options.delimiter;
+          pageLen += delimlen;
+        }
+
+        // if we are done with page save it and pass off to next recursive call or callback
+        if (doneWithPartition || doneWithPage) {
+          this.adapter.saveDatabase(keyname, pageBuilder, pageSaveCallback);
+          return;
+        }
+      }
+    };
+
+    /**
+     * A loki persistence adapter which persists using node fs module
+     * @constructor LokiFsAdapter
+     */
+    function LokiFsAdapter() {
+      try {
+        this.fs = require('fs');
+      } catch (e) {
+        this.fs = null;
+      }
+    }
+
+    /**
+     * loadDatabase() - Load data from file, will throw an error if the file does not exist
+     * @param {string} dbname - the filename of the database to load
+     * @param {function} callback - the callback to handle the result
+     * @memberof LokiFsAdapter
+     */
+    LokiFsAdapter.prototype.loadDatabase = function loadDatabase(dbname, callback) {
+      var self = this;
+
+      this.fs.stat(dbname, function (err, stats) {
+        if (!err && stats.isFile()) {
+          self.fs.readFile(dbname, {
+            encoding: 'utf8'
+          }, function readFileCallback(err, data) {
+            if (err) {
+              callback(new Error(err));
+            } else {
+              callback(data);
+            }
+          });
+        }
+        else {
+          callback(null);
+        }
+      });
+    };
+
+    /**
+     * saveDatabase() - save data to file, will throw an error if the file can't be saved
+     * might want to expand this to avoid dataloss on partial save
+     * @param {string} dbname - the filename of the database to load
+     * @param {function} callback - the callback to handle the result
+     * @memberof LokiFsAdapter
+     */
+    LokiFsAdapter.prototype.saveDatabase = function saveDatabase(dbname, dbstring, callback) {
+      var self = this;
+      var tmpdbname = dbname + '~';
+      this.fs.writeFile(tmpdbname, dbstring, function writeFileCallback(err) {
+        if (err) {
+          callback(new Error(err));
+        } else {
+          self.fs.rename(tmpdbname, dbname, callback);
+        }
+      });
+    };
+
+    /**
+     * deleteDatabase() - delete the database file, will throw an error if the
+     * file can't be deleted
+     * @param {string} dbname - the filename of the database to delete
+     * @param {function} callback - the callback to handle the result
+     * @memberof LokiFsAdapter
+     */
+    LokiFsAdapter.prototype.deleteDatabase = function deleteDatabase(dbname, callback) {
+      this.fs.unlink(dbname, function deleteDatabaseCallback(err) {
+        if (err) {
+          callback(new Error(err));
+        } else {
+          callback();
+        }
+      });
+    };
+
+
+    /**
+     * A loki persistence adapter which persists to web browser's local storage object
+     * @constructor LokiLocalStorageAdapter
+     */
+    function LokiLocalStorageAdapter() { }
+
+    /**
+     * loadDatabase() - Load data from localstorage
+     * @param {string} dbname - the name of the database to load
+     * @param {function} callback - the callback to handle the result
+     * @memberof LokiLocalStorageAdapter
+     */
+    LokiLocalStorageAdapter.prototype.loadDatabase = function loadDatabase(dbname, callback) {
+      if (localStorageAvailable()) {
+        callback(localStorage.getItem(dbname));
+      } else {
+        callback(new Error('localStorage is not available'));
+      }
+    };
+
+    /**
+     * saveDatabase() - save data to localstorage, will throw an error if the file can't be saved
+     * might want to expand this to avoid dataloss on partial save
+     * @param {string} dbname - the filename of the database to load
+     * @param {function} callback - the callback to handle the result
+     * @memberof LokiLocalStorageAdapter
+     */
+    LokiLocalStorageAdapter.prototype.saveDatabase = function saveDatabase(dbname, dbstring, callback) {
+      if (localStorageAvailable()) {
+        localStorage.setItem(dbname, dbstring);
+        callback(null);
+      } else {
+        callback(new Error('localStorage is not available'));
+      }
+    };
+
+    /**
+     * deleteDatabase() - delete the database from localstorage, will throw an error if it
+     * can't be deleted
+     * @param {string} dbname - the filename of the database to delete
+     * @param {function} callback - the callback to handle the result
+     * @memberof LokiLocalStorageAdapter
+     */
+    LokiLocalStorageAdapter.prototype.deleteDatabase = function deleteDatabase(dbname, callback) {
+      if (localStorageAvailable()) {
+        localStorage.removeItem(dbname);
+        callback(null);
+      } else {
+        callback(new Error('localStorage is not available'));
+      }
+    };
+
+    /**
+     * Wait for throttledSaves to complete and invoke your callback when drained or duration is met.
+     *
+     * @param {function} callback - callback to fire when save queue is drained, it is passed a sucess parameter value
+     * @param {object=} options - configuration options
+     * @param {boolean} options.recursiveWait - (default: true) if after queue is drained, another save was kicked off, wait for it
+     * @param {bool} options.recursiveWaitLimit - (default: false) limit our recursive waiting to a duration
+     * @param {int} options.recursiveWaitLimitDelay - (default: 2000) cutoff in ms to stop recursively re-draining
+     * @memberof Loki
+     */
+    Loki.prototype.throttledSaveDrain = function (callback, options) {
+      var self = this;
+      var now = (new Date()).getTime();
+
+      if (!this.throttledSaves) {
+        callback(true);
+      }
+
+      options = options || {};
+      if (!options.hasOwnProperty('recursiveWait')) {
+        options.recursiveWait = true;
+      }
+      if (!options.hasOwnProperty('recursiveWaitLimit')) {
+        options.recursiveWaitLimit = false;
+      }
+      if (!options.hasOwnProperty('recursiveWaitLimitDuration')) {
+        options.recursiveWaitLimitDuration = 2000;
+      }
+      if (!options.hasOwnProperty('started')) {
+        options.started = (new Date()).getTime();
+      }
+
+      // if save is pending
+      if (this.throttledSaves && this.throttledSavePending) {
+        // if we want to wait until we are in a state where there are no pending saves at all
+        if (options.recursiveWait) {
+          // queue the following meta callback for when it completes
+          this.throttledCallbacks.push(function () {
+            // if there is now another save pending...
+            if (self.throttledSavePending) {
+              // if we wish to wait only so long and we have exceeded limit of our waiting, callback with false success value
+              if (options.recursiveWaitLimit && (now - options.started > options.recursiveWaitLimitDuration)) {
+                callback(false);
+                return;
+              }
+              // it must be ok to wait on next queue drain
+              self.throttledSaveDrain(callback, options);
+              return;
+            }
+            // no pending saves so callback with true success
+            else {
+              callback(true);
+              return;
+            }
+          });
+        }
+        // just notify when current queue is depleted
+        else {
+          this.throttledCallbacks.push(callback);
+          return;
+        }
+      }
+      // no save pending, just callback
+      else {
+        callback(true);
+      }
+    };
+
+    /**
+     * Internal load logic, decoupled from throttling/contention logic
+     *
+     * @param {object} options - not currently used (remove or allow overrides?)
+     * @param {function=} callback - (Optional) user supplied async callback / error handler
+     */
+    Loki.prototype.loadDatabaseInternal = function (options, callback) {
+      var cFun = callback || function (err, data) {
+        if (err) {
+          throw err;
+        }
+      },
+        self = this;
+
+      // the persistenceAdapter should be present if all is ok, but check to be sure.
+      if (this.persistenceAdapter !== null) {
+
+        this.persistenceAdapter.loadDatabase(this.filename, function loadDatabaseCallback(dbString) {
+          if (typeof (dbString) === 'string') {
+            var parseSuccess = false;
+            try {
+              self.loadJSON(dbString, options || {});
+              parseSuccess = true;
+            } catch (err) {
+              cFun(err);
+            }
+            if (parseSuccess) {
+              cFun(null);
+              self.emit('loaded', 'database ' + self.filename + ' loaded');
+            }
+          } else {
+            // falsy result means new database
+            if (!dbString) {
+              cFun(null);
+              self.emit('loaded', 'empty database ' + self.filename + ' loaded');
+              return;
+            }
+
+            // instanceof error means load faulted
+            if (dbString instanceof Error) {
+              cFun(dbString);
+              return;
+            }
+
+            // if adapter has returned an js object (other than null or error) attempt to load from JSON object
+            if (typeof (dbString) === "object") {
+              self.loadJSONObject(dbString, options || {});
+              cFun(null); // return null on success
+              self.emit('loaded', 'database ' + self.filename + ' loaded');
+              return;
+            }
+
+            cFun("unexpected adapter response : " + dbString);
+          }
+        });
+
+      } else {
+        cFun(new Error('persistenceAdapter not configured'));
+      }
+    };
+
+    /**
+     * Handles manually loading from file system, local storage, or adapter (such as indexeddb)
+     *    This method utilizes loki configuration options (if provided) to determine which
+     *    persistence method to use, or environment detection (if configuration was not provided).
+     *    To avoid contention with any throttledSaves, we will drain the save queue first.
+     *
+     * If you are configured with autosave, you do not need to call this method yourself.
+     *
+     * @param {object} options - if throttling saves and loads, this controls how we drain save queue before loading
+     * @param {boolean} options.recursiveWait - (default: true) wait recursively until no saves are queued
+     * @param {bool} options.recursiveWaitLimit - (default: false) limit our recursive waiting to a duration
+     * @param {int} options.recursiveWaitLimitDelay - (default: 2000) cutoff in ms to stop recursively re-draining
+     * @param {function=} callback - (Optional) user supplied async callback / error handler
+     * @memberof Loki
+     * @example
+     * db.loadDatabase({}, function(err) {
+     *   if (err) {
+     *     console.log("error : " + err);
+     *   }
+     *   else {
+     *     console.log("database loaded.");
+     *   }
+     * });
+     */
+    Loki.prototype.loadDatabase = function (options, callback) {
+      var self = this;
+
+      // if throttling disabled, just call internal
+      if (!this.throttledSaves) {
+        this.loadDatabaseInternal(options, callback);
+        return;
+      }
+
+      // try to drain any pending saves in the queue to lock it for loading
+      this.throttledSaveDrain(function (success) {
+        if (success) {
+          // pause/throttle saving until loading is done
+          self.throttledSavePending = true;
+
+          self.loadDatabaseInternal(options, function (err) {
+            // now that we are finished loading, if no saves were throttled, disable flag
+            if (self.throttledCallbacks.length === 0) {
+              self.throttledSavePending = false;
+            }
+            // if saves requests came in while loading, kick off new save to kick off resume saves
+            else {
+              self.saveDatabase();
+            }
+
+            if (typeof callback === 'function') {
+              callback(err);
+            }
+          });
+          return;
+        }
+        else {
+          if (typeof callback === 'function') {
+            callback(new Error("Unable to pause save throttling long enough to read database"));
+          }
+        }
+      }, options);
+    };
+
+    /**
+     * Internal save logic, decoupled from save throttling logic
+     */
+    Loki.prototype.saveDatabaseInternal = function (callback) {
+      var cFun = callback || function (err) {
+        if (err) {
+          throw err;
+        }
+        return;
+      };
+      var self = this;
+
+      // the persistenceAdapter should be present if all is ok, but check to be sure.
+      if (!this.persistenceAdapter) {
+        cFun(new Error('persistenceAdapter not configured'));
+        return;
+      }
+
+      // run incremental, reference, or normal mode adapters, depending on what's available
+      if (this.persistenceAdapter.mode === "incremental") {
+        var cachedDirty;
+        // ignore autosave until we copy loki (only then we can clear dirty flags,
+        // but if we don't do it now, autosave will be triggered a lot unnecessarily)
+        this.ignoreAutosave = true;
+        this.persistenceAdapter.saveDatabase(
+          this.filename,
+          function getLokiCopy() {
+            self.ignoreAutosave = false;
+            if (cachedDirty) {
+              cFun(new Error('adapter error - getLokiCopy called more than once'));
+              return;
+            }
+            var lokiCopy = self.copy({ removeNonSerializable: true });
+
+            // remember and clear dirty ids -- we must do it before the save so that if
+            // and update occurs between here and callback, it will get saved later
+            cachedDirty = self.collections.map(function (collection) {
+              return [collection.dirty, collection.dirtyIds];
+            });
+            self.collections.forEach(function (col) {
+              col.dirty = false;
+              col.dirtyIds = [];
+            });
+            return lokiCopy;
+          },
+          function exportDatabaseCallback(err) {
+            self.ignoreAutosave = false;
+            if (err && cachedDirty) {
+              // roll back dirty IDs to be saved later
+              self.collections.forEach(function (col, i) {
+                var cached = cachedDirty[i];
+                col.dirty = col.dirty || cached[0];
+                col.dirtyIds = col.dirtyIds.concat(cached[1]);
+              });
+            }
+            cFun(err);
+          });
+      } else if (this.persistenceAdapter.mode === "reference" && typeof this.persistenceAdapter.exportDatabase === "function") {
+        // TODO: dirty should be cleared here
+        // filename may seem redundant but loadDatabase will need to expect this same filename
+        this.persistenceAdapter.exportDatabase(this.filename, this.copy({ removeNonSerializable: true }), function exportDatabaseCallback(err) {
+          self.autosaveClearFlags();
+          cFun(err);
+        });
+      }
+      // otherwise just pass the serialized database to adapter
+      else {
+        // persistenceAdapter might be asynchronous, so we must clear `dirty` immediately
+        // or autosave won't work if an update occurs between here and the callback
+        // TODO: This should be stored and rolled back in case of DB save failure
+        this.autosaveClearFlags();
+        this.persistenceAdapter.saveDatabase(this.filename, this.serialize(), function saveDatabasecallback(err) {
+          cFun(err);
+        });
+      }
+    };
+
+    /**
+     * Handles manually saving to file system, local storage, or adapter (such as indexeddb)
+     *    This method utilizes loki configuration options (if provided) to determine which
+     *    persistence method to use, or environment detection (if configuration was not provided).
+     *
+     * If you are configured with autosave, you do not need to call this method yourself.
+     *
+     * @param {function=} callback - (Optional) user supplied async callback / error handler
+     * @memberof Loki
+     * @example
+     * db.saveDatabase(function(err) {
+     *   if (err) {
+     *     console.log("error : " + err);
+     *   }
+     *   else {
+     *     console.log("database saved.");
+     *   }
+     * });
+     */
+    Loki.prototype.saveDatabase = function (callback) {
+      if (!this.throttledSaves) {
+        this.saveDatabaseInternal(callback);
+        return;
+      }
+
+      if (this.throttledSavePending) {
+        this.throttledCallbacks.push(callback);
+        return;
+      }
+
+      var localCallbacks = this.throttledCallbacks;
+      this.throttledCallbacks = [];
+      localCallbacks.unshift(callback);
+      this.throttledSavePending = true;
+
+      var self = this;
+      this.saveDatabaseInternal(function (err) {
+        self.throttledSavePending = false;
+        localCallbacks.forEach(function (pcb) {
+          if (typeof pcb === 'function') {
+            // Queue the callbacks so we first finish this method execution
+            setTimeout(function () {
+              pcb(err);
+            }, 1);
+          }
+        });
+
+        // since this is called async, future requests may have come in, if so.. kick off next save
+        if (self.throttledCallbacks.length > 0) {
+          self.saveDatabase();
+        }
+      });
+    };
+
+    // alias
+    Loki.prototype.save = Loki.prototype.saveDatabase;
+
+    /**
+     * Handles deleting a database from file system, local
+     *    storage, or adapter (indexeddb)
+     *    This method utilizes loki configuration options (if provided) to determine which
+     *    persistence method to use, or environment detection (if configuration was not provided).
+     *
+     * @param {function=} callback - (Optional) user supplied async callback / error handler
+     * @memberof Loki
+     */
+    Loki.prototype.deleteDatabase = function (options, callback) {
+      var cFun = callback || function (err, data) {
+        if (err) {
+          throw err;
+        }
+      };
+
+      // we aren't even using options, so we will support syntax where
+      // callback is passed as first and only argument
+      if (typeof options === 'function' && !callback) {
+        cFun = options;
+      }
+
+      // the persistenceAdapter should be present if all is ok, but check to be sure.
+      if (this.persistenceAdapter !== null) {
+        this.persistenceAdapter.deleteDatabase(this.filename, function deleteDatabaseCallback(err) {
+          cFun(err);
+        });
+      } else {
+        cFun(new Error('persistenceAdapter not configured'));
+      }
+    };
+
+    /**
+     * autosaveDirty - check whether any collections are 'dirty' meaning we need to save (entire) database
+     *
+     * @returns {boolean} - true if database has changed since last autosave, false if not.
+     */
+    Loki.prototype.autosaveDirty = function () {
+      for (var idx = 0; idx < this.collections.length; idx++) {
+        if (this.collections[idx].dirty) {
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    /**
+     * autosaveClearFlags - resets dirty flags on all collections.
+     *    Called from saveDatabase() after db is saved.
+     *
+     */
+    Loki.prototype.autosaveClearFlags = function () {
+      for (var idx = 0; idx < this.collections.length; idx++) {
+        this.collections[idx].dirty = false;
+      }
+    };
+
+    /**
+     * autosaveEnable - begin a javascript interval to periodically save the database.
+     *
+     * @param {object} options - not currently used (remove or allow overrides?)
+     * @param {function=} callback - (Optional) user supplied async callback
+     */
+    Loki.prototype.autosaveEnable = function (options, callback) {
+      this.autosave = true;
+
+      var delay = 5000,
+        self = this;
+
+      if (typeof (this.autosaveInterval) !== 'undefined' && this.autosaveInterval !== null) {
+        delay = this.autosaveInterval;
+      }
+
+      this.autosaveHandle = setInterval(function autosaveHandleInterval() {
+        // use of dirty flag will need to be hierarchical since mods are done at collection level with no visibility of 'db'
+        // so next step will be to implement collection level dirty flags set on insert/update/remove
+        // along with loki level isdirty() function which iterates all collections to see if any are dirty
+
+        if (self.autosaveDirty() && !self.ignoreAutosave) {
+          self.saveDatabase(callback);
+        }
+      }, delay);
+    };
+
+    /**
+     * autosaveDisable - stop the autosave interval timer.
+     *
+     */
+    Loki.prototype.autosaveDisable = function () {
+      if (typeof (this.autosaveHandle) !== 'undefined' && this.autosaveHandle !== null) {
+        clearInterval(this.autosaveHandle);
+        this.autosaveHandle = null;
+      }
+    };
+
+
+    /**
+     * Resultset class allowing chainable queries.  Intended to be instanced internally.
+     *    Collection.find(), Collection.where(), and Collection.chain() instantiate this.
+     *
+     * @example
+     *    mycollection.chain()
+     *      .find({ 'doors' : 4 })
+     *      .where(function(obj) { return obj.name === 'Toyota' })
+     *      .data();
+     *
+     * @constructor Resultset
+     * @param {Collection} collection - The collection which this Resultset will query against.
+     */
+    function Resultset(collection, options) {
+      options = options || {};
+
+      // retain reference to collection we are querying against
+      this.collection = collection;
+      this.filteredrows = [];
+      this.filterInitialized = false;
+
+      return this;
+    }
+
+    /**
+     * reset() - Reset the resultset to its initial state.
+     *
+     * @returns {Resultset} Reference to this resultset, for future chain operations.
+     */
+    Resultset.prototype.reset = function () {
+      if (this.filteredrows.length > 0) {
+        this.filteredrows = [];
+      }
+      this.filterInitialized = false;
+      return this;
+    };
+
+    /**
+     * toJSON() - Override of toJSON to avoid circular references
+     *
+     */
+    Resultset.prototype.toJSON = function () {
+      var copy = this.copy();
+      copy.collection = null;
+      return copy;
+    };
+
+    /**
+     * Allows you to limit the number of documents passed to next chain operation.
+     *    A resultset copy() is made to avoid altering original resultset.
+     *
+     * @param {int} qty - The number of documents to return.
+     * @returns {Resultset} Returns a copy of the resultset, limited by qty, for subsequent chain ops.
+     * @memberof Resultset
+     * // find the two oldest users
+     * var result = users.chain().simplesort("age", true).limit(2).data();
+     */
+    Resultset.prototype.limit = function (qty) {
+      // if this has no filters applied, we need to populate filteredrows first
+      if (!this.filterInitialized && this.filteredrows.length === 0) {
+        this.filteredrows = this.collection.prepareFullDocIndex();
+      }
+
+      var rscopy = new Resultset(this.collection);
+      rscopy.filteredrows = this.filteredrows.slice(0, qty);
+      rscopy.filterInitialized = true;
+      return rscopy;
+    };
+
+    /**
+     * Used for skipping 'pos' number of documents in the resultset.
+     *
+     * @param {int} pos - Number of documents to skip; all preceding documents are filtered out.
+     * @returns {Resultset} Returns a copy of the resultset, containing docs starting at 'pos' for subsequent chain ops.
+     * @memberof Resultset
+     * // find everyone but the two oldest users
+     * var result = users.chain().simplesort("age", true).offset(2).data();
+     */
+    Resultset.prototype.offset = function (pos) {
+      // if this has no filters applied, we need to populate filteredrows first
+      if (!this.filterInitialized && this.filteredrows.length === 0) {
+        this.filteredrows = this.collection.prepareFullDocIndex();
+      }
+
+      var rscopy = new Resultset(this.collection);
+      rscopy.filteredrows = this.filteredrows.slice(pos);
+      rscopy.filterInitialized = true;
+      return rscopy;
+    };
+
+    /**
+     * copy() - To support reuse of resultset in branched query situations.
+     *
+     * @returns {Resultset} Returns a copy of the resultset (set) but the underlying document references will be the same.
+     * @memberof Resultset
+     */
+    Resultset.prototype.copy = function () {
+      var result = new Resultset(this.collection);
+
+      if (this.filteredrows.length > 0) {
+        result.filteredrows = this.filteredrows.slice();
+      }
+      result.filterInitialized = this.filterInitialized;
+
+      return result;
+    };
+
+    /**
+     * Alias of copy()
+     * @memberof Resultset
+     */
+    Resultset.prototype.branch = Resultset.prototype.copy;
+
+    /**
+     * transform() - executes a named collection transform or raw array of transform steps against the resultset.
+     *
+     * @param transform {(string|array)} - name of collection transform or raw transform array
+     * @param parameters {object=} - (Optional) object property hash of parameters, if the transform requires them.
+     * @returns {Resultset} either (this) resultset or a clone of of this resultset (depending on steps)
+     * @memberof Resultset
+     * @example
+     * users.addTransform('CountryFilter', [
+     *   {
+     *     type: 'find',
+     *     value: {
+     *       'country': { $eq: '[%lktxp]Country' }
+     *     }
+     *   },
+     *   {
+     *     type: 'simplesort',
+     *     property: 'age',
+     *     options: { desc: false}
+     *   }
+     * ]);
+     * var results = users.chain().transform("CountryFilter", { Country: 'fr' }).data();
+     */
+    Resultset.prototype.transform = function (transform, parameters) {
+      var idx,
+        step,
+        rs = this;
+
+      // if transform is name, then do lookup first
+      if (typeof transform === 'string') {
+        if (this.collection.transforms.hasOwnProperty(transform)) {
+          transform = this.collection.transforms[transform];
+        }
+      }
+
+      // either they passed in raw transform array or we looked it up, so process
+      if (typeof transform !== 'object' || !Array.isArray(transform)) {
+        throw new Error("Invalid transform");
+      }
+
+      if (typeof parameters !== 'undefined') {
+        transform = Utils.resolveTransformParams(transform, parameters);
+      }
+
+      for (idx = 0; idx < transform.length; idx++) {
+        step = transform[idx];
+
+        switch (step.type) {
+          case "find":
+            rs.find(step.value);
+            break;
+          case "where":
+            rs.where(step.value);
+            break;
+          case "simplesort":
+            rs.simplesort(step.property, step.desc || step.options);
+            break;
+          case "compoundsort":
+            rs.compoundsort(step.value);
+            break;
+          case "sort":
+            rs.sort(step.value);
+            break;
+          case "limit":
+            rs = rs.limit(step.value);
+            break; // limit makes copy so update reference
+          case "offset":
+            rs = rs.offset(step.value);
+            break; // offset makes copy so update reference
+          case "map":
+            rs = rs.map(step.value, step.dataOptions);
+            break;
+          case "eqJoin":
+            rs = rs.eqJoin(step.joinData, step.leftJoinKey, step.rightJoinKey, step.mapFun, step.dataOptions);
+            break;
+          // following cases break chain by returning array data so make any of these last in transform steps
+          case "mapReduce":
+            rs = rs.mapReduce(step.mapFunction, step.reduceFunction);
+            break;
+          // following cases update documents in current filtered resultset (use carefully)
+          case "update":
+            rs.update(step.value);
+            break;
+          case "remove":
+            rs.remove();
+            break;
+          default:
+            break;
+        }
+      }
+
+      return rs;
+    };
+
+    /**
+     * User supplied compare function is provided two documents to compare. (chainable)
+     * @example
+     *    rslt.sort(function(obj1, obj2) {
+     *      if (obj1.name === obj2.name) return 0;
+     *      if (obj1.name > obj2.name) return 1;
+     *      if (obj1.name < obj2.name) return -1;
+     *    });
+     *
+     * @param {function} comparefun - A javascript compare function used for sorting.
+     * @returns {Resultset} Reference to this resultset, sorted, for future chain operations.
+     * @memberof Resultset
+     */
+    Resultset.prototype.sort = function (comparefun) {
+      // if this has no filters applied, just we need to populate filteredrows first
+      if (!this.filterInitialized && this.filteredrows.length === 0) {
+        this.filteredrows = this.collection.prepareFullDocIndex();
+      }
+
+      var wrappedComparer =
+        (function (userComparer, data) {
+          return function (a, b) {
+            return userComparer(data[a], data[b]);
+          };
+        })(comparefun, this.collection.data);
+
+      this.filteredrows.sort(wrappedComparer);
+
+      return this;
+    };
+
+    /**
+     * Simpler, loose evaluation for user to sort based on a property name. (chainable).
+     *    Sorting based on the same lt/gt helper functions used for binary indices.
+     *
+     * @param {string} propname - name of property to sort by.
+     * @param {object|bool=} options - boolean to specify if isdescending, or options object
+     * @param {boolean} [options.desc=false] - whether to sort descending
+     * @param {boolean} [options.disableIndexIntersect=false] - whether we should explicity not use array intersection.
+     * @param {boolean} [options.forceIndexIntersect=false] - force array intersection (if binary index exists).
+     * @param {boolean} [options.useJavascriptSorting=false] - whether results are sorted via basic javascript sort.
+     * @returns {Resultset} Reference to this resultset, sorted, for future chain operations.
+     * @memberof Resultset
+     * @example
+     * var results = users.chain().simplesort('age').data();
+     */
+    Resultset.prototype.simplesort = function (propname, options) {
+      var eff,
+        targetEff = 10,
+        dc = this.collection.data.length,
+        frl = this.filteredrows.length,
+        hasBinaryIndex = this.collection.binaryIndices.hasOwnProperty(propname);
+
+      if (typeof (options) === 'undefined' || options === false) {
+        options = { desc: false };
+      }
+      if (options === true) {
+        options = { desc: true };
+      }
+
+      // if nothing in filtered rows array...
+      if (frl === 0) {
+        // if the filter is initialized to be empty resultset, do nothing
+        if (this.filterInitialized) {
+          return this;
+        }
+
+        // otherwise no filters applied implies all documents, so we need to populate filteredrows first
+
+        // if we have a binary index, we can just use that instead of sorting (again)
+        if (this.collection.binaryIndices.hasOwnProperty(propname)) {
+          // make sure index is up-to-date
+          this.collection.ensureIndex(propname);
+          // copy index values into filteredrows
+          this.filteredrows = this.collection.binaryIndices[propname].values.slice(0);
+
+          if (options.desc) {
+            this.filteredrows.reverse();
+          }
+
+          // we are done, return this (resultset) for further chain ops
+          return this;
+        }
+        // otherwise initialize array for sort below
+        else {
+          // build full document index (to be sorted subsequently)
+          this.filteredrows = this.collection.prepareFullDocIndex();
+        }
+      }
+      // otherwise we had results to begin with, see if we qualify for index intercept optimization
+      else {
+
+        // If already filtered, but we want to leverage binary index on sort.
+        // This will use custom array intection algorithm.
+        if (!options.disableIndexIntersect && hasBinaryIndex) {
+
+          // calculate filter efficiency
+          eff = dc / frl;
+
+          // when javascript sort fallback is enabled, you generally need more than ~17% of total docs in resultset
+          // before array intersect is determined to be the faster algorithm, otherwise leave at 10% for loki sort.
+          if (options.useJavascriptSorting) {
+            targetEff = 6;
+          }
+
+          // anything more than ratio of 10:1 (total documents/current results) should use old sort code path
+          // So we will only use array intersection if you have more than 10% of total docs in your current resultset.
+          if (eff <= targetEff || options.forceIndexIntersect) {
+            var idx, fr = this.filteredrows;
+            var io = {};
+            // set up hashobject for simple 'inclusion test' with existing (filtered) results
+            for (idx = 0; idx < frl; idx++) {
+              io[fr[idx]] = true;
+            }
+            // grab full sorted binary index array
+            var pv = this.collection.binaryIndices[propname].values;
+
+            // filter by existing results
+            this.filteredrows = pv.filter(function (n) { return io[n]; });
+
+            if (options.desc) {
+              this.filteredrows.reverse();
+            }
+
+            return this;
+          }
+        }
+      }
+
+      // at this point, we will not be able to leverage binary index so we will have to do an array sort
+
+      // if we have opted to use simplified javascript comparison function...
+      if (options.useJavascriptSorting) {
+        return this.sort(function (obj1, obj2) {
+          if (obj1[propname] === obj2[propname]) return 0;
+          if (obj1[propname] > obj2[propname]) return 1;
+          if (obj1[propname] < obj2[propname]) return -1;
+        });
+      }
+
+      // otherwise use loki sort which will return same results if column is indexed or not
+      var wrappedComparer =
+        (function (prop, desc, data) {
+          var val1, val2, arr;
+          return function (a, b) {
+            if (~prop.indexOf('.')) {
+              arr = prop.split('.');
+              val1 = Utils.getIn(data[a], arr, true);
+              val2 = Utils.getIn(data[b], arr, true);
+            } else {
+              val1 = data[a][prop];
+              val2 = data[b][prop];
+            }
+            return sortHelper(val1, val2, desc);
+          };
+        })(propname, options.desc, this.collection.data);
+
+      this.filteredrows.sort(wrappedComparer);
+
+      return this;
+    };
+
+    /**
+     * Allows sorting a resultset based on multiple columns.
+     * @example
+     * // to sort by age and then name (both ascending)
+     * rs.compoundsort(['age', 'name']);
+     * // to sort by age (ascending) and then by name (descending)
+     * rs.compoundsort(['age', ['name', true]]);
+     *
+     * @param {array} properties - array of property names or subarray of [propertyname, isdesc] used evaluate sort order
+     * @returns {Resultset} Reference to this resultset, sorted, for future chain operations.
+     * @memberof Resultset
+     */
+    Resultset.prototype.compoundsort = function (properties) {
+      if (properties.length === 0) {
+        throw new Error("Invalid call to compoundsort, need at least one property");
+      }
+
+      var prop;
+      if (properties.length === 1) {
+        prop = properties[0];
+        if (Array.isArray(prop)) {
+          return this.simplesort(prop[0], prop[1]);
+        }
+        return this.simplesort(prop, false);
+      }
+
+      // unify the structure of 'properties' to avoid checking it repeatedly while sorting
+      for (var i = 0, len = properties.length; i < len; i += 1) {
+        prop = properties[i];
+        if (!Array.isArray(prop)) {
+          properties[i] = [prop, false];
+        }
+      }
+
+      // if this has no filters applied, just we need to populate filteredrows first
+      if (!this.filterInitialized && this.filteredrows.length === 0) {
+        this.filteredrows = this.collection.prepareFullDocIndex();
+      }
+
+      var wrappedComparer =
+        (function (props, data) {
+          return function (a, b) {
+            return compoundeval(props, data[a], data[b]);
+          };
+        })(properties, this.collection.data);
+
+      this.filteredrows.sort(wrappedComparer);
+
+      return this;
+    };
+
+    /**
+     * findOr() - oversee the operation of OR'ed query expressions.
+     *    OR'ed expression evaluation runs each expression individually against the full collection,
+     *    and finally does a set OR on each expression's results.
+     *    Each evaluation can utilize a binary index to prevent multiple linear array scans.
+     *
+     * @param {array} expressionArray - array of expressions
+     * @returns {Resultset} this resultset for further chain ops.
+     */
+    Resultset.prototype.findOr = function (expressionArray) {
+      var fr = null,
+        fri = 0,
+        frlen = 0,
+        docset = [],
+        idxset = [],
+        idx = 0,
+        origCount = this.count();
+
+      // If filter is already initialized, then we query against only those items already in filter.
+      // This means no index utilization for fields, so hopefully its filtered to a smallish filteredrows.
+      for (var ei = 0, elen = expressionArray.length; ei < elen; ei++) {
+        // we need to branch existing query to run each filter separately and combine results
+        fr = this.branch().find(expressionArray[ei]).filteredrows;
+        frlen = fr.length;
+
+        // add any document 'hits'
+        for (fri = 0; fri < frlen; fri++) {
+          idx = fr[fri];
+          if (idxset[idx] === undefined) {
+            idxset[idx] = true;
+            docset.push(idx);
+          }
+        }
+      }
+
+      this.filteredrows = docset;
+      this.filterInitialized = true;
+
+      return this;
+    };
+    Resultset.prototype.$or = Resultset.prototype.findOr;
+
+    // precompile recursively
+    function precompileQuery(operator, value) {
+      // for regex ops, precompile
+      if (operator === '$regex') {
+        if (Array.isArray(value)) {
+          value = new RegExp(value[0], value[1]);
+        } else if (!(value instanceof RegExp)) {
+          value = new RegExp(value);
+        }
+      }
+      else if (typeof value === 'object') {
+        for (var key in value) {
+          if (key === '$regex' || typeof value[key] === 'object') {
+            value[key] = precompileQuery(key, value[key]);
+          }
+        }
+      }
+
+      return value;
+    }
+
+    /**
+     * findAnd() - oversee the operation of AND'ed query expressions.
+     *    AND'ed expression evaluation runs each expression progressively against the full collection,
+     *    internally utilizing existing chained resultset functionality.
+     *    Only the first filter can utilize a binary index.
+     *
+     * @param {array} expressionArray - array of expressions
+     * @returns {Resultset} this resultset for further chain ops.
+     */
+    Resultset.prototype.findAnd = function (expressionArray) {
+      // we have already implementing method chaining in this (our Resultset class)
+      // so lets just progressively apply user supplied and filters
+      for (var i = 0, len = expressionArray.length; i < len; i++) {
+        if (this.count() === 0) {
+          return this;
+        }
+        this.find(expressionArray[i]);
+      }
+      return this;
+    };
+    Resultset.prototype.$and = Resultset.prototype.findAnd;
+
+    /**
+     * Used for querying via a mongo-style query object.
+     *
+     * @param {object} query - A mongo-style query object used for filtering current results.
+     * @param {boolean=} firstOnly - (Optional) Used by collection.findOne()
+     * @returns {Resultset} this resultset for further chain ops.
+     * @memberof Resultset
+     * @example
+     * var over30 = users.chain().find({ age: { $gte: 30 } }).data();
+     */
+    Resultset.prototype.find = function (query, firstOnly) {
+      if (this.collection.data.length === 0) {
+        this.filteredrows = [];
+        this.filterInitialized = true;
+        return this;
+      }
+
+      var queryObject = query || 'getAll',
+        p,
+        property,
+        queryObjectOp,
+        obj,
+        operator,
+        value,
+        key,
+        searchByIndex = false,
+        result = [],
+        filters = [],
+        index = null;
+
+      // flag if this was invoked via findOne()
+      firstOnly = firstOnly || false;
+
+      if (typeof queryObject === 'object') {
+        for (p in queryObject) {
+          obj = {};
+          obj[p] = queryObject[p];
+          filters.push(obj);
+
+          if (hasOwnProperty.call(queryObject, p)) {
+            property = p;
+            queryObjectOp = queryObject[p];
+          }
+        }
+        // if more than one expression in single query object,
+        // convert implicit $and to explicit $and
+        if (filters.length > 1) {
+          return this.find({ '$and': filters }, firstOnly);
+        }
+      }
+
+      // apply no filters if they want all
+      if (!property || queryObject === 'getAll') {
+        if (firstOnly) {
+          if (this.filterInitialized) {
+            this.filteredrows = this.filteredrows.slice(0, 1);
+          } else {
+            this.filteredrows = (this.collection.data.length > 0) ? [0] : [];
+            this.filterInitialized = true;
+          }
+        }
+
+        return this;
+      }
+
+      // injecting $and and $or expression tree evaluation here.
+      if (property === '$and' || property === '$or') {
+        this[property](queryObjectOp);
+
+        // for chained find with firstonly,
+        if (firstOnly && this.filteredrows.length > 1) {
+          this.filteredrows = this.filteredrows.slice(0, 1);
+        }
+
+        return this;
+      }
+
+      // see if query object is in shorthand mode (assuming eq operator)
+      if (queryObjectOp === null || (typeof queryObjectOp !== 'object' || queryObjectOp instanceof Date)) {
+        operator = '$eq';
+        value = queryObjectOp;
+      } else if (typeof queryObjectOp === 'object') {
+        for (key in queryObjectOp) {
+          if (hasOwnProperty.call(queryObjectOp, key)) {
+            operator = key;
+            value = queryObjectOp[key];
+            break;
+          }
+        }
+      } else {
+        throw new Error('Do not know what you want to do.');
+      }
+
+      if (operator === '$regex' || typeof value === 'object') {
+        value = precompileQuery(operator, value);
+      }
+
+      // if user is deep querying the object such as find('name.first': 'odin')
+      var usingDotNotation = (property.indexOf('.') !== -1);
+
+      // if an index exists for the property being queried against, use it
+      // for now only enabling where it is the first filter applied and prop is indexed
+      var doIndexCheck = !this.filterInitialized;
+
+      if (doIndexCheck && this.collection.binaryIndices[property] && indexedOps[operator]) {
+        // this is where our lazy index rebuilding will take place
+        // basically we will leave all indexes dirty until we need them
+        // so here we will rebuild only the index tied to this property
+        // ensureIndex() will only rebuild if flagged as dirty since we are not passing force=true param
+        if (this.collection.adaptiveBinaryIndices !== true) {
+          this.collection.ensureIndex(property);
+        }
+
+        searchByIndex = true;
+        index = this.collection.binaryIndices[property];
+      }
+
+      // opportunistically speed up $in searches from O(n*m) to O(n*log m)
+      if (!searchByIndex && operator === '$in' && Array.isArray(value) && typeof Set !== 'undefined') {
+        value = new Set(value);
+        operator = '$inSet';
+      }
+
+      // the comparison function
+      var fun = LokiOps[operator];
+
+      // "shortcut" for collection data
+      var t = this.collection.data;
+      // filter data length
+      var i = 0,
+        len = 0;
+
+      // Query executed differently depending on :
+      //    - whether the property being queried has an index defined
+      //    - if chained, we handle first pass differently for initial filteredrows[] population
+      //
+      // For performance reasons, each case has its own if block to minimize in-loop calculations
+
+      var filter, rowIdx = 0, record;
+
+      // If the filteredrows[] is already initialized, use it
+      if (this.filterInitialized) {
+        filter = this.filteredrows;
+        len = filter.length;
+
+        // currently supporting dot notation for non-indexed conditions only
+        if (usingDotNotation) {
+          property = property.split('.');
+          for (i = 0; i < len; i++) {
+            rowIdx = filter[i];
+            record = t[rowIdx];
+            if (dotSubScan(record, property, fun, value, record)) {
+              result.push(rowIdx);
+              if (firstOnly) {
+                this.filteredrows = result;
+                return this;
+              }
+            }
+          }
+        } else {
+          for (i = 0; i < len; i++) {
+            rowIdx = filter[i];
+            record = t[rowIdx];
+            if (fun(record[property], value, record)) {
+              result.push(rowIdx);
+              if (firstOnly) {
+                this.filteredrows = result;
+                return this;
+              }
+            }
+          }
+        }
+      }
+      // first chained query so work against data[] but put results in filteredrows
+      else {
+        // if not searching by index
+        if (!searchByIndex) {
+          len = t.length;
+
+          if (usingDotNotation) {
+            property = property.split('.');
+            for (i = 0; i < len; i++) {
+              record = t[i];
+              if (dotSubScan(record, property, fun, value, record)) {
+                result.push(i);
+                if (firstOnly) {
+                  this.filteredrows = result;
+                  this.filterInitialized = true;
+                  return this;
+                }
+              }
+            }
+          } else {
+            for (i = 0; i < len; i++) {
+              record = t[i];
+              if (fun(record[property], value, record)) {
+                result.push(i);
+                if (firstOnly) {
+                  this.filteredrows = result;
+                  this.filterInitialized = true;
+                  return this;
+                }
+              }
+            }
+          }
+        } else {
+          // search by index
+          var segm = this.collection.calculateRange(operator, property, value);
+
+          if (operator !== '$in') {
+            for (i = segm[0]; i <= segm[1]; i++) {
+              if (indexedOps[operator] !== true) {
+                // must be a function, implying 2nd phase filtering of results from calculateRange
+                if (indexedOps[operator](Utils.getIn(t[index.values[i]], property, usingDotNotation), value)) {
+                  result.push(index.values[i]);
+                  if (firstOnly) {
+                    this.filteredrows = result;
+                    this.filterInitialized = true;
+                    return this;
+                  }
+                }
+              }
+              else {
+                result.push(index.values[i]);
+                if (firstOnly) {
+                  this.filteredrows = result;
+                  this.filterInitialized = true;
+                  return this;
+                }
+              }
+            }
+          } else {
+            for (i = 0, len = segm.length; i < len; i++) {
+              result.push(index.values[segm[i]]);
+              if (firstOnly) {
+                this.filteredrows = result;
+                this.filterInitialized = true;
+                return this;
+              }
+            }
+          }
+        }
+
+      }
+
+      this.filteredrows = result;
+      this.filterInitialized = true; // next time work against filteredrows[]
+      return this;
+    };
+
+
+    /**
+     * where() - Used for filtering via a javascript filter function.
+     *
+     * @param {function} fun - A javascript function used for filtering current results by.
+     * @returns {Resultset} this resultset for further chain ops.
+     * @memberof Resultset
+     * @example
+     * var over30 = users.chain().where(function(obj) { return obj.age >= 30; }.data();
+     */
+    Resultset.prototype.where = function (fun) {
+      var viewFunction,
+        result = [];
+
+      if ('function' === typeof fun) {
+        viewFunction = fun;
+      } else {
+        throw new TypeError('Argument is not a stored view or a function');
+      }
+      try {
+        // If the filteredrows[] is already initialized, use it
+        if (this.filterInitialized) {
+          var j = this.filteredrows.length;
+
+          while (j--) {
+            if (viewFunction(this.collection.data[this.filteredrows[j]]) === true) {
+              result.push(this.filteredrows[j]);
+            }
+          }
+
+          this.filteredrows = result;
+
+          return this;
+        }
+        // otherwise this is initial chained op, work against data, push into filteredrows[]
+        else {
+          var k = this.collection.data.length;
+
+          while (k--) {
+            if (viewFunction(this.collection.data[k]) === true) {
+              result.push(k);
+            }
+          }
+
+          this.filteredrows = result;
+          this.filterInitialized = true;
+
+          return this;
+        }
+      } catch (err) {
+        throw err;
+      }
+    };
+
+    /**
+     * count() - returns the number of documents in the resultset.
+     *
+     * @returns {number} The number of documents in the resultset.
+     * @memberof Resultset
+     * @example
+     * var over30Count = users.chain().find({ age: { $gte: 30 } }).count();
+     */
+    Resultset.prototype.count = function () {
+      if (this.filterInitialized) {
+        return this.filteredrows.length;
+      }
+      return this.collection.count();
+    };
+
+    /**
+     * Terminates the chain and returns array of filtered documents
+     *
+     * @param {object=} options - allows specifying 'forceClones' and 'forceCloneMethod' options.
+     * @param {boolean} options.forceClones - Allows forcing the return of cloned objects even when
+     *        the collection is not configured for clone object.
+     * @param {string} options.forceCloneMethod - Allows overriding the default or collection specified cloning method.
+     *        Possible values include 'parse-stringify', 'jquery-extend-deep', 'shallow', 'shallow-assign'
+     * @param {bool} options.removeMeta - Will force clones and strip $loki and meta properties from documents
+     *
+     * @returns {array} Array of documents in the resultset
+     * @memberof Resultset
+     * @example
+     * var resutls = users.chain().find({ age: 34 }).data();
+     */
+    Resultset.prototype.data = function (options) {
+      var result = [],
+        data = this.collection.data,
+        obj,
+        len,
+        i,
+        method;
+
+      options = options || {};
+
+      // if user opts to strip meta, then force clones and use 'shallow' if 'force' options are not present
+      if (options.removeMeta && !options.forceClones) {
+        options.forceClones = true;
+        options.forceCloneMethod = options.forceCloneMethod || 'shallow';
+      }
+
+      // if collection has delta changes active, then force clones and use 'parse-stringify' for effective change tracking of nested objects
+      // if collection is immutable freeze and unFreeze takes care of cloning
+      if (!this.collection.disableDeltaChangesApi && this.collection.disableFreeze) {
+        options.forceClones = true;
+        options.forceCloneMethod = 'parse-stringify';
+      }
+
+      // if this has no filters applied, just return collection.data
+      if (!this.filterInitialized) {
+        if (this.filteredrows.length === 0) {
+          // determine whether we need to clone objects or not
+          if (this.collection.cloneObjects || options.forceClones) {
+            len = data.length;
+            method = options.forceCloneMethod || this.collection.cloneMethod;
+            for (i = 0; i < len; i++) {
+              obj = clone(data[i], method);
+              if (options.removeMeta) {
+                delete obj.$loki;
+                delete obj.meta;
+              }
+              result.push(obj);
+            }
+            return result;
+          }
+          // otherwise we are not cloning so return sliced array with same object references
+          else {
+            return data.slice();
+          }
+        } else {
+          // filteredrows must have been set manually, so use it
+          this.filterInitialized = true;
+        }
+      }
+
+      var fr = this.filteredrows;
+      len = fr.length;
+
+      if (this.collection.cloneObjects || options.forceClones) {
+        method = options.forceCloneMethod || this.collection.cloneMethod;
+        for (i = 0; i < len; i++) {
+          obj = clone(data[fr[i]], method);
+          if (options.removeMeta) {
+            delete obj.$loki;
+            delete obj.meta;
+          }
+          result.push(obj);
+        }
+      } else {
+        for (i = 0; i < len; i++) {
+          result.push(data[fr[i]]);
+        }
+      }
+      return result;
+    };
+
+    /**
+     * Used to run an update operation on all documents currently in the resultset.
+     *
+     * @param {function} updateFunction - User supplied updateFunction(obj) will be executed for each document object.
+     * @returns {Resultset} this resultset for further chain ops.
+     * @memberof Resultset
+     * @example
+     * users.chain().find({ country: 'de' }).update(function(user) {
+     *   user.phoneFormat = "+49 AAAA BBBBBB";
+     * });
+     */
+    Resultset.prototype.update = function (updateFunction) {
+
+      if (typeof (updateFunction) !== "function") {
+        throw new TypeError('Argument is not a function');
+      }
+
+      // if this has no filters applied, we need to populate filteredrows first
+      if (!this.filterInitialized && this.filteredrows.length === 0) {
+        this.filteredrows = this.collection.prepareFullDocIndex();
+      }
+
+      var obj, len = this.filteredrows.length,
+        rcd = this.collection.data;
+
+      // pass in each document object currently in resultset to user supplied updateFunction
+      for (var idx = 0; idx < len; idx++) {
+        // if we have cloning option specified or are doing differential delta changes, clone object first
+        if (!this.disableFreeze || this.collection.cloneObjects || !this.collection.disableDeltaChangesApi) {
+          obj = clone(rcd[this.filteredrows[idx]], this.collection.cloneMethod);
+          updateFunction(obj);
+          this.collection.update(obj);
+        }
+        else {
+          // no need to clone, so just perform update on collection data object instance
+          updateFunction(rcd[this.filteredrows[idx]]);
+          this.collection.update(rcd[this.filteredrows[idx]]);
+        }
+      }
+
+      return this;
+    };
+
+    /**
+     * Removes all document objects which are currently in resultset from collection (as well as resultset)
+     *
+     * @returns {Resultset} this (empty) resultset for further chain ops.
+     * @memberof Resultset
+     * @example
+     * // remove users inactive since 1/1/2001
+     * users.chain().find({ lastActive: { $lte: new Date("1/1/2001").getTime() } }).remove();
+     */
+    Resultset.prototype.remove = function () {
+
+      // if this has no filters applied, we need to populate filteredrows first
+      if (!this.filterInitialized && this.filteredrows.length === 0) {
+        this.filteredrows = this.collection.prepareFullDocIndex();
+      }
+
+      this.collection.removeBatchByPositions(this.filteredrows);
+
+      this.filteredrows = [];
+
+      return this;
+    };
+
+    /**
+     * data transformation via user supplied functions
+     *
+     * @param {function} mapFunction - this function accepts a single document for you to transform and return
+     * @param {function} reduceFunction - this function accepts many (array of map outputs) and returns single value
+     * @returns {value} The output of your reduceFunction
+     * @memberof Resultset
+     * @example
+     * var db = new loki("order.db");
+     * var orders = db.addCollection("orders");
+     * orders.insert([{ qty: 4, unitCost: 100.00 }, { qty: 10, unitCost: 999.99 }, { qty: 2, unitCost: 49.99 }]);
+     *
+     * function mapfun (obj) { return obj.qty*obj.unitCost };
+     * function reducefun(array) {
+     *   var grandTotal=0;
+     *   array.forEach(function(orderTotal) { grandTotal += orderTotal; });
+     *   return grandTotal;
+     * }
+     * var grandOrderTotal = orders.chain().mapReduce(mapfun, reducefun);
+     * console.log(grandOrderTotal);
+     */
+    Resultset.prototype.mapReduce = function (mapFunction, reduceFunction) {
+      try {
+        return reduceFunction(this.data().map(mapFunction));
+      } catch (err) {
+        throw err;
+      }
+    };
+
+    /**
+     * eqJoin() - Left joining two sets of data. Join keys can be defined or calculated properties
+     * eqJoin expects the right join key values to be unique.  Otherwise left data will be joined on the last joinData object with that key
+     * @param {Array|Resultset|Collection} joinData - Data array to join to.
+     * @param {(string|function)} leftJoinKey - Property name in this result set to join on or a function to produce a value to join on
+     * @param {(string|function)} rightJoinKey - Property name in the joinData to join on or a function to produce a value to join on
+     * @param {function=} mapFun - (Optional) A function that receives each matching pair and maps them into output objects - function(left,right){return joinedObject}
+     * @param {object=} dataOptions - options to data() before input to your map function
+     * @param {bool} dataOptions.removeMeta - allows removing meta before calling mapFun
+     * @param {boolean} dataOptions.forceClones - forcing the return of cloned objects to your map object
+     * @param {string} dataOptions.forceCloneMethod - Allows overriding the default or collection specified cloning method.
+     * @returns {Resultset} A resultset with data in the format [{left: leftObj, right: rightObj}]
+     * @memberof Resultset
+     * @example
+     * var db = new loki('sandbox.db');
+     *
+     * var products = db.addCollection('products');
+     * var orders = db.addCollection('orders');
+     *
+     * products.insert({ productId: "100234", name: "flywheel energy storage", unitCost: 19999.99 });
+     * products.insert({ productId: "140491", name: "300F super capacitor", unitCost: 129.99 });
+     * products.insert({ productId: "271941", name: "fuel cell", unitCost: 3999.99 });
+     * products.insert({ productId: "174592", name: "390V 3AH lithium bank", unitCost: 4999.99 });
+     *
+     * orders.insert({ orderDate : new Date("12/1/2017").getTime(), prodId: "174592", qty: 2, customerId: 2 });
+     * orders.insert({ orderDate : new Date("4/15/2016").getTime(), prodId: "271941", qty: 1, customerId: 1 });
+     * orders.insert({ orderDate : new Date("3/12/2017").getTime(), prodId: "140491", qty: 4, customerId: 4 });
+     * orders.insert({ orderDate : new Date("7/31/2017").getTime(), prodId: "100234", qty: 7, customerId: 3 });
+     * orders.insert({ orderDate : new Date("8/3/2016").getTime(), prodId: "174592", qty: 3, customerId: 5 });
+     *
+     * var mapfun = function(left, right) {
+     *   return {
+     *     orderId: left.$loki,
+     *     orderDate: new Date(left.orderDate) + '',
+     *     customerId: left.customerId,
+     *     qty: left.qty,
+     *     productId: left.prodId,
+     *     prodName: right.name,
+     *     prodCost: right.unitCost,
+     *     orderTotal: +((right.unitCost * left.qty).toFixed(2))
+     *   };
+     * };
+     *
+     * // join orders with relevant product info via eqJoin
+     * var orderSummary = orders.chain().eqJoin(products, "prodId", "productId", mapfun).data();
+     *
+     * console.log(orderSummary);
+     */
+    Resultset.prototype.eqJoin = function (joinData, leftJoinKey, rightJoinKey, mapFun, dataOptions) {
+
+      var leftData = [],
+        leftDataLength,
+        rightData = [],
+        rightDataLength,
+        key,
+        result = [],
+        leftKeyisFunction = typeof leftJoinKey === 'function',
+        rightKeyisFunction = typeof rightJoinKey === 'function',
+        joinMap = {};
+
+      //get the left data
+      leftData = this.data(dataOptions);
+      leftDataLength = leftData.length;
+
+      //get the right data
+      if (joinData instanceof Collection) {
+        rightData = joinData.chain().data(dataOptions);
+      } else if (joinData instanceof Resultset) {
+        rightData = joinData.data(dataOptions);
+      } else if (Array.isArray(joinData)) {
+        rightData = joinData;
+      } else {
+        throw new TypeError('joinData needs to be an array or result set');
+      }
+      rightDataLength = rightData.length;
+
+      //construct a lookup table
+
+      for (var i = 0; i < rightDataLength; i++) {
+        key = rightKeyisFunction ? rightJoinKey(rightData[i]) : rightData[i][rightJoinKey];
+        joinMap[key] = rightData[i];
+      }
+
+      if (!mapFun) {
+        mapFun = function (left, right) {
+          return {
+            left: left,
+            right: right
+          };
+        };
+      }
+
+      //Run map function over each object in the resultset
+      for (var j = 0; j < leftDataLength; j++) {
+        key = leftKeyisFunction ? leftJoinKey(leftData[j]) : leftData[j][leftJoinKey];
+        result.push(mapFun(leftData[j], joinMap[key] || {}));
+      }
+
+      //return return a new resultset with no filters
+      this.collection = new Collection('joinData');
+      this.collection.insert(result);
+      this.filteredrows = [];
+      this.filterInitialized = false;
+
+      return this;
+    };
+
+    /**
+     * Applies a map function into a new collection for further chaining.
+     * @param {function} mapFun - javascript map function
+     * @param {object=} dataOptions - options to data() before input to your map function
+     * @param {bool} dataOptions.removeMeta - allows removing meta before calling mapFun
+     * @param {boolean} dataOptions.forceClones - forcing the return of cloned objects to your map object
+     * @param {string} dataOptions.forceCloneMethod - Allows overriding the default or collection specified cloning method.
+     * @memberof Resultset
+     * @example
+     * var orders.chain().find({ productId: 32 }).map(function(obj) {
+     *   return {
+     *     orderId: $loki,
+     *     productId: productId,
+     *     quantity: qty
+     *   };
+     * });
+     */
+    Resultset.prototype.map = function (mapFun, dataOptions) {
+      var data = this.data(dataOptions).map(mapFun);
+      //return return a new resultset with no filters
+      this.collection = new Collection('mappedData');
+      this.collection.insert(data);
+      this.filteredrows = [];
+      this.filterInitialized = false;
+
+      return this;
+    };
+
+    /**
+     * DynamicView class is a versatile 'live' view class which can have filters and sorts applied.
+     *    Collection.addDynamicView(name) instantiates this DynamicView object and notifies it
+     *    whenever documents are add/updated/removed so it can remain up-to-date. (chainable)
+     *
+     * @example
+     * var mydv = mycollection.addDynamicView('test');  // default is non-persistent
+     * mydv.applyFind({ 'doors' : 4 });
+     * mydv.applyWhere(function(obj) { return obj.name === 'Toyota'; });
+     * var results = mydv.data();
+     *
+     * @constructor DynamicView
+     * @implements LokiEventEmitter
+     * @param {Collection} collection - A reference to the collection to work against
+     * @param {string} name - The name of this dynamic view
+     * @param {object=} options - (Optional) Pass in object with 'persistent' and/or 'sortPriority' options.
+     * @param {boolean} [options.persistent=false] - indicates if view is to main internal results array in 'resultdata'
+     * @param {string} [options.sortPriority='passive'] - 'passive' (sorts performed on call to data) or 'active' (after updates)
+     * @param {number} options.minRebuildInterval - minimum rebuild interval (need clarification to docs here)
+     * @see {@link Collection#addDynamicView} to construct instances of DynamicView
+     */
+    function DynamicView(collection, name, options) {
+      this.collection = collection;
+      this.name = name;
+      this.rebuildPending = false;
+      this.options = options || {};
+
+      if (!this.options.hasOwnProperty('persistent')) {
+        this.options.persistent = false;
+      }
+
+      // 'persistentSortPriority':
+      // 'passive' will defer the sort phase until they call data(). (most efficient overall)
+      // 'active' will sort async whenever next idle. (prioritizes read speeds)
+      if (!this.options.hasOwnProperty('sortPriority')) {
+        this.options.sortPriority = 'passive';
+      }
+
+      if (!this.options.hasOwnProperty('minRebuildInterval')) {
+        this.options.minRebuildInterval = 1;
+      }
+
+      this.resultset = new Resultset(collection);
+      this.resultdata = [];
+      this.resultsdirty = false;
+
+      this.cachedresultset = null;
+
+      // keep ordered filter pipeline
+      this.filterPipeline = [];
+      if (!this.collection.disableFreeze) {
+        Object.freeze(this.filterPipeline);
+      }
+
+      // sorting member variables
+      // we only support one active search, applied using applySort() or applySimpleSort()
+      this.sortFunction = null;
+      this.sortCriteria = null;
+      this.sortCriteriaSimple = null;
+      this.sortDirty = false;
+
+      // for now just have 1 event for when we finally rebuilt lazy view
+      // once we refactor transactions, i will tie in certain transactional events
+
+      this.events = {
+        'rebuild': [],
+        'filter': [],
+        'sort': []
+      };
+    }
+
+    DynamicView.prototype = new LokiEventEmitter();
+    DynamicView.prototype.constructor = DynamicView;
+
+    /**
+     * getSort() - used to get the current sort
+     *
+     * @returns function (sortFunction) or array (sortCriteria) or object (sortCriteriaSimple)
+     */
+    DynamicView.prototype.getSort = function () {
+      return this.sortFunction || this.sortCriteria || this.sortCriteriaSimple;
+    };
+
+    /**
+     * rematerialize() - internally used immediately after deserialization (loading)
+     *    This will clear out and reapply filterPipeline ops, recreating the view.
+     *    Since where filters do not persist correctly, this method allows
+     *    restoring the view to state where user can re-apply those where filters.
+     *
+     * @param {Object=} options - (Optional) allows specification of 'removeWhereFilters' option
+     * @returns {DynamicView} This dynamic view for further chained ops.
+     * @memberof DynamicView
+     * @fires DynamicView.rebuild
+     */
+    DynamicView.prototype.rematerialize = function (options) {
+      var fpl,
+        fpi,
+        idx;
+
+      options = options || {};
+
+      this.resultdata = [];
+      this.resultsdirty = true;
+      this.resultset = new Resultset(this.collection);
+
+      if (this.sortFunction || this.sortCriteria || this.sortCriteriaSimple) {
+        this.sortDirty = true;
+      }
+
+      var wasFrozen = Object.isFrozen(this.filterPipeline);
+      if (options.hasOwnProperty('removeWhereFilters')) {
+        // for each view see if it had any where filters applied... since they don't
+        // serialize those functions lets remove those invalid filters
+        if (wasFrozen) {
+          this.filterPipeline = this.filterPipeline.slice();
+        }
+        fpl = this.filterPipeline.length;
+        fpi = fpl;
+        while (fpi--) {
+          if (this.filterPipeline[fpi].type === 'where') {
+            if (fpi !== this.filterPipeline.length - 1) {
+              this.filterPipeline[fpi] = this.filterPipeline[this.filterPipeline.length - 1];
+            }
+            this.filterPipeline.length--;
+          }
+        }
+      }
+
+      // back up old filter pipeline, clear filter pipeline, and reapply pipeline ops
+      var ofp = this.filterPipeline;
+      this.filterPipeline = [];
+
+      // now re-apply 'find' filterPipeline ops
+      fpl = ofp.length;
+      for (idx = 0; idx < fpl; idx++) {
+        this.applyFind(ofp[idx].val, ofp[idx].uid);
+      }
+      if (wasFrozen) {
+        Object.freeze(this.filterPipeline);
+      }
+
+      // during creation of unit tests, i will remove this forced refresh and leave lazy
+      this.data();
+
+      // emit rebuild event in case user wants to be notified
+      this.emit('rebuild', this);
+
+      return this;
+    };
+
+    /**
+     * branchResultset() - Makes a copy of the internal resultset for branched queries.
+     *    Unlike this dynamic view, the branched resultset will not be 'live' updated,
+     *    so your branched query should be immediately resolved and not held for future evaluation.
+     *
+     * @param {(string|array=)} transform - Optional name of collection transform, or an array of transform steps
+     * @param {object=} parameters - optional parameters (if optional transform requires them)
+     * @returns {Resultset} A copy of the internal resultset for branched queries.
+     * @memberof DynamicView
+     * @example
+     * var db = new loki('test');
+     * var coll = db.addCollection('mydocs');
+     * var dv = coll.addDynamicView('myview');
+     * var tx = [
+     *   {
+     *     type: 'offset',
+     *     value: '[%lktxp]pageStart'
+     *   },
+     *   {
+     *     type: 'limit',
+     *     value: '[%lktxp]pageSize'
+     *   }
+     * ];
+     * coll.addTransform('viewPaging', tx);
+     *
+     * // add some records
+     *
+     * var results = dv.branchResultset('viewPaging', { pageStart: 10, pageSize: 10 }).data();
+     */
+    DynamicView.prototype.branchResultset = function (transform, parameters) {
+      var rs = this.resultset.branch();
+
+      if (typeof transform === 'undefined') {
+        return rs;
+      }
+
+      return rs.transform(transform, parameters);
+    };
+
+    /**
+     * toJSON() - Override of toJSON to avoid circular references
+     *
+     */
+    DynamicView.prototype.toJSON = function () {
+      var copy = new DynamicView(this.collection, this.name, this.options);
+      copy.resultset = this.resultset;
+      copy.resultdata = []; // let's not save data (copy) to minimize size
+      copy.resultsdirty = true;
+      copy.filterPipeline = this.filterPipeline;
+      copy.sortFunction = this.sortFunction;
+      copy.sortCriteria = this.sortCriteria;
+      copy.sortCriteriaSimple = this.sortCriteriaSimple || null;
+      copy.sortDirty = this.sortDirty;
+
+      // avoid circular reference, reapply in db.loadJSON()
+      copy.collection = null;
+
+      return copy;
+    };
+
+    /**
+     * removeFilters() - Used to clear pipeline and reset dynamic view to initial state.
+     *     Existing options should be retained.
+     * @param {object=} options - configure removeFilter behavior
+     * @param {boolean=} options.queueSortPhase - (default: false) if true we will async rebuild view (maybe set default to true in future?)
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.removeFilters = function (options) {
+      options = options || {};
+
+      this.rebuildPending = false;
+      this.resultset.reset();
+      this.resultdata = [];
+      this.resultsdirty = true;
+
+      this.cachedresultset = null;
+
+      var wasFrozen = Object.isFrozen(this.filterPipeline);
+      var filterChanged = this.filterPipeline.length > 0;
+      // keep ordered filter pipeline
+      this.filterPipeline = [];
+      if (wasFrozen) {
+        Object.freeze(this.filterPipeline);
+      }
+
+      // sorting member variables
+      // we only support one active search, applied using applySort() or applySimpleSort()
+      this.sortFunction = null;
+      this.sortCriteria = null;
+      this.sortCriteriaSimple = null;
+      this.sortDirty = false;
+
+      if (options.queueSortPhase === true) {
+        this.queueSortPhase();
+      }
+
+      if (filterChanged) {
+        this.emit('filter');
+      }
+    };
+
+    /**
+     * applySort() - Used to apply a sort to the dynamic view
+     * @example
+     * dv.applySort(function(obj1, obj2) {
+     *   if (obj1.name === obj2.name) return 0;
+     *   if (obj1.name > obj2.name) return 1;
+     *   if (obj1.name < obj2.name) return -1;
+     * });
+     *
+     * @param {function} comparefun - a javascript compare function used for sorting
+     * @returns {DynamicView} this DynamicView object, for further chain ops.
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.applySort = function (comparefun) {
+      this.sortFunction = comparefun;
+      this.sortCriteria = null;
+      this.sortCriteriaSimple = null;
+
+      this.queueSortPhase();
+      this.emit('sort');
+
+      return this;
+    };
+
+    /**
+     * applySimpleSort() - Used to specify a property used for view translation.
+     * @example
+     * dv.applySimpleSort("name");
+     *
+     * @param {string} propname - Name of property by which to sort.
+     * @param {object|boolean=} options - boolean for sort descending or options object
+     * @param {boolean} [options.desc=false] - whether we should sort descending.
+     * @param {boolean} [options.disableIndexIntersect=false] - whether we should explicity not use array intersection.
+     * @param {boolean} [options.forceIndexIntersect=false] - force array intersection (if binary index exists).
+     * @param {boolean} [options.useJavascriptSorting=false] - whether results are sorted via basic javascript sort.
+     * @returns {DynamicView} this DynamicView object, for further chain ops.
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.applySimpleSort = function (propname, options) {
+      this.sortCriteriaSimple = { propname: propname, options: options || false };
+      if (!this.collection.disableFreeze) {
+        deepFreeze(this.sortCriteriaSimple);
+      }
+      this.sortCriteria = null;
+      this.sortFunction = null;
+
+      this.queueSortPhase();
+      this.emit('sort');
+
+      return this;
+    };
+
+    /**
+     * applySortCriteria() - Allows sorting a resultset based on multiple columns.
+     * @example
+     * // to sort by age and then name (both ascending)
+     * dv.applySortCriteria(['age', 'name']);
+     * // to sort by age (ascending) and then by name (descending)
+     * dv.applySortCriteria(['age', ['name', true]);
+     * // to sort by age (descending) and then by name (descending)
+     * dv.applySortCriteria(['age', true], ['name', true]);
+     *
+     * @param {array} properties - array of property names or subarray of [propertyname, isdesc] used evaluate sort order
+     * @returns {DynamicView} Reference to this DynamicView, sorted, for future chain operations.
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.applySortCriteria = function (criteria) {
+      this.sortCriteria = criteria;
+      if (!this.collection.disableFreeze) {
+        deepFreeze(this.sortCriteria);
+      }
+      this.sortCriteriaSimple = null;
+      this.sortFunction = null;
+
+      this.queueSortPhase();
+      this.emit('sort');
+      return this;
+    };
+
+    /**
+     * startTransaction() - marks the beginning of a transaction.
+     *
+     * @returns {DynamicView} this DynamicView object, for further chain ops.
+     */
+    DynamicView.prototype.startTransaction = function () {
+      this.cachedresultset = this.resultset.copy();
+
+      return this;
+    };
+
+    /**
+     * commit() - commits a transaction.
+     *
+     * @returns {DynamicView} this DynamicView object, for further chain ops.
+     */
+    DynamicView.prototype.commit = function () {
+      this.cachedresultset = null;
+
+      return this;
+    };
+
+    /**
+     * rollback() - rolls back a transaction.
+     *
+     * @returns {DynamicView} this DynamicView object, for further chain ops.
+     */
+    DynamicView.prototype.rollback = function () {
+      this.resultset = this.cachedresultset;
+
+      if (this.options.persistent) {
+        // for now just rebuild the persistent dynamic view data in this worst case scenario
+        // (a persistent view utilizing transactions which get rolled back), we already know the filter so not too bad.
+        this.resultdata = this.resultset.data();
+
+        this.emit('rebuild', this);
+      }
+
+      return this;
+    };
+
+
+    /**
+     * Implementation detail.
+     * _indexOfFilterWithId() - Find the index of a filter in the pipeline, by that filter's ID.
+     *
+     * @param {(string|number)} uid - The unique ID of the filter.
+     * @returns {number}: index of the referenced filter in the pipeline; -1 if not found.
+     */
+    DynamicView.prototype._indexOfFilterWithId = function (uid) {
+      if (typeof uid === 'string' || typeof uid === 'number') {
+        for (var idx = 0, len = this.filterPipeline.length; idx < len; idx += 1) {
+          if (uid === this.filterPipeline[idx].uid) {
+            return idx;
+          }
+        }
+      }
+      return -1;
+    };
+
+    /**
+     * Implementation detail.
+     * _addFilter() - Add the filter object to the end of view's filter pipeline and apply the filter to the resultset.
+     *
+     * @param {object} filter - The filter object. Refer to applyFilter() for extra details.
+     */
+    DynamicView.prototype._addFilter = function (filter) {
+      var wasFrozen = Object.isFrozen(this.filterPipeline);
+      if (wasFrozen) {
+        this.filterPipeline = this.filterPipeline.slice();
+      }
+      if (!this.collection.disableFreeze) {
+        deepFreeze(filter);
+      }
+      this.filterPipeline.push(filter);
+      if (wasFrozen) {
+        Object.freeze(this.filterPipeline);
+      }
+      this.resultset[filter.type](filter.val);
+    };
+
+    /**
+     * reapplyFilters() - Reapply all the filters in the current pipeline.
+     *
+     * @returns {DynamicView} this DynamicView object, for further chain ops.
+     */
+    DynamicView.prototype.reapplyFilters = function () {
+      this.resultset.reset();
+
+      this.cachedresultset = null;
+      if (this.options.persistent) {
+        this.resultdata = [];
+        this.resultsdirty = true;
+      }
+
+      var filters = this.filterPipeline;
+      var wasFrozen = Object.isFrozen(filters);
+      this.filterPipeline = [];
+
+      for (var idx = 0, len = filters.length; idx < len; idx += 1) {
+        this._addFilter(filters[idx]);
+      }
+      if (wasFrozen) {
+        Object.freeze(this.filterPipeline);
+      }
+
+      if (this.sortFunction || this.sortCriteria || this.sortCriteriaSimple) {
+        this.queueSortPhase();
+      } else {
+        this.queueRebuildEvent();
+      }
+      this.emit('filter');
+      return this;
+    };
+
+    /**
+     * applyFilter() - Adds or updates a filter in the DynamicView filter pipeline
+     *
+     * @param {object} filter - A filter object to add to the pipeline.
+     *    The object is in the format { 'type': filter_type, 'val', filter_param, 'uid', optional_filter_id }
+     * @returns {DynamicView} this DynamicView object, for further chain ops.
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.applyFilter = function (filter) {
+      var idx = this._indexOfFilterWithId(filter.uid);
+      if (idx >= 0) {
+        var wasFrozen = Object.isFrozen(this.filterPipeline);
+        if (wasFrozen) {
+          this.filterPipeline = this.filterPipeline.slice();
+        }
+        this.filterPipeline[idx] = filter;
+        if (wasFrozen) {
+          freeze(filter);
+          Object.freeze(this.filterPipeline);
+        }
+        return this.reapplyFilters();
+      }
+
+      this.cachedresultset = null;
+      if (this.options.persistent) {
+        this.resultdata = [];
+        this.resultsdirty = true;
+      }
+
+      this._addFilter(filter);
+
+      if (this.sortFunction || this.sortCriteria || this.sortCriteriaSimple) {
+        this.queueSortPhase();
+      } else {
+        this.queueRebuildEvent();
+      }
+
+      this.emit('filter');
+      return this;
+    };
+
+    /**
+     * applyFind() - Adds or updates a mongo-style query option in the DynamicView filter pipeline
+     *
+     * @param {object} query - A mongo-style query object to apply to pipeline
+     * @param {(string|number)=} uid - Optional: The unique ID of this filter, to reference it in the future.
+     * @returns {DynamicView} this DynamicView object, for further chain ops.
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.applyFind = function (query, uid) {
+      this.applyFilter({
+        type: 'find',
+        val: query,
+        uid: uid
+      });
+      return this;
+    };
+
+    /**
+     * applyWhere() - Adds or updates a javascript filter function in the DynamicView filter pipeline
+     *
+     * @param {function} fun - A javascript filter function to apply to pipeline
+     * @param {(string|number)=} uid - Optional: The unique ID of this filter, to reference it in the future.
+     * @returns {DynamicView} this DynamicView object, for further chain ops.
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.applyWhere = function (fun, uid) {
+      this.applyFilter({
+        type: 'where',
+        val: fun,
+        uid: uid
+      });
+      return this;
+    };
+
+    /**
+     * removeFilter() - Remove the specified filter from the DynamicView filter pipeline
+     *
+     * @param {(string|number)} uid - The unique ID of the filter to be removed.
+     * @returns {DynamicView} this DynamicView object, for further chain ops.
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.removeFilter = function (uid) {
+      var idx = this._indexOfFilterWithId(uid);
+      if (idx < 0) {
+        throw new Error("Dynamic view does not contain a filter with ID: " + uid);
+      }
+      var wasFrozen = Object.isFrozen(this.filterPipeline);
+      if (wasFrozen) {
+        this.filterPipeline = this.filterPipeline.slice();
+      }
+      this.filterPipeline.splice(idx, 1);
+      if (wasFrozen) {
+        Object.freeze(this.filterPipeline);
+      }
+      this.reapplyFilters();
+      return this;
+    };
+
+    /**
+     * count() - returns the number of documents representing the current DynamicView contents.
+     *
+     * @returns {number} The number of documents representing the current DynamicView contents.
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.count = function () {
+      // in order to be accurate we will pay the minimum cost (and not alter dv state management)
+      // recurring resultset data resolutions should know internally its already up to date.
+      // for persistent data this will not update resultdata nor fire rebuild event.
+      if (this.resultsdirty) {
+        this.resultdata = this.resultset.data();
+      }
+
+      return this.resultset.count();
+    };
+
+    /**
+     * data() - resolves and pending filtering and sorting, then returns document array as result.
+     *
+     * @param {object=} options - optional parameters to pass to resultset.data() if non-persistent
+     * @param {boolean} options.forceClones - Allows forcing the return of cloned objects even when
+     *        the collection is not configured for clone object.
+     * @param {string} options.forceCloneMethod - Allows overriding the default or collection specified cloning method.
+     *        Possible values include 'parse-stringify', 'jquery-extend-deep', 'shallow', 'shallow-assign'
+     * @param {bool} options.removeMeta - Will force clones and strip $loki and meta properties from documents
+     * @returns {array} An array of documents representing the current DynamicView contents.
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.data = function (options) {
+      // using final sort phase as 'catch all' for a few use cases which require full rebuild
+      if (this.sortDirty || this.resultsdirty) {
+        this.performSortPhase({
+          suppressRebuildEvent: true
+        });
+      }
+      return (this.options.persistent) ? (this.resultdata) : (this.resultset.data(options));
+    };
+
+    /**
+     * queueRebuildEvent() - When the view is not sorted we may still wish to be notified of rebuild events.
+     *     This event will throttle and queue a single rebuild event when batches of updates affect the view.
+     */
+    DynamicView.prototype.queueRebuildEvent = function () {
+      if (this.rebuildPending) {
+        return;
+      }
+      this.rebuildPending = true;
+
+      var self = this;
+      setTimeout(function () {
+        if (self.rebuildPending) {
+          self.rebuildPending = false;
+          self.emit('rebuild', self);
+        }
+      }, this.options.minRebuildInterval);
+    };
+
+    /**
+     * queueSortPhase : If the view is sorted we will throttle sorting to either :
+     *    (1) passive - when the user calls data(), or
+     *    (2) active - once they stop updating and yield js thread control
+     */
+    DynamicView.prototype.queueSortPhase = function () {
+      // already queued? exit without queuing again
+      if (this.sortDirty) {
+        return;
+      }
+      this.sortDirty = true;
+
+      var self = this;
+      if (this.options.sortPriority === "active") {
+        // active sorting... once they are done and yield js thread, run async performSortPhase()
+        setTimeout(function () {
+          self.performSortPhase();
+        }, this.options.minRebuildInterval);
+      } else {
+        // must be passive sorting... since not calling performSortPhase (until data call), lets use queueRebuildEvent to
+        // potentially notify user that data has changed.
+        this.queueRebuildEvent();
+      }
+    };
+
+    /**
+     * performSortPhase() - invoked synchronously or asynchronously to perform final sort phase (if needed)
+     *
+     */
+    DynamicView.prototype.performSortPhase = function (options) {
+      // async call to this may have been pre-empted by synchronous call to data before async could fire
+      if (!this.sortDirty && !this.resultsdirty) {
+        return;
+      }
+
+      options = options || {};
+
+      if (this.sortDirty) {
+        if (this.sortFunction) {
+          this.resultset.sort(this.sortFunction);
+        } else if (this.sortCriteria) {
+          this.resultset.compoundsort(this.sortCriteria);
+        } else if (this.sortCriteriaSimple) {
+          this.resultset.simplesort(this.sortCriteriaSimple.propname, this.sortCriteriaSimple.options);
+        }
+
+        this.sortDirty = false;
+      }
+
+      if (this.options.persistent) {
+        // persistent view, rebuild local resultdata array
+        this.resultdata = this.resultset.data();
+        this.resultsdirty = false;
+      }
+
+      if (!options.suppressRebuildEvent) {
+        this.emit('rebuild', this);
+      }
+    };
+
+    /**
+     * evaluateDocument() - internal method for (re)evaluating document inclusion.
+     *    Called by : collection.insert() and collection.update().
+     *
+     * @param {int} objIndex - index of document to (re)run through filter pipeline.
+     * @param {bool} isNew - true if the document was just added to the collection.
+     */
+    DynamicView.prototype.evaluateDocument = function (objIndex, isNew) {
+      // if no filter applied yet, the result 'set' should remain 'everything'
+      if (!this.resultset.filterInitialized) {
+        if (this.options.persistent) {
+          this.resultdata = this.resultset.data();
+        }
+        // need to re-sort to sort new document
+        if (this.sortFunction || this.sortCriteria || this.sortCriteriaSimple) {
+          this.queueSortPhase();
+        } else {
+          this.queueRebuildEvent();
+        }
+        return;
+      }
+
+      var ofr = this.resultset.filteredrows;
+      var oldPos = (isNew) ? (-1) : (ofr.indexOf(+objIndex));
+      var oldlen = ofr.length;
+
+      // creating a 1-element resultset to run filter chain ops on to see if that doc passes filters;
+      // mostly efficient algorithm, slight stack overhead price (this function is called on inserts and updates)
+      var evalResultset = new Resultset(this.collection);
+      evalResultset.filteredrows = [objIndex];
+      evalResultset.filterInitialized = true;
+      var filter;
+      for (var idx = 0, len = this.filterPipeline.length; idx < len; idx++) {
+        filter = this.filterPipeline[idx];
+        evalResultset[filter.type](filter.val);
+      }
+
+      // not a true position, but -1 if not pass our filter(s), 0 if passed filter(s)
+      var newPos = (evalResultset.filteredrows.length === 0) ? -1 : 0;
+
+      // wasn't in old, shouldn't be now... do nothing
+      if (oldPos === -1 && newPos === -1) return;
+
+      // wasn't in resultset, should be now... add
+      if (oldPos === -1 && newPos !== -1) {
+        ofr.push(objIndex);
+
+        if (this.options.persistent) {
+          this.resultdata.push(this.collection.data[objIndex]);
+        }
+
+        // need to re-sort to sort new document
+        if (this.sortFunction || this.sortCriteria || this.sortCriteriaSimple) {
+          this.queueSortPhase();
+        } else {
+          this.queueRebuildEvent();
+        }
+
+        return;
+      }
+
+      // was in resultset, shouldn't be now... delete
+      if (oldPos !== -1 && newPos === -1) {
+        if (oldPos < oldlen - 1) {
+          ofr.splice(oldPos, 1);
+
+          if (this.options.persistent) {
+            this.resultdata.splice(oldPos, 1);
+          }
+        } else {
+          ofr.length = oldlen - 1;
+
+          if (this.options.persistent) {
+            this.resultdata.length = oldlen - 1;
+          }
+        }
+
+        // in case changes to data altered a sort column
+        if (this.sortFunction || this.sortCriteria || this.sortCriteriaSimple) {
+          this.queueSortPhase();
+        } else {
+          this.queueRebuildEvent();
+        }
+
+        return;
+      }
+
+      // was in resultset, should still be now... (update persistent only?)
+      if (oldPos !== -1 && newPos !== -1) {
+        if (this.options.persistent) {
+          // in case document changed, replace persistent view data with the latest collection.data document
+          this.resultdata[oldPos] = this.collection.data[objIndex];
+        }
+
+        // in case changes to data altered a sort column
+        if (this.sortFunction || this.sortCriteria || this.sortCriteriaSimple) {
+          this.queueSortPhase();
+        } else {
+          this.queueRebuildEvent();
+        }
+
+        return;
+      }
+    };
+
+    /**
+     * removeDocument() - internal function called on collection.delete()
+     * @param {number|number[]} objIndex - index of document to (re)run through filter pipeline.
+     */
+    DynamicView.prototype.removeDocument = function (objIndex) {
+      var idx, rmidx, rmlen, rxo = {}, fxo = {};
+      var adjels = [];
+      var drs = this.resultset;
+      var fr = this.resultset.filteredrows;
+      var frlen = fr.length;
+
+      // if no filter applied yet, the result 'set' should remain 'everything'
+      if (!this.resultset.filterInitialized) {
+        if (this.options.persistent) {
+          this.resultdata = this.resultset.data();
+        }
+        // in case changes to data altered a sort column
+        if (this.sortFunction || this.sortCriteria || this.sortCriteriaSimple) {
+          this.queueSortPhase();
+        } else {
+          this.queueRebuildEvent();
+        }
+        return;
+      }
+
+      // if passed single index, wrap in array
+      if (!Array.isArray(objIndex)) {
+        objIndex = [objIndex];
+      }
+
+      rmlen = objIndex.length;
+      // create intersection object of data indices to remove
+      for (rmidx = 0; rmidx < rmlen; rmidx++) {
+        rxo[objIndex[rmidx]] = true;
+      }
+
+      // pivot remove data indices into remove filteredrows indices and dump in hashobject
+      for (idx = 0; idx < frlen; idx++) {
+        if (rxo[fr[idx]]) fxo[idx] = true;
+      }
+
+      // if any of the removed items were in our filteredrows...
+      if (Object.keys(fxo).length > 0) {
+        // remove them from filtered rows
+        this.resultset.filteredrows = this.resultset.filteredrows.filter(function (di, idx) { return !fxo[idx]; });
+        // if persistent...
+        if (this.options.persistent) {
+          // remove from resultdata
+          this.resultdata = this.resultdata.filter(function (obj, idx) { return !fxo[idx]; });
+        }
+
+        // and queue sorts
+        if (this.sortFunction || this.sortCriteria || this.sortCriteriaSimple) {
+          this.queueSortPhase();
+        } else {
+          this.queueRebuildEvent();
+        }
+      }
+
+      // to remove holes, we need to 'shift down' indices, this filter function finds number of positions to shift
+      var filt = function (idx) { return function (di) { return di < drs.filteredrows[idx]; }; };
+
+      frlen = drs.filteredrows.length;
+      for (idx = 0; idx < frlen; idx++) {
+        // grab subset of removed elements where data index is less than current filtered row data index;
+        // use this to determine how many positions iterated remaining data index needs to be 'shifted down'
+        adjels = objIndex.filter(filt(idx));
+        drs.filteredrows[idx] -= adjels.length;
+      }
+    };
+
+    /**
+     * mapReduce() - data transformation via user supplied functions
+     *
+     * @param {function} mapFunction - this function accepts a single document for you to transform and return
+     * @param {function} reduceFunction - this function accepts many (array of map outputs) and returns single value
+     * @returns The output of your reduceFunction
+     * @memberof DynamicView
+     */
+    DynamicView.prototype.mapReduce = function (mapFunction, reduceFunction) {
+      try {
+        return reduceFunction(this.data().map(mapFunction));
+      } catch (err) {
+        throw err;
+      }
+    };
+
+
+    /**
+     * Collection class that handles documents of same type
+     * @constructor Collection
+     * @implements LokiEventEmitter
+     * @param {string} name - collection name
+     * @param {(array|object)=} options - (optional) array of property names to be indicized OR a configuration object
+     * @param {array=} [options.unique=[]] - array of property names to define unique constraints for
+     * @param {array=} [options.exact=[]] - array of property names to define exact constraints for
+     * @param {array=} [options.indices=[]] - array property names to define binary indexes for
+     * @param {boolean} [options.adaptiveBinaryIndices=true] - collection indices will be actively rebuilt rather than lazily
+     * @param {boolean} [options.asyncListeners=false] - whether listeners are invoked asynchronously
+     * @param {boolean} [options.disableMeta=false] - set to true to disable meta property on documents
+     * @param {boolean} [options.disableChangesApi=true] - set to false to enable Changes API
+     * @param {boolean} [options.disableDeltaChangesApi=true] - set to false to enable Delta Changes API (requires Changes API, forces cloning)
+     * @param {boolean} [options.autoupdate=false] - use Object.observe to update objects automatically
+     * @param {boolean} [options.clone=false] - specify whether inserts and queries clone to/from user
+     * @param {boolean} [options.serializableIndices=true[]] - converts date values on binary indexed properties to epoch time
+     * @param {boolean} [options.disableFreeze=true] - when false all docs are frozen
+     * @param {string} [options.cloneMethod='parse-stringify'] - 'parse-stringify', 'jquery-extend-deep', 'shallow', 'shallow-assign'
+     * @param {int=} options.ttl - age of document (in ms.) before document is considered aged/stale.
+     * @param {int=} options.ttlInterval - time interval for clearing out 'aged' documents; not set by default.
+     * @see {@link Loki#addCollection} for normal creation of collections
+     */
+    function Collection(name, options) {
+      // the name of the collection
+
+      this.name = name;
+      // the data held by the collection
+      this.data = [];
+      this.idIndex = null; // position->$loki index (built lazily)
+      this.binaryIndices = {}; // user defined indexes
+      this.constraints = {
+        unique: {},
+        exact: {}
+      };
+
+      // unique contraints contain duplicate object references, so they are not persisted.
+      // we will keep track of properties which have unique contraint applied here, and regenerate lazily
+      this.uniqueNames = [];
+
+      // transforms will be used to store frequently used query chains as a series of steps
+      // which itself can be stored along with the database.
+      this.transforms = {};
+
+      // the object type of the collection
+      this.objType = name;
+
+      // in autosave scenarios we will use collection level dirty flags to determine whether save is needed.
+      // currently, if any collection is dirty we will autosave the whole database if autosave is configured.
+      // defaulting to true since this is called from addCollection and adding a collection should trigger save
+      this.dirty = true;
+
+      // private holders for cached data
+      this.cachedIndex = null;
+      this.cachedBinaryIndex = null;
+      this.cachedData = null;
+      var self = this;
+
+      /* OPTIONS */
+      options = options || {};
+
+      // exact match and unique constraints
+      if (options.hasOwnProperty('unique')) {
+        if (!Array.isArray(options.unique)) {
+          options.unique = [options.unique];
+        }
+        // save names; actual index is built lazily
+        options.unique.forEach(function (prop) {
+          self.uniqueNames.push(prop);
+        });
+      }
+
+      if (options.hasOwnProperty('exact')) {
+        options.exact.forEach(function (prop) {
+          self.constraints.exact[prop] = new ExactIndex(prop);
+        });
+      }
+
+      // if set to true we will optimally keep indices 'fresh' during insert/update/remove ops (never dirty/never needs rebuild)
+      // if you frequently intersperse insert/update/remove ops between find ops this will likely be significantly faster option.
+      this.adaptiveBinaryIndices = options.hasOwnProperty('adaptiveBinaryIndices') ? options.adaptiveBinaryIndices : true;
+
+      // is collection transactional
+      this.transactional = options.hasOwnProperty('transactional') ? options.transactional : false;
+
+      // options to clone objects when inserting them
+      this.cloneObjects = options.hasOwnProperty('clone') ? options.clone : false;
+
+      // default clone method (if enabled) is parse-stringify
+      this.cloneMethod = options.hasOwnProperty('cloneMethod') ? options.cloneMethod : "parse-stringify";
+
+      // option to make event listeners async, default is sync
+      this.asyncListeners = options.hasOwnProperty('asyncListeners') ? options.asyncListeners : false;
+
+      // if set to true we will not maintain a meta property for a document
+      this.disableMeta = options.hasOwnProperty('disableMeta') ? options.disableMeta : false;
+
+      // disable track changes
+      this.disableChangesApi = options.hasOwnProperty('disableChangesApi') ? options.disableChangesApi : true;
+
+      // disable delta update object style on changes
+      this.disableDeltaChangesApi = options.hasOwnProperty('disableDeltaChangesApi') ? options.disableDeltaChangesApi : true;
+      if (this.disableChangesApi) { this.disableDeltaChangesApi = true; }
+
+      // option to observe objects and update them automatically, ignored if Object.observe is not supported
+      this.autoupdate = options.hasOwnProperty('autoupdate') ? options.autoupdate : false;
+
+      // by default, if you insert a document into a collection with binary indices, if those indexed properties contain
+      // a DateTime we will convert to epoch time format so that (across serializations) its value position will be the
+      // same 'after' serialization as it was 'before'.
+      this.serializableIndices = options.hasOwnProperty('serializableIndices') ? options.serializableIndices : true;
+
+      // option to deep freeze all documents
+      this.disableFreeze = options.hasOwnProperty('disableFreeze') ? options.disableFreeze : true;
+
+      //option to activate a cleaner daemon - clears "aged" documents at set intervals.
+      this.ttl = {
+        age: null,
+        ttlInterval: null,
+        daemon: null
+      };
+      this.setTTL(options.ttl || -1, options.ttlInterval);
+
+      // currentMaxId - change manually at your own peril!
+      this.maxId = 0;
+
+      this.DynamicViews = [];
+
+      // events
+      this.events = {
+        'insert': [],
+        'update': [],
+        'pre-insert': [],
+        'pre-update': [],
+        'close': [],
+        'flushbuffer': [],
+        'error': [],
+        'delete': [],
+        'warning': []
+      };
+
+      // changes are tracked by collection and aggregated by the db
+      this.changes = [];
+
+      // lightweight changes tracking (loki IDs only) for optimized db saving
+      this.dirtyIds = [];
+
+      // initialize optional user-supplied indices array ['age', 'lname', 'zip']
+      var indices = [];
+      if (options && options.indices) {
+        if (Object.prototype.toString.call(options.indices) === '[object Array]') {
+          indices = options.indices;
+        } else if (typeof options.indices === 'string') {
+          indices = [options.indices];
+        } else {
+          throw new TypeError('Indices needs to be a string or an array of strings');
+        }
+      }
+
+      for (var idx = 0; idx < indices.length; idx++) {
+        this.ensureIndex(indices[idx]);
+      }
+
+      function observerCallback(changes) {
+
+        var changedObjects = typeof Set === 'function' ? new Set() : [];
+
+        if (!changedObjects.add)
+          changedObjects.add = function (object) {
+            if (this.indexOf(object) === -1)
+              this.push(object);
+            return this;
+          };
+
+        changes.forEach(function (change) {
+          changedObjects.add(change.object);
+        });
+
+        changedObjects.forEach(function (object) {
+          if (!hasOwnProperty.call(object, '$loki'))
+            return self.removeAutoUpdateObserver(object);
+          try {
+            self.update(object);
+          } catch (err) { }
+        });
+      }
+
+      this.observerCallback = observerCallback;
+
+      //Compare changed object (which is a forced clone) with existing object and return the delta
+      function getChangeDelta(obj, old) {
+        if (old) {
+          return getObjectDelta(old, obj);
+        }
+        else {
+          return JSON.parse(JSON.stringify(obj));
+        }
+      }
+
+      this.getChangeDelta = getChangeDelta;
+
+      function getObjectDelta(oldObject, newObject) {
+        var propertyNames = newObject !== null && typeof newObject === 'object' ? Object.keys(newObject) : null;
+        if (propertyNames && propertyNames.length && ['string', 'boolean', 'number'].indexOf(typeof (newObject)) < 0) {
+          var delta = {};
+          for (var i = 0; i < propertyNames.length; i++) {
+            var propertyName = propertyNames[i];
+            if (newObject.hasOwnProperty(propertyName)) {
+              if (!oldObject.hasOwnProperty(propertyName) || self.uniqueNames.indexOf(propertyName) >= 0 || propertyName == '$loki' || propertyName == 'meta') {
+                delta[propertyName] = newObject[propertyName];
+              }
+              else {
+                var propertyDelta = getObjectDelta(oldObject[propertyName], newObject[propertyName]);
+                if (typeof propertyDelta !== "undefined" && propertyDelta != {}) {
+                  delta[propertyName] = propertyDelta;
+                }
+              }
+            }
+          }
+          return Object.keys(delta).length === 0 ? undefined : delta;
+        }
+        else {
+          return oldObject === newObject ? undefined : newObject;
+        }
+      }
+
+      this.getObjectDelta = getObjectDelta;
+
+      // clear all the changes
+      function flushChanges() {
+        self.changes = [];
+      }
+
+      this.getChanges = function () {
+        return self.changes;
+      };
+
+      this.flushChanges = flushChanges;
+
+      this.setChangesApi = function (enabled) {
+        self.disableChangesApi = !enabled;
+        if (!enabled) { self.disableDeltaChangesApi = false; }
+      };
+
+      this.on('delete', function deleteCallback(obj) {
+        if (!self.disableChangesApi) {
+          self.createChange(self.name, 'R', obj);
+        }
+      });
+
+      this.on('warning', function (warning) {
+        self.lokiConsoleWrapper.warn(warning);
+      });
+      // for de-serialization purposes
+      flushChanges();
+    }
+
+    Collection.prototype = new LokiEventEmitter();
+    Collection.prototype.contructor = Collection;
+
+    /*
+      * For ChangeAPI default to clone entire object, for delta changes create object with only differences (+ $loki and meta)
+      */
+    Collection.prototype.createChange = function (name, op, obj, old) {
+      this.changes.push({
+        name: name,
+        operation: op,
+        obj: op == 'U' && !this.disableDeltaChangesApi ? this.getChangeDelta(obj, old) : JSON.parse(JSON.stringify(obj))
+      });
+    };
+
+    Collection.prototype.insertMeta = function (obj) {
+      var len, idx;
+
+      if (this.disableMeta || !obj) {
+        return;
+      }
+
+      // if batch insert
+      if (Array.isArray(obj)) {
+        len = obj.length;
+
+        for (idx = 0; idx < len; idx++) {
+          if (!obj[idx].hasOwnProperty('meta')) {
+            obj[idx].meta = {};
+          }
+
+          obj[idx].meta.created = (new Date()).getTime();
+          obj[idx].meta.revision = 0;
+        }
+
+        return;
+      }
+
+      // single object
+      if (!obj.meta) {
+        obj.meta = {};
+      }
+
+      obj.meta.created = (new Date()).getTime();
+      obj.meta.revision = 0;
+    };
+
+    Collection.prototype.updateMeta = function (obj) {
+      if (this.disableMeta || !obj) {
+        return obj;
+      }
+      if (!this.disableFreeze) {
+        obj = unFreeze(obj);
+        obj.meta = unFreeze(obj.meta);
+      }
+      obj.meta.updated = (new Date()).getTime();
+      obj.meta.revision += 1;
+      return obj;
+    };
+
+    Collection.prototype.createInsertChange = function (obj) {
+      this.createChange(this.name, 'I', obj);
+    };
+
+    Collection.prototype.createUpdateChange = function (obj, old) {
+      this.createChange(this.name, 'U', obj, old);
+    };
+
+    Collection.prototype.insertMetaWithChange = function (obj) {
+      this.insertMeta(obj);
+      this.createInsertChange(obj);
+    };
+
+    Collection.prototype.updateMetaWithChange = function (obj, old, objFrozen) {
+      obj = this.updateMeta(obj, objFrozen);
+      this.createUpdateChange(obj, old);
+      return obj;
+    };
+
+    Collection.prototype.lokiConsoleWrapper = {
+      log: function () { },
+      warn: function () { },
+      error: function () { },
+    };
+
+    Collection.prototype.addAutoUpdateObserver = function (object) {
+      if (!this.autoupdate || typeof Object.observe !== 'function')
+        return;
+
+      Object.observe(object, this.observerCallback, ['add', 'update', 'delete', 'reconfigure', 'setPrototype']);
+    };
+
+    Collection.prototype.removeAutoUpdateObserver = function (object) {
+      if (!this.autoupdate || typeof Object.observe !== 'function')
+        return;
+
+      Object.unobserve(object, this.observerCallback);
+    };
+
+    /**
+     * Adds a named collection transform to the collection
+     * @param {string} name - name to associate with transform
+     * @param {array} transform - an array of transformation 'step' objects to save into the collection
+     * @memberof Collection
+     * @example
+     * users.addTransform('progeny', [
+     *   {
+     *     type: 'find',
+     *     value: {
+     *       'age': {'$lte': 40}
+     *     }
+     *   }
+     * ]);
+     *
+     * var results = users.chain('progeny').data();
+     */
+    Collection.prototype.addTransform = function (name, transform) {
+      if (this.transforms.hasOwnProperty(name)) {
+        throw new Error("a transform by that name already exists");
+      }
+
+      this.transforms[name] = transform;
+    };
+
+    /**
+     * Retrieves a named transform from the collection.
+     * @param {string} name - name of the transform to lookup.
+     * @memberof Collection
+     */
+    Collection.prototype.getTransform = function (name) {
+      return this.transforms[name];
+    };
+
+    /**
+     * Updates a named collection transform to the collection
+     * @param {string} name - name to associate with transform
+     * @param {object} transform - a transformation object to save into collection
+     * @memberof Collection
+     */
+    Collection.prototype.setTransform = function (name, transform) {
+      this.transforms[name] = transform;
+    };
+
+    /**
+     * Removes a named collection transform from the collection
+     * @param {string} name - name of collection transform to remove
+     * @memberof Collection
+     */
+    Collection.prototype.removeTransform = function (name) {
+      delete this.transforms[name];
+    };
+
+    Collection.prototype.byExample = function (template) {
+      var k, obj, query;
+      query = [];
+      for (k in template) {
+        if (!template.hasOwnProperty(k)) continue;
+        query.push((
+          obj = {},
+          obj[k] = template[k],
+          obj
+        ));
+      }
+      return {
+        '$and': query
+      };
+    };
+
+    Collection.prototype.findObject = function (template) {
+      return this.findOne(this.byExample(template));
+    };
+
+    Collection.prototype.findObjects = function (template) {
+      return this.find(this.byExample(template));
+    };
+
+    /*----------------------------+
+    | TTL daemon                  |
+    +----------------------------*/
+    Collection.prototype.ttlDaemonFuncGen = function () {
+      var collection = this;
+      var age = this.ttl.age;
+      return function ttlDaemon() {
+        var now = Date.now();
+        var toRemove = collection.chain().where(function daemonFilter(member) {
+          var timestamp = member.meta.updated || member.meta.created;
+          var diff = now - timestamp;
+          return age < diff;
+        });
+        toRemove.remove();
+      };
+    };
+
+    /**
+     * Updates or applies collection TTL settings.
+     * @param {int} age - age (in ms) to expire document from collection
+     * @param {int} interval - time (in ms) to clear collection of aged documents.
+     * @memberof Collection
+     */
+    Collection.prototype.setTTL = function (age, interval) {
+      if (age < 0) {
+        clearInterval(this.ttl.daemon);
+      } else {
+        this.ttl.age = age;
+        this.ttl.ttlInterval = interval;
+        this.ttl.daemon = setInterval(this.ttlDaemonFuncGen(), interval);
+      }
+    };
+
+    /*----------------------------+
+    | INDEXING                    |
+    +----------------------------*/
+
+    /**
+     * create a row filter that covers all documents in the collection
+     */
+    Collection.prototype.prepareFullDocIndex = function () {
+      var len = this.data.length;
+      var indexes = new Array(len);
+      for (var i = 0; i < len; i += 1) {
+        indexes[i] = i;
+      }
+      return indexes;
+    };
+
+    /**
+     * Will allow reconfiguring certain collection options.
+     * @param {boolean} options.adaptiveBinaryIndices - collection indices will be actively rebuilt rather than lazily
+     * @memberof Collection
+     */
+    Collection.prototype.configureOptions = function (options) {
+      options = options || {};
+
+      if (options.hasOwnProperty('adaptiveBinaryIndices')) {
+        this.adaptiveBinaryIndices = options.adaptiveBinaryIndices;
+
+        // if switching to adaptive binary indices, make sure none are 'dirty'
+        if (this.adaptiveBinaryIndices) {
+          this.ensureAllIndexes();
+        }
+      }
+    };
+
+    /**
+     * Ensure binary index on a certain field
+     * @param {string} property - name of property to create binary index on
+     * @param {boolean=} force - (Optional) flag indicating whether to construct index immediately
+     * @memberof Collection
+     */
+    Collection.prototype.ensureIndex = function (property, force) {
+      // optional parameter to force rebuild whether flagged as dirty or not
+      if (typeof (force) === 'undefined') {
+        force = false;
+      }
+
+      if (property === null || property === undefined) {
+        throw new Error('Attempting to set index without an associated property');
+      }
+
+      if (this.binaryIndices[property] && !force) {
+        if (!this.binaryIndices[property].dirty) return;
+      }
+
+      // if the index is already defined and we are using adaptiveBinaryIndices and we are not forcing a rebuild, return.
+      if (this.adaptiveBinaryIndices === true && this.binaryIndices.hasOwnProperty(property) && !force) {
+        return;
+      }
+
+      var index = {
+        'name': property,
+        'dirty': true,
+        'values': this.prepareFullDocIndex()
+      };
+      this.binaryIndices[property] = index;
+
+      var wrappedComparer =
+        (function (prop, data) {
+          var val1, val2;
+          var propPath = ~prop.indexOf('.') ? prop.split('.') : false;
+          return function (a, b) {
+            if (propPath) {
+              val1 = Utils.getIn(data[a], propPath, true);
+              val2 = Utils.getIn(data[b], propPath, true);
+            } else {
+              val1 = data[a][prop];
+              val2 = data[b][prop];
+            }
+
+            if (val1 !== val2) {
+              if (Comparators.lt(val1, val2, false)) return -1;
+              if (Comparators.gt(val1, val2, false)) return 1;
+            }
+            return 0;
+          };
+        })(property, this.data);
+
+      index.values.sort(wrappedComparer);
+      index.dirty = false;
+
+      this.dirty = true; // for autosave scenarios
+    };
+
+    /**
+     * Perform checks to determine validity/consistency of all binary indices
+     * @param {object=} options - optional configuration object
+     * @param {boolean} [options.randomSampling=false] - whether (faster) random sampling should be used
+     * @param {number} [options.randomSamplingFactor=0.10] - percentage of total rows to randomly sample
+     * @param {boolean} [options.repair=false] - whether to fix problems if they are encountered
+     * @returns {string[]} array of index names where problems were found.
+     * @memberof Collection
+     * @example
+     * // check all indices on a collection, returns array of invalid index names
+     * var result = coll.checkAllIndexes({ repair: true, randomSampling: true, randomSamplingFactor: 0.15 });
+     * if (result.length > 0) {
+     *   results.forEach(function(name) {
+     *     console.log('problem encountered with index : ' + name);
+     *   });
+     * }
+     */
+    Collection.prototype.checkAllIndexes = function (options) {
+      var key, bIndices = this.binaryIndices;
+      var results = [], result;
+
+      for (key in bIndices) {
+        if (hasOwnProperty.call(bIndices, key)) {
+          result = this.checkIndex(key, options);
+          if (!result) {
+            results.push(key);
+          }
+        }
+      }
+
+      return results;
+    };
+
+    /**
+     * Perform checks to determine validity/consistency of a binary index
+     * @param {string} property - name of the binary-indexed property to check
+     * @param {object=} options - optional configuration object
+     * @param {boolean} [options.randomSampling=false] - whether (faster) random sampling should be used
+     * @param {number} [options.randomSamplingFactor=0.10] - percentage of total rows to randomly sample
+     * @param {boolean} [options.repair=false] - whether to fix problems if they are encountered
+     * @returns {boolean} whether the index was found to be valid (before optional correcting).
+     * @memberof Collection
+     * @example
+     * // full test
+     * var valid = coll.checkIndex('name');
+     * // full test with repair (if issues found)
+     * valid = coll.checkIndex('name', { repair: true });
+     * // random sampling (default is 10% of total document count)
+     * valid = coll.checkIndex('name', { randomSampling: true });
+     * // random sampling (sample 20% of total document count)
+     * valid = coll.checkIndex('name', { randomSampling: true, randomSamplingFactor: 0.20 });
+     * // random sampling (implied boolean)
+     * valid = coll.checkIndex('name', { randomSamplingFactor: 0.20 });
+     * // random sampling with repair (if issues found)
+     * valid = coll.checkIndex('name', { repair: true, randomSampling: true });
+     */
+    Collection.prototype.checkIndex = function (property, options) {
+      options = options || {};
+      // if 'randomSamplingFactor' specified but not 'randomSampling', assume true
+      if (options.randomSamplingFactor && options.randomSampling !== false) {
+        options.randomSampling = true;
+      }
+      options.randomSamplingFactor = options.randomSamplingFactor || 0.1;
+      if (options.randomSamplingFactor < 0 || options.randomSamplingFactor > 1) {
+        options.randomSamplingFactor = 0.1;
+      }
+
+      var valid = true, idx, iter, pos, len, biv;
+
+      // make sure we are passed a valid binary index name
+      if (!this.binaryIndices.hasOwnProperty(property)) {
+        throw new Error("called checkIndex on property without an index: " + property);
+      }
+
+      // if lazy indexing, rebuild only if flagged as dirty
+      if (!this.adaptiveBinaryIndices) {
+        this.ensureIndex(property);
+      }
+
+      biv = this.binaryIndices[property].values;
+      len = biv.length;
+
+      // if the index has an incorrect number of values
+      if (len !== this.data.length) {
+        if (options.repair) {
+          this.ensureIndex(property, true);
+        }
+        return false;
+      }
+
+      if (len === 0) {
+        return true;
+      }
+
+      var usingDotNotation = (property.indexOf('.') !== -1);
+
+      if (len === 1) {
+        valid = (biv[0] === 0);
+      }
+      else {
+        if (options.randomSampling) {
+          // validate first and last
+          if (!LokiOps.$lte(Utils.getIn(this.data[biv[0]], property, usingDotNotation),
+            Utils.getIn(this.data[biv[1]], property, usingDotNotation))) {
+            valid = false;
+          }
+          if (!LokiOps.$lte(Utils.getIn(this.data[biv[len - 2]], property, usingDotNotation),
+            Utils.getIn(this.data[biv[len - 1]], property, usingDotNotation))) {
+            valid = false;
+          }
+
+          // if first and last positions are sorted correctly with their nearest neighbor,
+          // continue onto random sampling phase...
+          if (valid) {
+            // # random samplings = total count * sampling factor
+            iter = Math.floor((len - 1) * options.randomSamplingFactor);
+
+            // for each random sampling, validate that the binary index is sequenced properly
+            // with next higher value.
+            for (idx = 0; idx < iter - 1; idx++) {
+              // calculate random position
+              pos = Math.floor(Math.random() * (len - 1));
+              if (!LokiOps.$lte(Utils.getIn(this.data[biv[pos]], property, usingDotNotation),
+                Utils.getIn(this.data[biv[pos + 1]], property, usingDotNotation))) {
+                valid = false;
+                break;
+              }
+            }
+          }
+        }
+        else {
+          // validate that the binary index is sequenced properly
+          for (idx = 0; idx < len - 1; idx++) {
+            if (!LokiOps.$lte(Utils.getIn(this.data[biv[idx]], property, usingDotNotation),
+              Utils.getIn(this.data[biv[idx + 1]], property, usingDotNotation))) {
+              valid = false;
+              break;
+            }
+          }
+        }
+      }
+
+      // if incorrectly sequenced and we are to fix problems, rebuild index
+      if (!valid && options.repair) {
+        this.ensureIndex(property, true);
+      }
+
+      return valid;
+    };
+
+    Collection.prototype.getBinaryIndexValues = function (property) {
+      var idx, idxvals = this.binaryIndices[property].values;
+      var result = [];
+
+      for (idx = 0; idx < idxvals.length; idx++) {
+        result.push(Utils.getIn(this.data[idxvals[idx]], property, true));
+      }
+
+      return result;
+    };
+
+    /**
+     * Returns a named unique index
+     * @param {string} field - indexed field name
+     * @param {boolean} force - if `true`, will rebuild index; otherwise, function may return null
+     */
+    Collection.prototype.getUniqueIndex = function (field, force) {
+      var index = this.constraints.unique[field];
+      if (!index && force) {
+        return this.ensureUniqueIndex(field);
+      }
+      return index;
+    };
+
+    Collection.prototype.ensureUniqueIndex = function (field) {
+      var index = this.constraints.unique[field];
+      if (!index) {
+        // keep track of new unique index for regenerate after database (re)load.
+        if (this.uniqueNames.indexOf(field) == -1) {
+          this.uniqueNames.push(field);
+        }
+      }
+
+      // if index already existed, (re)loading it will likely cause collisions, rebuild always
+      this.constraints.unique[field] = index = new UniqueIndex(field);
+      this.data.forEach(function (obj) {
+        index.set(obj);
+      });
+      return index;
+    };
+
+    /**
+     * Ensure all binary indices
+     * @param {boolean} force - whether to force rebuild of existing lazy binary indices
+     * @memberof Collection
+     */
+    Collection.prototype.ensureAllIndexes = function (force) {
+      var key, bIndices = this.binaryIndices;
+      for (key in bIndices) {
+        if (hasOwnProperty.call(bIndices, key)) {
+          this.ensureIndex(key, force);
+        }
+      }
+    };
+
+    /**
+     * Internal method used to flag all lazy index as dirty
+     */
+    Collection.prototype.flagBinaryIndexesDirty = function () {
+      var key, bIndices = this.binaryIndices;
+      for (key in bIndices) {
+        if (hasOwnProperty.call(bIndices, key)) {
+          bIndices[key].dirty = true;
+        }
+      }
+    };
+
+    /**
+     * Internal method used to flag a lazy index as dirty
+     */
+    Collection.prototype.flagBinaryIndexDirty = function (index) {
+      if (this.binaryIndices[index])
+        this.binaryIndices[index].dirty = true;
+    };
+
+    /**
+     * Quickly determine number of documents in collection (or query)
+     * @param {object=} query - (optional) query object to count results of
+     * @returns {number} number of documents in the collection
+     * @memberof Collection
+     */
+    Collection.prototype.count = function (query) {
+      if (!query) {
+        return this.data.length;
+      }
+
+      return this.chain().find(query).filteredrows.length;
+    };
+
+    /**
+     * Rebuild idIndex
+     */
+    Collection.prototype.ensureId = function () {
+      if (this.idIndex) {
+        return;
+      }
+      var data = this.data,
+        i = 0;
+      var len = data.length;
+      var index = new Array(len);
+      for (i; i < len; i++) {
+        index[i] = data[i].$loki;
+      }
+      this.idIndex = index;
+    };
+
+    /**
+     * Rebuild idIndex async with callback - useful for background syncing with a remote server
+     */
+    Collection.prototype.ensureIdAsync = function (callback) {
+      this.async(function () {
+        this.ensureId();
+      }, callback);
+    };
+
+    /**
+     * Add a dynamic view to the collection
+     * @param {string} name - name of dynamic view to add
+     * @param {object=} options - options to configure dynamic view with
+     * @param {boolean} [options.persistent=false] - indicates if view is to main internal results array in 'resultdata'
+     * @param {string} [options.sortPriority='passive'] - 'passive' (sorts performed on call to data) or 'active' (after updates)
+     * @param {number} options.minRebuildInterval - minimum rebuild interval (need clarification to docs here)
+     * @returns {DynamicView} reference to the dynamic view added
+     * @memberof Collection
+     * @example
+     * var pview = users.addDynamicView('progeny');
+     * pview.applyFind({'age': {'$lte': 40}});
+     * pview.applySimpleSort('name');
+     *
+     * var results = pview.data();
+     **/
+
+    Collection.prototype.addDynamicView = function (name, options) {
+      var dv = new DynamicView(this, name, options);
+      this.DynamicViews.push(dv);
+
+      return dv;
+    };
+
+    /**
+     * Remove a dynamic view from the collection
+     * @param {string} name - name of dynamic view to remove
+     * @memberof Collection
+     **/
+    Collection.prototype.removeDynamicView = function (name) {
+      this.DynamicViews =
+        this.DynamicViews.filter(function (dv) { return dv.name !== name; });
+    };
+
+    /**
+     * Look up dynamic view reference from within the collection
+     * @param {string} name - name of dynamic view to retrieve reference of
+     * @returns {DynamicView} A reference to the dynamic view with that name
+     * @memberof Collection
+     **/
+    Collection.prototype.getDynamicView = function (name) {
+      for (var idx = 0; idx < this.DynamicViews.length; idx++) {
+        if (this.DynamicViews[idx].name === name) {
+          return this.DynamicViews[idx];
+        }
+      }
+
+      return null;
+    };
+
+    /**
+     * Applies a 'mongo-like' find query object and passes all results to an update function.
+     * For filter function querying you should migrate to [updateWhere()]{@link Collection#updateWhere}.
+     *
+     * @param {object|function} filterObject - 'mongo-like' query object (or deprecated filterFunction mode)
+     * @param {function} updateFunction - update function to run against filtered documents
+     * @memberof Collection
+     */
+    Collection.prototype.findAndUpdate = function (filterObject, updateFunction) {
+      if (typeof (filterObject) === "function") {
+        this.updateWhere(filterObject, updateFunction);
+      }
+      else {
+        this.chain().find(filterObject).update(updateFunction);
+      }
+    };
+
+    /**
+     * Applies a 'mongo-like' find query object removes all documents which match that filter.
+     *
+     * @param {object} filterObject - 'mongo-like' query object
+     * @memberof Collection
+     */
+    Collection.prototype.findAndRemove = function (filterObject) {
+      this.chain().find(filterObject).remove();
+    };
+
+    /**
+     * Adds object(s) to collection, ensure object(s) have meta properties, clone it if necessary, etc.
+     * @param {(object|array)} doc - the document (or array of documents) to be inserted
+     * @param {boolean=} overrideAdaptiveIndices - (optional) if `true`, adaptive indicies will be
+     *   temporarily disabled and then fully rebuilt after batch. This will be faster for
+     *   large inserts, but slower for small/medium inserts in large collections
+     * @returns {(object|array)} document or documents inserted
+     * @memberof Collection
+     * @example
+     * users.insert({
+     *     name: 'Odin',
+     *     age: 50,
+     *     address: 'Asgard'
+     * });
+     *
+     * // alternatively, insert array of documents
+     * users.insert([{ name: 'Thor', age: 35}, { name: 'Loki', age: 30}]);
+     */
+    Collection.prototype.insert = function (doc, overrideAdaptiveIndices) {
+      if (!Array.isArray(doc)) {
+        return this.insertOne(doc);
+      }
+
+      // holder to the clone of the object inserted if collections is set to clone objects
+      var obj;
+      var results = [];
+
+      // if not cloning, disable adaptive binary indices for the duration of the batch insert,
+      // followed by lazy rebuild and re-enabling adaptive indices after batch insert.
+      var adaptiveBatchOverride = overrideAdaptiveIndices && !this.cloneObjects &&
+        this.adaptiveBinaryIndices && Object.keys(this.binaryIndices).length > 0;
+
+      if (adaptiveBatchOverride) {
+        this.adaptiveBinaryIndices = false;
+      }
+
+      try {
+        this.emit('pre-insert', doc);
+        for (var i = 0, len = doc.length; i < len; i++) {
+          obj = this.insertOne(doc[i], true);
+          if (!obj) {
+            return undefined;
+          }
+          results.push(obj);
+        }
+      } finally {
+        if (adaptiveBatchOverride) {
+          this.ensureAllIndexes();
+          this.adaptiveBinaryIndices = true;
+        }
+      }
+
+      // at the 'batch' level, if clone option is true then emitted docs are clones
+      this.emit('insert', results);
+
+      // if clone option is set, clone return values
+      results = this.cloneObjects ? clone(results, this.cloneMethod) : results;
+
+      return results.length === 1 ? results[0] : results;
+    };
+
+    /**
+     * Adds a single object, ensures it has meta properties, clone it if necessary, etc.
+     * @param {object} doc - the document to be inserted
+     * @param {boolean} bulkInsert - quiet pre-insert and insert event emits
+     * @returns {object} document or 'undefined' if there was a problem inserting it
+     */
+    Collection.prototype.insertOne = function (doc, bulkInsert) {
+      var err = null;
+      var returnObj;
+
+      if (typeof doc !== 'object') {
+        err = new TypeError('Document needs to be an object');
+      } else if (doc === null) {
+        err = new TypeError('Object cannot be null');
+      }
+
+      if (err !== null) {
+        this.emit('error', err);
+        throw err;
+      }
+
+      // if configured to clone, do so now... otherwise just use same obj reference
+      var obj = this.cloneObjects ? clone(doc, this.cloneMethod) : doc;
+      if (!this.disableFreeze) {
+        obj = unFreeze(obj);
+      }
+
+      if (!this.disableMeta) {
+        if (typeof obj.meta === 'undefined') {
+          obj.meta = {
+            revision: 0,
+            created: 0
+          };
+        } else if (!this.disableFreeze) {
+          obj.meta = unFreeze(obj.meta);
+        }
+      }
+
+      // both 'pre-insert' and 'insert' events are passed internal data reference even when cloning
+      // insert needs internal reference because that is where loki itself listens to add meta
+      if (!bulkInsert) {
+        this.emit('pre-insert', obj);
+      }
+      if (!this.add(obj)) {
+        return undefined;
+      }
+
+      // update meta and store changes if ChangesAPI is enabled
+      // (moved from "insert" event listener to allow internal reference to be used)
+      if (this.disableChangesApi) {
+        this.insertMeta(obj);
+      } else {
+        this.insertMetaWithChange(obj);
+      }
+
+      if (!this.disableFreeze) {
+        deepFreeze(obj);
+      }
+
+      // if cloning is enabled, emit insert event with clone of new object
+      returnObj = this.cloneObjects ? clone(obj, this.cloneMethod) : obj;
+
+      if (!bulkInsert) {
+        this.emit('insert', returnObj);
+      }
+
+      this.addAutoUpdateObserver(returnObj);
+
+      return returnObj;
+    };
+
+    /**
+     * Empties the collection.
+     * @param {object=} options - configure clear behavior
+     * @param {bool=} [options.removeIndices=false] - whether to remove indices in addition to data
+     * @memberof Collection
+     */
+    Collection.prototype.clear = function (options) {
+      var self = this;
+
+      options = options || {};
+
+      this.data = [];
+      this.idIndex = null;
+      this.cachedIndex = null;
+      this.cachedBinaryIndex = null;
+      this.cachedData = null;
+      this.maxId = 0;
+      this.DynamicViews = [];
+      this.dirty = true;
+      this.constraints = {
+        unique: {},
+        exact: {}
+      };
+
+      // if removing indices entirely
+      if (options.removeIndices === true) {
+        this.binaryIndices = {};
+        this.uniqueNames = [];
+      }
+      // clear indices but leave definitions in place
+      else {
+        // clear binary indices
+        var keys = Object.keys(this.binaryIndices);
+        keys.forEach(function (biname) {
+          self.binaryIndices[biname].dirty = false;
+          self.binaryIndices[biname].values = [];
+        });
+      }
+    };
+
+    /**
+     * Updates an object and notifies collection that the document has changed.
+     * @param {object} doc - document to update within the collection
+     * @memberof Collection
+     */
+    Collection.prototype.update = function (doc) {
+      var adaptiveBatchOverride, k, len;
+
+      if (Array.isArray(doc)) {
+        len = doc.length;
+
+        // if not cloning, disable adaptive binary indices for the duration of the batch update,
+        // followed by lazy rebuild and re-enabling adaptive indices after batch update.
+        adaptiveBatchOverride = !this.cloneObjects &&
+          this.adaptiveBinaryIndices && Object.keys(this.binaryIndices).length > 0;
+
+        if (adaptiveBatchOverride) {
+          this.adaptiveBinaryIndices = false;
+        }
+
+        try {
+          for (k = 0; k < len; k += 1) {
+            this.update(doc[k]);
+          }
+        }
+        finally {
+          if (adaptiveBatchOverride) {
+            this.ensureAllIndexes();
+            this.adaptiveBinaryIndices = true;
+          }
+        }
+
+        return;
+      }
+
+      // verify object is a properly formed document
+      if (!hasOwnProperty.call(doc, '$loki')) {
+        throw new Error('Trying to update unsynced document. Please save the document first by using insert() or addMany()');
+      }
+      try {
+        this.startTransaction();
+        var arr = this.get(doc.$loki, true),
+          oldInternal,   // ref to existing obj
+          newInternal, // ref to new internal obj
+          position,
+          self = this;
+
+        if (!arr) {
+          throw new Error('Trying to update a document not in collection.');
+        }
+
+        oldInternal = arr[0]; // -internal- obj ref
+        position = arr[1]; // position in data array
+
+        // if configured to clone, do so now... otherwise just use same obj reference
+        newInternal = this.cloneObjects || (!this.disableDeltaChangesApi && this.disableFreeze) ? clone(doc, this.cloneMethod) : doc;
+
+        this.emit('pre-update', doc);
+
+        this.uniqueNames.forEach(function (key) {
+          self.getUniqueIndex(key, true).update(oldInternal, newInternal);
+        });
+
+        // operate the update
+        this.data[position] = newInternal;
+
+        if (newInternal !== doc) {
+          this.addAutoUpdateObserver(doc);
+        }
+
+        // now that we can efficiently determine the data[] position of newly added document,
+        // submit it for all registered DynamicViews to evaluate for inclusion/exclusion
+        for (var idx = 0; idx < this.DynamicViews.length; idx++) {
+          this.DynamicViews[idx].evaluateDocument(position, false);
+        }
+
+        var key;
+        if (this.adaptiveBinaryIndices) {
+          // for each binary index defined in collection, immediately update rather than flag for lazy rebuild
+          var bIndices = this.binaryIndices;
+          for (key in bIndices) {
+            this.adaptiveBinaryIndexUpdate(position, key);
+          }
+        }
+        else {
+          this.flagBinaryIndexesDirty();
+        }
+
+        this.idIndex[position] = newInternal.$loki;
+        //this.flagBinaryIndexesDirty();
+
+        if (this.isIncremental) {
+          this.dirtyIds.push(newInternal.$loki);
+        }
+
+        this.commit();
+        this.dirty = true; // for autosave scenarios
+
+        // update meta and store changes if ChangesAPI is enabled
+        if (this.disableChangesApi) {
+          newInternal = this.updateMeta(newInternal);
+        } else {
+          newInternal = this.updateMetaWithChange(newInternal, oldInternal);
+        }
+
+        if (!this.disableFreeze) {
+          deepFreeze(newInternal);
+        }
+
+        var returnObj;
+
+        // if cloning is enabled, emit 'update' event and return with clone of new object
+        if (this.cloneObjects) {
+          returnObj = clone(newInternal, this.cloneMethod);
+        }
+        else {
+          returnObj = newInternal;
+        }
+
+        this.emit('update', returnObj, oldInternal);
+        return returnObj;
+      } catch (err) {
+        this.rollback();
+        this.lokiConsoleWrapper.error(err.message);
+        this.emit('error', err);
+        throw (err); // re-throw error so user does not think it succeeded
+      }
+    };
+
+    /**
+     * Add object to collection
+     */
+    Collection.prototype.add = function (obj) {
+      // if parameter isn't object exit with throw
+      if ('object' !== typeof obj) {
+        throw new TypeError('Object being added needs to be an object');
+      }
+      // if object you are adding already has id column it is either already in the collection
+      // or the object is carrying its own 'id' property.  If it also has a meta property,
+      // then this is already in collection so throw error, otherwise rename to originalId and continue adding.
+      if (typeof (obj.$loki) !== 'undefined') {
+        throw new Error('Document is already in collection, please use update()');
+      }
+
+      /*
+       * try adding object to collection
+       */
+      try {
+        this.startTransaction();
+        this.maxId++;
+
+        if (isNaN(this.maxId)) {
+          this.maxId = (this.data[this.data.length - 1].$loki + 1);
+        }
+
+        var newId = this.maxId;
+        obj.$loki = newId;
+
+        if (!this.disableMeta) {
+          obj.meta.version = 0;
+        }
+
+        for (var i = 0, len = this.uniqueNames.length; i < len; i ++) {
+          this.getUniqueIndex(this.uniqueNames[i], true).set(obj);
+        }
+
+        if (this.idIndex) {
+          this.idIndex.push(newId);
+        }
+
+        if (this.isIncremental) {
+          this.dirtyIds.push(newId);
+        }
+
+        // add the object
+        this.data.push(obj);
+
+        var addedPos = this.data.length - 1;
+
+        // now that we can efficiently determine the data[] position of newly added document,
+        // submit it for all registered DynamicViews to evaluate for inclusion/exclusion
+        var dvlen = this.DynamicViews.length;
+        for (i = 0; i < dvlen; i++) {
+          this.DynamicViews[i].evaluateDocument(addedPos, true);
+        }
+
+        if (this.adaptiveBinaryIndices) {
+          // for each binary index defined in collection, immediately update rather than flag for lazy rebuild
+          var bIndices = this.binaryIndices;
+          for (var key in bIndices) {
+            this.adaptiveBinaryIndexInsert(addedPos, key);
+          }
+        }
+        else {
+          this.flagBinaryIndexesDirty();
+        }
+
+        this.commit();
+        this.dirty = true; // for autosave scenarios
+
+        return (this.cloneObjects) ? (clone(obj, this.cloneMethod)) : (obj);
+      } catch (err) {
+        this.rollback();
+        this.lokiConsoleWrapper.error(err.message);
+        this.emit('error', err);
+        throw (err); // re-throw error so user does not think it succeeded
+      }
+    };
+
+    /**
+     * Applies a filter function and passes all results to an update function.
+     *
+     * @param {function} filterFunction - filter function whose results will execute update
+     * @param {function} updateFunction - update function to run against filtered documents
+     * @memberof Collection
+     */
+    Collection.prototype.updateWhere = function (filterFunction, updateFunction) {
+      var results = this.where(filterFunction),
+        i = 0,
+        obj;
+      try {
+        for (i; i < results.length; i++) {
+          obj = updateFunction(results[i]);
+          this.update(obj);
+        }
+
+      } catch (err) {
+        this.rollback();
+        this.lokiConsoleWrapper.error(err.message);
+      }
+    };
+
+    /**
+     * Remove all documents matching supplied filter function.
+     * For 'mongo-like' querying you should migrate to [findAndRemove()]{@link Collection#findAndRemove}.
+     * @param {function|object} query - query object to filter on
+     * @memberof Collection
+     */
+    Collection.prototype.removeWhere = function (query) {
+      var list;
+      if (typeof query === 'function') {
+        list = this.data.filter(query);
+        this.remove(list);
+      } else {
+        this.chain().find(query).remove();
+      }
+    };
+
+    Collection.prototype.removeDataOnly = function () {
+      this.remove(this.data.slice());
+    };
+
+    /**
+     * Internal method to remove a batch of documents from the collection.
+     * @param {number[]} positions - data/idIndex positions to remove
+     */
+    Collection.prototype.removeBatchByPositions = function (positions) {
+      var len = positions.length;
+      var xo = {};
+      var dlen, didx, idx;
+      var bic = Object.keys(this.binaryIndices).length;
+      var uic = Object.keys(this.constraints.unique).length;
+      var adaptiveOverride = this.adaptiveBinaryIndices && Object.keys(this.binaryIndices).length > 0;
+      var doc, self = this;
+
+      try {
+        this.startTransaction();
+
+        // create hashobject for positional removal inclusion tests...
+        // all keys defined in this hashobject represent $loki ids of the documents to remove.
+        this.ensureId();
+        for (idx = 0; idx < len; idx++) {
+          xo[this.idIndex[positions[idx]]] = true;
+        }
+
+        // if we will need to notify dynamic views and/or binary indices to update themselves...
+        dlen = this.DynamicViews.length;
+        if ((dlen > 0) || (bic > 0) || (uic > 0)) {
+          if (dlen > 0) {
+            // notify dynamic views to remove relevant documents at data positions
+            for (didx = 0; didx < dlen; didx++) {
+              // notify dv of remove (passing batch/array of positions)
+              this.DynamicViews[didx].removeDocument(positions);
+            }
+          }
+
+          // notify binary indices to update
+          if (this.adaptiveBinaryIndices && !adaptiveOverride) {
+            // for each binary index defined in collection, immediately update rather than flag for lazy rebuild
+            var key, bIndices = this.binaryIndices;
+
+            for (key in bIndices) {
+              this.adaptiveBinaryIndexRemove(positions, key);
+            }
+          }
+          else {
+            this.flagBinaryIndexesDirty();
+          }
+
+          if (uic) {
+            this.uniqueNames.forEach(function (key) {
+              var index = self.getUniqueIndex(key);
+              if (index) {
+                for (idx = 0; idx < len; idx++) {
+                  doc = self.data[positions[idx]];
+                  if (doc[key] !== null && doc[key] !== undefined) {
+                    index.remove(doc[key]);
+                  }
+                }
+              }
+            });
+          }
+        }
+
+        // emit 'delete' events only of listeners are attached.
+        // since data not removed yet, in future we can emit single delete event with array...
+        // for now that might be breaking change to put in potential 1.6 or LokiDB (lokijs2) version
+        if (!this.disableChangesApi || this.events.delete.length > 1) {
+          for (idx = 0; idx < len; idx++) {
+            this.emit('delete', this.data[positions[idx]]);
+          }
+        }
+
+        // remove from data[] :
+        // filter collection data for items not in inclusion hashobject
+        this.data = this.data.filter(function (obj) {
+          return !xo[obj.$loki];
+        });
+
+        if (this.isIncremental) {
+          for(idx=0; idx < len; idx++) {
+            this.dirtyIds.push(this.idIndex[positions[idx]]);
+          }
+        }
+
+        // remove from idIndex[] :
+        // filter idIndex for items not in inclusion hashobject
+        this.idIndex = this.idIndex.filter(function (id) {
+          return !xo[id];
+        });
+
+        if (this.adaptiveBinaryIndices && adaptiveOverride) {
+          this.adaptiveBinaryIndices = false;
+          this.ensureAllIndexes(true);
+          this.adaptiveBinaryIndices = true;
+        }
+
+        this.commit();
+
+        // flag collection as dirty for autosave
+        this.dirty = true;
+      }
+      catch (err) {
+        this.rollback();
+        if (adaptiveOverride) {
+          this.adaptiveBinaryIndices = true;
+        }
+        this.lokiConsoleWrapper.error(err.message);
+        this.emit('error', err);
+        return null;
+      }
+    };
+
+    /**
+     *  Internal method called by remove()
+     * @param {object[]|number[]} batch - array of documents or $loki ids to remove
+     */
+    Collection.prototype.removeBatch = function (batch) {
+      var len = batch.length,
+        dlen = this.data.length,
+        idx;
+      var xlt = {};
+      var posx = [];
+
+      // create lookup hashobject to translate $loki id to position
+      for (idx = 0; idx < dlen; idx++) {
+        xlt[this.data[idx].$loki] = idx;
+      }
+
+      // iterate the batch
+      for (idx = 0; idx < len; idx++) {
+        if (typeof (batch[idx]) === 'object') {
+          posx.push(xlt[batch[idx].$loki]);
+        }
+        else {
+          posx.push(xlt[batch[idx]]);
+        }
+      }
+
+      this.removeBatchByPositions(posx);
+    };
+
+    /**
+     * Remove a document from the collection
+     * @param {object} doc - document to remove from collection
+     * @memberof Collection
+     */
+    Collection.prototype.remove = function (doc) {
+      var frozen;
+
+      if (typeof doc === 'number') {
+        doc = this.get(doc);
+      }
+
+      if ('object' !== typeof doc) {
+        throw new Error('Parameter is not an object');
+      }
+      if (Array.isArray(doc)) {
+        this.removeBatch(doc);
+        return;
+      }
+
+      if (!hasOwnProperty.call(doc, '$loki')) {
+        throw new Error('Object is not a document stored in the collection');
+      }
+
+      try {
+        this.startTransaction();
+        var arr = this.get(doc.$loki, true),
+          // obj = arr[0],
+          position = arr[1];
+        var self = this;
+        this.uniqueNames.forEach(function (key) {
+          if (doc[key] !== null && typeof doc[key] !== 'undefined') {
+            var index = self.getUniqueIndex(key);
+            if (index) {
+              index.remove(doc[key]);
+            }
+          }
+        });
+        // now that we can efficiently determine the data[] position of newly added document,
+        // submit it for all registered DynamicViews to remove
+        for (var idx = 0; idx < this.DynamicViews.length; idx++) {
+          this.DynamicViews[idx].removeDocument(position);
+        }
+
+        if (this.adaptiveBinaryIndices) {
+          // for each binary index defined in collection, immediately update rather than flag for lazy rebuild
+          var key, bIndices = this.binaryIndices;
+          for (key in bIndices) {
+            this.adaptiveBinaryIndexRemove(position, key);
+          }
+        }
+        else {
+          this.flagBinaryIndexesDirty();
+        }
+
+        this.data.splice(position, 1);
+        this.removeAutoUpdateObserver(doc);
+
+        // remove id from idIndex
+        this.idIndex.splice(position, 1);
+
+        if (this.isIncremental) {
+          this.dirtyIds.push(doc.$loki);
+        }
+
+        this.commit();
+        this.dirty = true; // for autosave scenarios
+        this.emit('delete', arr[0]);
+
+        if (!this.disableFreeze) {
+          doc = unFreeze(doc);
+        }
+        delete doc.$loki;
+        delete doc.meta;
+        if (!this.disableFreeze) {
+          freeze(doc);
+        }
+        return doc;
+
+      } catch (err) {
+        this.rollback();
+        this.lokiConsoleWrapper.error(err.message);
+        this.emit('error', err);
+        return null;
+      }
+    };
+
+    /*---------------------+
+    | Finding methods     |
+    +----------------------*/
+
+    /**
+     * Get by Id - faster than other methods because of the searching algorithm
+     * @param {int} id - $loki id of document you want to retrieve
+     * @param {boolean} returnPosition - if 'true' we will return [object, position]
+     * @returns {(object|array|null)} Object reference if document was found, null if not,
+     *     or an array if 'returnPosition' was passed.
+     * @memberof Collection
+     */
+    Collection.prototype.get = function (id, returnPosition) {
+      if (!this.idIndex) {
+        this.ensureId();
+      }
+
+      var retpos = returnPosition || false,
+        data = this.idIndex,
+        max = data.length - 1,
+        min = 0,
+        mid = (min + max) >> 1;
+
+      id = typeof id === 'number' ? id : parseInt(id, 10);
+
+      if (isNaN(id)) {
+        throw new TypeError('Passed id is not an integer');
+      }
+
+      while (data[min] < data[max]) {
+        mid = (min + max) >> 1;
+
+        if (data[mid] < id) {
+          min = mid + 1;
+        } else {
+          max = mid;
+        }
+      }
+
+      if (max === min && data[min] === id) {
+        if (retpos) {
+          return [this.data[min], min];
+        }
+        return this.data[min];
+      }
+      return null;
+
+    };
+
+    /**
+     * Perform binary range lookup for the data[dataPosition][binaryIndexName] property value
+     *    Since multiple documents may contain the same value (which the index is sorted on),
+     *    we hone in on range and then linear scan range to find exact index array position.
+     * @param {int} dataPosition : coll.data array index/position
+     * @param {string} binaryIndexName : index to search for dataPosition in
+     */
+    Collection.prototype.getBinaryIndexPosition = function (dataPosition, binaryIndexName) {
+      var val = Utils.getIn(this.data[dataPosition], binaryIndexName, true);
+      var index = this.binaryIndices[binaryIndexName].values;
+
+      // i think calculateRange can probably be moved to collection
+      // as it doesn't seem to need resultset.  need to verify
+      var range = this.calculateRange("$eq", binaryIndexName, val);
+
+      if (range[0] === 0 && range[1] === -1) {
+        // uhoh didn't find range
+        return null;
+      }
+
+      var min = range[0];
+      var max = range[1];
+
+      // narrow down the sub-segment of index values
+      // where the indexed property value exactly matches our
+      // value and then linear scan to find exact -index- position
+      for (var idx = min; idx <= max; idx++) {
+        if (index[idx] === dataPosition) return idx;
+      }
+
+      // uhoh
+      return null;
+    };
+
+    /**
+     * Adaptively insert a selected item to the index.
+     * @param {int} dataPosition : coll.data array index/position
+     * @param {string} binaryIndexName : index to search for dataPosition in
+     */
+    Collection.prototype.adaptiveBinaryIndexInsert = function (dataPosition, binaryIndexName) {
+      var usingDotNotation = (binaryIndexName.indexOf('.') !== -1);
+      var index = this.binaryIndices[binaryIndexName].values;
+      var val = Utils.getIn(this.data[dataPosition], binaryIndexName, usingDotNotation);
+
+      // If you are inserting a javascript Date value into a binary index, convert to epoch time
+      if (this.serializableIndices === true && val instanceof Date) {
+        this.data[dataPosition][binaryIndexName] = val.getTime();
+        val = Utils.getIn(this.data[dataPosition], binaryIndexName);
+      }
+
+      var idxPos = (index.length === 0) ? 0 : this.calculateRangeStart(binaryIndexName, val, true, usingDotNotation);
+
+      // insert new data index into our binary index at the proper sorted location for relevant property calculated by idxPos.
+      // doing this after adjusting dataPositions so no clash with previous item at that position.
+      this.binaryIndices[binaryIndexName].values.splice(idxPos, 0, dataPosition);
+    };
+
+    /**
+     * Adaptively update a selected item within an index.
+     * @param {int} dataPosition : coll.data array index/position
+     * @param {string} binaryIndexName : index to search for dataPosition in
+     */
+    Collection.prototype.adaptiveBinaryIndexUpdate = function (dataPosition, binaryIndexName) {
+      // linear scan needed to find old position within index unless we optimize for clone scenarios later
+      // within (my) node 5.6.0, the following for() loop with strict compare is -much- faster than indexOf()
+      var idxPos,
+        index = this.binaryIndices[binaryIndexName].values,
+        len = index.length;
+
+      for (idxPos = 0; idxPos < len; idxPos++) {
+        if (index[idxPos] === dataPosition) break;
+      }
+
+      //var idxPos = this.binaryIndices[binaryIndexName].values.indexOf(dataPosition);
+      this.binaryIndices[binaryIndexName].values.splice(idxPos, 1);
+
+      //this.adaptiveBinaryIndexRemove(dataPosition, binaryIndexName, true);
+      this.adaptiveBinaryIndexInsert(dataPosition, binaryIndexName);
+    };
+
+    /**
+     * Adaptively remove a selected item from the index.
+     * @param {number|number[]} dataPosition : coll.data array index/position
+     * @param {string} binaryIndexName : index to search for dataPosition in
+     */
+    Collection.prototype.adaptiveBinaryIndexRemove = function (dataPosition, binaryIndexName, removedFromIndexOnly) {
+      var bi = this.binaryIndices[binaryIndexName];
+      var len, idx, rmidx, rmlen, rxo = {};
+      var curr, shift, idxPos;
+
+      if (Array.isArray(dataPosition)) {
+        // when called from chained remove, and only one document in array,
+        // it will be faster to use old algorithm
+        rmlen = dataPosition.length;
+        if (rmlen === 1) {
+          dataPosition = dataPosition[0];
+        }
+        // we were passed an array (batch) of documents so use this 'batch optimized' algorithm
+        else {
+          for (rmidx = 0; rmidx < rmlen; rmidx++) {
+            rxo[dataPosition[rmidx]] = true;
+          }
+
+          // remove document from index (with filter function)
+          bi.values = bi.values.filter(function (di) { return !rxo[di]; });
+
+          // if we passed this optional flag parameter, we are calling from adaptiveBinaryIndexUpdate,
+          // in which case data positions stay the same.
+          if (removedFromIndexOnly === true) {
+            return;
+          }
+
+          var sortedPositions = dataPosition.slice();
+          sortedPositions.sort(function (a, b) { return a - b; });
+
+          // to remove holes, we need to 'shift down' the index's data array positions
+          // we need to adjust array positions -1 for each index data positions greater than removed positions
+          len = bi.values.length;
+          for (idx = 0; idx < len; idx++) {
+            curr = bi.values[idx];
+            shift = 0;
+            for (rmidx = 0; rmidx < rmlen && curr > sortedPositions[rmidx]; rmidx++) {
+              shift++;
+            }
+            bi.values[idx] -= shift;
+          }
+
+          // batch processed, bail out
+          return;
+        }
+
+        // not a batch so continue...
+      }
+
+      idxPos = this.getBinaryIndexPosition(dataPosition, binaryIndexName);
+
+      if (idxPos === null) {
+        // throw new Error('unable to determine binary index position');
+        return null;
+      }
+
+      // remove document from index (with splice)
+      bi.values.splice(idxPos, 1);
+
+      // if we passed this optional flag parameter, we are calling from adaptiveBinaryIndexUpdate,
+      // in which case data positions stay the same.
+      if (removedFromIndexOnly === true) {
+        return;
+      }
+
+      // since index stores data array positions, if we remove a document
+      // we need to adjust array positions -1 for all document positions greater than removed position
+      len = bi.values.length;
+      for (idx = 0; idx < len; idx++) {
+        if (bi.values[idx] > dataPosition) {
+          bi.values[idx]--;
+        }
+      }
+    };
+
+    /**
+     * Internal method used for index maintenance and indexed searching.
+     * Calculates the beginning of an index range for a given value.
+     * For index maintainance (adaptive:true), we will return a valid index position to insert to.
+     * For querying (adaptive:false/undefined), we will :
+     *    return lower bound/index of range of that value (if found)
+     *    return next lower index position if not found (hole)
+     * If index is empty it is assumed to be handled at higher level, so
+     * this method assumes there is at least 1 document in index.
+     *
+     * @param {string} prop - name of property which has binary index
+     * @param {any} val - value to find within index
+     * @param {bool?} adaptive - if true, we will return insert position
+     */
+    Collection.prototype.calculateRangeStart = function (prop, val, adaptive, usingDotNotation) {
+      var rcd = this.data;
+      var index = this.binaryIndices[prop].values;
+      var min = 0;
+      var max = index.length - 1;
+      var mid = 0;
+
+      if (index.length === 0) {
+        return -1;
+      }
+
+      var minVal = Utils.getIn(rcd[index[min]], prop, usingDotNotation);
+      var maxVal = Utils.getIn(rcd[index[max]], prop, usingDotNotation);
+
+      // hone in on start position of value
+      while (min < max) {
+        mid = (min + max) >> 1;
+
+        if (Comparators.lt(Utils.getIn(rcd[index[mid]], prop, usingDotNotation), val, false)) {
+          min = mid + 1;
+        } else {
+          max = mid;
+        }
+      }
+
+      var lbound = min;
+
+      // found it... return it
+      if (Comparators.aeq(val, Utils.getIn(rcd[index[lbound]], prop, usingDotNotation))) {
+        return lbound;
+      }
+
+      // if not in index and our value is less than the found one
+      if (Comparators.lt(val, Utils.getIn(rcd[index[lbound]], prop, usingDotNotation), false)) {
+        return adaptive ? lbound : lbound - 1;
+      }
+
+      // not in index and our value is greater than the found one
+      return adaptive ? lbound + 1 : lbound;
+    };
+
+    /**
+     * Internal method used for indexed $between.  Given a prop (index name), and a value
+     * (which may or may not yet exist) this will find the final position of that upper range value.
+     */
+    Collection.prototype.calculateRangeEnd = function (prop, val, usingDotNotation) {
+      var rcd = this.data;
+      var index = this.binaryIndices[prop].values;
+      var min = 0;
+      var max = index.length - 1;
+      var mid = 0;
+
+      if (index.length === 0) {
+        return -1;
+      }
+
+      var minVal = Utils.getIn(rcd[index[min]], prop, usingDotNotation);
+      var maxVal = Utils.getIn(rcd[index[max]], prop, usingDotNotation);
+
+      // hone in on start position of value
+      while (min < max) {
+        mid = (min + max) >> 1;
+
+        if (Comparators.lt(val, Utils.getIn(rcd[index[mid]], prop, usingDotNotation), false)) {
+          max = mid;
+        } else {
+          min = mid + 1;
+        }
+      }
+
+      var ubound = max;
+
+      // only eq if last element in array is our val
+      if (Comparators.aeq(val, Utils.getIn(rcd[index[ubound]], prop, usingDotNotation))) {
+        return ubound;
+      }
+
+      // if not in index and our value is less than the found one
+      if (Comparators.gt(val, Utils.getIn(rcd[index[ubound]], prop, usingDotNotation), false)) {
+        return ubound + 1;
+      }
+
+      // either hole or first nonmatch
+      if (Comparators.aeq(val, Utils.getIn(rcd[index[ubound - 1]], prop, usingDotNotation))) {
+        return ubound - 1;
+      }
+
+      // hole, so ubound if nearest gt than the val we were looking for
+      return ubound;
+    };
+
+    /**
+     * calculateRange() - Binary Search utility method to find range/segment of values matching criteria.
+     *    this is used for collection.find() and first find filter of resultset/dynview
+     *    slightly different than get() binary search in that get() hones in on 1 value,
+     *    but we have to hone in on many (range)
+     * @param {string} op - operation, such as $eq
+     * @param {string} prop - name of property to calculate range for
+     * @param {object} val - value to use for range calculation.
+     * @returns {array} [start, end] index array positions
+     */
+    Collection.prototype.calculateRange = function (op, prop, val) {
+      var rcd = this.data;
+      var index = this.binaryIndices[prop].values;
+      var min = 0;
+      var max = index.length - 1;
+      var mid = 0;
+      var lbound, lval;
+      var ubound, uval;
+
+      // when no documents are in collection, return empty range condition
+      if (rcd.length === 0) {
+        return [0, -1];
+      }
+
+      var usingDotNotation = (prop.indexOf('.') !== -1);
+
+      var minVal = Utils.getIn(rcd[index[min]], prop, usingDotNotation);
+      var maxVal = Utils.getIn(rcd[index[max]], prop, usingDotNotation);
+
+      // if value falls outside of our range return [0, -1] to designate no results
+      switch (op) {
+        case '$eq':
+        case '$aeq':
+          if (Comparators.lt(val, minVal, false) || Comparators.gt(val, maxVal, false)) {
+            return [0, -1];
+          }
+          break;
+        case '$dteq':
+          if (Comparators.lt(val, minVal, false) || Comparators.gt(val, maxVal, false)) {
+            return [0, -1];
+          }
+          break;
+        case '$gt':
+          // none are within range
+          if (Comparators.gt(val, maxVal, true)) {
+            return [0, -1];
+          }
+          // all are within range
+          if (Comparators.gt(minVal, val, false)) {
+            return [min, max];
+          }
+          break;
+        case '$gte':
+          // none are within range
+          if (Comparators.gt(val, maxVal, false)) {
+            return [0, -1];
+          }
+          // all are within range
+          if (Comparators.gt(minVal, val, true)) {
+            return [min, max];
+          }
+          break;
+        case '$lt':
+          // none are within range
+          if (Comparators.lt(val, minVal, true)) {
+            return [0, -1];
+          }
+          // all are within range
+          if (Comparators.lt(maxVal, val, false)) {
+            return [min, max];
+          }
+          break;
+        case '$lte':
+          // none are within range
+          if (Comparators.lt(val, minVal, false)) {
+            return [0, -1];
+          }
+          // all are within range
+          if (Comparators.lt(maxVal, val, true)) {
+            return [min, max];
+          }
+          break;
+        case '$between':
+          // none are within range (low range is greater)
+          if (Comparators.gt(val[0], maxVal, false)) {
+            return [0, -1];
+          }
+          // none are within range (high range lower)
+          if (Comparators.lt(val[1], minVal, false)) {
+            return [0, -1];
+          }
+
+          lbound = this.calculateRangeStart(prop, val[0], false, usingDotNotation);
+          ubound = this.calculateRangeEnd(prop, val[1], usingDotNotation);
+
+          if (lbound < 0) lbound++;
+          if (ubound > max) ubound--;
+
+          if (!Comparators.gt(Utils.getIn(rcd[index[lbound]], prop, usingDotNotation), val[0], true)) lbound++;
+          if (!Comparators.lt(Utils.getIn(rcd[index[ubound]], prop, usingDotNotation), val[1], true)) ubound--;
+
+          if (ubound < lbound) return [0, -1];
+
+          return ([lbound, ubound]);
+        case '$in':
+          var idxset = [],
+            segResult = [];
+          // query each value '$eq' operator and merge the seqment results.
+          for (var j = 0, len = val.length; j < len; j++) {
+            var seg = this.calculateRange('$eq', prop, val[j]);
+
+            for (var i = seg[0]; i <= seg[1]; i++) {
+              if (idxset[i] === undefined) {
+                idxset[i] = true;
+                segResult.push(i);
+              }
+            }
+          }
+          return segResult;
+      }
+
+      // determine lbound where needed
+      switch (op) {
+        case '$eq':
+        case '$aeq':
+        case '$dteq':
+        case '$gte':
+        case '$lt':
+          lbound = this.calculateRangeStart(prop, val, false, usingDotNotation);
+          lval = Utils.getIn(rcd[index[lbound]], prop, usingDotNotation);
+          break;
+        default: break;
+      }
+
+      // determine ubound where needed
+      switch (op) {
+        case '$eq':
+        case '$aeq':
+        case '$dteq':
+        case '$lte':
+        case '$gt':
+          ubound = this.calculateRangeEnd(prop, val, usingDotNotation);
+          uval = Utils.getIn(rcd[index[ubound]], prop, usingDotNotation);
+          break;
+        default: break;
+      }
+
+
+      switch (op) {
+        case '$eq':
+        case '$aeq':
+        case '$dteq':
+          // if hole (not found)
+          if (!Comparators.aeq(lval, val)) {
+            return [0, -1];
+          }
+
+          return [lbound, ubound];
+
+        case '$gt':
+          // if hole (not found) ub position is already greater
+          if (!Comparators.aeq(Utils.getIn(rcd[index[ubound]], prop, usingDotNotation), val)) {
+            return [ubound, max];
+          }
+          // otherwise (found) so ubound is still equal, get next
+          return [ubound + 1, max];
+
+        case '$gte':
+          // if hole (not found) lb position marks left outside of range
+          if (!Comparators.aeq(Utils.getIn(rcd[index[lbound]], prop, usingDotNotation), val)) {
+            return [lbound + 1, max];
+          }
+          // otherwise (found) so lb is first position where its equal
+          return [lbound, max];
+
+        case '$lt':
+          // if hole (not found) position already is less than
+          if (!Comparators.aeq(Utils.getIn(rcd[index[lbound]], prop, usingDotNotation), val)) {
+            return [min, lbound];
+          }
+          // otherwise (found) so lb marks left inside of eq range, get previous
+          return [min, lbound - 1];
+
+        case '$lte':
+          // if hole (not found) ub position marks right outside so get previous
+          if (!Comparators.aeq(Utils.getIn(rcd[index[ubound]], prop, usingDotNotation), val)) {
+            return [min, ubound - 1];
+          }
+          // otherwise (found) so ub is last position where its still equal
+          return [min, ubound];
+
+        default:
+          return [0, rcd.length - 1];
+      }
+    };
+
+    /**
+     * Retrieve doc by Unique index
+     * @param {string} field - name of uniquely indexed property to use when doing lookup
+     * @param {value} value - unique value to search for
+     * @returns {object} document matching the value passed
+     * @memberof Collection
+     */
+    Collection.prototype.by = function (field, value) {
+      var self;
+      if (value === undefined) {
+        self = this;
+        return function (value) {
+          return self.by(field, value);
+        };
+      }
+
+      var result = this.getUniqueIndex(field, true).get(value);
+      if (!this.cloneObjects) {
+        return result;
+      } else {
+        return clone(result, this.cloneMethod);
+      }
+    };
+
+    /**
+     * Find one object by index property, by property equal to value
+     * @param {object} query - query object used to perform search with
+     * @returns {(object|null)} First matching document, or null if none
+     * @memberof Collection
+     */
+    Collection.prototype.findOne = function (query) {
+      query = query || {};
+
+      // Instantiate Resultset and exec find op passing firstOnly = true param
+      var result = this.chain().find(query, true).data();
+
+      if (Array.isArray(result) && result.length === 0) {
+        return null;
+      } else {
+        if (!this.cloneObjects) {
+          return result[0];
+        } else {
+          return clone(result[0], this.cloneMethod);
+        }
+      }
+    };
+
+    /**
+     * Chain method, used for beginning a series of chained find() and/or view() operations
+     * on a collection.
+     *
+     * @param {string|array=} transform - named transform or array of transform steps
+     * @param {object=} parameters - Object containing properties representing parameters to substitute
+     * @returns {Resultset} (this) resultset, or data array if any map or join functions where called
+     * @memberof Collection
+     */
+    Collection.prototype.chain = function (transform, parameters) {
+      var rs = new Resultset(this);
+
+      if (typeof transform === 'undefined') {
+        return rs;
+      }
+
+      return rs.transform(transform, parameters);
+    };
+
+    /**
+     * Find method, api is similar to mongodb.
+     * for more complex queries use [chain()]{@link Collection#chain} or [where()]{@link Collection#where}.
+     * @example {@tutorial Query Examples}
+     * @param {object} query - 'mongo-like' query object
+     * @returns {array} Array of matching documents
+     * @memberof Collection
+     */
+    Collection.prototype.find = function (query) {
+      return this.chain().find(query).data();
+    };
+
+    /**
+     * Find object by unindexed field by property equal to value,
+     * simply iterates and returns the first element matching the query
+     */
+    Collection.prototype.findOneUnindexed = function (prop, value) {
+      var i = this.data.length,
+        doc;
+      while (i--) {
+        if (Utils.getIn(this.data[i], prop, true) === value) {
+          doc = this.data[i];
+          return doc;
+        }
+      }
+      return null;
+    };
+
+    /**
+     * Transaction methods
+     */
+
+    /** start the transation */
+    Collection.prototype.startTransaction = function () {
+      if (this.transactional) {
+        this.cachedData = clone(this.data, this.cloneMethod);
+        this.cachedIndex = this.idIndex;
+        this.cachedBinaryIndex = this.binaryIndices;
+        this.cachedDirtyIds = this.dirtyIds;
+
+        // propagate startTransaction to dynamic views
+        for (var idx = 0; idx < this.DynamicViews.length; idx++) {
+          this.DynamicViews[idx].startTransaction();
+        }
+      }
+    };
+
+    /** commit the transation */
+    Collection.prototype.commit = function () {
+      if (this.transactional) {
+        this.cachedData = null;
+        this.cachedIndex = null;
+        this.cachedBinaryIndex = null;
+        this.cachedDirtyIds = null;
+
+        // propagate commit to dynamic views
+        for (var idx = 0; idx < this.DynamicViews.length; idx++) {
+          this.DynamicViews[idx].commit();
+        }
+      }
+    };
+
+    /** roll back the transation */
+    Collection.prototype.rollback = function () {
+      if (this.transactional) {
+        if (this.cachedData !== null && this.cachedIndex !== null) {
+          this.data = this.cachedData;
+          this.idIndex = this.cachedIndex;
+          this.binaryIndices = this.cachedBinaryIndex;
+          this.dirtyIds = this.cachedDirtyIds;
+        }
+
+        // propagate rollback to dynamic views
+        for (var idx = 0; idx < this.DynamicViews.length; idx++) {
+          this.DynamicViews[idx].rollback();
+        }
+      }
+    };
+
+    // async executor. This is only to enable callbacks at the end of the execution.
+    Collection.prototype.async = function (fun, callback) {
+      setTimeout(function () {
+        if (typeof fun === 'function') {
+          fun();
+          callback();
+        } else {
+          throw new TypeError('Argument passed for async execution is not a function');
+        }
+      }, 0);
+    };
+
+    /**
+     * Query the collection by supplying a javascript filter function.
+     * @example
+     * var results = coll.where(function(obj) {
+     *   return obj.legs === 8;
+     * });
+     *
+     * @param {function} fun - filter function to run against all collection docs
+     * @returns {array} all documents which pass your filter function
+     * @memberof Collection
+     */
+    Collection.prototype.where = function (fun) {
+      return this.chain().where(fun).data();
+    };
+
+    /**
+     * Map Reduce operation
+     *
+     * @param {function} mapFunction - function to use as map function
+     * @param {function} reduceFunction - function to use as reduce function
+     * @returns {data} The result of your mapReduce operation
+     * @memberof Collection
+     */
+    Collection.prototype.mapReduce = function (mapFunction, reduceFunction) {
+      try {
+        return reduceFunction(this.data.map(mapFunction));
+      } catch (err) {
+        throw err;
+      }
+    };
+
+    /**
+     * Join two collections on specified properties
+     *
+     * @param {array|Resultset|Collection} joinData - array of documents to 'join' to this collection
+     * @param {string} leftJoinProp - property name in collection
+     * @param {string} rightJoinProp - property name in joinData
+     * @param {function=} mapFun - (Optional) map function to use
+     * @param {object=} dataOptions - options to data() before input to your map function
+     * @param {bool} dataOptions.removeMeta - allows removing meta before calling mapFun
+     * @param {boolean} dataOptions.forceClones - forcing the return of cloned objects to your map object
+     * @param {string} dataOptions.forceCloneMethod - Allows overriding the default or collection specified cloning method.
+     * @returns {Resultset} Result of the mapping operation
+     * @memberof Collection
+     */
+    Collection.prototype.eqJoin = function (joinData, leftJoinProp, rightJoinProp, mapFun, dataOptions) {
+      // logic in Resultset class
+      return new Resultset(this).eqJoin(joinData, leftJoinProp, rightJoinProp, mapFun, dataOptions);
+    };
+
+    /* ------ STAGING API -------- */
+    /**
+     * stages: a map of uniquely identified 'stages', which hold copies of objects to be
+     * manipulated without affecting the data in the original collection
+     */
+    Collection.prototype.stages = {};
+
+    /**
+     * (Staging API) create a stage and/or retrieve it
+     * @memberof Collection
+     */
+    Collection.prototype.getStage = function (name) {
+      if (!this.stages[name]) {
+        this.stages[name] = {};
+      }
+      return this.stages[name];
+    };
+    /**
+     * a collection of objects recording the changes applied through a commmitStage
+     */
+    Collection.prototype.commitLog = [];
+
+    /**
+     * (Staging API) create a copy of an object and insert it into a stage
+     * @memberof Collection
+     */
+    Collection.prototype.stage = function (stageName, obj) {
+      var copy = JSON.parse(JSON.stringify(obj));
+      this.getStage(stageName)[obj.$loki] = copy;
+      return copy;
+    };
+
+    /**
+     * (Staging API) re-attach all objects to the original collection, so indexes and views can be rebuilt
+     * then create a message to be inserted in the commitlog
+     * @param {string} stageName - name of stage
+     * @param {string} message
+     * @memberof Collection
+     */
+    Collection.prototype.commitStage = function (stageName, message) {
+      var stage = this.getStage(stageName),
+        prop,
+        timestamp = new Date().getTime();
+
+      for (prop in stage) {
+
+        this.update(stage[prop]);
+        this.commitLog.push({
+          timestamp: timestamp,
+          message: message,
+          data: JSON.parse(JSON.stringify(stage[prop]))
+        });
+      }
+      this.stages[stageName] = {};
+    };
+
+    Collection.prototype.no_op = function () {
+      return;
+    };
+
+    /**
+     * @memberof Collection
+     */
+    Collection.prototype.extract = function (field) {
+      var i = 0,
+        len = this.data.length,
+        isDotNotation = isDeepProperty(field),
+        result = [];
+      for (i; i < len; i += 1) {
+        result.push(deepProperty(this.data[i], field, isDotNotation));
+      }
+      return result;
+    };
+
+    /**
+     * @memberof Collection
+     */
+    Collection.prototype.max = function (field) {
+      return Math.max.apply(null, this.extract(field));
+    };
+
+    /**
+     * @memberof Collection
+     */
+    Collection.prototype.min = function (field) {
+      return Math.min.apply(null, this.extract(field));
+    };
+
+    /**
+     * @memberof Collection
+     */
+    Collection.prototype.maxRecord = function (field) {
+      var i = 0,
+        len = this.data.length,
+        deep = isDeepProperty(field),
+        result = {
+          index: 0,
+          value: undefined
+        },
+        max;
+
+      for (i; i < len; i += 1) {
+        if (max !== undefined) {
+          if (max < deepProperty(this.data[i], field, deep)) {
+            max = deepProperty(this.data[i], field, deep);
+            result.index = this.data[i].$loki;
+          }
+        } else {
+          max = deepProperty(this.data[i], field, deep);
+          result.index = this.data[i].$loki;
+        }
+      }
+      result.value = max;
+      return result;
+    };
+
+    /**
+     * @memberof Collection
+     */
+    Collection.prototype.minRecord = function (field) {
+      var i = 0,
+        len = this.data.length,
+        deep = isDeepProperty(field),
+        result = {
+          index: 0,
+          value: undefined
+        },
+        min;
+
+      for (i; i < len; i += 1) {
+        if (min !== undefined) {
+          if (min > deepProperty(this.data[i], field, deep)) {
+            min = deepProperty(this.data[i], field, deep);
+            result.index = this.data[i].$loki;
+          }
+        } else {
+          min = deepProperty(this.data[i], field, deep);
+          result.index = this.data[i].$loki;
+        }
+      }
+      result.value = min;
+      return result;
+    };
+
+    /**
+     * @memberof Collection
+     */
+    Collection.prototype.extractNumerical = function (field) {
+      return this.extract(field).map(parseBase10).filter(Number).filter(function (n) {
+        return !(isNaN(n));
+      });
+    };
+
+    /**
+     * Calculates the average numerical value of a property
+     *
+     * @param {string} field - name of property in docs to average
+     * @returns {number} average of property in all docs in the collection
+     * @memberof Collection
+     */
+    Collection.prototype.avg = function (field) {
+      return average(this.extractNumerical(field));
+    };
+
+    /**
+     * Calculate standard deviation of a field
+     * @memberof Collection
+     * @param {string} field
+     */
+    Collection.prototype.stdDev = function (field) {
+      return standardDeviation(this.extractNumerical(field));
+    };
+
+    /**
+     * @memberof Collection
+     * @param {string} field
+     */
+    Collection.prototype.mode = function (field) {
+      var dict = {},
+        data = this.extract(field);
+      data.forEach(function (obj) {
+        if (dict[obj]) {
+          dict[obj] += 1;
+        } else {
+          dict[obj] = 1;
+        }
+      });
+      var max,
+        prop, mode;
+      for (prop in dict) {
+        if (max) {
+          if (max < dict[prop]) {
+            mode = prop;
+          }
+        } else {
+          mode = prop;
+          max = dict[prop];
+        }
+      }
+      return mode;
+    };
+
+    /**
+     * @memberof Collection
+     * @param {string} field - property name
+     */
+    Collection.prototype.median = function (field) {
+      var values = this.extractNumerical(field);
+      values.sort(sub);
+
+      var half = Math.floor(values.length / 2);
+
+      if (values.length % 2) {
+        return values[half];
+      } else {
+        return (values[half - 1] + values[half]) / 2.0;
+      }
+    };
+
+    /**
+     * General utils, including statistical functions
+     */
+    function isDeepProperty(field) {
+      return field.indexOf('.') !== -1;
+    }
+
+    function parseBase10(num) {
+      return parseFloat(num, 10);
+    }
+
+    function isNotUndefined(obj) {
+      return obj !== undefined;
+    }
+
+    function add(a, b) {
+      return a + b;
+    }
+
+    function sub(a, b) {
+      return a - b;
+    }
+
+    function median(values) {
+      values.sort(sub);
+      var half = Math.floor(values.length / 2);
+      return (values.length % 2) ? values[half] : ((values[half - 1] + values[half]) / 2.0);
+    }
+
+    function average(array) {
+      return (array.reduce(add, 0)) / array.length;
+    }
+
+    function standardDeviation(values) {
+      var avg = average(values);
+      var squareDiffs = values.map(function (value) {
+        var diff = value - avg;
+        var sqrDiff = diff * diff;
+        return sqrDiff;
+      });
+
+      var avgSquareDiff = average(squareDiffs);
+
+      var stdDev = Math.sqrt(avgSquareDiff);
+      return stdDev;
+    }
+
+    function deepProperty(obj, property, isDeep) {
+      if (isDeep === false) {
+        // pass without processing
+        return obj[property];
+      }
+      var pieces = property.split('.'),
+        root = obj;
+      while (pieces.length > 0) {
+        root = root[pieces.shift()];
+      }
+      return root;
+    }
+
+    function binarySearch(array, item, fun) {
+      var lo = 0,
+        hi = array.length,
+        compared,
+        mid;
+      while (lo < hi) {
+        mid = (lo + hi) >> 1;
+        compared = fun.apply(null, [item, array[mid]]);
+        if (compared === 0) {
+          return {
+            found: true,
+            index: mid
+          };
+        } else if (compared < 0) {
+          hi = mid;
+        } else {
+          lo = mid + 1;
+        }
+      }
+      return {
+        found: false,
+        index: hi
+      };
+    }
+
+    function BSonSort(fun) {
+      return function (array, item) {
+        return binarySearch(array, item, fun);
+      };
+    }
+
+    function KeyValueStore() { }
+
+    KeyValueStore.prototype = {
+      keys: [],
+      values: [],
+      sort: function (a, b) {
+        return (a < b) ? -1 : ((a > b) ? 1 : 0);
+      },
+      setSort: function (fun) {
+        this.bs = new BSonSort(fun);
+      },
+      bs: function () {
+        return new BSonSort(this.sort);
+      },
+      set: function (key, value) {
+        var pos = this.bs(this.keys, key);
+        if (pos.found) {
+          this.values[pos.index] = value;
+        } else {
+          this.keys.splice(pos.index, 0, key);
+          this.values.splice(pos.index, 0, value);
+        }
+      },
+      get: function (key) {
+        return this.values[binarySearch(this.keys, key, this.sort).index];
+      }
+    };
+
+    function UniqueIndex(uniqueField) {
+      this.field = uniqueField;
+      this.keyMap = Object.create(null);
+      this.lokiMap = Object.create(null);
+    }
+    UniqueIndex.prototype.keyMap = {};
+    UniqueIndex.prototype.lokiMap = {};
+    UniqueIndex.prototype.set = function (obj) {
+      var fieldValue = obj[this.field];
+      if (fieldValue !== null && typeof (fieldValue) !== 'undefined') {
+        if (this.keyMap[fieldValue]) {
+          throw new Error('Duplicate key for property ' + this.field + ': ' + fieldValue);
+        } else {
+          this.keyMap[fieldValue] = obj;
+          this.lokiMap[obj.$loki] = fieldValue;
+        }
+      }
+    };
+    UniqueIndex.prototype.get = function (key) {
+      return this.keyMap[key];
+    };
+
+    UniqueIndex.prototype.byId = function (id) {
+      return this.keyMap[this.lokiMap[id]];
+    };
+    /**
+     * Updates a document's unique index given an updated object.
+     * @param  {Object} obj Original document object
+     * @param  {Object} doc New document object (likely the same as obj)
+     */
+    UniqueIndex.prototype.update = function (obj, doc) {
+      if (this.lokiMap[obj.$loki] !== doc[this.field]) {
+        var old = this.lokiMap[obj.$loki];
+        this.set(doc);
+        // make the old key fail bool test, while avoiding the use of delete (mem-leak prone)
+        this.keyMap[old] = undefined;
+      } else {
+        this.keyMap[obj[this.field]] = doc;
+      }
+    };
+    UniqueIndex.prototype.remove = function (key) {
+      var obj = this.keyMap[key];
+      if (obj !== null && typeof obj !== 'undefined') {
+        // avoid using `delete`
+        this.keyMap[key] = undefined;
+        this.lokiMap[obj.$loki] = undefined;
+      } else {
+        throw new Error('Key is not in unique index: ' + this.field);
+      }
+    };
+    UniqueIndex.prototype.clear = function () {
+      this.keyMap = Object.create(null);
+      this.lokiMap = Object.create(null);
+    };
+
+    function ExactIndex(exactField) {
+      this.index = Object.create(null);
+      this.field = exactField;
+    }
+
+    // add the value you want returned to the key in the index
+    ExactIndex.prototype = {
+      set: function add(key, val) {
+        if (this.index[key]) {
+          this.index[key].push(val);
+        } else {
+          this.index[key] = [val];
+        }
+      },
+
+      // remove the value from the index, if the value was the last one, remove the key
+      remove: function remove(key, val) {
+        var idxSet = this.index[key];
+        for (var i in idxSet) {
+          if (idxSet[i] == val) {
+            idxSet.splice(i, 1);
+          }
+        }
+        if (idxSet.length < 1) {
+          this.index[key] = undefined;
+        }
+      },
+
+      // get the values related to the key, could be more than one
+      get: function get(key) {
+        return this.index[key];
+      },
+
+      // clear will zap the index
+      clear: function clear(key) {
+        this.index = {};
+      }
+    };
+
+    function SortedIndex(sortedField) {
+      this.field = sortedField;
+    }
+
+    SortedIndex.prototype = {
+      keys: [],
+      values: [],
+      // set the default sort
+      sort: function (a, b) {
+        return (a < b) ? -1 : ((a > b) ? 1 : 0);
+      },
+      bs: function () {
+        return new BSonSort(this.sort);
+      },
+      // and allow override of the default sort
+      setSort: function (fun) {
+        this.bs = new BSonSort(fun);
+      },
+      // add the value you want returned  to the key in the index
+      set: function (key, value) {
+        var pos = binarySearch(this.keys, key, this.sort);
+        if (pos.found) {
+          this.values[pos.index].push(value);
+        } else {
+          this.keys.splice(pos.index, 0, key);
+          this.values.splice(pos.index, 0, [value]);
+        }
+      },
+      // get all values which have a key == the given key
+      get: function (key) {
+        var bsr = binarySearch(this.keys, key, this.sort);
+        if (bsr.found) {
+          return this.values[bsr.index];
+        } else {
+          return [];
+        }
+      },
+      // get all values which have a key < the given key
+      getLt: function (key) {
+        var bsr = binarySearch(this.keys, key, this.sort);
+        var pos = bsr.index;
+        if (bsr.found) pos--;
+        return this.getAll(key, 0, pos);
+      },
+      // get all values which have a key > the given key
+      getGt: function (key) {
+        var bsr = binarySearch(this.keys, key, this.sort);
+        var pos = bsr.index;
+        if (bsr.found) pos++;
+        return this.getAll(key, pos, this.keys.length);
+      },
+
+      // get all vals from start to end
+      getAll: function (key, start, end) {
+        var results = [];
+        for (var i = start; i < end; i++) {
+          results = results.concat(this.values[i]);
+        }
+        return results;
+      },
+      // just in case someone wants to do something smart with ranges
+      getPos: function (key) {
+        return binarySearch(this.keys, key, this.sort);
+      },
+      // remove the value from the index, if the value was the last one, remove the key
+      remove: function (key, value) {
+        var pos = binarySearch(this.keys, key, this.sort).index;
+        var idxSet = this.values[pos];
+        for (var i in idxSet) {
+          if (idxSet[i] == value) idxSet.splice(i, 1);
+        }
+        if (idxSet.length < 1) {
+          this.keys.splice(pos, 1);
+          this.values.splice(pos, 1);
+        }
+      },
+      // clear will zap the index
+      clear: function () {
+        this.keys = [];
+        this.values = [];
+      }
+    };
+
+    Loki.deepFreeze = deepFreeze;
+    Loki.freeze = freeze;
+    Loki.unFreeze = unFreeze;
+    Loki.LokiOps = LokiOps;
+    Loki.Collection = Collection;
+    Loki.DynamicView = DynamicView;
+    Loki.Resultset = Resultset;
+    Loki.KeyValueStore = KeyValueStore;
+    Loki.LokiMemoryAdapter = LokiMemoryAdapter;
+    Loki.LokiPartitioningAdapter = LokiPartitioningAdapter;
+    Loki.LokiLocalStorageAdapter = LokiLocalStorageAdapter;
+    Loki.LokiFsAdapter = LokiFsAdapter;
+    Loki.persistenceAdapters = {
+      fs: LokiFsAdapter,
+      localStorage: LokiLocalStorageAdapter
+    };
+    Loki.aeq = aeqHelper;
+    Loki.lt = ltHelper;
+    Loki.gt = gtHelper;
+    Loki.Comparators = Comparators;
+    return Loki;
+  }());
+
+}));
+
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./loki-indexed-adapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/loki-enclave-facade/lib/lokijs/src/loki-indexed-adapter.js","fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js":[function(require,module,exports){
+const {SmartUrl} = require("../utils");
+
 function RemotePersistence() {
     const openDSU = require("opendsu");
     const keySSISpace = openDSU.loadAPI("keyssi");
     const resolver = openDSU.loadAPI("resolver");
-    const http = openDSU.loadAPI("http");
     const promiseRunner = require("../utils/promise-runner");
 
     const getAnchoringServices = (dlDomain, callback) => {
@@ -29990,7 +38938,10 @@ function RemotePersistence() {
     const getAnchorHandler = (anchorId, anchorValue, dlDomain, anchorAction) => {
         return function (service) {
             return new Promise((resolve, reject) => {
-                const putResult = http.doPut(`${service}/anchor/${dlDomain}/${anchorAction}/${anchorId}/${anchorValue}`, "", (err, data) => {
+                let smartUrl = new SmartUrl(service);
+                smartUrl = smartUrl.concatWith(`/anchor/${dlDomain}/${anchorAction}/${anchorId}/${anchorValue}`);
+
+                const putResult = smartUrl.doPut("", (err, data) => {
                     if (err) {
                         return reject({
                             statusCode: err.statusCode,
@@ -30023,7 +38974,11 @@ function RemotePersistence() {
     const getFetchAnchor = (anchorId, dlDomain, actionName, callback) => {
         return function (service) {
             return new Promise((resolve, reject) => {
-                http.doGet(`${service}/anchor/${dlDomain}/${actionName}/${anchorId}`, (err, data) => {
+
+                let smartUrl = new SmartUrl(service);
+                smartUrl = smartUrl.concatWith(`/anchor/${dlDomain}/${actionName}/${anchorId}`);
+
+                smartUrl.doGet((err, data) => {
                     if (err) {
                         return reject(err);
                     }
@@ -30077,7 +39032,10 @@ function RemotePersistence() {
     }
 
     this.createOrUpdateMultipleAnchors = (anchors, callback) => {
-        http.doPut(`/anchor/create-or-update-multiple-anchors`, JSON.stringify(anchors), (err, data) => {
+        let smartUrl = new SmartUrl(service);
+        smartUrl = smartUrl.concatWith(`/anchor/create-or-update-multiple-anchors`);
+
+        smartUrl.doPut(JSON.stringify(anchors), (err, data) => {
             if (err) {
                 return callback(err);
             }
@@ -30088,7 +39046,7 @@ function RemotePersistence() {
 }
 
 module.exports = RemotePersistence;
-},{"../utils/promise-runner":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/promise-runner.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
 function validateHashLinks(keySSI, hashLinks, callback) {
@@ -30182,12 +39140,15 @@ module.exports = {
     verifySignature
 };
 
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js":[function(require,module,exports){
 const {createOpenDSUErrorWrapper} = require("../error");
+const fakeHistory = {};
+const fakeLastVersion = {};
 
 function AnchoringAbstractBehaviour(persistenceStrategy) {
     const self = this;
     const keySSISpace = require("opendsu").loadAPI("keyssi");
+
     self.createAnchor = function (anchorId, anchorValueSSI, callback) {
         if (typeof anchorId === 'undefined' || typeof anchorValueSSI === 'undefined' || anchorId === null || anchorValueSSI === null) {
             return callback(Error(`Invalid call for create anchor ${anchorId}:${anchorValueSSI}`));
@@ -30202,10 +39163,19 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
             anchorValueSSIKeySSI = keySSISpace.parse(anchorValueSSI);
         }
 
+
+
         anchorIdKeySSI.getAnchorId((err, _anchorId) => {
             if (err) {
                 return callback(err);
             }
+
+            let fakeLastVersionForAnchorId = fakeLastVersion[_anchorId];
+            if(fakeLastVersionForAnchorId){
+                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                return callback(undefined);
+            }
+
             if (!anchorIdKeySSI.canAppend()) {
                 return persistenceStrategy.createAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), callback);
             }
@@ -30216,9 +39186,7 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
             if (!signer.verify(dataToVerify, signature)) {
                 return callback(Error("Failed to verify signature"));
             }
-            persistenceStrategy.createAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), (err) => {
-                return callback(err);
-            });
+            persistenceStrategy.createAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), callback);
         });
     }
 
@@ -30240,34 +39208,47 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
             if (!anchorIdKeySSI.canAppend()) {
                 return callback(Error(`Cannot append anchor for ${anchorId} because of the keySSI type`));
             }
-            persistenceStrategy.getAllVersions(anchorId, (err, data) => {
-                // throw Error("Get all versions callback");
+
+            anchorIdKeySSI.getAnchorId((err, _anchorId) => {
                 if (err) {
                     return callback(err);
                 }
-                if (typeof data === 'undefined' || data === null) {
-                    data = [];
-                }
-                const historyOfKeySSI = data.map(el => keySSISpace.parse(el));
-                const signer = determineSigner(anchorIdKeySSI, historyOfKeySSI);
-                const signature = anchorValueSSIKeySSI.getSignature();
-                if (typeof data[data.length - 1] === 'undefined') {
-                    return callback(`Cannot update non existing anchor ${anchorId}`);
-                }
-                const lastSignedHashLinkKeySSI = keySSISpace.parse(data[data.length - 1]);
-                const dataToVerify = anchorValueSSIKeySSI.getDataToSign(anchorIdKeySSI, lastSignedHashLinkKeySSI);
-                if (!signer.verify(dataToVerify, signature)) {
-                    return callback({statusCode: 428, message: "Versions out of sync"});
-                }
 
-                anchorIdKeySSI.getAnchorId((err, _anchorId) => {
+                let verifySignaturesAndAppend = (err, data) => {
+                    // throw Error("Get all versions callback");
                     if (err) {
                         return callback(err);
                     }
+                    if (typeof data === 'undefined' || data === null) {
+                        data = [];
+                    }
+
+                    if(!self.testIfRecoveryActiveFor(_anchorId)){
+                        const historyOfKeySSI = data.map(el => keySSISpace.parse(el));
+                        const signer = determineSigner(anchorIdKeySSI, historyOfKeySSI);
+                        const signature = anchorValueSSIKeySSI.getSignature();
+                        if (typeof data[data.length - 1] === 'undefined') {
+                            return callback(`Cannot update non existing anchor ${anchorId}`);
+                        }
+                        const lastSignedHashLinkKeySSI = keySSISpace.parse(data[data.length - 1]);
+                        const dataToVerify = anchorValueSSIKeySSI.getDataToSign(anchorIdKeySSI, lastSignedHashLinkKeySSI);
+                        if (!signer.verify(dataToVerify, signature)) {
+                            return callback({statusCode: 428, message: "Versions out of sync"});
+                        }
+                    }
+
                     persistenceStrategy.appendAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), callback);
-                });
-            })
+                }
+
+                let fakeHistoryAvailable = fakeHistory[_anchorId];
+                if(fakeHistoryAvailable){
+                    return verifySignaturesAndAppend(undefined, fakeHistoryAvailable);
+                }
+
+                persistenceStrategy.getAllVersions(anchorId, verifySignaturesAndAppend)
+            });
         }
+
         if (typeof persistenceStrategy.prepareAnchoring === "function") {
             persistenceStrategy.prepareAnchoring(anchorId, err => {
                 if (err) {
@@ -30285,9 +39266,15 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
         if (typeof anchorId === "string") {
             anchorIdKeySSI = keySSISpace.parse(anchorId);
         }
+
         anchorIdKeySSI.getAnchorId((err, anchorId) => {
             if (err) {
                 return callback(err);
+            }
+
+            let fakeHistoryAvailable = fakeHistory[anchorId];
+            if(fakeHistoryAvailable){
+                return callback(undefined, fakeHistoryAvailable);
             }
 
             persistenceStrategy.getAllVersions(anchorId, (err, data) => {
@@ -30333,10 +39320,17 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
         if (typeof anchorId === "string") {
             anchorIdKeySSI = keySSISpace.parse(anchorId);
         }
+
         anchorIdKeySSI.getAnchorId((err, anchorId) => {
             if (err) {
                 return callback(err);
             }
+
+            let fakeLastVersionForAnchorId = fakeLastVersion[anchorId];
+            if(fakeLastVersionForAnchorId){
+                return callback(undefined, fakeLastVersionForAnchorId);
+            }
+
             persistenceStrategy.getLastVersion(anchorId, (err, data) => {
                 if (err) {
                     return callback(err);
@@ -30353,6 +39347,15 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
                 callback(undefined, anchorValueSSI);
             });
         });
+    }
+
+    self.markAnchorForRecovery = function(anchorId, anchorFakeHistory, anchorFakeLastVersion){
+        fakeHistory[anchorId] = anchorFakeHistory;
+        fakeLastVersion[anchorId] = anchorFakeLastVersion;
+    }
+
+    self.testIfRecoveryActiveFor = function(anchorId){
+        return !!fakeHistory[anchorId];
     }
 
     function determineSigner(anchorIdKeySSI, historyOfKeySSIValues) {
@@ -30386,12 +39389,14 @@ module.exports = {
     AnchoringAbstractBehaviour
 }
 
-},{"../error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/index.js":[function(require,module,exports){
-const keyssi = require("../keyssi");
-const {fetch, doPut} = require("../http");
-const constants = require("../moduleConstants");
-const promiseRunner = require("../utils/promise-runner");
-const config = require("../config");
+},{"../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js":[function(require,module,exports){
+const openDSU = require("opendsu")
+const keyssi = openDSU.loadAPI("keyssi");
+const utils = openDSU.loadAPI("utils");
+const SmartUrl = utils.SmartUrl;
+const constants = openDSU.constants;
+const promiseRunner = utils.promiseRunner;
+const config = openDSU.loadAPI("config");
 const {validateHashLinks, verifySignature} = require("./anchoring-utils");
 
 const getAnchoringBehaviour = (persistenceStrategy) => {
@@ -30432,7 +39437,9 @@ const buildGetVersionFunction = function(processingFunction){
 
                 //TODO: security issue (which response we trust)
                 const fetchAnchor = (service) => {
-                    return fetch(`${service}/anchor/${dlDomain}/get-all-versions/${anchorId}`).then(processingFunction);
+                    let smartUrl = new SmartUrl(service);
+                    smartUrl = smartUrl.concatWith(`/anchor/${dlDomain}/get-all-versions/${anchorId}`);
+                    return smartUrl.fetch().then(processingFunction);
                 };
 
                 promiseRunner.runOneSuccessful(anchoringServicesArray, fetchAnchor, callback, new Error("get Anchoring Service"));
@@ -30563,7 +39570,11 @@ const addVersion = (SSICapableOfSigning, newSSI, lastSSI, zkpValue, callback) =>
 
                 const addAnchor = (service) => {
                     return new Promise((resolve, reject) => {
-                        const putResult = doPut(`${service}/anchor/${dlDomain}/${anchorAction}/${anchorId}`, JSON.stringify(body), (err, data) => {
+
+                        let smartUrl = new SmartUrl(service);
+                        smartUrl = smartUrl.concatWith(`/anchor/${dlDomain}/${anchorAction}/${anchorId}`);
+
+                        const putResult = smartUrl.doPut(JSON.stringify(body), (err, data) => {
                             if (err) {
                                 return reject({
                                     statusCode: err.statusCode,
@@ -30666,7 +39677,7 @@ module.exports = {
     getAnchoringX
 }
 
-},{"../bdns":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bdns/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/index.js","../http":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js","../keyssi":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/keyssi/index.js","../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/promise-runner":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/promise-runner.js","./RemotePersistence":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js","./anchoring-utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js","./anchoringAbstractBehaviour":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bdns/index.js":[function(require,module,exports){
+},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","./RemotePersistence":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js","./anchoring-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js","./anchoringAbstractBehaviour":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 const PendingCallMixin = require("../utils/PendingCallMixin");
 const getBaseURL = require("../utils/getBaseURL");
@@ -30779,7 +39790,7 @@ function BDNS() {
 
 module.exports = new BDNS();
 
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","../utils/getBaseURL":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/BootEngine.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js":[function(require,module,exports){
 (function (global){(function (){
 function BootEngine(getKeySSI) {
     if (typeof getKeySSI !== "function") {
@@ -30911,7 +39922,7 @@ module.exports = BootEngine;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js":[function(require,module,exports){
 function boot(keySSI) {
     const worker_threads = "worker_threads";
     const { parentPort } = require(worker_threads);
@@ -30953,7 +39964,7 @@ function boot(keySSI) {
 
 module.exports = boot;
 
-},{"./BootEngine.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js":[function(require,module,exports){
+},{"./BootEngine.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js":[function(require,module,exports){
 function boot(keySSI) {
     const { handleMessage } = require("./boot-utils.js");
 
@@ -30986,7 +39997,7 @@ function boot(keySSI) {
 
 module.exports = boot;
 
-},{"./BootEngine.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/boot-utils.js":[function(require,module,exports){
+},{"./BootEngine.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/boot-utils.js":[function(require,module,exports){
 function handleMessage(message, onHandleMessage) {
     // console.log("[worker] Received message", message);
 
@@ -31025,7 +40036,7 @@ module.exports = {
     handleMessage,
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/index.js":[function(require,module,exports){
 let { ENVIRONMENT_TYPES } = require("../moduleConstants.js");
 
 function getBootScript() {
@@ -31041,12 +40052,12 @@ function getBootScript() {
 
 module.exports = getBootScript();
 
-},{"../moduleConstants.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./NodeBootScript":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js","./WorkerBootScript":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bricking/index.js":[function(require,module,exports){
+},{"../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./NodeBootScript":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js","./WorkerBootScript":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bricking/index.js":[function(require,module,exports){
 const openDSU = require("opendsu");
-const {fetch, doPut} = openDSU.loadApi("http");
 const constants = require("../moduleConstants");
 const cache = require("../cache/").getCacheForVault(constants.CACHE.ENCRYPTED_BRICKS_CACHE);
 const promiseRunner = require("../utils/promise-runner");
+const {SmartUrl} = require("../utils");
 
 const isValidBrickHash = (hashLinkSSI, brickData) => {
     const ensureIsBuffer = require("swarmutils").ensureIsBuffer;
@@ -31096,17 +40107,19 @@ const getBrick = (hashLinkSSI, authToken, callback) => {
             }
 
             const fetchBrick = (storage) => {
-                return fetch(`${storage}/bricking/${dlDomain}/get-brick/${brickHash}`)
-                    .then(async (response) => {
-                        const brickData = await response.arrayBuffer();
-                        if (isValidBrickHash(hashLinkSSI, brickData)) {
-                            if (typeof cache !== "undefined") {
-                                cache.put(brickHash, brickData);
-                            }
-                            return brickData;
+                let smartUrl = new SmartUrl(storage);
+                smartUrl = smartUrl.concatWith(`/bricking/${dlDomain}/get-brick/${brickHash}`);
+
+                return smartUrl.fetch().then(async (response) => {
+                    const brickData = await response.arrayBuffer();
+                    if (isValidBrickHash(hashLinkSSI, brickData)) {
+                        if (typeof cache !== "undefined") {
+                            cache.put(brickHash, brickData);
                         }
-                        throw Error(`Failed to validate brick <${brickHash}>`);
-                    });
+                        return brickData;
+                    }
+                    throw Error(`Failed to validate brick <${brickHash}>`);
+                });
             };
 
             const runnerCallback = (error, result) => {
@@ -31185,7 +40198,10 @@ const putBrick = (domain, brick, authToken, callback) => {
         }
         const setBrickInStorage = (storage) => {
             return new Promise((resolve, reject) => {
-                const putResult = doPut(`${storage}/bricking/${domain}/put-brick`, brick, (err, data) => {
+                let smartUrl = new SmartUrl(storage);
+                smartUrl = smartUrl.concatWith(`/bricking/${domain}/put-brick`);
+
+                const putResult = smartUrl.doPut(brick, (err, data) => {
                     if (err) {
                         return reject(err);
                     }
@@ -31261,7 +40277,7 @@ const constructBricksFromData = (keySSI, data, options, callback) => {
 
 module.exports = {getBrick, putBrick, getMultipleBricks, constructBricksFromData};
 
-},{"../cache/":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/promise-runner":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/promise-runner.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/FSCache.js":[function(require,module,exports){
+},{"../cache/":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/FSCache.js":[function(require,module,exports){
 let stores = {};
 const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
@@ -31341,7 +40357,7 @@ function FSCache(folderName) {
 
 
 module.exports.FSCache = FSCache;
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js":[function(require,module,exports){
 let stores = {};
 const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
@@ -31462,11 +40478,11 @@ function IndexedDBCache(storeName, lifetime) {
 
 
 module.exports.IndexedDBCache  = IndexedDBCache;
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/MemoryCache.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/MemoryCache.js":[function(require,module,exports){
 
 const constants = require("../moduleConstants");
 
-function MemoryCache() {
+function MemoryCache(useWeakRef) {
     let storage = {};
     const self = this;
 
@@ -31474,15 +40490,23 @@ function MemoryCache() {
         if(typeof key !== "string"){
             throw new Error("Keys should be strings");
         }
-        if(callback){
-            callback(undefined, storage[key])
+
+        let value = storage[key];
+        if(value && useWeakRef){
+            value = value.deref();
         }
-        return storage[key];
+        if(callback){
+            callback(undefined, value);
+        }
+        return value;
     };
 
     self.put = function (key, value, callback) {
         if(typeof key !== "string"){
             throw new Error("Keys should be strings");
+        }
+        if(useWeakRef){
+            value = value ? new WeakRef(value) : value;
         }
         storage[key] = value;
         if(callback){
@@ -31495,7 +40519,7 @@ function MemoryCache() {
 
 
 module.exports.MemoryCache = MemoryCache;
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js":[function(require,module,exports){
 let stores = {};
 const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
@@ -31528,14 +40552,24 @@ function getCacheForVault(storeName, lifetime) {
 }
 
 function getMemoryCache(storeName){
-    return stores[storeName] = new MemoryCache(storeName);
+    return stores[storeName] = new MemoryCache();
+}
+
+function getWeakRefMemoryCache(storeName){
+    let cache = stores[storeName];
+    if(!cache){
+        cache = new MemoryCache(true);
+        stores[storeName] = cache;
+    }
+    return cache;
 }
 
 module.exports = {
     getCacheForVault,
-    getMemoryCache
+    getMemoryCache,
+    getWeakRefMemoryCache
 }
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./FSCache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/FSCache.js","./IndexeDBCache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js","./MemoryCache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/MemoryCache.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/autoConfig.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./FSCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/FSCache.js","./IndexeDBCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js","./MemoryCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/MemoryCache.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfig.js":[function(require,module,exports){
 const config = require("./index");
 const constants = require("../moduleConstants");
 const system = require("../system");
@@ -31572,7 +40606,7 @@ setGlobalVariable("printOpenDSUError", errorModule.printOpenDSUError);
 
 
 
-},{"../error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/system/index.js","../utils/getBaseURL":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js":[function(require,module,exports){
+},{"../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js","../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js":[function(require,module,exports){
 
 module.exports = function(environment){
         const config = require("./index.js");
@@ -31589,7 +40623,7 @@ module.exports = function(environment){
         }
         console.log("Environment for vault", environment.appName,  config.get(constants.CACHE.VAULT_TYPE))
 }
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./index.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./index.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 const config = {};
 
@@ -31678,7 +40712,7 @@ module.exports = {
 };
 
 
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./autoConfigFromEnvironment":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/contracts/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./autoConfigFromEnvironment":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/index.js":[function(require,module,exports){
 const getBaseURL = require("../utils/getBaseURL");
 
 const {
@@ -31825,7 +40859,7 @@ module.exports = {
     generateNoncedCommandForSpecificServer,
 };
 
-},{"../utils/getBaseURL":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/contracts/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/contracts/utils.js":[function(require,module,exports){
+},{"../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/utils.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const { fetch, doPost } = require("../http");
 const promiseRunner = require("../utils/promise-runner");
@@ -31986,7 +41020,7 @@ module.exports = {
 
 }).call(this)}).call(this,{"isBuffer":require("../../../node_modules/is-buffer/index.js")})
 
-},{"../../../node_modules/is-buffer/index.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/node_modules/is-buffer/index.js","../http":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js","../utils/promise-runner":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/promise-runner.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js":[function(require,module,exports){
+},{"../../../node_modules/is-buffer/index.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js":[function(require,module,exports){
 function InstanceReadyMixin(target) {
 
 	target.isInstanceReady = false;
@@ -32015,7 +41049,7 @@ function InstanceReadyMixin(target) {
 }
 
 module.exports = InstanceReadyMixin;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js":[function(require,module,exports){
 const JWT_ERRORS = {
 	EMPTY_JWT_PROVIDED: 'EMPTY_JWT_PROVIDED',
 	INVALID_JWT_FORMAT: 'INVALID_JWT_FORMAT',
@@ -32084,7 +41118,7 @@ module.exports = {
 	getDefaultJWTOptions: getDefaultJWTOptions,
 	VALIDATION_STRATEGIES
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/index.js":[function(require,module,exports){
 const {createJWTVc, loadJWTVc} = require('./vc/jwtVc');
 const {createJWTVp, loadJWTVp} = require('./vp/jwtVp');
 const validationStrategies = require('./validationStrategies');
@@ -32173,7 +41207,7 @@ module.exports = {
     parseJWTSegments,
     JWT_ERRORS: require('./constants').JWT_ERRORS
 };
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","./validationStrategies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js","./vc/jwtVc":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js","./vp/jwtVp":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/index.js":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./validationStrategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js","./vc/jwtVc":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js","./vp/jwtVp":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/index.js":[function(require,module,exports){
 const { JWT_ERRORS, IMMUTABLE_PUBLIC_CLAIMS } = require('../constants');
 const { base64UrlEncode } = require('../utils');
 const { signJWT } = require('./sign');
@@ -32257,7 +41291,7 @@ class JWT {
 }
 
 module.exports = JWT;
-},{"../InstanceReadyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js","../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","./sign":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/model.js":[function(require,module,exports){
+},{"../InstanceReadyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js","../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/model.js":[function(require,module,exports){
 const { JWT_DEFAULTS, JWT_ERRORS, getDefaultJWTOptions } = require('../constants');
 const utils = require('../utils');
 
@@ -32337,7 +41371,7 @@ function defaultJWTParser(encodedJWT, callback) {
 module.exports = {
 	defaultJWTBuilder, defaultJWTParser
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js":[function(require,module,exports){
 const openDSU = require('opendsu');
 const w3cDID = openDSU.loadAPI('w3cdid');
 const crypto = openDSU.loadAPI('crypto');
@@ -32431,7 +41465,7 @@ function signUsingDID(issuer, dataToSign, callback) {
 module.exports = {
     signJWT
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js":[function(require,module,exports){
 const opendsu = require('opendsu');
 const w3cDID = opendsu.loadAPI('w3cdid');
 const crypto = opendsu.loadAPI('crypto');
@@ -32623,7 +41657,7 @@ module.exports = {
     verifyRootsOfTrust,
     verifyEncryptedCredential
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js":[function(require,module,exports){
 const opendsu = require('opendsu');
 const w3cDID = opendsu.loadAPI('w3cdid');
 const scAPI = opendsu.loadAPI('sc');
@@ -32945,7 +41979,7 @@ module.exports = {
     asymmetricalEncryption,
     asymmetricalDecryption
 };
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js":[function(require,module,exports){
 const {JWT_ERRORS} = require("../constants");
 const utils = require("../utils");
 
@@ -33014,7 +42048,7 @@ class DefaultValidationStrategy {
 }
 
 module.exports = DefaultValidationStrategy;
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js":[function(require,module,exports){
 const VALIDATION_STRATEGIES = require('../constants').VALIDATION_STRATEGIES;
 const DefaultValidationStrategy = require("./defaultValidationStrategy");
 const RootOfTrustValidationStrategy = require("./rootOfTrustValidationStrategy");
@@ -33123,7 +42157,7 @@ module.exports = {
 
     VALIDATION_STRATEGIES
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","./defaultValidationStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js","./rootOfTrustValidationStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","./defaultValidationStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js","./rootOfTrustValidationStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js":[function(require,module,exports){
 const {JWT_ERRORS, LABELS} = require("../constants");
 const utils = require("../utils");
 
@@ -33193,7 +42227,7 @@ class RootOfTrustValidationStrategy {
 }
 
 module.exports = RootOfTrustValidationStrategy;
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js":[function(require,module,exports){
 const JWT = require('../jwt');
 const JWT_ERRORS = require('../constants').JWT_ERRORS;
 const { dateTimeFormatter, isValidURL } = require('../utils');
@@ -33363,7 +42397,7 @@ function loadJWTVc(encodedJWTVc) {
 module.exports = {
 	createJWTVc, loadJWTVc
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vc/model.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vc/model.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/model.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/model.js":[function(require,module,exports){
 const {JWT_DEFAULTS, JWT_ERRORS} = require('../constants');
 const {defaultJWTParser, defaultJWTBuilder} = require('../jwt/model');
 const utils = require('../utils');
@@ -33443,7 +42477,7 @@ function jwtVcVerifier(decodedJWT, rootsOfTrust, callback) {
 module.exports = {
     jwtVcBuilder, jwtVcParser, jwtVcVerifier
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js":[function(require,module,exports){
 const JWT = require('../jwt');
 const JWT_ERRORS = require('../constants').JWT_ERRORS;
 const { jwtVpBuilder, jwtVpParser, jwtVpVerifier } = require('./model');
@@ -33567,7 +42601,7 @@ function loadJWTVp(encodedJWTVp) {
 module.exports = {
 	createJWTVp, loadJWTVp
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vp/model.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vp/model.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/model.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/model.js":[function(require,module,exports){
 const {JWT_DEFAULTS, JWT_ERRORS} = require('../constants');
 const {defaultJWTParser, defaultJWTBuilder} = require('../jwt/model');
 const utils = require('../utils');
@@ -33641,7 +42675,7 @@ function jwtVpVerifier(decodedJWT, rootsOfTrust, callback) {
 module.exports = {
     jwtVpBuilder, jwtVpParser, jwtVpVerifier
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/index.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js":[function(require,module,exports){
 const keySSIResolver = require("key-ssi-resolver");
 const crypto = require("pskcrypto");
 const cryptoRegistry = keySSIResolver.CryptoAlgorithmsRegistry;
@@ -34002,7 +43036,7 @@ module.exports = {
     convertMnemonicToKeySSIIdentifier
 };
 
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/index.js","./jwt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/jwt.js","./mnemonic":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/mnemonic.js","key-ssi-resolver":"key-ssi-resolver","psk-dbf":false,"pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/jwt.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js","./jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jwt.js","./mnemonic":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/mnemonic.js","key-ssi-resolver":"key-ssi-resolver","psk-dbf":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jwt.js":[function(require,module,exports){
 const keySSIResolver = require("key-ssi-resolver");
 const cryptoRegistry = keySSIResolver.CryptoAlgorithmsRegistry;
 const SSITypes = keySSIResolver.SSITypes;
@@ -34354,7 +43388,7 @@ module.exports = {
     verifyDID_JWT
 };
 
-},{"../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/mnemonic.js":[function(require,module,exports){
+},{"../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/mnemonic.js":[function(require,module,exports){
 let WORDLISTS = {};
 WORDLISTS["english"] = [
     "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse",
@@ -34734,11 +43768,11 @@ module.exports = {
     Mnemonic
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js":[function(require,module,exports){
 module.exports.TimestampMergingStrategy = function(){
 
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js":[function(require,module,exports){
 /*
     An OpenDSU  BasicDB is a simple noSQL database
     The DB is used with a concept of "table" and rows (records) that have multiple versions
@@ -34986,7 +44020,7 @@ function BasicDB(storageStrategy, conflictSolvingStrategy, options) {
 
 module.exports = BasicDB;
 
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js":[function(require,module,exports){
 module.exports = {
     ensure_WalletDB_DSU_Initialisation: function (keySSI, dbName, callback) {
         let resolver = require("../../resolver");
@@ -35153,7 +44187,7 @@ module.exports = {
     }
 }
 
-},{"../../keyssi":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/keyssi/index.js","../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../../resolver":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/resolver/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/index.js":[function(require,module,exports){
+},{"../../keyssi":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js","../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/index.js":[function(require,module,exports){
 let util = require("./impl/DSUDBUtil")
 
 function getBasicDB(storageStrategy, conflictSolvingStrategy, options) {
@@ -35248,7 +44282,7 @@ module.exports = {
     getSharedEnclaveDB
 }
 
-},{"./conflictSolvingStrategies/timestampMergingStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js","./impl/BasicDB":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js","./impl/DSUDBUtil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js","./storageStrategies/MemoryStorageStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js","./storageStrategies/SingleDSUStorageStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js":[function(require,module,exports){
+},{"./conflictSolvingStrategies/timestampMergingStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js","./impl/BasicDB":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js","./impl/DSUDBUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js","./storageStrategies/MemoryStorageStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js","./storageStrategies/SingleDSUStorageStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js":[function(require,module,exports){
 (function (Buffer){(function (){
 function MemoryStorageStrategy() {
     const ObservableMixin = require("../../utils/ObservableMixin");
@@ -35511,7 +44545,7 @@ function MemoryStorageStrategy() {
 module.exports = MemoryStorageStrategy;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js":[function(require,module,exports){
 function Query(queryArray) {
     let conditions = [];
     const operators = require("./operators");
@@ -35615,7 +44649,7 @@ function Query(queryArray) {
 }
 
 module.exports = Query;
-},{"./operators":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js":[function(require,module,exports){
+},{"./operators":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const ObservableMixin = require("../../utils/ObservableMixin");
 const Query = require("./Query");
@@ -36275,7 +45309,7 @@ function SingleDSUStorageStrategy() {
 module.exports.SingleDSUStorageStrategy = SingleDSUStorageStrategy;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js","buffer":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js","buffer":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js":[function(require,module,exports){
 module.exports = {
     "<": function (x, y) {
         return x < y
@@ -36318,7 +45352,7 @@ module.exports = {
     }
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js":[function(require,module,exports){
 function getCompareFunction(sortOrder) {
     if (sortOrder === "asc" || sortOrder === "ascending") {
         return function (a, b) {
@@ -36363,11 +45397,11 @@ module.exports = {
     getCompareFunction,
     getCompareFunctionForObjects
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dc/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dc/index.js":[function(require,module,exports){
 /*
 html API space
 */
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -36922,7 +45956,7 @@ function AppBuilderService(environment, opts) {
     }
 }
 module.exports = AppBuilderService;
-},{"./DossierBuilder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./FileService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/FileService.js","./commands/utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/BuildWallet.js":[function(require,module,exports){
+},{"./DossierBuilder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./FileService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/FileService.js","./commands/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/BuildWallet.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const resolver = openDSU.loadAPI("resolver");
 const keySSISpace = openDSU.loadAPI("keyssi");
@@ -37056,7 +46090,7 @@ const initialiseWallet = (callback) => {
 module.exports = {
     initialiseWallet
 };
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -37289,7 +46323,7 @@ const DossierBuilder = function (sourceDSU, varStore) {
 
 module.exports = DossierBuilder;
 
-},{"./commands":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/index.js","./commands/VarStore":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js","./commands/utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js","./index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/FileService.js":[function(require,module,exports){
+},{"./commands":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js","./commands/VarStore":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js","./commands/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/FileService.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -37410,7 +46444,7 @@ function FileService(options) {
 }
 
 module.exports = FileService;
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -37515,7 +46549,7 @@ class Command {
 }
 
 module.exports = Command;
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Registry.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js":[function(require,module,exports){
 /**
  * List of all available commands to the Dossier Builder
  * Without being here, they can't be used
@@ -37549,7 +46583,7 @@ const _getByName = function(cmdName){
 }
 
 module.exports = _getByName;
-},{"./addFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js":[function(require,module,exports){
+},{"./addFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js":[function(require,module,exports){
 /**
  * @module commands
  * A simple variable store
@@ -37594,7 +46628,7 @@ const VarStore = function(){
 }
 
 module.exports = VarStore;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFile.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFile.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -37682,7 +46716,7 @@ class AddFileCommand extends Command{
 }
 
 module.exports = AddFileCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -37753,7 +46787,7 @@ class AddFolderCommand extends Command {
 }
 
 module.exports = AddFolderCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -37944,7 +46978,7 @@ class CreateDSUCommand extends Command{
 }
 
 module.exports = CreateDSUCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./genKey":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createFile.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./genKey":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createFile.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38010,7 +47044,7 @@ class CreateFileCommand extends Command{
 }
 
 module.exports = CreateFileCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/define.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/define.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38092,7 +47126,7 @@ class DefineCommand extends Command {
 }
 
 module.exports = DefineCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/delete.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/delete.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38147,7 +47181,7 @@ class DeleteCommand extends Command {
 
 module.exports = DeleteCommand;
 
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/derive.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/derive.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38208,7 +47242,7 @@ class DeriveCommand extends Command{
 }
 
 module.exports = DeriveCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/endWith.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/endWith.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38260,7 +47294,7 @@ class EndWithCommand extends Command{
 }
 
 module.exports = EndWithCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/genKey.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38409,7 +47443,7 @@ class GenKeyCommand extends Command {
 }
 
 module.exports = GenKeyCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38481,7 +47515,7 @@ class GetIdentifierCommand extends Command{
 }
 
 module.exports = GetIdentifierCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/index.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38504,7 +47538,7 @@ module.exports = {
     WithCommand: require('./with'),
     _getByName: require('./Registry')
 }
-},{"./Registry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./addFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/mount.js":[function(require,module,exports){
+},{"./Registry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./addFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/mount.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38639,7 +47673,7 @@ class MountCommand extends Command {
 }
 
 module.exports = MountCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./readFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./readFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38696,7 +47730,7 @@ class ObjToArrayCommand extends Command{
 }
 
 module.exports = ObjToArrayCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/readFile.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38758,7 +47792,7 @@ class ReadFileCommand extends Command{
 }
 
 module.exports = ReadFileCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js":[function(require,module,exports){
 /**
  * @module Commands
  */
@@ -38869,7 +47903,7 @@ module.exports = {
     KEY_TYPE,
     DSU_TYPE
 };
-},{"fs":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/with.js":[function(require,module,exports){
+},{"fs":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/with.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -38996,7 +48030,7 @@ class WithCommand extends Command {
 }
 
 module.exports = WithCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/index.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/index.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -39030,7 +48064,7 @@ module.exports = {
     AppBuilderService: require('./AppBuilderService')
 }
 
-},{"./AppBuilderService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js","./BuildWallet":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/BuildWallet.js","./DossierBuilder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./commands":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js":[function(require,module,exports){
+},{"./AppBuilderService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js","./BuildWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/BuildWallet.js","./DossierBuilder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./commands":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js":[function(require,module,exports){
 const {createCommandObject} = require("./lib/createCommandObject");
 
 function APIHUBProxy(domain, did) {
@@ -39082,7 +48116,7 @@ function APIHUBProxy(domain, did) {
 }
 
 module.exports = APIHUBProxy;
-},{".././../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js":[function(require,module,exports){
+},{".././../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js":[function(require,module,exports){
 const constants = require("./constants");
 
 function Enclave_Mixin(target, did, keySSI) {
@@ -39597,7 +48631,10 @@ function Enclave_Mixin(target, did, keySSI) {
                 keySSISpace[fnName](...args);
             }
         } else if (fnName.startsWith("createTemplate")) {
-            target[fnName] = keySSISpace[fnName];
+            target[fnName] = (...args) => {
+                args.shift();
+                keySSISpace[fnName](...args);
+            }
         }
     })
 
@@ -39696,10 +48733,14 @@ function Enclave_Mixin(target, did, keySSI) {
             callback(undefined, dsu);
         })
     }
+
+    target.loadDSURecoveryMode = (forDID, ssi, contentRecoveryFnc, callback)=>{
+        target.loadDSU(forDID, ssi, {contentRecoveryFnc, recoveryMode: true}, callback);
+    }
 }
 
 module.exports = Enclave_Mixin;
-},{"../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createCommandObject} = require("./lib/createCommandObject");
 
@@ -39761,7 +48802,7 @@ function HighSecurityProxy(domain, did) {
 module.exports = HighSecurityProxy;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{".././../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","buffer":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js":[function(require,module,exports){
+},{".././../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","buffer":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js":[function(require,module,exports){
 function MemoryEnclave() {
     const EnclaveMixin = require("./Enclave_Mixin");
     EnclaveMixin(this);
@@ -39788,7 +48829,7 @@ function MemoryEnclave() {
 }
 
 module.exports = MemoryEnclave;
-},{"./Enclave_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js":[function(require,module,exports){
+},{"./Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js":[function(require,module,exports){
 function PathKeyMapping(enclaveHandler) {
     const utils = require("./utils");
     const openDSU = require("opendsu");
@@ -39900,7 +48941,7 @@ function PathKeyMapping(enclaveHandler) {
 }
 
 module.exports = PathKeyMapping;
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createOpenDSUErrorWrapper} = require("../../error");
 
@@ -40110,7 +49151,7 @@ function ProxyMixin(target) {
 module.exports = ProxyMixin;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./lib/commandsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js","buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js":[function(require,module,exports){
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./lib/commandsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js":[function(require,module,exports){
 const { createCommandObject } = require("./lib/createCommandObject");
 const ProxyMixin = require("./ProxyMixin");
 const openDSU = require('../../index');
@@ -40211,7 +49252,7 @@ function RemoteEnclave(clientDID, remoteDID, requestTimeout) {
 }
 
 module.exports = RemoteEnclave;
-},{"../../index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/index.js","./ProxyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js":[function(require,module,exports){
+},{"../../index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/index.js","./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js":[function(require,module,exports){
 function WalletDBEnclave(keySSI, did) {
     const openDSU = require("opendsu");
     const constants = require("./constants");
@@ -40306,7 +49347,7 @@ function WalletDBEnclave(keySSI, did) {
 }
 
 module.exports = WalletDBEnclave;
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./Enclave_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js":[function(require,module,exports){
 const pathModule = require("path");
 const constants = require("./constants");
 
@@ -40477,7 +49518,7 @@ function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
 }
 
 module.exports = WalletDBEnclaveHandler;
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/constants.js":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js":[function(require,module,exports){
 module.exports = {
     TABLE_NAMES: {
         KEY_SSIS: "keyssis",
@@ -40494,7 +49535,7 @@ module.exports = {
         WALLET_DB_ENCLAVE: "walletdb_enclave"
     }
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js":[function(require,module,exports){
 module.exports = {
     INSERT_RECORD: "insertRecord",
     UPDATE_RECORD: "updateRecord",
@@ -40522,7 +49563,7 @@ module.exports = {
     DECRYPT_MESSAGE: "decryptMessage",
     GET_PRIVATE_INFO_FOR_DID:"getPrivateInfoForDID"
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js":[function(require,module,exports){
 const createCommandObject = (commandName, ...args) => {
     const commandID = require('crypto').randomBytes(32).toString("base64")
 
@@ -40538,7 +49579,7 @@ const createCommandObject = (commandName, ...args) => {
 module.exports = {
     createCommandObject
 }
-},{"crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/utils.js":[function(require,module,exports){
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/utils.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const keySSISpace = openDSU.loadAPI("keyssi");
 
@@ -40633,7 +49674,7 @@ module.exports = {
     getKeySSIMapping,
     mergeMappings
 }
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
 function initialiseWalletDBEnclave(keySSI, did) {
@@ -40698,7 +49739,7 @@ module.exports = {
     ProxyMixin: require("./impl/ProxyMixin")
 }
 
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./impl/APIHUBProxy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js","./impl/Enclave_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./impl/HighSecurityProxy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js","./impl/MemoryEnclave":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js","./impl/ProxyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./impl/RemoteEnclave":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js","./impl/WalletDBEnclave":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./impl/APIHUBProxy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js","./impl/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./impl/HighSecurityProxy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js","./impl/MemoryEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js","./impl/ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./impl/RemoteEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js","./impl/WalletDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js":[function(require,module,exports){
 function ErrorWrapper(message, err, otherErrors){
     let newErr = {};
 
@@ -40886,7 +49927,7 @@ module.exports = {
     DB_INSERT_EXISTING_RECORD_ERROR
 }
 
-},{"./../utils/observable":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/browser/index.js":[function(require,module,exports){
+},{"./../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js":[function(require,module,exports){
 function generateMethodForRequestWithData(httpMethod) {
 	return function (url, data, options, callback) {
 		if(typeof options === "function"){
@@ -40967,7 +50008,7 @@ module.exports = {
 	doPut: generateMethodForRequestWithData('PUT'),
 	doGet
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js":[function(require,module,exports){
 /**
  * http API space
  */
@@ -41002,7 +50043,7 @@ module.exports.unpoll = function(request){
 	rm.cancelRequest(request);
 }
 
-},{"./browser":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/browser/index.js","./node":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/index.js","./serviceWorker":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js","./utils/PollRequestManager":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js","./utils/interceptors":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/utils/interceptors.js","overwrite-require":"overwrite-require"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/common.js":[function(require,module,exports){
+},{"./browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js","./node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/index.js","./serviceWorker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js","./utils/PollRequestManager":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js","./utils/interceptors":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/interceptors.js","overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/common.js":[function(require,module,exports){
 const userAgent = 'PSK NodeAgent/0.0.1';
 const signatureHeaderName = process.env.vmq_signature_header_name || "x-signature";
 
@@ -41092,7 +50133,7 @@ module.exports = {
 	buildOptions,
 	getNetworkForOptions
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/fetch.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/fetch.js":[function(require,module,exports){
 const http = require("http");
 const https = require("https");
 const URL = require("url");
@@ -41326,7 +50367,7 @@ module.exports = {
 	fetch
 }
 
-},{"http":false,"https":false,"url":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/index.js":[function(require,module,exports){
+},{"http":false,"https":false,"url":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/index.js":[function(require,module,exports){
 
 const {setContentTypeByData,buildOptions,getNetworkForOptions} = require("./common.js");
 
@@ -41414,7 +50455,7 @@ module.exports = {
 	doPut: generateMethodForRequestWithData('PUT')
 }
 
-},{"./common.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/common.js","./fetch":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/fetch.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js":[function(require,module,exports){
+},{"./common.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/common.js","./fetch":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/fetch.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js":[function(require,module,exports){
 function generateMethodForRequestWithData(httpMethod) {
 	return function (url, data, options, callback) {
 		if(typeof options === "function"){
@@ -41462,7 +50503,7 @@ module.exports = {
 	doGet: require("./../browser").doGet
 }
 
-},{"./../browser":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/browser/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js":[function(require,module,exports){
+},{"./../browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js":[function(require,module,exports){
 function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTimeout = 1000){
 
 	const requests = new Map();
@@ -41658,7 +50699,7 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 
 module.exports = PollRequestManager;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/utils/interceptors.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/interceptors.js":[function(require,module,exports){
 let interceptors = [];
 
 function registerInterceptor(interceptor){
@@ -41764,7 +50805,7 @@ function enable(handler){
 }
 
 module.exports = {enable};
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/keyssi/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js":[function(require,module,exports){
 const keySSIResolver = require("key-ssi-resolver");
 const keySSIFactory = keySSIResolver.KeySSIFactory;
 const SSITypes = keySSIResolver.SSITypes;
@@ -41915,7 +50956,7 @@ const we_createConstSSI = (enclave, domain, constString, vn, hint, callback) => 
     constSSI.initialize(domain, constString, vn, hint);
     if (typeof callback === "function") {
         if (enclave) {
-            enclave.storeKeySSI(undefined, constSSI, callback);
+            enclave.storeKeySSI(undefined, constSSI, (err) => callback(err, constSSI));
         } else {
             callback(undefined, constSSI);
         }
@@ -41932,7 +50973,7 @@ const we_createArraySSI = (enclave, domain, arr, vn, hint, callback) => {
     arraySSI.initialize(domain, arr, vn, hint);
     if (typeof callback === "function") {
         if (enclave) {
-            enclave.storeKeySSI(undefined, arraySSI, callback);
+            enclave.storeKeySSI(undefined, arraySSI, (err) => callback(err, arraySSI));
         } else {
             callback(undefined, arraySSI);
         }
@@ -42089,7 +51130,7 @@ module.exports = {
     createEmbedSSI
 };
 
-},{"../anchoring":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js":[function(require,module,exports){
+},{"../anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js":[function(require,module,exports){
 const apis = {};
 function defineApi(name, implementation){
 	if(typeof implementation !== "function"){
@@ -42103,7 +51144,7 @@ function getApis(){
 }
 
 module.exports = {defineApi, getApis}
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js":[function(require,module,exports){
 const registry = require("../apisRegistry");
 
 /*
@@ -42320,7 +51361,50 @@ registry.defineApi("getResolver", function (domain, ssiType, options) {
 });
 
 
-},{"../apisRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js":[function(require,module,exports){
+registry.defineApi("testAndRecoverBrickMap", function (ssi, callback) {
+    const opendsu = require("opendsu");
+    const keyssi = opendsu.loadApi("keyssi");
+    const anchoring = opendsu.loadApi("anchoring");
+    const bricking = opendsu.loadApi("bricking");
+    const identifier = keyssi.parse(ssi);
+    let anchorId = identifier.getAnchorId();
+
+    anchoring.getAnchoringX.getLastVersion(anchorId, (err, lastVersion)=>{
+        if(err){
+            return callback(err);
+        }
+
+        bricking.getBrick(lastVersion, (err, brickMap)=>{
+            //if all good let's skip the rest of the code
+            if(brickMap){
+                return callback(undefined, brickMap);
+            }
+
+            if(err){
+                //needs better error handling... some errors need to be handled here and some need to be thrown up
+                // no domain replicas needs to be thrown
+                // no brick available or corrupted is our role to handle it
+                let possibleErrors = ["Failed to validate brick", "Failed to get brick"];
+                let ourResponsibility = false;
+                possibleErrors.forEach((possibleErr)=>{
+                    if(err.message.indexOf(possibleErr) !== -1){
+                        ourResponsibility = true;
+                    }
+                });
+                if(!ourResponsibility){
+                    return callback(err);
+                }
+            }
+
+            //... let's start the patching process
+
+        });
+    });
+
+});
+
+
+},{"../apisRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js":[function(require,module,exports){
 const mappingRegistry = require("./../mappingRegistry.js");
 
 async function validateMessage(message){
@@ -42332,7 +51416,7 @@ async function digestMessage(message){
 }
 
 mappingRegistry.defineMapping(validateMessage, digestMessage);
-},{"./../mappingRegistry.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js":[function(require,module,exports){
+},{"./../mappingRegistry.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js":[function(require,module,exports){
 errorTypes = {
   "UNKNOWN": {
     errorCode: 0,
@@ -42497,7 +51581,7 @@ module.exports = {
   addNewErrorType
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/index.js":[function(require,module,exports){
 const mappingRegistry = require("./mappingRegistry.js");
 const apisRegistry = require("./apisRegistry.js");
 const errMap = require("./errorsMap.js")
@@ -42521,6 +51605,16 @@ function MappingEngine(storageService, options) {
   //the purpose of the method is to create a "this" instance to be used during a message mapping process
   function buildMappingInstance() {
     let instance = {storageService, options};
+
+    let recoveryMode = false;
+    instance.setRecovery = function(value){
+      recoveryMode = !!value;
+    }
+
+    instance.isRecoveryActive = function(){
+      return recoveryMode;
+    }
+
     const apis = apisRegistry.getApis();
 
     //we inject all the registered apis on the instance that will become the "this" for a mapping
@@ -42585,6 +51679,7 @@ function MappingEngine(storageService, options) {
       if (mappingFnc) {
         const instance = buildMappingInstance();
         try {
+          instance.setRecovery(message.force);
           await mappingFnc.call(instance, message);
         } catch (err) {
           //we need to return the list of touched DSUs for partial rollback procedure
@@ -42762,7 +51857,7 @@ module.exports = {
   defineApi: apisRegistry.defineApi
 }
 
-},{"./apisRegistry.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","./defaultApis":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js","./defaultMappings":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js","./errorsMap.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js","./mappingRegistry.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js","./messagesPipe":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js":[function(require,module,exports){
+},{"./apisRegistry.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","./defaultApis":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js","./defaultMappings":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js","./errorsMap.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js","./mappingRegistry.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js","./messagesPipe":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js":[function(require,module,exports){
 const mappingRegistry = [];
 function defineMapping(matchFunction, mappingFunction){
 	mappingRegistry.push({matchFunction, mappingFunction});
@@ -42776,7 +51871,7 @@ module.exports = {
 	defineMapping,
 	getMappings
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js":[function(require,module,exports){
 module.exports = function (maxGroupSize, maxQueuingTime, groupingFunction) {
 
     this.queue = [];
@@ -42837,7 +51932,7 @@ module.exports = function (maxGroupSize, maxQueuingTime, groupingFunction) {
     startWaitingMessages();
 
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js":[function(require,module,exports){
 const ENVIRONMENT_TYPES = require("../overwrite-require/moduleConstants");
 
 let cachedKeySSIResolver = undefined;
@@ -42861,6 +51956,7 @@ module.exports = {
 	VAULT_DOMAIN: "vaultDomain",
 	DOMAIN: "domain",
 	DID_DOMAIN: "didDomain",
+	MAIN_APP_DID: "mainAppDID",
 	MAIN_ENCLAVE: {
 		TYPE: "enclaveType",
 		DID: "enclaveDID",
@@ -42920,7 +52016,7 @@ module.exports = {
 
 
 
-},{"../overwrite-require/moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/moduleConstants.js","key-ssi-resolver":"key-ssi-resolver"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/mq/mqClient.js":[function(require,module,exports){
+},{"../overwrite-require/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","key-ssi-resolver":"key-ssi-resolver"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/mq/mqClient.js":[function(require,module,exports){
 /*
 Message Queues API space
 */
@@ -43188,7 +52284,6 @@ function MQHandler(didDocument, domain, pollingTimeout) {
                     let options = { headers: { Authorization: token } };
 
                     async function makeRequest() {
-                        
                         let request = http.poll(url, options, connectionTimeout, timeout);
                         callback.__requestInProgress = request;
 
@@ -43283,7 +52378,7 @@ module.exports = {
     unsubscribe,
     getMQHandlerForDID
 }
-},{"../bdns":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/observable.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/notifications/index.js":[function(require,module,exports){
+},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/notifications/index.js":[function(require,module,exports){
 /*
 KeySSI Notification API space
 */
@@ -43395,7 +52490,7 @@ module.exports = {
     isSubscribed
 }
 
-},{"../bdns":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/index.js":[function(require,module,exports){
+},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/index.js":[function(require,module,exports){
 const createOIDC = (options) => {
     const OIDC = require("./src/oidc/OIDC");
     return new OIDC(options);
@@ -43407,7 +52502,7 @@ module.exports = {
     constants: require("./src/oidc/constants"),
 
 }
-},{"./src/oidc/OIDC":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js","./src/oidc/constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js","./src/util/Storage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js":[function(require,module,exports){
+},{"./src/oidc/OIDC":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js","./src/oidc/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js","./src/util/Storage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js":[function(require,module,exports){
 class Client {
     constructor(options) {
         this.options = options;
@@ -43436,7 +52531,7 @@ class Client {
 
 
 module.exports = Client;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js":[function(require,module,exports){
 class Issuer {
     constructor(options) {
         this.options = options;
@@ -43460,7 +52555,7 @@ class Issuer {
 
 
 module.exports = Issuer;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js":[function(require,module,exports){
 const RedirectInteraction = require('./interactions/Redirect');
 const IFrameInteraction = require('./interactions/IFrame');
 const PopupInteraction = require('./interactions/Popup');
@@ -43791,7 +52886,7 @@ class OIDC {
 
 OIDC.utils = {Browser};
 module.exports = OIDC;
-},{"../util/Browser":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js","../util/Crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js","../util/Storage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js","./Client":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js","./Issuer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js","./grants/AuthorizationCode":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js","./grants/RefreshToken":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js","./interactions/IFrame":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js","./interactions/Popup":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js","./interactions/Redirect":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js":[function(require,module,exports){
+},{"../util/Browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js","../util/Crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js","../util/Storage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js","./Client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js","./Issuer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js","./grants/AuthorizationCode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js","./grants/RefreshToken":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js","./interactions/IFrame":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js","./interactions/Popup":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js","./interactions/Redirect":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js":[function(require,module,exports){
 module.exports = {
     ID_TOKEN: 'session.idToken',
     ACCESS_TOKEN: 'session.accessToken',
@@ -43808,7 +52903,7 @@ module.exports = {
     TOKEN_CHECK_INTERVAL: 1000 * 30,
     TOKEN_EXPIRATION_THRESHOLD: 1000 * 60,
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js":[function(require,module,exports){
 const Crypto = require('../../util/Crypto');
 
 
@@ -43859,7 +52954,7 @@ class AuthorizationCode {
 
 
 module.exports = AuthorizationCode;
-},{"../../util/Crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js":[function(require,module,exports){
+},{"../../util/Crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js":[function(require,module,exports){
 class RefreshToken {
     static refreshToken(issuer, client, options) {
         const params = new URLSearchParams();
@@ -43880,7 +52975,7 @@ class RefreshToken {
 
 
 module.exports = RefreshToken;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js":[function(require,module,exports){
 const Promises = require('../../util/Promises');
 const Interaction = require('./Interaction');
 
@@ -43954,7 +53049,7 @@ class IFrame extends Interaction {
 
 
 module.exports = IFrame;
-},{"../../util/Promises":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js":[function(require,module,exports){
+},{"../../util/Promises":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js":[function(require,module,exports){
 const Browser = require('../../util/Browser');
 
 
@@ -43986,7 +53081,7 @@ class Interaction {
 
 
 module.exports = Interaction;
-},{"../../util/Browser":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js":[function(require,module,exports){
+},{"../../util/Browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js":[function(require,module,exports){
 const Interaction = require('./Interaction');
 const Promises = require('../../util/Promises');
 
@@ -44041,7 +53136,7 @@ class Popup extends Interaction {
 
 
 module.exports = Popup;
-},{"../../util/Promises":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js":[function(require,module,exports){
+},{"../../util/Promises":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js":[function(require,module,exports){
 const Interaction = require('./Interaction');
 const Promises = require('../../util/Promises');
 
@@ -44066,7 +53161,7 @@ class Redirect extends Interaction {
 
 
 module.exports = Redirect;
-},{"../../util/Promises":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js":[function(require,module,exports){
+},{"../../util/Promises":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js":[function(require,module,exports){
 function parseUrlHash(hash) {
     return parseUrlParams(hash.substring(1));
 }
@@ -44126,7 +53221,7 @@ module.exports = {
     getCurrentLocation,
     isItMe
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadAPI("crypto");
 
@@ -44158,7 +53253,7 @@ module.exports = {
     generateCodeChallenge,
     decodeBase64EncodedData
 }
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js":[function(require,module,exports){
 function flatPromise() {
     let resolve, reject;
     let promise = new Promise((_resolve, _reject) => {
@@ -44173,7 +53268,7 @@ function flatPromise() {
 module.exports = {
     flatPromise
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js":[function(require,module,exports){
 const {prettyByte} = require("@msgpack/msgpack/dist/utils/prettyByte");
 
 class Storage {
@@ -44213,22 +53308,17 @@ const getStorage = () => {
 module.exports = {
     getStorage
 };
-},{"@msgpack/msgpack/dist/utils/prettyByte":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/resolver/index.js":[function(require,module,exports){
+},{"@msgpack/msgpack/dist/utils/prettyByte":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const KeySSIResolver = require("key-ssi-resolver");
 const keySSISpace = require("opendsu").loadApi("keyssi");
-const cache = require("../cache");
 
-let dsuCache = cache.getMemoryCache("DSUs");
 let {ENVIRONMENT_TYPES, KEY_SSIS} = require("../moduleConstants.js");
 const {getWebWorkerBootScript, getNodeWorkerBootScript} = require("./resolver-utils");
-let recoveryMode = false;
+const cache = require("../cache");
+let dsuCache = cache.getWeakRefMemoryCache("mainDSUsCache");
 
-function setRecoveryMode(enabled) {
-    recoveryMode = enabled;
-}
-
-const initializeResolver = (options) => {
+const getResolver = (options) => {
     options = options || {};
     return KeySSIResolver.initialize(options);
 };
@@ -44236,21 +53326,6 @@ const initializeResolver = (options) => {
 const registerDSUFactory = (type, factory) => {
     KeySSIResolver.DSUFactory.prototype.registerDSUType(type, factory);
 };
-
-function addDSUInstanceInCache(dsuInstance, callback) {
-    dsuInstance.getKeySSIAsObject((err, keySSI) => {
-        if (err) {
-            return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to retrieve keySSI`, err));
-        }
-        keySSI.getAnchorId((err, cacheKey) => {
-            if (err) {
-                return callback(err);
-            }
-            dsuCache.set(cacheKey, dsuInstance);
-            callback(undefined, dsuInstance);
-        });
-    });
-}
 
 const createDSU = (templateKeySSI, options, callback) => {
     if (typeof options === "function") {
@@ -44274,20 +53349,13 @@ const createDSU = (templateKeySSI, options, callback) => {
         }
     }
 
-    const keySSIResolver = initializeResolver(options);
+    const keySSIResolver = getResolver(options);
     keySSIResolver.createDSU(templateKeySSI, options, (err, dsuInstance) => {
         if (err) {
             return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to create DSU instance`, err));
         }
 
-        function addInCache(err, result) {
-            if (err) {
-                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to create DSU instance`, err));
-            }
-            addDSUInstanceInCache(dsuInstance, callback);
-        }
-
-        addInCache(undefined, dsuInstance);
+        addDSUInstanceInCache(dsuInstance, callback);
     });
 };
 
@@ -44380,7 +53448,7 @@ const loadDSUVersion = (keySSI, versionHashlink, options, callback) => {
         }
     }
 
-    const keySSIResolver = initializeResolver(options);
+    const keySSIResolver = getResolver(options);
     options.versionHashlink = versionHashlink;
     keySSIResolver.loadDSU(keySSI, options, callback);
 }
@@ -44442,6 +53510,38 @@ const loadDSUVersionBasedOnVersionNumber = (keySSI, versionNumber, callback) => 
     })
 }
 
+let tryToRunRecoveryContentFnc = (keySSI, recoveredInstance, options, anchorFakeHistory, anchorFakeLastVersion,  callback)=>{
+    if(typeof options.contentRecoveryFnc === "function"){
+        let ignoreError = false;
+        try{
+            let cb = (err)=>{
+                ignoreError = true;
+                if(err){
+                    return callback(createOpenDSUErrorWrapper(`Failed to recover fallback DSU for keySSI ${keySSI.getIdentifier()}`, err));
+                }
+
+                return callback(undefined, recoveredInstance);
+            };
+            keySSI.getAnchorId((err, anchorId)=>{
+                if(err){
+                   throw createOpenDSUErrorWrapper(`Surprise error!`, err);
+                }
+                require("opendsu").loadApi("anchoring").getAnchoringX().markAnchorForRecovery(anchorId, anchorFakeHistory, anchorFakeLastVersion);
+                options.contentRecoveryFnc(recoveredInstance, cb);
+            });
+
+        }catch(err){
+            if(!ignoreError){
+                return callback(createOpenDSUErrorWrapper(`Caught an error in contentRecoveryFunction`, err));
+            }
+            throw err;
+        }
+        //callback already called above
+        return;
+    }
+    callback(undefined, recoveredInstance);
+}
+
 const loadFallbackDSU = (keySSI, options, callback) => {
     if (typeof keySSI === "string") {
         try {
@@ -44470,14 +53570,24 @@ const loadFallbackDSU = (keySSI, options, callback) => {
             const __loadFallbackDSURecursively = (index) => {
                 const versionHashlink = versions[index];
                 if (typeof versionHashlink === "undefined") {
-                    return callback(createOpenDSUErrorWrapper(`Failed to load fallback DSU for keySSI ${keySSI.getIdentifier()}`));
+                    //we weren't able to load any version of the dsu (const or not)
+                    options.addLog = false;
+                    return createDSUForExistingSSI(keySSI, options, (err, recoveredInstance) => {
+                        if(err){
+                            return callback(err);
+                        }
+
+                        return tryToRunRecoveryContentFnc (keySSI, recoveredInstance, options, [], versions[versions.length-1],  callback);
+                    });
                 }
 
                 loadDSUVersion(keySSI, versionHashlink, options, (err, dsuInstance) => {
                     if (err) {
                         return __loadFallbackDSURecursively(index - 1);
                     }
-
+                    if(index < versions.length - 1){
+                        return tryToRunRecoveryContentFnc (keySSI, dsuInstance, options, versions.slice(0, index), versions[versions.length-1], callback);
+                    }
                     callback(undefined, dsuInstance);
                 })
             }
@@ -44506,12 +53616,13 @@ const loadDSU = (keySSI, options, callback) => {
         return loadDSUVersionBasedOnVersionNumber(keySSI, versionNumber, callback);
     }
 
-    if (recoveryMode) {
+    if (options && options.recoveryMode) {
         return loadFallbackDSU(keySSI, options, callback);
     }
+
     const loadDSU = (addInCache) => {
 
-        const keySSIResolver = initializeResolver(options);
+        const keySSIResolver = getResolver(options);
         keySSIResolver.loadDSU(keySSI, options, (err, dsuInstance) => {
             if (err) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load DSU`, err));
@@ -44539,7 +53650,6 @@ const loadDSU = (keySSI, options, callback) => {
         }
         loadDSU(true);
     })
-
 };
 
 /*
@@ -44721,6 +53831,22 @@ function invalidateDSUCache(dsuKeySSI, callback) {
     });
 }
 
+function addDSUInstanceInCache(dsuInstance, callback) {
+    dsuInstance.getKeySSIAsObject((err, keySSI) => {
+        if (err) {
+            return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to retrieve keySSI`, err));
+        }
+        keySSI.getAnchorId((err, cacheKey) => {
+            if (err) {
+                return callback(err);
+            }
+            dsuCache.set(cacheKey, dsuInstance);
+            callback(undefined, dsuInstance);
+        });
+    });
+}
+
+
 module.exports = {
     createDSU,
     createDSUx,
@@ -44732,13 +53858,12 @@ module.exports = {
     getDSUHandler,
     registerDSUFactory,
     invalidateDSUCache,
-    setRecoveryMode,
     loadDSUVersion
 };
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../cache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./resolver-utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js","buffer":false,"key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","syndicate":"syndicate"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js":[function(require,module,exports){
+},{"../cache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./resolver-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js","buffer":false,"key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","syndicate":"syndicate"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js":[function(require,module,exports){
 (function (global){(function (){
 function getWebWorkerBootScript(dsuKeySSI) {
     const scriptLocation = document.currentScript
@@ -44773,7 +53898,7 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/index.js":[function(require,module,exports){
 /*
     Security Context related functionalities
 
@@ -44984,7 +54109,7 @@ module.exports = {
         isPINNeeded
     };
     
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./lib/MainDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js","./lib/SecurityContext":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./lib/MainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js","./lib/SecurityContext":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js":[function(require,module,exports){
 (function (Buffer){(function (){
 function InMemoryMainDSU() {
     const obj = {};
@@ -45018,7 +54143,7 @@ function InMemoryMainDSU() {
 module.exports = InMemoryMainDSU;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js":[function(require,module,exports){
+},{"buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js":[function(require,module,exports){
 const constants = require("../../moduleConstants");
 const {getURLForSsappContext} = require("../../utils/getURLForSsappContext");
 const openDSU = require("opendsu");
@@ -45106,7 +54231,7 @@ module.exports = {
     setMainDSU
 }
 
-},{"../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/getURLForSsappContext":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js","./InMemoryMainDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/getURLForSsappContext":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js","./InMemoryMainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js":[function(require,module,exports){
 const constants = require("../../moduleConstants");
 
 function SecurityContext(target, PIN) {
@@ -45446,7 +54571,7 @@ function SecurityContext(target, PIN) {
 
 module.exports = SecurityContext;
 
-},{"../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/DSUStorage.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/DSUStorage.js":[function(require,module,exports){
 const { fetch } = require("./utils");
 
 // helpers
@@ -45756,12 +54881,12 @@ function getDSUStorage() {
 
 module.exports = getDSUStorage;
 
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/index.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/index.js":[function(require,module,exports){
 module.exports = {
   getDSUStorage: require("./DSUStorage")
 };
 
-},{"./DSUStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/DSUStorage.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/utils.js":[function(require,module,exports){
+},{"./DSUStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/DSUStorage.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/utils.js":[function(require,module,exports){
 function promisify(fun) {
   return function (...args) {
     return new Promise((resolve, reject) => {
@@ -45804,7 +54929,7 @@ module.exports = {
   fetch: executeFetch,
 };
 
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/system/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js":[function(require,module,exports){
 const envVariables = {};
 function getEnvironmentVariable(name){
     if (typeof envVariables[name] !== "undefined") {
@@ -45837,7 +54962,7 @@ module.exports = {
     getBaseURL
 }
 
-},{"../utils/getBaseURL":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getBaseURL.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js":[function(require,module,exports){
+},{"../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js":[function(require,module,exports){
 const PendingCallMixin = require("./PendingCallMixin");
 /*
     Utility to make classes that depend on some initialisation easier to use.
@@ -45889,7 +55014,43 @@ module.exports.bindAutoPendingFunctions = function(obj, exceptionList){
     return obj;
 };
 
-},{"./PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js":[function(require,module,exports){
+module.exports.bindParallelAutoPendingFunctions = function(obj, exceptionList){
+    let originalFunctions = {};
+
+    for(let m in obj){
+        if(typeof obj[m] == "function"){
+            if(!exceptionList || exceptionList.indexOf(m) === -1){
+                originalFunctions[m] = obj[m];
+            }
+        }
+    }
+    PendingCallMixin(obj);
+    let isInitialised = false;
+
+    obj.finishInitialisation = function(){
+        isInitialised = true;
+        obj.executePendingCalls();
+    };
+
+    function getWrapper(func){
+        return function(...args){
+            if(isInitialised){
+                return func(...args);
+            } else {
+                obj.addPendingCall( function(){
+                    return func(...args);
+                })
+            }
+        }.bind(obj);
+    }
+
+    for(let m in originalFunctions){
+        obj[m] = getWrapper(originalFunctions[m]);
+    }
+    return obj;
+};
+
+},{"./PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js":[function(require,module,exports){
 function ObservableMixin(target) {
     let observers = {};
 
@@ -45947,7 +55108,7 @@ function ObservableMixin(target) {
 
 module.exports = ObservableMixin;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js":[function(require,module,exports){
 function PendingCallMixin(target) {
     let pendingCalls = [];
     let serialPendingCalls = [];
@@ -45996,7 +55157,71 @@ function PendingCallMixin(target) {
 }
 
 module.exports = PendingCallMixin;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/array.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/SmartUrl.js":[function(require,module,exports){
+function SmartUrl(bdnsEntry){
+    const {fetch, doPut, doPost, doGet} = require("opendsu").loadAPI("http");
+    let url = typeof bdnsEntry === "string" ? bdnsEntry : bdnsEntry.url;
+
+    if(!url){
+        console.debug(`<${JSON.stringify(bdnsEntry)}> BDNS entry wrong configuration.`);
+        throw new Error(`<${JSON.stringify(bdnsEntry)}> BDNS entry wrong configuration.`);
+    }
+
+    function getOptions(options){
+        let opts = options || {};
+        if(url !== bdnsEntry && bdnsEntry.headers){
+            if(!opts.headers){
+                opts.headers = {};
+            }
+            Object.assign(opts.headers, bdnsEntry.headers);
+        }
+        return opts;
+    }
+
+    this.fetch = (options)=>{
+        return fetch(url, getOptions(options));
+    }
+
+    this.doPut = (body, options, callback)=>{
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+       return doPut(url, body, getOptions(options), callback);
+    }
+
+    this.doPost = (body, options, callback)=>{
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+       return doPost(url, body, getOptions(options), callback);
+    }
+
+    this.doGet = (options, callback)=>{
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+        return doGet(url, getOptions(options), callback);
+    }
+
+    function concatUrls(base, path){
+        let returnUrl = base;
+        if(returnUrl.endsWith("/") && path.startsWith("/")){
+            returnUrl = returnUrl.slice(0, returnUrl.length-1);
+        }
+        returnUrl += path;
+        return returnUrl;
+    }
+
+    this.concatWith = (path) => {
+        return new SmartUrl(bdnsEntry === url ? concatUrls(url, path) :{url: concatUrls(url, path), headers:bdnsEntry.headers});
+    }
+}
+
+module.exports = SmartUrl;
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/array.js":[function(require,module,exports){
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -46006,7 +55231,7 @@ function shuffle(array) {
 
 module.exports.shuffle = shuffle;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getBaseURL.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 const system = require("../system");
 function getBaseURL(){
@@ -46045,7 +55270,7 @@ function getBaseURL(){
 }
 
 module.exports = getBaseURL;
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/system/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js":[function(require,module,exports){
 function getURLForSsappContext(relativePath) {
     if (window["$$"] && $$.SSAPP_CONTEXT && $$.SSAPP_CONTEXT.BASE_URL && $$.SSAPP_CONTEXT.SEED) {
         // if we have a BASE_URL then we prefix the fetch url with BASE_URL
@@ -46060,13 +55285,16 @@ module.exports = {
     getURLForSsappContext
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js":[function(require,module,exports){
 module.exports = {
     bindAutoPendingFunctions: require("./BindAutoPendingFunctions").bindAutoPendingFunctions,
+    bindParallelAutoPendingFunctions: require("./BindAutoPendingFunctions").bindParallelAutoPendingFunctions,
     ObservableMixin: require("./ObservableMixin"),
-    PendingCallMixin: require('./PendingCallMixin')
+    PendingCallMixin: require('./PendingCallMixin'),
+    SmartUrl: require("./SmartUrl"),
+    promiseRunner: require("./promise-runner")
 }
-},{"./BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/observable.js":[function(require,module,exports){
+},{"./BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./SmartUrl":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/SmartUrl.js","./promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js":[function(require,module,exports){
 module.exports.createObservable = function(){
 	let observableMixin = require("./ObservableMixin");
 	let obs = {};
@@ -46074,7 +55302,7 @@ module.exports.createObservable = function(){
 	observableMixin(obs);
 	return obs;
 }
-},{"./ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/promise-runner.js":[function(require,module,exports){
+},{"./ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js":[function(require,module,exports){
 const arrayUtils = require("./array");
 const { OpenDSUSafeCallback, createOpenDSUErrorWrapper } = require('./../error')
 
@@ -46233,7 +55461,7 @@ module.exports = {
   runEnoughForMajority,
 };
 
-},{"./../error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","./array":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/array.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js":[function(require,module,exports){
+},{"./../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","./array":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/array.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js":[function(require,module,exports){
 const cryptoSkillsRegistry = {};
 const methodsNames = require("../didMethodsNames");
 const KeyDID_CryptographicSkills = require("./KeyDID_CryptographicSkills");
@@ -46262,7 +55490,7 @@ module.exports = {
     NAMES: require("./cryptographicSkillsNames"),
     CryptographicSkillsMixin: require("./CryptographicSkillsMixin")
 };
-},{"../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js","./GroupDID_CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js","./KeyDID_CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js","./NameDID_CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js","./SReadDID_CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js","./SSI_KeyDID_CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js","./cryptographicSkillsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js":[function(require,module,exports){
+},{"../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js","./GroupDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js","./KeyDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js","./NameDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js","./SReadDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js","./SSI_KeyDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js","./cryptographicSkillsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js":[function(require,module,exports){
 function CryptographicSkillsMixin(target) {
     target = target || {};
     const crypto = require("pskcrypto");
@@ -46458,7 +55686,7 @@ function CryptographicSkillsMixin(target) {
 
 module.exports = CryptographicSkillsMixin;
 
-},{"opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js":[function(require,module,exports){
+},{"opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function GroupDID_CryptographicSkills() {
@@ -46471,7 +55699,7 @@ function GroupDID_CryptographicSkills() {
 }
 
 module.exports = GroupDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function KeyDID_CryptographicSkills() {
@@ -46484,7 +55712,7 @@ function KeyDID_CryptographicSkills() {
 }
 
 module.exports = KeyDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function NameDID_CryptographicSkills() {
@@ -46497,7 +55725,7 @@ function NameDID_CryptographicSkills() {
 }
 
 module.exports = NameDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function SReadDID_CryptographicSkills() {
@@ -46510,7 +55738,7 @@ function SReadDID_CryptographicSkills() {
 }
 
 module.exports = SReadDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function SSI_KeyDID_CryptographicSkills() {
@@ -46523,7 +55751,7 @@ function SSI_KeyDID_CryptographicSkills() {
 }
 
 module.exports = SSI_KeyDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js":[function(require,module,exports){
 module.exports = {
     CREATE_DID_DOCUMENT:"createDID_Document",
     SIGN: "sign",
@@ -46531,7 +55759,7 @@ module.exports = {
     ENCRYPT_MESSAGE: "encryptMessage",
     DECRYPT_MESSAGE: "decryptMessage"
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js":[function(require,module,exports){
 /*
     W3CDID Minxin is abstracting the DID document for OpenDSU compatible DID methods
 
@@ -46610,7 +55838,7 @@ function W3CDID_Mixin(target, enclave) {
             try {
                 message = message.getSerialisation();
             } catch (e) {
-                return callback(e);
+                message = JSON.stringify(message);
             }
         }
 
@@ -46738,7 +55966,7 @@ function W3CDID_Mixin(target, enclave) {
 
 module.exports = W3CDID_Mixin;
 
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js":[function(require,module,exports){
 
 /*
     W3CVC Mixin is abstracting a JWT based credential
@@ -46765,7 +55993,7 @@ function W3CVC_Mixin(){
 
 module.exports = W3CVC_Mixin;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js":[function(require,module,exports){
 const methodsNames = require("./didMethodsNames");
 const createNameDIDDocument = require("./didssi/NameDID_Document").initiateDIDDocument;
 const createGroupDID_Document = require("./didssi/GroupDID_Document").initiateDIDDocument;
@@ -46793,7 +56021,7 @@ module.exports = {
     registerDID_Document_Constructor,
     createDID_Document
 }
-},{"./didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/GroupDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./didssi/KeyDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./didssi/NameDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./didssi/SReadDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","./w3cdids/KeyDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js":[function(require,module,exports){
+},{"./didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/GroupDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./didssi/KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./didssi/NameDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./didssi/SReadDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","./w3cdids/KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js":[function(require,module,exports){
 module.exports = {
     OPENDSU_METHOD_NAME: "ssi",
     KEY_SUBTYPE: "key",
@@ -46803,7 +56031,7 @@ module.exports = {
     GROUP_METHOD_NAME: "ssi:group",
     DEMO_METHOD_NAME: "demo"
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createOpenDSUErrorWrapper} = require("../../error");
 
@@ -46955,7 +56183,7 @@ module.exports = ConstDID_Document_Mixin;
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","buffer":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js":[function(require,module,exports){
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","buffer":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 
 function GroupDID_Document(enclave, domain, groupName, isInitialisation) {
@@ -47168,7 +56396,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 const {bindAutoPendingFunctions} = require("../../utils/BindAutoPendingFunctions");
 
@@ -47258,7 +56486,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../W3CDID_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 
 function NameDID_Document(enclave, domain, name, isInitialisation) {
@@ -47302,7 +56530,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 
 function SReadDID_Document(enclave, isInitialisation, seedSSI) {
@@ -47413,7 +56641,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js":[function(require,module,exports){
 function storeDIDInSC(didDocument, callback) {
     const securityContext = require("opendsu").loadAPI("sc").getSecurityContext();
     const __registerDID = () => {
@@ -47567,7 +56795,273 @@ module.exports = {
     create_GroupDID_Method
 }
 
-},{"./GroupDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./KeyDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./NameDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./SReadDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/index.js":[function(require,module,exports){
+},{"./GroupDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./NameDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./SReadDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js":[function(require,module,exports){
+function CommunicationHub() {
+    const pubSub = require("soundpubsub").soundPubSub;
+    const didAPI = require("opendsu").loadAPI("w3cdid");
+    const connectedToMQ = {};
+    let strongPubSub;
+    const getChannelName = (did, messageType) => {
+        return `${did.getIdentifier()}/${messageType}`;
+    }
+
+    const ensureDIDDocumentIsLoadedThenExecute = (did, fnToExecute) => {
+        if (typeof did === "string") {
+            return didAPI.resolveDID(did, (err, resolvedDID) => {
+                if (err) {
+                    console.error(err)
+                }
+
+                did = resolvedDID;
+                fnToExecute(did);
+            })
+        }
+
+        fnToExecute(did);
+    }
+
+    this.subscribe = (did, messageType, callback) => {
+        const __subscribe = (did) => {
+            if (!connectedToMQ[did.getIdentifier()]) {
+                connectedToMQ[did.getIdentifier()] = true;
+                did.waitForMessages((err, message) => {
+                    if (err) {
+                        console.error(err);
+                    }
+
+                    try {
+                        message = JSON.parse(message);
+                    } catch (e) {
+                        console.error(e);
+                    }
+
+                    const channelName = getChannelName(did, message.messageType);
+                    if (!pubSub.hasChannel(channelName)) {
+                        pubSub.addChannel(channelName);
+                    }
+
+                    pubSub.publish(channelName, message);
+                });
+            }
+            const channel = getChannelName(did, messageType);
+            pubSub.subscribe(channel, callback);
+        }
+
+        ensureDIDDocumentIsLoadedThenExecute(did, __subscribe);
+    };
+
+    this.unsubscribe = (did, messageType, callback) => {
+        const stopWaitingForMessages = (did) => {
+            did.stopWaitingForMessages();
+            const channel = getChannelName(did, messageType);
+            delete connectedToMQ[did.getIdentifier()];
+            pubSub.unsubscribe(channel, callback);
+        }
+
+        ensureDIDDocumentIsLoadedThenExecute(did, stopWaitingForMessages);
+    };
+
+    const subscribers = {};
+    // soundpubSub keeps WeakRefs
+    this.strongSubscribe = (did, messageType, callback) => {
+        const __strongSubscribe = (did) => {
+            const channelName = getChannelName(did, messageType);
+            if (!subscribers[channelName]) {
+                subscribers[channelName] = [];
+            }
+
+            const index = subscribers[channelName].findIndex(sub => sub === callback);
+            if (index === -1) {
+                subscribers[channelName].push(callback);
+            }
+
+            this.subscribe(did, messageType, callback);
+        }
+
+        ensureDIDDocumentIsLoadedThenExecute(did, __strongSubscribe);
+    }
+
+    this.strongUnsubscribe = (did, messageType, callback) => {
+        const channelName = getChannelName(did, messageType);
+        const __strongUnsubscribe = (did) => {
+            if (!subscribers[channelName]) {
+                return callback();
+            }
+
+            const index = subscribers[channelName].findIndex(sub => sub === callback);
+            if (index === -1) {
+                return callback();
+            }
+
+            subscribers[channelName].splice(index);
+            if (subscribers[channelName].length === 0) {
+                delete subscribers[channelName];
+                return callback();
+            }
+
+            this.unsubscribe(did, messageType, callback);
+        }
+
+        ensureDIDDocumentIsLoadedThenExecute(did, __strongUnsubscribe);
+    }
+
+    this.getPubSub = () => {
+        return pubSub;
+    }
+
+    const createStrongPubSub = (_pubSub) => {
+        const strongPubSub = Object.assign({}, _pubSub);
+        strongPubSub.subscribe = (target, callback, waitForMore, filter) => {
+            if (!subscribers[target]) {
+                subscribers[target] = [];
+            }
+
+            const index = subscribers[target].findIndex(sub => sub === callback);
+            if (index === -1) {
+                subscribers[target].push(callback);
+            }
+
+            if (!_pubSub.hasChannel(target)) {
+                _pubSub.addChannel(target);
+            }
+
+            _pubSub.subscribe(target, callback, waitForMore, filter);
+        }
+
+        strongPubSub.unsubscribe = (target, callback, filter) => {
+            if (!strongPubSub[target]) {
+                return callback();
+            }
+
+            const index = subscribers[target].findIndex(sub => sub === callback);
+            if (index === -1) {
+                return callback();
+            }
+
+            subscribers[target].splice(index);
+            if (subscribers[target].length === 0) {
+                delete subscribers[target];
+                return callback();
+            }
+
+            _pubSub.unsubscribe(target, callback, filter);
+        }
+
+        return strongPubSub;
+    }
+
+    this.getStrongPubSub = () => {
+        if (!strongPubSub) {
+            strongPubSub = createStrongPubSub(pubSub);
+        }
+
+        return strongPubSub;
+    }
+}
+
+const getCommunicationHub = () => {
+    if (!$$.CommunicationHub) {
+        $$.CommunicationHub = new CommunicationHub();
+    }
+
+    return $$.CommunicationHub;
+}
+
+module.exports = {
+    getCommunicationHub
+}
+},{"opendsu":"opendsu","soundpubsub":"soundpubsub"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/TypicalBusinessLogicHub.js":[function(require,module,exports){
+const {createOpenDSUErrorWrapper} = require("../../error");
+const getCheckVariableFunction = function (envVariableName, hubContext, selector,  callback) {
+    if (hubContext[selector]) {
+        hubContext.self.finishInitialisation();
+        return callback(undefined, hubContext[selector]);
+    }
+    hubContext.configAPI.getEnv(envVariableName, (err, envValue) => {
+        if (err || !envValue) {
+            return callback(undefined, false);
+        }
+
+        hubContext[selector] = envValue;
+        hubContext.self.finishInitialisation();
+        callback(undefined, envValue);
+    });
+};
+
+const setVariable = function (envVariableName, value, hubContext, selector, callback) {
+    hubContext[selector] = value;
+    hubContext.configAPI.setEnv(envVariableName, value, err => {
+        if (err) {
+            return callback(createOpenDSUErrorWrapper(`Failed to initialise app`, err));
+        }
+
+        hubContext.self.finishInitialisation();
+        callback(undefined);
+    });
+};
+function TypicalBusinessLogicHub() {
+    const openDSU = require("opendsu");
+    const didAPI = openDSU.loadAPI("w3cdid");
+    const configAPI = openDSU.loadAPI("config");
+    const utilsAPI = openDSU.loadAPI("utils");
+    const constants = openDSU.constants;
+    const APP_MAIN_DID = "appMainDID";
+    const SHARED_ENCLAVE = "sharedEnclave";
+    let hubContext = {
+        appMainDID: undefined,
+        sharedEnclave: undefined,
+        self: this,
+        configAPI
+    }
+    const commHub = didAPI.getCommunicationHub();
+
+    this.mainDIDCreated = (callback) => {
+        getCheckVariableFunction(constants.MAIN_APP_DID, hubContext, APP_MAIN_DID, callback);
+    }
+
+    this.setMainDID = (appMainDID, callback) => {
+        setVariable(constants.MAIN_APP_DID, appMainDID, hubContext, APP_MAIN_DID, callback);
+    }
+
+    this.sharedEnclaveIsSet = (callback) => {
+        getCheckVariableFunction(constants.SHARED_ENCLAVE, hubContext, SHARED_ENCLAVE, callback);
+    }
+
+    this.setSharedEnclave = (sharedEnclaveKeySSI, callback) => {
+        setVariable(constants.SHARED_ENCLAVE, sharedEnclaveKeySSI, hubContext, SHARED_ENCLAVE, callback);
+    }
+
+    this.subscribe = (messageType, checkSecurityMethod, callback) => {
+        commHub.subscribe(hubContext.appMainDID, messageType, checkSecurityMethod, callback);
+    }
+
+    this.unsubscribe = (messageType, callback) => {
+        commHub.unsubscribe(hubContext.appMainDID, messageType, callback);
+    }
+
+    this.strongSubscribe = (messageType, callback) => {
+        commHub.strongSubscribe(hubContext.appMainDID, messageType, callback);
+    }
+
+    this.strongUnsubscribe = (messageType, callback) => {
+        commHub.strongUnsubscribe(hubContext.appMainDID, messageType, callback);
+    }
+
+    utilsAPI.bindParallelAutoPendingFunctions(this, ["mainDIDCreated", "setMainDID", "sharedEnclaveIsSet", "setSharedEnclave"]);
+}
+
+const getTypicalBusinessLogicHub = () => {
+    if (!$$.TypicalBusinessLogicHub) {
+        $$.TypicalBusinessLogicHub = new TypicalBusinessLogicHub();
+    }
+
+    return $$.TypicalBusinessLogicHub;
+}
+
+module.exports = {
+    getTypicalBusinessLogicHub
+}
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/index.js":[function(require,module,exports){
 /*
     OpenDSU W3C compatible  ID pluginisable resolver  that can resolve arbitrary DID methods.
 
@@ -47694,10 +57188,12 @@ module.exports = {
     registerDIDMethod,
     CryptographicSkills: require("./CryptographicSkills/CryptographicSkills"),
     W3CDIDMixin: require('./W3CDID_Mixin'),
-    W3CCVCMixin: require('./W3CVC_Mixin')
+    W3CCVCMixin: require('./W3CVC_Mixin'),
+    getCommunicationHub: require("./hubs/CommunicationHub").getCommunicationHub,
+    getTypicalBusinessLogicHub: require("./hubs/TypicalBusinessLogicHub").getTypicalBusinessLogicHub
 }
 
-},{"./CryptographicSkills/CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js","./W3CDID_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","./W3CVC_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js","./didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/ssiMethods":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js","./w3cdids/didMethods":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js":[function(require,module,exports){
+},{"./CryptographicSkills/CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js","./W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","./W3CVC_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js","./didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/ssiMethods":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js","./hubs/CommunicationHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js","./hubs/TypicalBusinessLogicHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/TypicalBusinessLogicHub.js","./w3cdids/didMethods":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const methodsNames = require("../didMethodsNames");
 
@@ -47790,7 +57286,7 @@ module.exports = {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","buffer":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","buffer":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js":[function(require,module,exports){
 function KeyDID_Method() {
     let KeyDIDDocument = require("./KeyDID_Document");
     this.create = function (enclave, publicKey, privateKey, callback) {
@@ -47820,7 +57316,7 @@ module.exports = {
         return new KeyDID_Method();
     }
 }
-},{"./KeyDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/bootScript/node.js":[function(require,module,exports){
+},{"./KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/node.js":[function(require,module,exports){
 module.exports = () => {
     const worker_threads = "worker_threads";
     const { parentPort } = require(worker_threads);
@@ -47844,7 +57340,7 @@ module.exports = () => {
         setTimeout(() => process.exit(1), 100);
     });
 }
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/bootScript/web.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/web.js":[function(require,module,exports){
 module.exports = () => {
     addEventListener('message', (event) => {
         const { functionName, payload } = event.data;
@@ -47865,7 +57361,7 @@ module.exports = () => {
         console.error("[workers] web worker error", error);
     });
 }
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/functions.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/functions.js":[function(require,module,exports){
 function runSyncFunction({ apiSpaceName, functionName, params }) {
     const openDSU = require("opendsu");
     const api = openDSU.loadAPI(apiSpaceName);
@@ -47885,7 +57381,7 @@ module.exports = {
     runSyncFunction,
     runSyncFunctionOnlyFromWorker
 }
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/index.js":[function(require,module,exports){
 (function (global){(function (){
 function getWebWorkerBootScript() {
     const scriptLocation = document.currentScript
@@ -48064,11 +57560,14 @@ module.exports = {
 }
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../moduleConstants.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./bootScript/node":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/bootScript/node.js","./bootScript/web":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/bootScript/web.js","./functions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/functions.js","opendsu":"opendsu","syndicate":"syndicate"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
+},{"../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./bootScript/node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/node.js","./bootScript/web":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/web.js","./functions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/functions.js","opendsu":"opendsu","syndicate":"syndicate"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
+const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
+if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined" ) {
+    process.env.OPENDSU_ENABLE_DEBUG = IS_DEV_MODE.toString();
+}
 const DEBUG_LOG_ENABLED = process.env.OPENDSU_ENABLE_DEBUG === "true";
-
 if ($$.environmentType === envTypes.NODEJS_ENVIRONMENT_TYPE) {
     const logger = new Logger("Logger", "overwrite-require");
     if (DEBUG_LOG_ENABLED) {
@@ -48081,7 +57580,6 @@ if ($$.environmentType === envTypes.NODEJS_ENVIRONMENT_TYPE) {
 
 function Logger(className, moduleName, logFile) {
     const MAX_STRING_LENGTH = 11;
-    const IS_DEV_MODE = process.env.DEV === "true";
     const getPaddingForArg = (arg, maxLen = MAX_STRING_LENGTH) => {
         let noSpaces = Math.abs(maxLen - arg.length);
         let spaces = String(" ").repeat(noSpaces);
@@ -48157,7 +57655,7 @@ function Logger(className, moduleName, logFile) {
 
     const stripCodeFromArgs = (...args) => {
         let code = args[0];
-        if (typeof code !== "number") {
+        if (typeof code !== "number" || args.length === 1) {
             code = 0;
         } else {
             args.shift();
@@ -48240,7 +57738,7 @@ module.exports = {
     getLogger
 }
 
-},{"./moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
+},{"./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
 module.exports = {
   BROWSER_ENVIRONMENT_TYPE: 'browser',
   MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
@@ -48251,7 +57749,7 @@ module.exports = {
   NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
 (function (global){(function (){
 let logger = console;
 
@@ -48574,7 +58072,7 @@ $$.registerGlobalSymbol("throttlingEvent", function (...args) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"buffer":false,"psklogger":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-cache/lib/Cache.js":[function(require,module,exports){
+},{"buffer":false,"psklogger":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-cache/lib/Cache.js":[function(require,module,exports){
 const DEFAULT_ITEMS_LIMIT = 1000;
 const DEFAULT_STORAGE_LEVELS = 3;
 
@@ -48614,6 +58112,10 @@ function Cache(options) {
     }
 
     this.storage = this.createStorage(this.maxLevels);
+
+    this.resetCache = ()=>{
+        this.storage = this.createStorage(this.maxLevels);
+    }
 
     /**
      * @param {*} key
@@ -48693,7 +58195,7 @@ function Cache(options) {
 
 module.exports = Cache;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/index.js":[function(require,module,exports){
 //to look nice the requireModule on Node
 require("./lib/psk-abstract-client");
 const or = require('overwrite-require');
@@ -48702,7 +58204,7 @@ if ($$.environmentType === or.constants.BROWSER_ENVIRONMENT_TYPE) {
 } else {
 	require("./lib/psk-node-client");
 }
-},{"./lib/psk-abstract-client":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/lib/psk-abstract-client.js","./lib/psk-browser-client":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/lib/psk-browser-client.js","./lib/psk-node-client":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/lib/psk-node-client.js","overwrite-require":"overwrite-require"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/lib/psk-abstract-client.js":[function(require,module,exports){
+},{"./lib/psk-abstract-client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/lib/psk-abstract-client.js","./lib/psk-browser-client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/lib/psk-browser-client.js","./lib/psk-node-client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/lib/psk-node-client.js","overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/lib/psk-abstract-client.js":[function(require,module,exports){
 /**********************  utility class **********************************/
 function RequestManager(pollingTimeOut) {
     if (!pollingTimeOut) {
@@ -49179,7 +58681,7 @@ $$.apihub.createConnection = function(alias, url, ssi){
     return $$.apihub.connections[alias];
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/lib/psk-browser-client.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/lib/psk-browser-client.js":[function(require,module,exports){
 function generateMethodForRequestWithData(httpMethod) {
     return function (url, data, callback) {
         const xhr = new XMLHttpRequest();
@@ -49318,7 +58820,7 @@ $$.remote.base64Decode = function base64Decode(encodedString){
     return window.atob(encodedString);
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/lib/psk-node-client.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/lib/psk-node-client.js":[function(require,module,exports){
 require("./psk-abstract-client");
 
 const http = require("http");
@@ -49503,7 +59005,7 @@ $$.remote.base64Decode = function base64Decode(encodedString){
     return $$.Buffer.from(encodedString, 'base64').toString('ascii');
 };
 
-},{"./psk-abstract-client":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/lib/psk-abstract-client.js","http":false,"https":false,"url":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js":[function(require,module,exports){
+},{"./psk-abstract-client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/lib/psk-abstract-client.js","http":false,"https":false,"url":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -49608,7 +59110,7 @@ module.exports = {
     convertKeysToKeyObjects
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js":[function(require,module,exports){
 module.exports = {
     curveName: 'secp256k1',
     encodingFormat: 'base64',
@@ -49624,7 +59126,7 @@ module.exports = {
     publicKeyType: 'spki'
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -49662,7 +59164,7 @@ module.exports = {
     symmetricDecrypt
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -49699,7 +59201,7 @@ module.exports = {
     verifyDigitalSignature
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -49737,7 +59239,7 @@ class ECEphemeralKeyAgreement {
 
 module.exports = ECEphemeralKeyAgreement
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js":[function(require,module,exports){
 'use strict';
 
 const cipher = require('./cipher')
@@ -49767,7 +59269,7 @@ module.exports = {
     PublicKeyDeserializer: require('./pkdeserializer')
 }
 
-},{"./cipher":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js","./digitalsig":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js","./ecephka":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js","./kdf":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js","./kmac":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js","./pkdeserializer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js","./pkserializer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js":[function(require,module,exports){
+},{"./cipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js","./digitalsig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js","./ecephka":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js","./kdf":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js","./kmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js","./pkdeserializer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js","./pkserializer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -49798,7 +59300,7 @@ module.exports = {
     KDF2
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -49825,7 +59327,7 @@ module.exports = {
     verifyKMAC
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","./index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto')
@@ -49859,7 +59361,7 @@ function PublicKeyDeserializer() {
 
 module.exports = new PublicKeyDeserializer()
 
-},{"../../lib/ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js":[function(require,module,exports){
+},{"../../lib/ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js":[function(require,module,exports){
 const config = require('../config');
 
 function PublicKeySerializer() {
@@ -49888,7 +59390,7 @@ function PublicKeySerializer() {
 
 module.exports = new PublicKeySerializer()
 
-},{"../../lib/ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js":[function(require,module,exports){
+},{"../../lib/ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -49957,7 +59459,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     };
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -50017,7 +59519,7 @@ module.exports.encrypt = function (senderECSigningKeyPair, receiverECDHPublicKey
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 };
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -50025,7 +59527,7 @@ module.exports = {
   decrypt: require('./decrypt').decrypt,
   getDecodedECDHPublicKeyFromEncEnvelope: require('../common').getDecodedECDHPublicKeyFromEncEnvelope
 }
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto');
@@ -50090,7 +59592,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     };
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto');
@@ -50145,9 +59647,9 @@ module.exports.encrypt = function (senderECDHKeyPair, receiverECDHPublicKey, mes
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 };
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -50199,7 +59701,7 @@ module.exports.decrypt = function (receiverECDHKeyPair, encEnvelope, options) {
     return mycrypto.symmetricDecrypt(symmetricCipherKey, ciphertext, iv, options)
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const utils = require('../utils')
@@ -50260,7 +59762,7 @@ module.exports.encrypt = function (message, ...receiverECDHPublicKeys) {
     }
 }
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -50269,7 +59771,7 @@ module.exports = {
   getRecipientECDHPublicKeysFromEncEnvelope: require('../utils').getRecipientECDHPublicKeysFromEncEnvelope
 }
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -50320,7 +59822,7 @@ module.exports.decrypt = function (receiverECDHKeyPair, encEnvelope, options) {
     }
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -50369,9 +59871,9 @@ module.exports.encrypt = function (senderECSigningKeyPair, message, ...receiverE
     return eciesGEEnvelope;
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"][0].apply(exports,arguments)
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"][0].apply(exports,arguments)
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js":[function(require,module,exports){
 'use strict';
 
 const sender = require('./sender')
@@ -50387,7 +59889,7 @@ module.exports = {
 
 
 
-},{"./recipient":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js","./sender":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js":[function(require,module,exports){
+},{"./recipient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js","./sender":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -50471,7 +59973,7 @@ module.exports.parseKeyBuffer = function (keyBuffer, options) {
     }
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -50509,7 +60011,7 @@ module.exports.senderMultiRecipientECIESEncrypt = function(message, ...receiverE
     return $$.Buffer.from(JSON.stringify(eciesInstancesArray))
 }
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -50560,7 +60062,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     return mycrypto.symmetricDecrypt(symmetricEncryptionKey, ciphertext, iv, options)
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -50602,9 +60104,9 @@ module.exports.encrypt = function (receiverECDHPublicKey, message, options) {
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js":[function(require,module,exports){
 module.exports = {
     ecies_encrypt: require("./ecies").encrypt,
     ecies_decrypt: require("./ecies").decrypt,
@@ -50620,7 +60122,7 @@ module.exports = {
     ecies_group_getRecipientECDHPublicKeysFromEncEnvelope: require("./ecies-group-encryption/ecies-ge-doa").getRecipientECDHPublicKeysFromEncEnvelope
 }
 
-},{"./ecies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js","./ecies-doa-ds":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js","./ecies-doa-kmac":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js","./ecies-group-encryption/ecies-ge-anon":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js","./ecies-group-encryption/ecies-ge-doa":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js","./ecies/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js":[function(require,module,exports){
+},{"./ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js","./ecies-doa-ds":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js","./ecies-doa-kmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js","./ecies-group-encryption/ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js","./ecies-group-encryption/ecies-ge-doa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js","./ecies/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js":[function(require,module,exports){
 var jws = require('./jws');
 
 module.exports = function (jwt, options) {
@@ -50651,7 +60153,7 @@ module.exports = function (jwt, options) {
     }
     return payload;
 };
-},{"./jws":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js":[function(require,module,exports){
+},{"./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js":[function(require,module,exports){
 module.exports = {
     verify: require('./verify'),
     sign: require('./sign'),
@@ -50662,7 +60164,7 @@ Object.defineProperty(module.exports, 'decode', {
     value: require('./decode'),
 });
 
-},{"./decode":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./sign":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js","./verify":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js":[function(require,module,exports){
+},{"./decode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js","./verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js":[function(require,module,exports){
 var getParamBytesForAlg = require('./param-bytes-for-alg');
 
 var MAX_OCTET = 0x80,
@@ -50846,7 +60348,7 @@ module.exports = {
     derToJose: derToJose,
     joseToDer: joseToDer
 };
-},{"./param-bytes-for-alg":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js":[function(require,module,exports){
+},{"./param-bytes-for-alg":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js":[function(require,module,exports){
 var crypto = require('crypto');
 var formatEcdsa = require('./ecdsa-sig-formatter');
 var util = require('util');
@@ -51097,7 +60599,7 @@ module.exports = function jwa(algorithm) {
         verify: verifierFactories[algo](bits),
     }
 };
-},{"./ecdsa-sig-formatter":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js","crypto":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js":[function(require,module,exports){
+},{"./ecdsa-sig-formatter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js","crypto":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js":[function(require,module,exports){
 'use strict';
 
 function getParamSize(keySize) {
@@ -51121,7 +60623,7 @@ function getParamBytesForAlg(alg) {
 }
 
 module.exports = getParamBytesForAlg;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js":[function(require,module,exports){
 var asn = require('../../lib/asn1/asn1');
 var crypto = require('crypto')
 var BN = asn.bignum
@@ -51174,7 +60676,7 @@ function factor(e, d, n) {
 }
 
 module.exports = factor
-},{"../../lib/asn1/asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js":[function(require,module,exports){
+},{"../../lib/asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var asn = require('../../lib/asn1/asn1')
 var factor = require('./factor')
@@ -51411,7 +60913,7 @@ module.exports = {
 }
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../lib/asn1/asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./factor":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js","buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js":[function(require,module,exports){
+},{"../../lib/asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./factor":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js":[function(require,module,exports){
 /*global module, process*/
 var Stream = require('stream');
 var util = require('util');
@@ -51466,7 +60968,7 @@ DataStream.prototype.end = function end(data) {
 };
 
 module.exports = DataStream;
-},{"stream":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js":[function(require,module,exports){
+},{"stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js":[function(require,module,exports){
 /*global exports*/
 var SignStream = require('./sign-stream');
 var VerifyStream = require('./verify-stream');
@@ -51489,7 +60991,7 @@ exports.createSign = function createSign(opts) {
 exports.createVerify = function createVerify(opts) {
     return new VerifyStream(opts);
 };
-},{"./sign-stream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js","./verify-stream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js":[function(require,module,exports){
+},{"./sign-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js","./verify-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js":[function(require,module,exports){
 var DataStream = require('./data-stream');
 var jwa = require('../jwa');
 var Stream = require('stream');
@@ -51566,7 +61068,7 @@ SignStream.prototype.sign = function sign() {
 SignStream.sign = jwsSign;
 
 module.exports = SignStream;
-},{"../jwa":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js":[function(require,module,exports){
+},{"../jwa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js":[function(require,module,exports){
 module.exports = function toString(obj) {
     if (typeof obj === 'string')
         return obj;
@@ -51574,7 +61076,7 @@ module.exports = function toString(obj) {
         return obj.toString();
     return JSON.stringify(obj);
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js":[function(require,module,exports){
 /*global module*/
 var DataStream = require('./data-stream');
 var jwa = require('../jwa');
@@ -51694,7 +61196,7 @@ VerifyStream.isValid = isValidJws;
 VerifyStream.verify = jwsVerify;
 
 module.exports = VerifyStream;
-},{"../jwa":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js":[function(require,module,exports){
+},{"../jwa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js":[function(require,module,exports){
 var JsonWebTokenError = function (message, error) {
     Error.call(this, message);
     if(Error.captureStackTrace) {
@@ -51709,7 +61211,7 @@ JsonWebTokenError.prototype = Object.create(Error.prototype);
 JsonWebTokenError.prototype.constructor = JsonWebTokenError;
 
 module.exports = JsonWebTokenError;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js":[function(require,module,exports){
 var JsonWebTokenError = require('./JsonWebTokenError');
 
 var NotBeforeError = function (message, date) {
@@ -51723,7 +61225,7 @@ NotBeforeError.prototype = Object.create(JsonWebTokenError.prototype);
 NotBeforeError.prototype.constructor = NotBeforeError;
 
 module.exports = NotBeforeError;
-},{"./JsonWebTokenError":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js":[function(require,module,exports){
+},{"./JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js":[function(require,module,exports){
 var JsonWebTokenError = require('./JsonWebTokenError');
 
 var TokenExpiredError = function (message, expiredAt) {
@@ -51737,7 +61239,7 @@ TokenExpiredError.prototype = Object.create(JsonWebTokenError.prototype);
 TokenExpiredError.prototype.constructor = TokenExpiredError;
 
 module.exports = TokenExpiredError;
-},{"./JsonWebTokenError":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js":[function(require,module,exports){
+},{"./JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js":[function(require,module,exports){
 module.exports = function (time, iat) {
     var timestamp = iat || Math.floor(Date.now() / 1000);
 
@@ -51748,7 +61250,7 @@ module.exports = function (time, iat) {
     }
 
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var timespan = require('./lib/timespan');
 var jws = require('./jws');
@@ -51882,7 +61384,7 @@ module.exports = function (payload, secretOrPrivateKey, options, callback) {
 };
 }).call(this)}).call(this,{"isBuffer":require("../../../node_modules/is-buffer/index.js")})
 
-},{"../../../node_modules/is-buffer/index.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/node_modules/is-buffer/index.js","./jws":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/timespan":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js":[function(require,module,exports){
+},{"../../../node_modules/is-buffer/index.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js","./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/timespan":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js":[function(require,module,exports){
 var JsonWebTokenError = require('./lib/JsonWebTokenError');
 var NotBeforeError = require('./lib/NotBeforeError');
 var TokenExpiredError = require('./lib/TokenExpiredError');
@@ -52108,7 +61610,7 @@ module.exports = function (jwtString, secretOrPublicKey, options, callback) {
         return done(null, payload);
     });
 };
-},{"./decode":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./jwkToPemConverter":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js","./jws":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/JsonWebTokenError":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js","./lib/NotBeforeError":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js","./lib/TokenExpiredError":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js","./lib/timespan":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js":[function(require,module,exports){
+},{"./decode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./jwkToPemConverter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js","./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js","./lib/NotBeforeError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js","./lib/TokenExpiredError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js","./lib/timespan":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js":[function(require,module,exports){
 const utils = require("./utils/cryptoUtils");
 
 function ECKeyGenerator() {
@@ -52254,7 +61756,7 @@ exports.createECKeyGenerator = () => {
     return new ECKeyGenerator();
 };
 
-},{"./keyEncoder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js":[function(require,module,exports){
+},{"./keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js":[function(require,module,exports){
 function PskCrypto() {
     const crypto = require('crypto');
     const utils = require("./utils/cryptoUtils");
@@ -52474,7 +61976,7 @@ module.exports = new PskCrypto();
 
 
 
-},{"../js-mutual-auth-ecies/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js","../jsonWebToken":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js","../signsensusDS/ssutil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js","./ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","./PskEncryption":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js","./utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","./utils/eth":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js":[function(require,module,exports){
+},{"../js-mutual-auth-ecies/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js","../jsonWebToken":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js","../signsensusDS/ssutil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js","./ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","./PskEncryption":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js","./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","./utils/eth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js":[function(require,module,exports){
 function PskEncryption(algorithm) {
     const crypto = require("crypto");
     const utils = require("./utils/cryptoUtils");
@@ -52500,10 +62002,19 @@ function PskEncryption(algorithm) {
         if (typeof encryptionKey === "string") {
             encryptionKey = $$.Buffer.from(encryptionKey);
         }
-        iv = iv || crypto.randomBytes(16);
+        if(options && options.avoidRandom){
+            iv = utils.generateSalt(encryptionKey, 16);
+        }else{
+            iv = iv || crypto.randomBytes(16);
+        }
+
         const cipher = crypto.createCipheriv(algorithm, encryptionKey, iv, options);
         if (encryptionIsAuthenticated) {
-            aad = crypto.randomBytes(encryptionKey.length);
+            if(options && options.avoidRandom){
+                aad = utils.generateSalt(encryptionKey, encryptionKey.length);
+            }else{
+                aad = crypto.randomBytes(encryptionKey.length);
+            }
             cipher.setAAD(aad);
         }
 
@@ -52574,7 +62085,7 @@ function PskEncryption(algorithm) {
 
 module.exports = PskEncryption;
 
-},{"./utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js":[function(require,module,exports){
+},{"./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js":[function(require,module,exports){
 var asn1 = require('./asn1');
 var inherits = require('util').inherits;
 
@@ -52635,7 +62146,7 @@ Entity.prototype.encode = function encode(data, enc, /* internal */ reporter) {
   return this._getEncoder(enc).encode(data, reporter);
 };
 
-},{"./asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false,"vm":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js":[function(require,module,exports){
+},{"./asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false,"vm":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js":[function(require,module,exports){
 var asn1 = exports;
 
 asn1.bignum = require('./bignum/bn');
@@ -52646,7 +62157,7 @@ asn1.constants = require('./constants/index');
 asn1.decoders = require('./decoders/index');
 asn1.encoders = require('./encoders/index');
 
-},{"./api":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js","./base/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","./bignum/bn":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","./constants/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js","./decoders/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js","./encoders/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js":[function(require,module,exports){
+},{"./api":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js","./base/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","./bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","./constants/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js","./decoders/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js","./encoders/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 const Reporter = require('../base').Reporter;
 
@@ -52765,7 +62276,7 @@ EncoderBuffer.prototype.join = function join(out, offset) {
     return out;
 };
 
-},{"../base":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js":[function(require,module,exports){
+},{"../base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js":[function(require,module,exports){
 var base = exports;
 
 base.Reporter = require('./reporter').Reporter;
@@ -52773,7 +62284,7 @@ base.DecoderBuffer = require('./buffer').DecoderBuffer;
 base.EncoderBuffer = require('./buffer').EncoderBuffer;
 base.Node = require('./node');
 
-},{"./buffer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js","./node":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js","./reporter":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js":[function(require,module,exports){
+},{"./buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js","./node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js","./reporter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js":[function(require,module,exports){
 var Reporter = require('../base').Reporter;
 var EncoderBuffer = require('../base').EncoderBuffer;
 //var assert = require('double-check').assert;
@@ -53373,7 +62884,7 @@ Node.prototype._encodePrimitive = function encodePrimitive(tag, data) {
     throw new Error('Unsupported tag: ' + tag);
 };
 
-},{"../base":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js":[function(require,module,exports){
+},{"../base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 function Reporter(options) {
@@ -53477,7 +62988,7 @@ ReporterError.prototype.rethrow = function rethrow(msg) {
   return this;
 };
 
-},{"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js":[function(require,module,exports){
+},{"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js":[function(require,module,exports){
 (function (module, exports) {
 
 'use strict';
@@ -55920,7 +65431,7 @@ Mont.prototype.invm = function invm(a) {
 
 })(typeof module === 'undefined' || module, this);
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js":[function(require,module,exports){
 var constants = require('../constants');
 
 exports.tagClass = {
@@ -55964,7 +65475,7 @@ exports.tag = {
 };
 exports.tagByName = constants._reverse(exports.tag);
 
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js":[function(require,module,exports){
 var constants = exports;
 
 // Helper
@@ -55985,7 +65496,7 @@ constants._reverse = function reverse(map) {
 
 constants.der = require('./der');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 var asn1 = require('../asn1');
@@ -56278,13 +65789,13 @@ function derDecodeLen(buf, primitive, fail) {
   return len;
 }
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js":[function(require,module,exports){
 var decoders = exports;
 
 decoders.der = require('./der');
 decoders.pem = require('./pem');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","./pem":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 
 const asn1 = require('../asn1');
@@ -56334,7 +65845,7 @@ PEMDecoder.prototype.decode = function decode(data, options) {
     return DERDecoder.prototype.decode.call(this, input, options);
 };
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 const asn1 = require('../asn1');
 const base = asn1.base;
@@ -56604,13 +66115,13 @@ function encodeTag(tag, primitive, cls, reporter) {
     return res;
 }
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js":[function(require,module,exports){
 var encoders = exports;
 
 encoders.der = require('./der');
 encoders.pem = require('./pem');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","./pem":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 var asn1 = require('../asn1');
@@ -56634,7 +66145,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
   return out.join('\n');
 };
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js":[function(require,module,exports){
 'use strict'
 
 const asn1 = require('./asn1/asn1');
@@ -56807,7 +66318,7 @@ KeyEncoder.prototype.encodePublic = function (publicKey, originalFormat, destina
 
 module.exports = KeyEncoder;
 
-},{"./asn1/asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./asn1/bignum/bn":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js":[function(require,module,exports){
+},{"./asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./asn1/bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js":[function(require,module,exports){
 const stream = require('stream');
 const util = require('util');
 
@@ -56832,7 +66343,7 @@ DuplexStream.prototype._read = function (n) {
 };
 
 module.exports = DuplexStream;
-},{"stream":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js":[function(require,module,exports){
+},{"stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js":[function(require,module,exports){
 const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 const BASE = ALPHABET.length;
 const LEADER = ALPHABET.charAt(0);
@@ -56967,7 +66478,7 @@ module.exports = {
     encode,
     decode
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const BASE_MAP = {};
@@ -57087,7 +66598,7 @@ module.exports = {
 }
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js":[function(require,module,exports){
+},{"buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js":[function(require,module,exports){
 const base58 = require('./base58');
 const base64 = require('./base64');
 const keyEncoder = require("../keyEncoder");
@@ -57226,7 +66737,7 @@ module.exports = {
 };
 
 
-},{"../keyEncoder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./base58":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js","./base64":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js":[function(require,module,exports){
+},{"../keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./base58":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js","./base64":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const keyEncoder = require("../keyEncoder");
 const BN = require('../asn1/bignum/bn');
@@ -57319,7 +66830,7 @@ module.exports = {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../PskCrypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","../asn1/bignum/bn":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","../keyEncoder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","../utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js":[function(require,module,exports){
+},{"../ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../PskCrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","../asn1/bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","../keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","../utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js":[function(require,module,exports){
 const stream = require('stream');
 
 
@@ -57347,7 +66858,7 @@ module.exports            = isStream;
 module.exports.isReadable = isReadable;
 module.exports.isWritable = isWritable;
 module.exports.isDuplex   = isDuplex;
-},{"stream":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js":[function(require,module,exports){
+},{"stream":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js":[function(require,module,exports){
 /*
  SignSens helper functions
  */
@@ -57546,7 +67057,7 @@ exports.createSignature = function (agent,counter, nextPublic, arr, size){
 
     return agent + ":" + counter + ":" + nextPublic + ":" + result;
 }
-},{"crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js":[function(require,module,exports){
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js":[function(require,module,exports){
 /*
 Initial License: (c) Axiologic Research & Alboaie Sînică.
 Contributors: Axiologic Research , PrivateSky project
@@ -57971,7 +67482,7 @@ function SoundPubSub(){
 
 exports.soundPubSub = new SoundPubSub();
 
-},{"queue":"queue"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/SwarmEngine.js":[function(require,module,exports){
+},{"queue":"queue"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/SwarmEngine.js":[function(require,module,exports){
 function SwarmEngine(identity) {
     let myOwnIdentity = identity || SwarmEngine.prototype.ANONYMOUS_IDENTITY;
 
@@ -58244,7 +67755,7 @@ function makePluggable(powerCord) {
 
 module.exports = SwarmEngine;
 
-},{"./interactions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/interactions/index.js","./swarms":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/swarms/index.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/BootEngine.js":[function(require,module,exports){
+},{"./interactions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/interactions/index.js","./swarms":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/swarms/index.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/BootEngine.js":[function(require,module,exports){
 (function (global){(function (){
 function BootEngine(getKeySSI, initializeSwarmEngine, runtimeBundles, constitutionBundles) {
 
@@ -58352,7 +67863,7 @@ module.exports = BootEngine;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/IsolateBootScript.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/IsolateBootScript.js":[function(require,module,exports){
 
 async function getIsolatesWorker({workerData: {constitutions}, externalApi}) {
     const swarmUtils = require('swarmutils');
@@ -58447,7 +67958,7 @@ async function getIsolatesWorker({workerData: {constitutions}, externalApi}) {
 
 module.exports = getIsolatesWorker;
 
-},{"events":false,"fs":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/ThreadWorkerBootScript.js":[function(require,module,exports){
+},{"events":false,"fs":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/ThreadWorkerBootScript.js":[function(require,module,exports){
 function boot() {
     const worker_threads ='worker_threads';
     const {parentPort, workerData} = require(worker_threads);
@@ -58517,7 +68028,7 @@ function boot() {
 boot();
 //module.exports = boot.toString();
 
-},{"./BootEngine.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/BootEngine.js","callflow":"callflow","opendsu":"opendsu","swarm-engine":"swarm-engine"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/domainBootScript.js":[function(require,module,exports){
+},{"./BootEngine.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/BootEngine.js","callflow":"callflow","opendsu":"opendsu","swarm-engine":"swarm-engine"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/domainBootScript.js":[function(require,module,exports){
 const path = require('path');
 //enabling life line to parent process
 require(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/core/utils/pingpongFork.js")).enableLifeLine();
@@ -58657,7 +68168,7 @@ function plugPowerCords() {
 
 boot();
 
-},{"./BootEngine":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/BootEngine.js","dossier":"dossier","opendsu":"opendsu","path":false,"soundpubsub":"soundpubsub","swarm-engine":"swarm-engine","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/index.js":[function(require,module,exports){
+},{"./BootEngine":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/BootEngine.js","dossier":"dossier","opendsu":"opendsu","path":false,"soundpubsub":"soundpubsub","swarm-engine":"swarm-engine","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/index.js":[function(require,module,exports){
 module.exports = {
     getIsolatesBootScript: function() {
         return require('./IsolateBootScript');
@@ -58669,7 +68180,7 @@ module.exports = {
         return require('./domainBootScript');
     }
 };
-},{"./IsolateBootScript":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/IsolateBootScript.js","./ThreadWorkerBootScript":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/ThreadWorkerBootScript.js","./domainBootScript":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/domainBootScript.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/interactions/InteractionSpace.js":[function(require,module,exports){
+},{"./IsolateBootScript":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/IsolateBootScript.js","./ThreadWorkerBootScript":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/ThreadWorkerBootScript.js","./domainBootScript":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/domainBootScript.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/interactions/InteractionSpace.js":[function(require,module,exports){
 function InteractionSpace(swarmEngineApi) {
     const listeners = {};
     const interactionTemplate = require('./interaction_template').getTemplateHandler(swarmEngineApi);
@@ -58741,7 +68252,7 @@ function InteractionSpace(swarmEngineApi) {
 
 module.exports = InteractionSpace;
 
-},{"./interaction_template":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/interactions/interaction_template.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/interactions/index.js":[function(require,module,exports){
+},{"./interaction_template":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/interactions/interaction_template.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/interactions/index.js":[function(require,module,exports){
 module.exports = function (swarmEngineApi) {
     let cm = require("callflow");
     const InteractionSpace = require("./InteractionSpace");
@@ -58785,7 +68296,7 @@ module.exports = function (swarmEngineApi) {
     return is;
 };
 
-},{"./InteractionSpace":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/interactions/InteractionSpace.js","callflow":"callflow"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/interactions/interaction_template.js":[function(require,module,exports){
+},{"./InteractionSpace":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/interactions/InteractionSpace.js","callflow":"callflow"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/interactions/interaction_template.js":[function(require,module,exports){
 exports.getTemplateHandler = function (swarmEngineApi) {
 
     return {
@@ -58829,7 +68340,7 @@ exports.getTemplateHandler = function (swarmEngineApi) {
     }
 };
 
-},{"callflow":"callflow"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/InnerIsolatePowerCord.js":[function(require,module,exports){
+},{"callflow":"callflow"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/InnerIsolatePowerCord.js":[function(require,module,exports){
 (function (global){(function (){
 function InnerIsolatePowerCord() {
 
@@ -58879,7 +68390,7 @@ module.exports = InnerIsolatePowerCord;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/InnerThreadPowerCord.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/InnerThreadPowerCord.js":[function(require,module,exports){
 function InnerThreadPowerCord() {
     const worker_threads = 'worker_threads';
     const {parentPort} = require(worker_threads);
@@ -58892,7 +68403,7 @@ function InnerThreadPowerCord() {
 
 module.exports = InnerThreadPowerCord;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/OuterIsolatePowerCord.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/OuterIsolatePowerCord.js":[function(require,module,exports){
 function OuterIsolatePowerCord(energySource, numberOfWires = 1, apis) { // seed or array of constitution bundle paths
     const syndicate = require('syndicate');
     const bootScripts = require('../bootScripts');
@@ -58954,7 +68465,7 @@ function OuterIsolatePowerCord(energySource, numberOfWires = 1, apis) { // seed 
 
 module.exports = OuterIsolatePowerCord;
 
-},{"../bootScripts":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/index.js","syndicate":"syndicate"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/OuterThreadPowerCord.js":[function(require,module,exports){
+},{"../bootScripts":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/index.js","syndicate":"syndicate"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/OuterThreadPowerCord.js":[function(require,module,exports){
 function OuterThreadPowerCord(threadBootScript, evaluate= false, energySourceSeed, numberOfWires = 1) { // seed or array of constitution bundle paths
     const syndicate = require('syndicate');
     let pool = null;
@@ -59003,7 +68514,7 @@ function OuterThreadPowerCord(threadBootScript, evaluate= false, energySourceSee
 
 module.exports = OuterThreadPowerCord;
 
-},{"syndicate":"syndicate"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/RemoteChannelPairPowerCord.js":[function(require,module,exports){
+},{"syndicate":"syndicate"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/RemoteChannelPairPowerCord.js":[function(require,module,exports){
 const outbound = "outbound";
 const inbound = "inbound";
 
@@ -59082,7 +68593,7 @@ function RemoteChannelPairPowerCord(host, channelName, receivingHost, receivingC
 }
 
 module.exports = RemoteChannelPairPowerCord;
-},{"../../psk-http-client":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/index.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/RemoteChannelPowerCord.js":[function(require,module,exports){
+},{"../../psk-http-client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/index.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/RemoteChannelPowerCord.js":[function(require,module,exports){
 const inbound = "inbound";
 
 function RemoteChannelPowerCord(receivingHost, receivingChannelName){
@@ -59146,7 +68657,7 @@ function RemoteChannelPowerCord(receivingHost, receivingChannelName){
 }
 
 module.exports = RemoteChannelPowerCord;
-},{"../../psk-http-client":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/index.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/SmartRemoteChannelPowerCord.js":[function(require,module,exports){
+},{"../../psk-http-client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/index.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/SmartRemoteChannelPowerCord.js":[function(require,module,exports){
 const inbound = "inbound";
 
 function SmartRemoteChannelPowerCord(communicationAddrs, receivingChannelName, zeroMQAddress) {
@@ -59347,7 +68858,7 @@ function SmartRemoteChannelPowerCord(communicationAddrs, receivingChannelName, z
 
 module.exports = SmartRemoteChannelPowerCord;
 
-},{"../../psk-http-client":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-http-client/index.js","apihub":"apihub","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/browser/SSAppPowerCord.js":[function(require,module,exports){
+},{"../../psk-http-client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-http-client/index.js","apihub":"apihub","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/browser/SSAppPowerCord.js":[function(require,module,exports){
 /*
 	This type of PowerCord can be used from outer and inner SSApp in order to facilitate the SWARM communication
 	@param reference can be the parent (SSApp or wallet environment) or the iframe in which the SSApp gets loaded
@@ -59394,7 +68905,7 @@ function SSAppPowerCord(reference){
 
 module.exports = SSAppPowerCord;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/swarms/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/swarms/index.js":[function(require,module,exports){
 module.exports = function(swarmEngineApi){
     const cm = require("callflow");
     const swarmUtils = require("./swarm_template-se");
@@ -59406,7 +68917,7 @@ module.exports = function(swarmEngineApi){
         swarmEngineApi.startSwarmAs(identity, swarmName, ctor, ...params);
     };
 };
-},{"./swarm_template-se":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/swarms/swarm_template-se.js","callflow":"callflow"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/swarms/swarm_template-se.js":[function(require,module,exports){
+},{"./swarm_template-se":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/swarms/swarm_template-se.js","callflow":"callflow"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/swarms/swarm_template-se.js":[function(require,module,exports){
 exports.getTemplateHandler = function (swarmEngine) {
     let cm = require("callflow");
 
@@ -59492,7 +69003,7 @@ exports.getTemplateHandler = function (swarmEngine) {
         }
     }
 };
-},{"callflow":"callflow","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
+},{"callflow":"callflow","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
 function product(args) {
     if(!args.length){
         return [ [] ];
@@ -59518,7 +69029,7 @@ function objectProduct(obj) {
 }
 
 module.exports = objectProduct;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
 var meta = "meta";
 
 function OwM(serialized){
@@ -59609,7 +69120,7 @@ OwM.prototype.setMetaFor = function(obj, name, value){
 };
 
 module.exports = OwM;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
 function QueueElement(content) {
 	this.content = content;
 	this.next = null;
@@ -59710,7 +69221,7 @@ Queue.prototype.inspect = Queue.prototype.toString;
 
 module.exports = Queue;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
 const HEADER_SIZE_RESEARVED = 4;
 
 function SwarmPacker(){
@@ -59859,7 +69370,7 @@ SwarmPacker.getHeader = function(pack){
     return header;
 };
 module.exports = SwarmPacker;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
 
 function TaskCounter(finalCallback) {
 	let results = [];
@@ -59909,7 +69420,7 @@ function TaskCounter(finalCallback) {
 }
 
 module.exports = TaskCounter;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
 const OwM = require("./OwM");
 
 /*
@@ -59965,7 +69476,7 @@ exports.jsonToNative = function(serialisedValues, result){
     };
 
 };
-},{"./OwM":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
+},{"./OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
 function replaceAll(str, search, replacement) {
     return str.split(search).join(replacement);
 }
@@ -60152,7 +69663,7 @@ module.exports = {
     extname
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
 const PING = "PING";
 const PONG = "PONG";
 
@@ -60244,7 +69755,7 @@ module.exports.enableLifeLine = function(timeout){
         }
     }, interval);
 };
-},{"child_process":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
+},{"child_process":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
 var commands = {};
 var commands_help = {};
 
@@ -60315,7 +69826,7 @@ module.exports = {
 };
 
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
 const removeDir = (...args) => {
     const fs = require("fs");
     if (typeof fs.rm !== "function") {
@@ -60336,7 +69847,7 @@ module.exports = {
     removeDirSync,
     removeDir
 }
-},{"fs":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
+},{"fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
 
 function encode(buffer) {
     return buffer.toString('base64')
@@ -60403,7 +69914,7 @@ exports.short_uuid = function(callback) {
         callback(null, encode(buf));
     });
 };
-},{"crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
 function UidGenerator(minBuffers, buffersSize) {
     const Queue = require("./Queue");
     var PSKBuffer = typeof $$ !== "undefined" && $$.PSKBuffer ? $$.PSKBuffer : $$.Buffer;
@@ -60505,7 +70016,7 @@ module.exports.createUidGenerator = function (minBuffers, bufferSize) {
     return new UidGenerator(minBuffers, bufferSize);
 };
 
-},{"./Queue":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/AbstractPool.js":[function(require,module,exports){
+},{"./Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/AbstractPool.js":[function(require,module,exports){
 (function (setImmediate){(function (){
 const {assert} = require('./utils');
 const util = require('util');
@@ -60617,7 +70128,7 @@ module.exports = AbstractPool;
 
 }).call(this)}).call(this,require("timers").setImmediate)
 
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/utils.js","events":false,"timers":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Isolates.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/utils.js","events":false,"timers":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Isolates.js":[function(require,module,exports){
 const AbstractPool = require('./AbstractPool');
 const util = require('util');
 /**
@@ -60653,7 +70164,7 @@ util.inherits(PoolIsolates, AbstractPool);
 
 module.exports = PoolIsolates;
 
-},{"./AbstractPool":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Threads.js":[function(require,module,exports){
+},{"./AbstractPool":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Threads.js":[function(require,module,exports){
 const AbstractPool = require('./AbstractPool');
 const util = require('util');
 
@@ -60706,7 +70217,7 @@ util.inherits(PoolThreads, AbstractPool);
 
 module.exports = PoolThreads;
 
-},{"./AbstractPool":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Web-Workers.js":[function(require,module,exports){
+},{"./AbstractPool":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Web-Workers.js":[function(require,module,exports){
 const AbstractPool = require('./AbstractPool');
 const util = require('util');
 
@@ -60760,7 +70271,7 @@ util.inherits(PoolWebWorkers, AbstractPool);
 
 module.exports = PoolWebWorkers;
 
-},{"./AbstractPool":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","overwrite-require":"overwrite-require","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/PoolConfig.js":[function(require,module,exports){
+},{"./AbstractPool":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","overwrite-require":"overwrite-require","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/PoolConfig.js":[function(require,module,exports){
 const os = require('os');
 const util = require('util');
 const WorkerStrategies = require('./WorkerStrategies');
@@ -60862,7 +70373,7 @@ PoolConfig.createByOverwritingDefaults = function (config = {}, options = {allow
 };
 
 module.exports = PoolConfig;
-},{"./WorkerStrategies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js","os":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/QueueShim.js":[function(require,module,exports){
+},{"./WorkerStrategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js","os":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/QueueShim.js":[function(require,module,exports){
 function Queue() {
     const backingStorage = [];
 
@@ -60924,7 +70435,7 @@ function Queue() {
 
 module.exports = Queue;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/WorkerPool.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/WorkerPool.js":[function(require,module,exports){
 /** @param pool {AbstractPool} */
 function WorkerPool(pool) {
     const { assert } = require("./utils");
@@ -61058,7 +70569,7 @@ function WorkerPool(pool) {
 
 module.exports = WorkerPool;
 
-},{"./QueueShim.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/QueueShim.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/utils.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js":[function(require,module,exports){
+},{"./QueueShim.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/QueueShim.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/utils.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js":[function(require,module,exports){
 const WorkerStrategies = {
     THREADS: 'threads',
     ISOLATES: 'isolates',
@@ -61067,7 +70578,7 @@ const WorkerStrategies = {
 
 module.exports = Object.freeze(WorkerStrategies);
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/utils.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/utils.js":[function(require,module,exports){
 function assert(condition, {ifFails}) {
     if (condition === false) {
         console.error(ifFails);
@@ -61078,7 +70589,7 @@ module.exports = {
     assert
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/node_modules/is-buffer/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js":[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -61106,6 +70617,11 @@ const logger = $$.getLogger("HttpServer", "apihub");
 
 process.on('uncaughtException', err => {
 	logger.critical('There was an uncaught error', err);
+});
+
+process.on('SIGTERM', (signal)=>{
+	process.shuttingDown = true;
+	logger.info('Received signal:', signal, ". Activating the gracefulTerminationWatcher.");
 });
 
 const httpWrapper = require('./libs/http-wrapper');
@@ -61256,6 +70772,19 @@ function HttpServer({ listeningPort, rootFolder, sslConfig, dynamicPort, restart
 			const ResponseHeaderMiddleware = require('./middlewares/responseHeader');
 			const genericErrorMiddleware = require('./middlewares/genericErrorMiddleware');
 			const requestEnhancements = require('./middlewares/requestEnhancements');
+
+			server.use(function gracefulTerminationWatcher(req, res, next) {
+				const allowedUrls = ["/installation-details", "/ready-probe"];
+				if(process.shuttingDown && allowedUrls.indexOf(req.url) === -1){
+					//uncaught exception was caught so server is shutting down gracefully and not accepting any requests
+					res.statusCode = 503;
+					logger.log(0x02, `Rejecting ${req.url} with status code ${res.statusCode} because process is shutting down.`);
+					res.end();
+					return;
+				}
+				//if the url is allowed or shuttingDown flag not present, we let the request go on...
+				next();
+			});
 
 			if(conf.enableRequestLogger) {
 				new LoggerMiddleware(server);
@@ -61428,12 +70957,12 @@ module.exports.getDomainConfig = function (domain, ...configKeys) {
 
 module.exports.anchoringStrategies = require("./components/anchoring/strategies");
 
-},{"./components/admin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/admin/index.js","./components/anchoring":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/index.js","./components/anchoring/strategies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./components/bdns":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bdns/index.js","./components/bricking":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricking/index.js","./components/bricksFabric":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/bricksFabric/index.js","./components/cloudWallet":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/cloudWallet/index.js","./components/config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/config/index.js","./components/contracts":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/contracts/index.js","./components/debugLogger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/debugLogger/index.js","./components/enclave":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/enclave/index.js","./components/fileManager":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/fileManager/index.js","./components/installation-details":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/installation-details/index.js","./components/keySsiNotifications":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/keySsiNotifications/index.js","./components/mainDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mainDSU/index.js","./components/mqHub":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/mqHub/index.js","./components/requestForwarder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/requestForwarder/index.js","./components/secrets":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/secrets/index.js","./components/staticServer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/staticServer/index.js","./components/stream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/components/stream/index.js","./config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/config/index.js","./libs/http-wrapper":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/libs/http-wrapper/src/index.js","./middlewares/authorisation":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/authorisation/index.js","./middlewares/genericErrorMiddleware":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js","./middlewares/logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/logger/index.js","./middlewares/oauth":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/oauth/index.js","./middlewares/requestEnhancements":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js","./middlewares/responseHeader":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/responseHeader/index.js","./middlewares/throttler":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/apihub/middlewares/throttler/index.js","swarmutils":"swarmutils"}],"bar-fs-adapter":[function(require,module,exports){
+},{"./components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./components/anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/index.js","./components/anchoring/strategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./components/bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bdns/index.js","./components/bricking":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/index.js","./components/bricksFabric":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/index.js","./components/cloudWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/cloudWallet/index.js","./components/config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/config/index.js","./components/contracts":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/contracts/index.js","./components/debugLogger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/debugLogger/index.js","./components/enclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/enclave/index.js","./components/fileManager":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/fileManager/index.js","./components/installation-details":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/installation-details/index.js","./components/keySsiNotifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/keySsiNotifications/index.js","./components/mainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mainDSU/index.js","./components/mqHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/index.js","./components/requestForwarder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/requestForwarder/index.js","./components/secrets":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js","./components/staticServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js","./components/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/index.js","./config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./libs/http-wrapper":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/index.js","./middlewares/authorisation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/authorisation/index.js","./middlewares/genericErrorMiddleware":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js","./middlewares/logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/logger/index.js","./middlewares/oauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/index.js","./middlewares/requestEnhancements":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js","./middlewares/responseHeader":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/responseHeader/index.js","./middlewares/throttler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/throttler/index.js","swarmutils":"swarmutils"}],"bar-fs-adapter":[function(require,module,exports){
 module.exports.createFsAdapter = () => {
     const FsAdapter = require("./lib/FsAdapter");
     return new FsAdapter();
 };
-},{"./lib/FsAdapter":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js"}],"bar":[function(require,module,exports){
+},{"./lib/FsAdapter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js"}],"bar":[function(require,module,exports){
 
 const ArchiveConfigurator = require("./lib/ArchiveConfigurator");
 const createFolderBrickStorage = require("./lib/obsolete/FolderBrickStorage").createFolderBrickStorage;
@@ -61514,7 +71043,7 @@ module.exports.createBrickStorageService = (archiveConfigurator, keySSI) => {
 
     return brickStorageService;
 };
-},{"./lib/Archive":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Archive.js","./lib/ArchiveConfigurator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js","./lib/Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","./lib/BrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js","./lib/BrickMapController":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapController.js","./lib/BrickMapDiff":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./lib/BrickMapStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./lib/BrickMapStrategy/BrickMapStrategyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","./lib/BrickStorageService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./lib/obsolete/FileBrickStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js","./lib/obsolete/FolderBrickStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js"}],"blockchain":[function(require,module,exports){
+},{"./lib/Archive":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Archive.js","./lib/ArchiveConfigurator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js","./lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./lib/BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./lib/BrickMapController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js","./lib/BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./lib/BrickMapStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./lib/BrickMapStrategy/BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","./lib/BrickStorageService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./lib/obsolete/FileBrickStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js","./lib/obsolete/FolderBrickStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js"}],"blockchain":[function(require,module,exports){
 ___DISABLE_OBSOLETE_ZIP_ARCHIVER_WAIT_FOR_BARS = true;
 //require("../../../psknode/bundles/pskruntime.js");
 var callflowModule = require("callflow");
@@ -61528,7 +71057,7 @@ $$.transaction      = $$.transactions;
 module.exports = require('./moduleExports');
 
 
-},{"./blockchainSwarmTypes/asset_swarm_template":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/asset_swarm_template.js","./blockchainSwarmTypes/transaction_swarm_template":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/transaction_swarm_template.js","./moduleExports":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleExports.js","callflow":"callflow"}],"bricksledger":[function(require,module,exports){
+},{"./blockchainSwarmTypes/asset_swarm_template":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/asset_swarm_template.js","./blockchainSwarmTypes/transaction_swarm_template":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/transaction_swarm_template.js","./moduleExports":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleExports.js","callflow":"callflow"}],"bricksledger":[function(require,module,exports){
 const Command = require("./src/Command");
 const Logger = require("./src/Logger");
 const PBlockAddedMessage = require("./src/Broadcaster/PBlockAddedMessage");
@@ -61794,7 +71323,7 @@ module.exports = {
     createFSBrickStorage,
 };
 
-},{"./src/Broadcaster":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Broadcaster/index.js","./src/Broadcaster/PBlockAddedMessage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Broadcaster/PBlockAddedMessage.js","./src/Broadcaster/ValidatorNonInclusionMessage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Broadcaster/ValidatorNonInclusionMessage.js","./src/Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Command.js","./src/CommandHistoryStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/CommandHistoryStorage.js","./src/ConsensusCore":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ConsensusCore/index.js","./src/ExecutionEngine":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/ExecutionEngine/index.js","./src/FSBrickStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/FSBrickStorage/index.js","./src/FSKeyValueStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/FSKeyValueStorage/index.js","./src/Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Logger.js","./src/Notifier":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/Notifier.js","./src/PBlocksFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bricksledger/src/PBlocksFactory.js","opendsu":"opendsu"}],"buffer-crc32":[function(require,module,exports){
+},{"./src/Broadcaster":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Broadcaster/index.js","./src/Broadcaster/PBlockAddedMessage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Broadcaster/PBlockAddedMessage.js","./src/Broadcaster/ValidatorNonInclusionMessage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Broadcaster/ValidatorNonInclusionMessage.js","./src/Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Command.js","./src/CommandHistoryStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/CommandHistoryStorage.js","./src/ConsensusCore":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ConsensusCore/index.js","./src/ExecutionEngine":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/ExecutionEngine/index.js","./src/FSBrickStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/FSBrickStorage/index.js","./src/FSKeyValueStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/FSKeyValueStorage/index.js","./src/Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Logger.js","./src/Notifier":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/Notifier.js","./src/PBlocksFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bricksledger/src/PBlocksFactory.js","opendsu":"opendsu"}],"buffer-crc32":[function(require,module,exports){
 
 var CRC_TABLE = [
   0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419,
@@ -62000,7 +71529,7 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/constants.js","./lib/InterceptorRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/InterceptorRegistry.js","./lib/loadLibrary":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/loadLibrary.js","./lib/parallelJoinPoint":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js","./lib/serialJoinPoint":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js","./lib/swarmDescription":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/swarmDescription.js","./lib/utilityFunctions/base":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js","crypto":false,"path":false,"soundpubsub":"soundpubsub"}],"dossier":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/constants.js","./lib/InterceptorRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/InterceptorRegistry.js","./lib/loadLibrary":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/loadLibrary.js","./lib/parallelJoinPoint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js","./lib/serialJoinPoint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js","./lib/swarmDescription":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/swarmDescription.js","./lib/utilityFunctions/base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js","crypto":false,"path":false,"soundpubsub":"soundpubsub"}],"dossier":[function(require,module,exports){
 function envSetup(powerCord, seed, identity, callback){
     let cord_identity;
     try{
@@ -62057,7 +71586,7 @@ module.exports.load = function(seed, identity, callback){
 }
 
 module.exports.RawDossier = require("./lib/RawDossier");
-},{"./lib/RawDossier":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dossier/lib/RawDossier.js","overwrite-require":"overwrite-require","pskcrypto":"pskcrypto","swarm-engine":"swarm-engine"}],"double-check":[function(require,module,exports){
+},{"./lib/RawDossier":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dossier/lib/RawDossier.js","overwrite-require":"overwrite-require","pskcrypto":"pskcrypto","swarm-engine":"swarm-engine"}],"double-check":[function(require,module,exports){
 /**
  * Generic function used to registers methods such as asserts, logging, etc. on the current context.
  * @param name {String)} - name of the method (use case) to be registered.
@@ -62376,7 +71905,7 @@ Object.assign(module.exports, {
     deleteFoldersSync
 });
 
-},{"../utils/AsyncDispatcher":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/utils/AsyncDispatcher.js","./runner.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/runner.js","./standardAsserts.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/standardAsserts.js","./standardChecks.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/standardChecks.js","./standardExceptions.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/standardExceptions.js","./standardLogs.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/double-check/lib/standardLogs.js","crypto":false,"fs":false,"os":false,"path":false,"swarmutils":"swarmutils"}],"dsu-wizard":[function(require,module,exports){
+},{"../utils/AsyncDispatcher":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/utils/AsyncDispatcher.js","./runner.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/runner.js","./standardAsserts.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/standardAsserts.js","./standardChecks.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/standardChecks.js","./standardExceptions.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/standardExceptions.js","./standardLogs.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/lib/standardLogs.js","crypto":false,"fs":false,"os":false,"path":false,"swarmutils":"swarmutils"}],"dsu-wizard":[function(require,module,exports){
 (function (__dirname){(function (){
 function initWizard(server) {
 	const transactionManager = require("./TransactionManager");
@@ -62442,7 +71971,7 @@ module.exports = {
 }
 }).call(this)}).call(this,"/modules/dsu-wizard")
 
-},{"./CommandRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js","./TransactionManager":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/TransactionManager.js","./commands":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/index.js","./commands/dummyCommand":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/commands/dummyCommand.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/dsu-wizard/utils.js","apihub":"apihub","path":false}],"key-ssi-resolver":[function(require,module,exports){
+},{"./CommandRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/CommandRegistry.js","./TransactionManager":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/TransactionManager.js","./commands":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/index.js","./commands/dummyCommand":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/commands/dummyCommand.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/dsu-wizard/utils.js","apihub":"apihub","path":false}],"key-ssi-resolver":[function(require,module,exports){
 const KeySSIResolver = require('./lib/KeySSIResolver');
 const DSUFactory = require("./lib/DSUFactoryRegistry");
 
@@ -62482,7 +72011,535 @@ module.exports = {
     CryptoAlgorithmsMixin: require('./lib/CryptoAlgorithms/CryptoAlgorithmsMixin')
 };
 
-},{"./lib/CryptoAlgorithms/CryptoAlgorithmsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./lib/CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./lib/CryptoAlgorithms/CryptoFunctionTypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./lib/DSUFactoryRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js","./lib/KeySSIResolver":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js","./lib/KeySSIs/KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./lib/KeySSIs/KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./lib/KeySSIs/SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","bar":"bar"}],"opendsu":[function(require,module,exports){
+},{"./lib/CryptoAlgorithms/CryptoAlgorithmsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./lib/CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./lib/CryptoAlgorithms/CryptoFunctionTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./lib/DSUFactoryRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js","./lib/KeySSIResolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js","./lib/KeySSIs/KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./lib/KeySSIs/KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./lib/KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","bar":"bar"}],"loki-enclave-facade":[function(require,module,exports){
+(function (Buffer){(function (){
+const loki = require("./lib/lokijs/src/lokijs.js");
+const lfsa = require("./lib/lokijs/src/loki-fs-sync-adapter.js");
+// const lfssa = require("./lib/lokijs/src/loki-fs-structured-adapter");
+
+const TABLE_NOT_FOUND_ERROR_CODE = 100;
+const adapter = new lfsa();
+
+let filterOperationsMap = {
+    "!=": "$ne",
+    "==": "$aeq",
+    ">": "$jgt",
+    ">=": "$jgte",
+    "<": "$jlt",
+    "<=": "$jlte",
+    "like": "$regex"
+}
+
+function LokiEnclaveFacade(rootFolder, autosaveInterval) {
+    const openDSU = require("opendsu");
+    const keySSISpace = openDSU.loadAPI("keyssi")
+    const w3cDID = openDSU.loadAPI("w3cdid")
+    const utils = openDSU.loadAPI("utils");
+    const CryptoSkills = w3cDID.CryptographicSkills;
+    const logger = $$.getLogger("LokiEnclaveFacade", "lokiEnclaveFacade");
+    const DEFAULT_NAME = "LokiEnclaveFacade";
+    const path = require("path");
+    const KEY_SSIS_TABLE = "keyssis";
+    const SEED_SSIS_TABLE = "seedssis";
+    const DIDS_PRIVATE_KEYS = "dids_private";
+    const AUTOSAVE_INTERVAL = 100;
+    autosaveInterval = autosaveInterval || AUTOSAVE_INTERVAL;
+    if (typeof rootFolder === "undefined") {
+        throw Error("Root folder was not specified for LokiEnclaveFacade");
+    }
+    let db = new loki(rootFolder, {
+        adapter: adapter,
+        autoload: true,
+        autoloadCallback: initialized.bind(this),
+        autosave: true,
+        autosaveInterval: autosaveInterval,
+        autosaveCallback: function (err) {
+            if (err) {
+                logger.error(`Failed to save db on disk.`)
+            }
+        }
+    });
+
+    this.refresh = function (callback) {
+        db.loadDatabaseInternal(undefined, callback);
+    }
+
+    this.count = function (tableName, callback) {
+        let table = db.getCollection(tableName);
+        if (!table) {
+            return callback(createOpenDSUErrorWrapper(`Table ${tableName} not found`))
+        }
+        let result;
+        try {
+            result = table.count();
+        } catch (err) {
+            return callback(createOpenDSUErrorWrapper(`Could not count on ${tableName}`, err))
+        }
+
+        callback(null, result)
+    }
+
+    this.getCollections = function () {
+        return db.listCollections().map(collection => {
+            return collection.name
+        })
+    }
+
+    this.insertRecord = function (forDID, tableName, pk, record, callback) {
+        let table = db.getCollection(tableName) || db.addCollection(tableName);
+        const foundRecord = table.findOne({ 'pk': pk });
+        if (foundRecord) {
+            return callback(createOpenDSUErrorWrapper(`A record with pk ${pk} already exists in ${tableName}`))
+        }
+        let result;
+        try {
+            result = table.insert({ "pk": pk, ...record, "did": forDID, "__timestamp": Date.now() });
+        } catch (err) {
+            return callback(createOpenDSUErrorWrapper(` Could not insert record in table ${tableName} `, err))
+        }
+
+        callback(null, result);
+    }
+
+    this.updateRecord = function (forDID, tableName, pk, record, callback) {
+        let table = db.getCollection(tableName);
+        const doc = table.by("pk", pk);
+        for (let prop in record) {
+            doc[prop] = record[prop];
+        }
+        let result;
+        try {
+            result = table.update(doc);
+        } catch (err) {
+            return callback(createOpenDSUErrorWrapper(` Could not insert record in table ${tableName} `, err));
+        }
+
+        callback(null, result);
+    }
+
+    this.deleteRecord = function (forDID, tableName, pk, callback) {
+        let table = db.getCollection(tableName);
+        if (!table) {
+            return callback();
+        }
+        const record = table.findOne({ 'pk': pk });
+        if (!record) {
+            return callback(createOpenDSUErrorWrapper(`Couldn't find a record for pk ${pk} in ${tableName}`))
+        }
+        let result;
+        try {
+            result = table.remove(record);
+        } catch (err) {
+            return callback(createOpenDSUErrorWrapper(`Couldn't do remove for pk ${pk} in ${tableName}`, err))
+        }
+
+        callback(null, result);
+    }
+
+    this.getRecord = function (forDID, tableName, pk, callback) {
+        let table = db.getCollection(tableName);
+        if (!table) {
+            return callback();
+        }
+        let result;
+        try {
+            result = table.findObject({ 'pk': pk });
+        } catch (err) {
+            return callback(createOpenDSUErrorWrapper(`Could not find object with pk ${pk}`, err));
+        }
+
+        callback(null, result)
+    }
+
+    function __parseQuery(filterConditions) {
+        let lokiQuery = {}
+        if (!filterConditions) {
+            return lokiQuery;
+        }
+
+        filterConditions.forEach(condition => {
+            const splitCondition = condition.split(" ");
+            const field = splitCondition[0];
+            const operator = splitCondition[1];
+            const value = splitCondition[2];
+            lokiQuery[field] = {};
+            lokiQuery[field][`${filterOperationsMap[operator]}`] = value;
+        })
+        return lokiQuery;
+    }
+
+    function __getSortingField(filterConditions) {
+        let sortingField = "__timestamp";
+        if (filterConditions && filterConditions.length) {
+            const splitCondition = filterConditions[0].split(" ");
+            sortingField = splitCondition[0];
+        }
+
+        return sortingField;
+    }
+
+    this.filter = function (forDID, tableName, filterConditions, sort, max, callback) {
+        if (typeof filterConditions === "string") {
+            filterConditions = [filterConditions];
+        }
+
+        if (typeof filterConditions === "function") {
+            callback = filterConditions;
+            filterConditions = undefined;
+            sort = "asc";
+            max = Infinity;
+        }
+
+        if (typeof sort === "function") {
+            callback = sort;
+            sort = "asc";
+            max = Infinity;
+        }
+
+        if (typeof max === "function") {
+            callback = max;
+            max = Infinity;
+        }
+
+        if (!max) {
+            max = Infinity;
+        }
+
+        const sortingField = __getSortingField(filterConditions);
+        filterConditions = __parseQuery(filterConditions);
+
+        let table = db.getCollection(tableName);
+        if (!table) {
+            const err = Error(`Table ${tableName} does not exist.`);
+            err.code = 404;
+            return callback(err);
+        }
+        let direction = false;
+        if (sort === "desc") {
+            direction = true;
+        }
+
+        let result;
+        try {
+            result = table.chain().find(filterConditions).simplesort(sortingField, direction).limit(max).data();
+        } catch (err) {
+            return callback(createOpenDSUErrorWrapper(`Filter operation failed on ${tableName}`, err));
+        }
+
+
+        callback(null, result);
+    }
+
+    this.getAllRecords = (forDID, tableName, callback) => {
+        let table = db.getCollection(tableName);
+        if (!table) {
+            return callback();
+        }
+
+        let results;
+        try {
+            results = table.find();
+        } catch (err) {
+            return callback(createOpenDSUErrorWrapper(`Filter operation failed on ${tableName}`, err));
+        }
+
+        callback(null, results);
+    };
+
+    utils.bindAutoPendingFunctions(this);
+
+    const READ_WRITE_KEY_TABLE = "KeyValueTable";
+
+    this.writeKey = (forDID, key, value, callback) => {
+        let valueObject = {
+            type: typeof value,
+            value: value
+        };
+
+        if (typeof value === "object") {
+            if (Buffer.isBuffer(value)) {
+                valueObject = {
+                    type: "buffer",
+                    value: value.toString()
+                }
+            } else {
+                valueObject = {
+                    type: "object",
+                    value: JSON.stringify(value)
+                }
+            }
+        }
+        this.insertRecord(forDID, READ_WRITE_KEY_TABLE, key, valueObject, callback);
+    }
+
+    this.readKey = (forDID, key, callback) => {
+        this.getRecord(forDID, READ_WRITE_KEY_TABLE, key, (err, record) => {
+            if (err) {
+                return callback(createOpenDSUErrorWrapper(`Failed to read key ${key}`, err));
+            }
+
+            callback(undefined, record);
+        })
+    }
+
+    //------------------ queue -----------------
+    let self = this;
+    this.addInQueue = function (forDID, queueName, encryptedObject, callback) {
+        let queue = db.getCollection(queueName) || db.addCollection(queueName);
+        const crypto = require("opendsu").loadApi("crypto");
+        const hash = crypto.sha256(encryptedObject);
+        self.insertRecord(forDID, queueName, hash, encryptedObject, callback);
+    }
+
+    this.queueSize = function (forDID, queueName, callback) {
+        self.count(queueName, callback);
+    }
+
+    this.listQueue = function (forDID, queueName, sortAfterInsertTime, onlyFirstN, callback) {
+
+        if (typeof sortAfterInsertTime === "function") {
+            callback = sortAfterInsertTime;
+            sortAfterInsertTime = "asc";
+            onlyFirstN = undefined
+        }
+        if (typeof onlyFirstN === "function") {
+            callback = onlyFirstN;
+            onlyFirstN = undefined;
+        }
+
+        self.filter(forDID, queueName, undefined, sortAfterInsertTime, onlyFirstN, (err, result) => {
+            if (err) {
+                return callback(err);
+            }
+
+            result = result.map(item => {
+                return item.pk
+            })
+            return callback(null, result);
+        })
+    }
+
+    this.getObjectFromQueue = function (forDID, queueName, hash, callback) {
+        return self.getRecord(forDID, queueName, hash, callback)
+    }
+
+    this.deleteObjectFromQueue = function (forDID, queueName, hash, callback) {
+        return self.deleteRecord(forDID, queueName, hash, callback)
+    }
+
+    //------------------ KeySSIs -----------------
+    const getCapableOfSigningKeySSI = (keySSI, callback) => {
+        if (typeof keySSI === "undefined") {
+            return callback(Error(`A SeedSSI should be specified.`));
+        }
+
+        if (typeof keySSI === "string") {
+            try {
+                keySSI = keySSISpace.parse(keySSI);
+            } catch (e) {
+                return callback(createOpenDSUErrorWrapper(`Failed to parse keySSI ${keySSI}`, e))
+            }
+        }
+
+        this.getRecord(undefined, KEY_SSIS_TABLE, keySSI.getIdentifier(), (err, record) => {
+            if (err) {
+                return callback(createOpenDSUErrorWrapper(`No capable of signing keySSI found for keySSI ${keySSI.getIdentifier()}`, err));
+            }
+
+            let capableOfSigningKeySSI;
+            try {
+                capableOfSigningKeySSI = keySSISpace.parse(record.capableOfSigningKeySSI);
+            } catch (e) {
+                return callback(createOpenDSUErrorWrapper(`Failed to parse keySSI ${record.capableOfSigningKeySSI}`, e))
+            }
+
+            callback(undefined, capableOfSigningKeySSI);
+        });
+    };
+
+    this.storeSeedSSI = (forDID, seedSSI, alias, callback) => {
+        if (typeof seedSSI === "string") {
+            try {
+                seedSSI = keySSISpace.parse(seedSSI);
+            } catch (e) {
+                return callback(createOpenDSUErrorWrapper(`Failed to parse keySSI ${seedSSI}`, e))
+            }
+        }
+
+        const keySSIIdentifier = seedSSI.getIdentifier();
+
+        const registerDerivedKeySSIs = (derivedKeySSI) => {
+            this.insertRecord(forDID, KEY_SSIS_TABLE, derivedKeySSI.getIdentifier(), { capableOfSigningKeySSI: keySSIIdentifier }, (err) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                try {
+                    derivedKeySSI = derivedKeySSI.derive();
+                } catch (e) {
+                    return callback();
+                }
+
+                registerDerivedKeySSIs(derivedKeySSI);
+            });
+        }
+
+        this.insertRecord(forDID, SEED_SSIS_TABLE, alias, { seedSSI: keySSIIdentifier }, (err) => {
+            if (err) {
+                return callback(err);
+            }
+
+            return registerDerivedKeySSIs(seedSSI);
+        })
+    }
+
+    this.signForKeySSI = (forDID, keySSI, hash, callback) => {
+        getCapableOfSigningKeySSI(keySSI, (err, capableOfSigningKeySSI) => {
+            if (err) {
+                return callback(err);
+            }
+            if (typeof capableOfSigningKeySSI === "undefined") {
+                return callback(Error(`The provided SSI does not grant writing rights`));
+            }
+
+            capableOfSigningKeySSI.sign(hash, callback);
+        });
+    }
+
+    //------------------ DIDs -----------------
+    const getPrivateInfoForDID = (did, callback) => {
+        this.getRecord(undefined, DIDS_PRIVATE_KEYS, did, (err, record) => {
+            if (err) {
+                return callback(err);
+            }
+
+            const privateKeysAsBuff = record.privateKeys.map(privateKey => {
+                if (privateKey) {
+                    return $$.Buffer.from(privateKey)
+                }
+
+                return privateKey;
+            });
+            callback(undefined, privateKeysAsBuff);
+        });
+    };
+
+    const __ensureAreDIDDocumentsThenExecute = (did, fn, callback) => {
+        if (typeof did === "string") {
+            return w3cDID.resolveDID(did, (err, didDocument) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                fn(didDocument, callback);
+            })
+        }
+
+        fn(did, callback);
+    }
+
+    this.storeDID = (forDID, storedDID, privateKeys, callback) => {
+        this.getRecord(forDID, DIDS_PRIVATE_KEYS, storedDID, (err, res) => {
+            if (err || !res) {
+                return this.insertRecord(forDID, DIDS_PRIVATE_KEYS, storedDID, { privateKeys: privateKeys }, callback);
+            }
+
+            privateKeys.forEach(privateKey => {
+                res.privateKeys.push(privateKey);
+            })
+            this.updateRecord(forDID, DIDS_PRIVATE_KEYS, storedDID, res, callback);
+        });
+    }
+
+    this.signForDID = (forDID, didThatIsSigning, hash, callback) => {
+        const __signForDID = (didThatIsSigning, callback) => {
+            getPrivateInfoForDID(didThatIsSigning.getIdentifier(), (err, privateKeys) => {
+                if (err) {
+                    return callback(createOpenDSUErrorWrapper(`Failed to get private info for did ${didThatIsSigning.getIdentifier()}`, err));
+                }
+
+                const signature = CryptoSkills.applySkill(didThatIsSigning.getMethodName(), CryptoSkills.NAMES.SIGN, hash, privateKeys[privateKeys.length - 1]);
+                callback(undefined, signature);
+            });
+        }
+
+        __ensureAreDIDDocumentsThenExecute(didThatIsSigning, __signForDID, callback);
+    }
+
+    this.verifyForDID = (forDID, didThatIsVerifying, hash, signature, callback) => {
+        const __verifyForDID = (didThatIsVerifying, callback) => {
+            didThatIsVerifying.getPublicKey("pem", (err, publicKey) => {
+                if (err) {
+                    return callback(createOpenDSUErrorWrapper(`Failed to read public key for did ${didThatIsVerifying.getIdentifier()}`, err));
+                }
+
+                const verificationResult = CryptoSkills.applySkill(didThatIsVerifying.getMethodName(), CryptoSkills.NAMES.VERIFY, hash, publicKey, $$.Buffer.from(signature));
+                callback(undefined, verificationResult);
+            });
+        }
+
+        __ensureAreDIDDocumentsThenExecute(didThatIsVerifying, __verifyForDID, callback);
+    }
+
+    this.encryptMessage = (forDID, didFrom, didTo, message, callback) => {
+        const __encryptMessage = () => {
+            getPrivateInfoForDID(didFrom.getIdentifier(), (err, privateKeys) => {
+                if (err) {
+                    return callback(createOpenDSUErrorWrapper(`Failed to get private info for did ${didFrom.getIdentifier()}`, err));
+                }
+
+                CryptoSkills.applySkill(didFrom.getMethodName(), CryptoSkills.NAMES.ENCRYPT_MESSAGE, privateKeys, didFrom, didTo, message, callback);
+            });
+        }
+        if (typeof didFrom === "string") {
+            w3cDID.resolveDID(didFrom, (err, didDocument) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                didFrom = didDocument;
+
+
+                if (typeof didTo === "string") {
+                    w3cDID.resolveDID(didTo, (err, didDocument) => {
+                        if (err) {
+                            return callback(err);
+                        }
+
+                        didTo = didDocument;
+                        __encryptMessage();
+                    })
+                } else {
+                    __encryptMessage();
+                }
+            })
+        } else {
+            __encryptMessage();
+        }
+    }
+
+    this.decryptMessage = (forDID, didTo, encryptedMessage, callback) => {
+        const __decryptMessage = (didTo, callback) => {
+            getPrivateInfoForDID(didTo.getIdentifier(), (err, privateKeys) => {
+                if (err) {
+                    return callback(createOpenDSUErrorWrapper(`Failed to get private info for did ${didTo.getIdentifier()}`, err));
+                }
+
+                CryptoSkills.applySkill(didTo.getMethodName(), CryptoSkills.NAMES.DECRYPT_MESSAGE, privateKeys, didTo, encryptedMessage, callback);
+            });
+        }
+        __ensureAreDIDDocumentsThenExecute(didTo, __decryptMessage, callback);
+    };
+}
+
+function initialized() {
+    this.finishInitialisation();
+}
+
+module.exports = LokiEnclaveFacade;
+}).call(this)}).call(this,{"isBuffer":require("../../node_modules/is-buffer/index.js")})
+
+},{"../../node_modules/is-buffer/index.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js","./lib/lokijs/src/loki-fs-sync-adapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/loki-enclave-facade/lib/lokijs/src/loki-fs-sync-adapter.js","./lib/lokijs/src/lokijs.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/loki-enclave-facade/lib/lokijs/src/lokijs.js","opendsu":"opendsu","path":false}],"opendsu":[function(require,module,exports){
 (function (global){(function (){
 /*
 html API space
@@ -62619,7 +72676,7 @@ module.exports = PREVENT_DOUBLE_LOADING_OF_OPENDSU;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./anchoring":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/index.js","./bdns":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bdns/index.js","./boot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/index.js","./bricking":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bricking/index.js","./cache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/index.js","./config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/index.js","./config/autoConfig":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/autoConfig.js","./contracts":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/contracts/index.js","./credentials":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/index.js","./crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/index.js","./db":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/index.js","./dc":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dc/index.js","./dt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/index.js","./enclave":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/index.js","./error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","./http":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js","./keyssi":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/keyssi/index.js","./m2dsu":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/index.js","./moduleConstants.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./mq/mqClient":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/mq/mqClient.js","./notifications":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/notifications/index.js","./oauth":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/index.js","./resolver":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/resolver/index.js","./sc":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/index.js","./storage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/index.js","./system":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/system/index.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/index.js","./w3cdid":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/index.js","./workers":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/index.js"}],"overwrite-require":[function(require,module,exports){
+},{"./anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js","./bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","./boot":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/index.js","./bricking":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bricking/index.js","./cache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","./config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js","./config/autoConfig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfig.js","./contracts":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/index.js","./credentials":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/index.js","./crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js","./db":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/index.js","./dc":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dc/index.js","./dt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/index.js","./enclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js","./error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","./http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","./keyssi":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js","./m2dsu":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/index.js","./moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./mq/mqClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/mq/mqClient.js","./notifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/notifications/index.js","./oauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/index.js","./resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js","./sc":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/index.js","./storage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/index.js","./system":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","./w3cdid":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/index.js","./workers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/index.js"}],"overwrite-require":[function(require,module,exports){
 (function (global){(function (){
 /*
  require and $$.require are overwriting the node.js defaults in loading modules for increasing security, speed and making it work to the privatesky runtime build with browserify.
@@ -63029,7 +73086,7 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js"}],"psk-cache":[function(require,module,exports){
+},{"./Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js"}],"psk-cache":[function(require,module,exports){
 const Cache = require("./lib/Cache")
 let cacheInstance;
 
@@ -63066,7 +73123,7 @@ module.exports = {
     }
 };
 
-},{"./lib/Cache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-cache/lib/Cache.js"}],"pskcrypto":[function(require,module,exports){
+},{"./lib/Cache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-cache/lib/Cache.js"}],"pskcrypto":[function(require,module,exports){
 const PskCrypto = require("./lib/PskCrypto");
 const ssutil = require("./signsensusDS/ssutil");
 
@@ -63077,7 +73134,7 @@ module.exports.hashValues = ssutil.hashValues;
 module.exports.DuplexStream = require("./lib/utils/DuplexStream");
 
 module.exports.isStream = require("./lib/utils/isStream");
-},{"./lib/PskCrypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","./lib/utils/DuplexStream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js","./lib/utils/isStream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js","./signsensusDS/ssutil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js"}],"queue":[function(require,module,exports){
+},{"./lib/PskCrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","./lib/utils/DuplexStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js","./lib/utils/isStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js","./signsensusDS/ssutil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js"}],"queue":[function(require,module,exports){
 function QueueElement(content) {
 	this.content = content;
 	this.next = null;
@@ -63150,7 +73207,7 @@ module.exports = Queue;
 module.exports = {
 					soundPubSub: require("./lib/soundPubSub").soundPubSub
 };
-},{"./lib/soundPubSub":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js"}],"swarm-engine":[function(require,module,exports){
+},{"./lib/soundPubSub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js"}],"swarm-engine":[function(require,module,exports){
 module.exports = {
     initialise:function(...args){
         if(typeof $$.swarmEngine === "undefined"){
@@ -63179,7 +73236,7 @@ module.exports = {
 };
 
 
-},{"./SwarmEngine":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/SwarmEngine.js","./bootScripts":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/bootScripts/index.js","./powerCords/InnerIsolatePowerCord":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/InnerIsolatePowerCord.js","./powerCords/InnerThreadPowerCord":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/InnerThreadPowerCord.js","./powerCords/OuterIsolatePowerCord":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/OuterIsolatePowerCord.js","./powerCords/OuterThreadPowerCord":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/OuterThreadPowerCord.js","./powerCords/RemoteChannelPairPowerCord":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/RemoteChannelPairPowerCord.js","./powerCords/RemoteChannelPowerCord":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/RemoteChannelPowerCord.js","./powerCords/SmartRemoteChannelPowerCord":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/SmartRemoteChannelPowerCord.js","./powerCords/browser/SSAppPowerCord":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarm-engine/powerCords/browser/SSAppPowerCord.js","overwrite-require":"overwrite-require"}],"swarmutils":[function(require,module,exports){
+},{"./SwarmEngine":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/SwarmEngine.js","./bootScripts":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/index.js","./powerCords/InnerIsolatePowerCord":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/InnerIsolatePowerCord.js","./powerCords/InnerThreadPowerCord":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/InnerThreadPowerCord.js","./powerCords/OuterIsolatePowerCord":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/OuterIsolatePowerCord.js","./powerCords/OuterThreadPowerCord":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/OuterThreadPowerCord.js","./powerCords/RemoteChannelPairPowerCord":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/RemoteChannelPairPowerCord.js","./powerCords/RemoteChannelPowerCord":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/RemoteChannelPowerCord.js","./powerCords/SmartRemoteChannelPowerCord":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/SmartRemoteChannelPowerCord.js","./powerCords/browser/SSAppPowerCord":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/powerCords/browser/SSAppPowerCord.js","overwrite-require":"overwrite-require"}],"swarmutils":[function(require,module,exports){
 
 let cachedUIDGenerator = undefined;
 let cachedSafeUid = undefined;
@@ -63234,7 +73291,7 @@ module.exports.ensureIsBuffer = function (data) {
 module.exports.removeDir = require("./lib/removeDir").removeDir;
 module.exports.removeDirSync = require("./lib/removeDir").removeDirSync;
 
-},{"./lib/Combos":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}],"syndicate":[function(require,module,exports){
+},{"./lib/Combos":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}],"syndicate":[function(require,module,exports){
 const PoolConfig = require('./lib/PoolConfig');
 const WorkerPool = require('./lib/WorkerPool');
 const WorkerStrategies = require('./lib/WorkerStrategies');
@@ -63290,8 +73347,8 @@ module.exports = {
     registerWorkerStrategy
 };
 
-},{"./lib/Pool-Isolates":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Isolates.js","./lib/Pool-Threads":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Threads.js","./lib/Pool-Web-Workers":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Web-Workers.js","./lib/PoolConfig":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/PoolConfig.js","./lib/WorkerPool":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/WorkerPool.js","./lib/WorkerStrategies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js"}]},{},["/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/builds/tmp/testsRuntime.js"])
+},{"./lib/Pool-Isolates":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Isolates.js","./lib/Pool-Threads":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Threads.js","./lib/Pool-Web-Workers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Web-Workers.js","./lib/PoolConfig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/PoolConfig.js","./lib/WorkerPool":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/WorkerPool.js","./lib/WorkerStrategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js"}]},{},["/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testsRuntime.js"])
                     ;(function(global) {
-                        global.bundlePaths = {"webshims":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/webshims.js","pskruntime":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/pskruntime.js","pskWebServer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/pskWebServer.js","consoleTools":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/consoleTools.js","blockchain":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/blockchain.js","openDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/openDSU.js","nodeBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/nodeBoot.js","testsRuntime":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/testsRuntime.js","bindableModel":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/bindableModel.js","loaderBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/loaderBoot.js","swBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/swBoot.js","iframeBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/iframeBoot.js","launcherBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/launcherBoot.js","testRunnerBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/testRunnerBoot.js"};
+                        global.bundlePaths = {"webshims":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/webshims.js","pskruntime":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/pskruntime.js","pskWebServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/pskWebServer.js","consoleTools":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/consoleTools.js","blockchain":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/blockchain.js","openDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/openDSU.js","nodeBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/nodeBoot.js","testsRuntime":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/testsRuntime.js","bindableModel":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/bindableModel.js","loaderBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/loaderBoot.js","swBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/swBoot.js","iframeBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/iframeBoot.js","launcherBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/launcherBoot.js","testRunnerBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/testRunnerBoot.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
                 

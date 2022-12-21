@@ -1,9 +1,9 @@
-openDSURequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/builds/tmp/openDSU.js":[function(require,module,exports){
+openDSURequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/openDSU.js":[function(require,module,exports){
 const or = require('overwrite-require');
 or.enableForEnvironment(or.constants.NODEJS_ENVIRONMENT_TYPE);
 
 require("./openDSU_intermediar");
-},{"./openDSU_intermediar":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/builds/tmp/openDSU_intermediar.js","overwrite-require":"overwrite-require"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/builds/tmp/openDSU_intermediar.js":[function(require,module,exports){
+},{"./openDSU_intermediar":"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/openDSU_intermediar.js","overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/openDSU_intermediar.js":[function(require,module,exports){
 (function (global){(function (){
 global.openDSULoadModules = function(){ 
 
@@ -61,7 +61,7 @@ if (typeof $$ !== "undefined") {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"bar":"bar","bar-fs-adapter":"bar-fs-adapter","blockchain":"blockchain","callflow":"callflow","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache","pskcrypto":"pskcrypto","swarmutils":"swarmutils","syndicate":"syndicate"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js":[function(require,module,exports){
+},{"bar":"bar","bar-fs-adapter":"bar-fs-adapter","blockchain":"blockchain","callflow":"callflow","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache","pskcrypto":"pskcrypto","swarmutils":"swarmutils","syndicate":"syndicate"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js":[function(require,module,exports){
 function FsAdapter() {
     const fsModule = "fs";
     const fs = require(fsModule);
@@ -122,7 +122,7 @@ function FsAdapter() {
 }
 
 module.exports = FsAdapter;
-},{"./PathAsyncIterator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js":[function(require,module,exports){
+},{"./PathAsyncIterator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js":[function(require,module,exports){
 function PathAsyncIterator(inputPath) {
     const fsModule = "fs";
     const fs = require(fsModule);
@@ -247,7 +247,7 @@ function PathAsyncIterator(inputPath) {
 }
 
 module.exports = PathAsyncIterator;
-},{"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/AnchorValidator.js":[function(require,module,exports){
+},{"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/AnchorValidator.js":[function(require,module,exports){
 'use strict'
 
 /**
@@ -294,7 +294,7 @@ function AnchorValidator(options) {
 }
 
 module.exports = AnchorValidator;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Archive.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Archive.js":[function(require,module,exports){
 const Brick = require('./Brick');
 const stream = require('stream');
 const BrickStorageService = require('./BrickStorageService').Service;
@@ -344,7 +344,8 @@ function Archive(archiveConfigurator) {
             brickMapController = new BrickMapController({
                 config: archiveConfigurator,
                 brickStorageService,
-                keySSI
+                keySSI,
+                ...archiveConfigurator.getOptions()
             });
 
             callback();
@@ -668,18 +669,7 @@ function Archive(archiveConfigurator) {
     };
 
     const _ingestData = (barPath, data, options, callback) => {
-        _fileIsEmbedded(barPath, (err, fileIsEmbedded) => {
-            if (err) {
-                return callback(err);
-            }
-
-            let ingestionMethod = "ingestData";
-            if (fileIsEmbedded) {
-                ingestionMethod = "createEmbedSSIFromData"
-            }
-
-            brickStorageService[ingestionMethod](data, options, callback)
-        });
+        brickStorageService.ingestData(data, options, callback)
     }
 
     const _embedFile = (barPath, data, options, callback) => {
@@ -691,7 +681,25 @@ function Archive(archiveConfigurator) {
             brickMapController.addFile(barPath, result, callback);
         })
     }
-    
+
+    const embedOrCreateBricks = (barPath, data, options, callback) => {
+        if (options.embed) {
+            return brickMapController.embedData(barPath, data, options, callback);
+        }
+
+        _fileIsEmbedded(barPath, (err, fileIsEmbedded) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (fileIsEmbedded) {
+                return brickMapController.embedData(barPath, data, options, callback);
+            }
+
+            _ingestData(barPath, data, options, callback);
+        });
+    }
+
     /**
      * @param {string} barPath
      * @param {string|$$.Buffer|stream.ReadableStream} data
@@ -705,24 +713,52 @@ function Archive(archiveConfigurator) {
             return _createFile(barPath, callback);
         }
 
-        _ingestData(barPath, data, options, (err, result) => {
+        if (options.embed) {
+            return brickMapController.embedData(barPath, data, options, callback);
+        }
+
+        _fileIsEmbedded(barPath, (err, fileIsEmbedded) => {
             if (err) {
                 return callback(err);
             }
 
-            brickMapController.addFile(barPath, result, callback);
-        })
+            if (fileIsEmbedded) {
+                return brickMapController.embedData(barPath, data, options, callback);
+            }
+
+            _ingestData(barPath, data, options, (err, result) => {
+                if (err) {
+                    return callback(err);
+                }
+                brickMapController.addFile(barPath, result, callback);
+
+            });
+        });
     };
 
     const _appendToFile = (barPath, data, options, callback) => {
         barPath = pskPth.normalize(barPath);
 
-        _ingestData(barPath, data, options, (err, result) => {
+        if (options.embed) {
+            return brickMapController.appendToEmbeddedFile(barPath, data, options, callback);
+        }
+
+        _fileIsEmbedded(barPath, (err, fileIsEmbedded) => {
             if (err) {
-                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to append data to file " + barPath, err));
+                return callback(err);
             }
 
-            brickMapController.appendToFile(barPath, result, callback);
+            if (fileIsEmbedded) {
+                return brickMapController.appendToEmbeddedFile(barPath, data, options, callback);
+            }
+
+            _ingestData(barPath, data, options, (err, result) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                brickMapController.appendToFile(barPath, result, callback);
+            });
         });
     };
 
@@ -820,6 +856,16 @@ function Archive(archiveConfigurator) {
         barPath = pskPth.normalize(barPath);
 
         let bricksMeta;
+        let embeddedData;
+        try {
+            embeddedData = brickMapController.getEmbeddedFile(barPath);
+        } catch (e) {
+            return callback(e);
+        }
+
+        if (typeof embeddedData !== "undefined") {
+            return callback(undefined, embeddedData);
+        }
 
         try {
             bricksMeta = brickMapController.getBricksMeta(barPath);
@@ -1530,7 +1576,7 @@ function Archive(archiveConfigurator) {
 
     this.writeFile = (path, data, options, callback) => {
         waitIfDSUIsRefreshing(() => {
-            const defaultOpts = {encrypt: true, ignoreMounts: false};
+            const defaultOpts = {encrypt: true, ignoreMounts: false, embed: false};
             if (typeof data === "function") {
                 callback = data;
                 data = undefined;
@@ -1538,20 +1584,19 @@ function Archive(archiveConfigurator) {
             }
             if (typeof options === "function") {
                 callback = options;
-                options = {
-                    encrypt: true
-                };
+                options = defaultOpts;
             }
             if (typeof options === "undefined") {
-                options = {
-                    encrypt: true
-                };
+                options = defaultOpts;
             }
 
             callback = $$.makeSaneCallback(callback);
 
             Object.assign(defaultOpts, options);
             options = defaultOpts;
+            if (options.embed) {
+                options.encrypt = false;
+            }
 
             if (options.ignoreMounts === true) {
                 _writeFile(path, data, options, callback);
@@ -2629,17 +2674,17 @@ function Archive(archiveConfigurator) {
 
 module.exports = Archive;
 
-},{"./Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMapController":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapController.js","./BrickStorageService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./Manifest":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Manifest.js","opendsu":"opendsu","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js":[function(require,module,exports){
+},{"./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMapController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js","./BrickStorageService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./Manifest":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Manifest.js","opendsu":"opendsu","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js":[function(require,module,exports){
 const storageProviders = {};
 const fsAdapters = {};
 
-function ArchiveConfigurator() {
+function ArchiveConfigurator(options) {
     const config = {};
     let dsuCaching = true;
     let cache;
     let keySSI;
 
-    this.getCreationSSI = function(plain){
+    this.getCreationSSI = function (plain) {
         return config.keySSI.getIdentifier(plain);
     }
 
@@ -2816,6 +2861,10 @@ function ArchiveConfigurator() {
     this.dsuCachingEnabled = () => {
         return dsuCaching;
     }
+
+    this.getOptions = () => {
+        return options;
+    }
 }
 
 // @TODO: obsolete
@@ -2829,7 +2878,7 @@ ArchiveConfigurator.prototype.registerFsAdapter = (fsAdapterName, factory) => {
 
 module.exports = ArchiveConfigurator;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadApi("crypto");
 const keySSISpace = openDSU.loadApi("keyssi");
@@ -3030,7 +3079,7 @@ function Brick(options) {
 
 module.exports = Brick;
 
-},{"./brick-transforms":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js":[function(require,module,exports){
+},{"./brick-transforms":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js":[function(require,module,exports){
 const BrickMapMixin = require('./BrickMapMixin');
 
 /**
@@ -3072,9 +3121,9 @@ const BrickMapMixin = require('./BrickMapMixin');
  * @param {object|undefined} header
  */
 
-function BrickMap(header) {
+function BrickMap(header, options) {
     Object.assign(this, BrickMapMixin);
-    this.initialize(header);
+    this.initialize(header, options);
 
     /**
      * Clone object/array
@@ -3213,7 +3262,8 @@ function BrickMap(header) {
             }
         };
         merge(this.header.items, changes.header.items);
-        this.updateMetadata('/', 'updatedAt', this.getTimestamp());
+        merge(this.header.embedded, changes.header.embedded);
+        this.updateTimeMetadata('/', 'updatedAt', this.getTimestamp());
     }
 
     /**
@@ -3243,11 +3293,24 @@ function BrickMap(header) {
             }
         }
 
+        let embedClone = {};
+        if(brickMap.header.embedded){
+            embedClone = JSON.parse(JSON.stringify(brickMap.header.embedded));
+            let embeddedSrc = this.header.embedded;
+            for (let f in embeddedSrc) {
+                if (embedClone[f] === embeddedSrc[f]) {
+                    delete embedClone[f];
+                }
+            }
+        }
+
+
         const brickMapDiff = new this.constructor({
             metadata: {
                 createdAt: this.getTimestamp()
             },
-            items: changes
+            items: changes,
+            embedded: embedClone
         });
         return brickMapDiff;
     }
@@ -3266,41 +3329,45 @@ function BrickMap(header) {
         switch (op) {
             case 'add':
                 this.appendBricksToFile(path, data);
-                this.setMetadata(path, {
-                    updatedAt: timestamp
-                });
+                this.updateTimeMetadata(path, 'updatedAt', timestamp);
                 break;
             case 'truncate':
                 this.emptyList(path);
-                this.updateMetadata(path, 'updatedAt', timestamp);
+                this.updateTimeMetadata(path, 'updatedAt', timestamp);
                 break;
             case 'delete':
                 this.delete(path);
-                this.updateMetadata(path, 'deletedAt', timestamp);
+                this.updateTimeMetadata(path, 'deletedAt', timestamp);
                 break;
             case 'copy':
                 const dstPath = data;
                 this.copy(path, dstPath);
-                this.updateMetadata(dstPath, 'createdAt', timestamp);
+                this.updateTimeMetadata(dstPath, 'createdAt', timestamp);
                 break;
             case 'createFolder':
                 this.createFolder(path);
-                this.updateMetadata(path, 'createdAt', timestamp);
+                this.updateTimeMetadata(path, 'createdAt', timestamp);
                 break;
             case 'createFile':
                 this.createFile(path);
-                this.updateMetadata(path, 'createdAt', timestamp);
+                this.updateTimeMetadata(path, 'createdAt', timestamp);
                 break;
             case 'replaceFirstBrick':
                 this.replaceFirstBrick(path, data);
-                this.updateMetadata(path, 'updatedAt', timestamp);
+                this.updateTimeMetadata(path, 'updatedAt', timestamp);
                 break;
             case 'replaceLastBrick':
                 this.replaceLastBrick(path, data);
-                this.updateMetadata(path, 'updatedAt', timestamp);
+                this.updateTimeMetadata(path, 'updatedAt', timestamp);
+                break;
+            case 'embed':
+                this.putEmbeddedFile(path, data);
+                break;
+            case 'appendToEmbed':
+                this.appendToEmbedded(path, data);
                 break;
             default:
-                throw new Error(`Unknown operation <${operation}>`);
+                throw new Error(`Unknown operation <${JSON.stringify(operation)}>`);
         }
     }
 
@@ -3329,7 +3396,7 @@ function BrickMap(header) {
         for (const operation of operationsLog) {
             this.replayOperation(operation, brickMap);
         }
-        this.updateMetadata('/', 'updatedAt', this.getTimestamp());
+        this.updateTimeMetadata('/', 'updatedAt', this.getTimestamp());
         this.header.metadata.prevDiffHashLink = metadata.prevDiffHashLink;
     }
 
@@ -3404,7 +3471,7 @@ function BrickMap(header) {
 }
 module.exports = BrickMap;
 
-},{"./BrickMapMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapController.js":[function(require,module,exports){
+},{"./BrickMapMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js":[function(require,module,exports){
 'use strict';
 
 // HTTP error code returned by the anchoring middleware
@@ -3674,7 +3741,7 @@ function BrickMapController(options) {
         strategy.setBrickMapState(state);
         strategy.setValidator(validator);
 
-        const brickMap = new BrickMap();
+        const brickMap = new BrickMap(undefined, options);
         const brickMapProperties = Object.getOwnPropertyNames(brickMap);
         for (const propertyName of brickMapProperties) {
             if (typeof brickMap[propertyName] !== 'function' || propertyName === 'load') {
@@ -4170,14 +4237,40 @@ function BrickMapController(options) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to retrieve current diffBrickMap`, err));
             }
 
-            try {
-                const hashList = this.getHashList(path);
-                const embedSSI = keySSISpace.parse(hashList[0]);
-                callback(undefined, embedSSI.isEmbed());
-            } catch (e) {
-                return callback(undefined, false);
-            }
+            const embeddedFile = this.getEmbeddedFile(path);
+            callback(undefined, !!embeddedFile);
         })
+    }
+
+    this.embedData = (path, data, options, callback) => {
+        getCurrentDiffBrickMap((err, _brickMap) => {
+            if (err) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to retrieve current diffBrickMap`, err));
+            }
+
+            try {
+                this.putEmbeddedFile(path, data);
+            } catch (e) {
+                return callback(e);
+            }
+
+            this.attemptAnchoring(callback);
+        });
+    }
+
+    this.appendToEmbeddedFile = (path, data, options, callback) => {
+        getCurrentDiffBrickMap((err, _brickMap) => {
+            if (err) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to retrieve current diffBrickMap`, err));
+            }
+            try {
+                this.appendToEmbedded(path, data);
+            } catch (e) {
+                return callback(e);
+            }
+
+            this.attemptAnchoring(callback);
+        });
     }
 
     /**
@@ -4288,6 +4381,30 @@ function BrickMapController(options) {
     }
 
     /**
+     * Proxy for BrickMap.putEmbeddedFile()
+     *
+     * @param {string} path
+     * @param {string} data
+     */
+    this.putEmbeddedFileProxyHandler = (path, data) => {
+        const dirtyBrickMap = state.getDirtyBrickMap();
+        dirtyBrickMap.putEmbeddedFile(path, data);
+        state.getCurrentDiff().putEmbeddedFile(path, data);
+    }
+
+    /**
+     * Proxy for BrickMap.appendToEmbedded()
+     *
+     * @param {string} path
+     * @param {string} data
+     */
+    this.appendToEmbeddedProxyHandler = (path, data) => {
+        const dirtyBrickMap = state.getDirtyBrickMap();
+        dirtyBrickMap.appendToEmbedded(path, data);
+        state.getCurrentDiff().appendToEmbedded(path, data);
+    }
+
+    /**
      * Persists a BrickMap Brick
      *
      * @param {BrickMap} brickMap
@@ -4295,6 +4412,7 @@ function BrickMapController(options) {
      */
     this.saveBrickMap = (domain, brickMap, callback) => {
         const brickMapBrick = brickMap.toBrick();
+
         brickMapBrick.setKeySSI(brickMap.getBrickEncryptionKeySSI());
         brickMapBrick.getTransformedData((err, brickData) => {
             if (err) {
@@ -4315,7 +4433,7 @@ function BrickMapController(options) {
             brick = undefined;
         }
 
-        const brickMap = new BrickMap(brick);
+        const brickMap = new BrickMap(brick, options);
         this.configureBrickMap(brickMap, (err => callback(err, brickMap)));
     }
 
@@ -4405,63 +4523,67 @@ function BrickMapController(options) {
                     return endAnchoring(listener, anchoringStatus.PERSIST_BRICKMAP_ERR, err);
                 }
 
-
-                const __storeAnchor = (anchorValue) => {
-                    //signedHashLink should not contain any hint because is not trusted
-
-                    const updateAnchorCallback = (err) => {
-                        if (err) {
-                            // In case of any errors, the compacted BrickMapDiff objects
-                            // are put back into the "pending anchoring" state in case
-                            // we need to retry the anchoring process
-                            state.rollback(mergedDiffs);
-
-                            // The anchoring middleware detected that we were trying
-                            // to anchor outdated changes. In order to finish the anchoring
-                            // process the conflict must be first resolved
-                            if (isAliasSyncError(err)) {
-                                return this.handleAnchoringConflict(listener);
-                            }
-
-                            return endAnchoring(listener, anchoringStatus.ANCHOR_VERSION_ERR, err);
-                        }
-
-                        // After the alias is updated, the strategy is tasked
-                        // with updating our anchored BrickMap with the new changes
-                        strategy.afterBrickMapAnchoring(brickMap, anchorValue, (err, hashLink) => {
-                            if (err) {
-                                return endAnchoring(listener, anchoringStatus.BRICKMAP_UPDATE_ERR, err);
-                            }
-
-                            endAnchoring(listener, anchoringStatus.OK, hashLink);
-
-                            if (anchoringRequestExists()) {
-                                // Another anchoring was requested during the time this one
-                                // was in progress, as such, we start the process again
-                                this.anchorChanges(listener);
-                            }
-                        });
+                keySSI.getAnchorId((err, anchorId) => {
+                    if (err) {
+                        return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to get anchorId for keySSI ${keySSI.getIdentifier()}`, err));
                     }
 
-                    const currentAnchoredHashLink = state.getCurrentAnchoredHashLink();
-                    /*if (!currentAnchoredHashLink) {
-                        anchoring.createAnchor(keySSI, (err) => {
+                    const __storeAnchor = (anchorValue) => {
+                        //signedHashLink should not contain any hint because is not trusted
+
+                        const updateAnchorCallback = (err) => {
                             if (err) {
-                                return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to create anchor`, err));
+                                // In case of any errors, the compacted BrickMapDiff objects
+                                // are put back into the "pending anchoring" state in case
+                                // we need to retry the anchoring process
+                                state.rollback(mergedDiffs);
+
+                                // The anchoring middleware detected that we were trying
+                                // to anchor outdated changes. In order to finish the anchoring
+                                // process the conflict must be first resolved
+                                if (isAliasSyncError(err)) {
+                                    return this.handleAnchoringConflict(listener);
+                                }
+
+                                return endAnchoring(listener, anchoringStatus.ANCHOR_VERSION_ERR, err);
                             }
 
-                            anchoring.appendToAnchor(keySSI, signedHashLink, '', updateAnchorCallback);
-                        });
-                    } else {
-                        anchoring.appendToAnchor(keySSI, signedHashLink, currentAnchoredHashLink, updateAnchorCallback);
-                    }*/
-                    keySSI.getAnchorId((err, anchorId) => {
-                        if (err) {
-                            return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to get anchorId for keySSI ${keySSI.getIdentifier()}`, err));
+                            // After the alias is updated, the strategy is tasked
+                            // with updating our anchored BrickMap with the new changes
+                            strategy.afterBrickMapAnchoring(brickMap, anchorValue, (err, hashLink) => {
+                                if (err) {
+                                    return endAnchoring(listener, anchoringStatus.BRICKMAP_UPDATE_ERR, err);
+                                }
+
+                                endAnchoring(listener, anchoringStatus.OK, hashLink);
+
+                                if (anchoringRequestExists()) {
+                                    // Another anchoring was requested during the time this one
+                                    // was in progress, as such, we start the process again
+                                    this.anchorChanges(listener);
+                                }
+                            });
                         }
+
+                        const currentAnchoredHashLink = state.getCurrentAnchoredHashLink();
+                        /*if (!currentAnchoredHashLink) {
+                            anchoring.createAnchor(keySSI, (err) => {
+                                if (err) {
+                                    return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to create anchor`, err));
+                                }
+
+                                anchoring.appendToAnchor(keySSI, signedHashLink, '', updateAnchorCallback);
+                            });
+                        } else {
+                            anchoring.appendToAnchor(keySSI, signedHashLink, currentAnchoredHashLink, updateAnchorCallback);
+                        }*/
 
                         //TODO: update the smart contract and after that uncomment the above code and eliminate the following if statement
                         if (!currentAnchoredHashLink) {
+                            if (anchoringx.testIfRecoveryActiveFor(anchorId) && !keySSI.canAppend()) {
+                                //if we are in recovery mode, and we are const keyssi type then we don't create the anchor
+                                return updateAnchorCallback();
+                            }
                             anchoringx.getLastVersion(keySSI, (err, version) => {
                                 if (err) {
                                     // return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to retrieve versions of anchor`, err));
@@ -4475,28 +4597,51 @@ function BrickMapController(options) {
                                     return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to retrieve last anchor version`, err));
                                 }
 
-                                if (version.getIdentifier() !== currentAnchoredHashLink.getIdentifier()) {
+                                if (!anchoringx.testIfRecoveryActiveFor(anchorId) && version.getIdentifier() !== currentAnchoredHashLink.getIdentifier()) {
                                     return updateAnchorCallback({statusCode: 428, message: "Versions out of sync"})
                                 }
-
 
                                 anchoringx.appendAnchor(anchorId, anchorValue, updateAnchorCallback);
                             });
                         }
-                    });
-                }
-
-                let lastEntryInAnchor;
-                if (state.getCurrentAnchoredHashLink()) {
-                    lastEntryInAnchor = state.getCurrentAnchoredHashLink().getIdentifier();
-                }
-                keySSI.createAnchorValue(hash, lastEntryInAnchor, (err, anchorValue) => {
-                    if (err) {
-                        return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`The SSI type does not have write access`, err));
                     }
 
-                    __storeAnchor(anchorValue);
+                    let lastEntryInAnchor;
+                    let getCurrentHashLink = (callback) => {
+                        callback(undefined, state.getCurrentAnchoredHashLink());
+                    }
+
+                    if (anchoringx.testIfRecoveryActiveFor(anchorId)) {
+                        getCurrentHashLink = (callback) => {
+                            return anchoringx.getLastVersion(anchorId, callback);
+                        }
+                    }
+
+                    let proceed = (lastEntryInAnchor) => {
+                        keySSI.createAnchorValue(hash, lastEntryInAnchor, (err, anchorValue) => {
+                            if (err) {
+                                return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`The SSI type does not have write access`, err));
+                            }
+
+                            __storeAnchor(anchorValue);
+                        });
+                    }
+
+                    if (state.getCurrentAnchoredHashLink()) {
+                        return getCurrentHashLink((err, lastHashLink) => {
+                            if (err) {
+                                //ignorable error. can't happen
+                            }
+                            if (typeof lastHashLink === "string") {
+                                lastHashLink = keySSISpace.parse(lastHashLink);
+                            }
+                            lastEntryInAnchor = lastHashLink.getIdentifier();
+                            proceed(lastEntryInAnchor);
+                        })
+                    }
+                    proceed(lastEntryInAnchor);
                 });
+
             })
         });
     }
@@ -4594,7 +4739,7 @@ function BrickMapController(options) {
 
 module.exports = BrickMapController;
 
-},{"./AnchorValidator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/AnchorValidator.js","./Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapDiff":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapDiff.js":[function(require,module,exports){
+},{"./AnchorValidator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/AnchorValidator.js","./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js":[function(require,module,exports){
 'use strict';
 
 const BrickMapMixin = require('./BrickMapMixin');
@@ -4748,10 +4893,18 @@ function BrickMapDiff(header) {
     this.replaceLastBrick = function (filePath, brick) {
         this.log('replaceLastBrick', filePath, brick);
     }
+
+    this.putEmbeddedFile = function(filePath, data) {
+        this.log('embed', filePath, data);
+    }
+
+    this.appendToEmbedded = function(filePath, data){
+        this.log('appendToEmbed', filePath, data);
+    }
 }
 module.exports = BrickMapDiff;
 
-},{"./BrickMapMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapMixin.js":[function(require,module,exports){
+},{"./BrickMapMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapMixin.js":[function(require,module,exports){
 'use strict';
 
 const Brick = require("./Brick");
@@ -4774,17 +4927,45 @@ const BrickMapMixin = {
     /**
      * @param {Brick|string|object} header
      */
-    initialize: function (header) {
+    initialize: function (header, options) {
+        options = options || {};
         this.header = header;
         if (this.header) {
+            if(typeof this.header === "object" && !this.header.embedded){
+                //for backwards compatibility reasons
+                this.header.embedded = {};
+            }
             return;
         }
 
         this.header = {
+            v: 1,
             items: {},
-            metadata: {
-                createdAt: this.getTimestamp()
+            metadata: {},
+            embedded: {}
+        }
+
+        if (!options.disableTimeMetadata) {
+            this.header.metadata.createdAt = this.getTimestamp();
+        }
+    },
+
+    updateTimeMetadata: function (target, prop, timestamp) {
+        if (typeof target === "string") {
+            target = this.getDeepestNode(target);
+        }
+
+        if(!target){
+            return ;
+        }
+
+        prop = prop || "updatedAt";
+        timestamp = timestamp || this.getTimestamp();
+        if (this.header.metadata.createdAt) {
+            if (!target.metadata) {
+                target.metadata = {};
             }
+            target.metadata[prop] = timestamp;
         }
     },
 
@@ -4792,7 +4973,7 @@ const BrickMapMixin = {
      * @return {boolean}
      */
     hasItems: function () {
-        return Object.keys(this.header.items).length > 0;
+        return Object.keys(this.header.items).length > 0 || (this.header.embedded && Object.keys(this.header.embedded).length > 0);
     },
 
     /**
@@ -4807,7 +4988,7 @@ const BrickMapMixin = {
      * @param {object} brick
      */
     appendBrick: function (node, brick) {
-        node.metadata.updatedAt = this.getTimestamp();
+        this.updateTimeMetadata(node);
         node.hashLinks.push(brick);
     },
 
@@ -4835,7 +5016,7 @@ const BrickMapMixin = {
      */
     replaceFirstBrick: function (filePath, brick) {
         const node = this.getNodeFromPath(filePath);
-        node.metadata.updatedAt = this.getTimestamp();
+        this.updateTimeMetadata(node);
         if (node.hashLinks.length > 0) {
             node.hashLinks[0] = brick;
         }
@@ -4847,7 +5028,7 @@ const BrickMapMixin = {
      */
     replaceLastBrick: function (filePath, brick) {
         const node = this.getNodeFromPath(filePath);
-        node.metadata.updatedAt = this.getTimestamp();
+        this.updateTimeMetadata(node);
         if (node.hashLinks.length > 0) {
             node.hashLinks[node.hashLinks.length - 1] = brick;
         }
@@ -4858,12 +5039,12 @@ const BrickMapMixin = {
      * @param {string} name
      */
     createFileNode: function (parent, name) {
-        parent.items[name] = {
+        const node = {
             hashLinks: [],
-            metadata: {
-                createdAt: this.getTimestamp()
-            }
-        }
+            metadata: {}
+        };
+        parent.items[name] = node;
+        this.updateTimeMetadata(node, "createdAt");
     },
 
     /**
@@ -4871,12 +5052,12 @@ const BrickMapMixin = {
      * @param {string} name
      */
     createDirectoryNode: function (root, name) {
-        root.items[name] = {
-            metadata: {
-                createdAt: this.getTimestamp()
-            },
+        const node = {
+            metadata: {},
             items: {}
         }
+        root.items[name] = node;
+        this.updateTimeMetadata(node, "createdAt");
     },
 
     /**
@@ -4975,7 +5156,7 @@ const BrickMapMixin = {
      * @param {object} node
      */
     deleteNode: function (node) {
-        node.metadata.deletedAt = this.getTimestamp();
+        this.updateTimeMetadata(node, "deletedAt");
         if (this.nodeIsDirectory(node)) {
             node.items = {};
             return;
@@ -4989,7 +5170,7 @@ const BrickMapMixin = {
      */
     truncateNode: function (node) {
         delete node.metadata.deletedAt;
-        node.metadata.updatedAt = this.getTimestamp();
+        this.updateTimeMetadata(node);
         if (this.nodeIsDirectory(node)) {
             node.items = {};
         }
@@ -5124,13 +5305,26 @@ const BrickMapMixin = {
         barPath = pskPath.normalize(barPath);
         const childNode = this.getDeepestNode(barPath);
         if (!childNode) {
-            throw new Error(`Unable to delete <${barPath}>. File or directory not found.`);
+            return;
         }
         if (this.nodeIsDeleted(childNode)) {
-            throw new Error(`Unable to delete <${barPath}>. File or directory already deleted.`);
+            return;
         }
 
         this.deleteNode(childNode);
+
+        let deleteEmbedded = ()=>{
+            if(this.header && this.header.embedded){
+                let embeddedFiles = Object.keys(this.header.embedded);
+                for(let filepath of embeddedFiles){
+                    if(filepath.startsWith(barPath)){
+                        delete this.header.embedded[filepath];
+                    }
+                }
+            }
+        }
+
+        deleteEmbedded();
     },
 
     createNode: function (barPath, options) {
@@ -5216,6 +5410,51 @@ const BrickMapMixin = {
         return hashes;
     },
 
+    getEmbeddedFile: function (filePath) {
+        if (filePath === "") {
+            throw Error(`File path must not be empty.`);
+        }
+
+        let data;
+        if (this.header.embedded && this.header.embedded[filePath]) {
+            data = this.header.embedded[filePath].content;
+        }
+
+        return data;
+    },
+
+    putEmbeddedFile:  function (filePath, data) {
+        if (filePath === "") {
+            throw Error(`File path must not be empty.`);
+        }
+
+        if (!this.header.embedded) {
+            this.header.embedded = {};
+        }
+
+        let embeddedFile = this.header.embedded[filePath];
+        if(!embeddedFile){
+            embeddedFile = {
+                content: data,
+                metadata:{}
+            };
+            this.header.embedded[filePath] = embeddedFile;
+            this.updateTimeMetadata(embeddedFile, 'createdAt');
+            return;
+        }
+
+        embeddedFile.content = data;
+        this.updateTimeMetadata(embeddedFile);
+    },
+
+    appendToEmbedded: function (filePath, data) {
+        let existingData = this.getEmbeddedFile(filePath);
+        if (!existingData) {
+            existingData = "";
+        }
+
+        this.putEmbeddedFile(filePath, existingData + data);
+},
     /**
      * @param {string} filePath
      * @return {boolean}
@@ -5294,7 +5533,12 @@ const BrickMapMixin = {
      * @return {Brick}
      */
     toBrick: function () {
-        const brick = new Brick({templateKeySSI: this.templateKeySSI, brickMap: true});
+        let brickOptions = {templateKeySSI: this.templateKeySSI, brickMap: true};
+        let hint = this.templateKeySSI.getHint();
+        if(hint && hint.get("avoidRandom")){
+            brickOptions.avoidRandom = true;
+        }
+        const brick = new Brick(brickOptions);
         brick.setKeySSI(this.templateKeySSI);
         brick.setRawData($$.Buffer.from(JSON.stringify(this.header)));
         return brick;
@@ -5307,12 +5551,40 @@ const BrickMapMixin = {
      * @return {Array<string>}
      */
     getFileList: function (folderBarPath, recursive) {
+        let listEmbeddedFiles = ()=>{
+            let files = [];
+            if(this.header.embedded){
+                if(recursive){
+                    let embeddedFiles = Object.keys(this.header.embedded);
+                    for(let filePath of embeddedFiles){
+                        if(filePath.startsWith(folderBarPath)){
+                            files.push(filePath.replace(folderBarPath, ""));
+                        }
+                    }
+                }else{
+                    let embeddedFiles = Object.keys(this.header.embedded);
+                    for(let filePath of embeddedFiles){
+                        if(filePath.startsWith(folderBarPath)){
+                            let relativePath = filePath.replace(folderBarPath, "");
+                            if(relativePath.indexOf("/")===-1){
+                                files.push(relativePath);
+                            }else{
+                                //we skip this file because seems to be a directory (contains at least one more / character)
+                            }
+                        }
+                    }
+                }
+            }
+            return files;
+        }
+
         if (typeof recursive === "undefined") {
             recursive = true;
         }
         const node = this.getDeepestNode(folderBarPath);
         if (!node) {
-            return [];
+            let embeddedFiles = listEmbeddedFiles();
+            return embeddedFiles;
         }
 
         const findFiles = (nodes, currentPath) => {
@@ -5338,7 +5610,9 @@ const BrickMapMixin = {
         }
 
         const files = findFiles(node.items);
-        return files;
+        const embeddedFiles = listEmbeddedFiles(files);
+
+        return files.concat(embeddedFiles);
     },
 
     /**
@@ -5540,7 +5814,7 @@ const BrickMapMixin = {
 
 module.exports = BrickMapMixin;
 
-},{"./Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js":[function(require,module,exports){
+},{"./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js":[function(require,module,exports){
 const BrickMapStrategyMixin = {
     brickMapController: null,
     brickMapState: null,
@@ -5872,7 +6146,7 @@ const BrickMapStrategyMixin = {
 
 module.exports = BrickMapStrategyMixin;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js":[function(require,module,exports){
 'use strict';
 
 const BrickMapDiff = require('../../lib/BrickMapDiff');
@@ -6187,7 +6461,7 @@ function DiffStrategy(options) {
 
 module.exports = DiffStrategy;
 
-},{"../../lib/Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","../../lib/BrickMapDiff":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","../BrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapStrategyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js":[function(require,module,exports){
+},{"../../lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../../lib/BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js":[function(require,module,exports){
 'use strict';
 
 const BrickMapDiff = require('../BrickMapDiff');
@@ -6508,7 +6782,7 @@ function LatestVersionStrategy(options) {
 
 module.exports = LatestVersionStrategy;
 
-},{"../../lib/Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js","../BrickMapDiff":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js":[function(require,module,exports){
+},{"../../lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","../BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js":[function(require,module,exports){
 module.exports = {
     DIFF: 'Diff',
     LATEST_VERSION: 'LatestVersion',
@@ -6516,7 +6790,7 @@ module.exports = {
     //DEFAULT_BRICK_MAP_STRATEGY: 'Diff'
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js":[function(require,module,exports){
 /**
  * @param {object} options
  */
@@ -6585,7 +6859,7 @@ function BrickMapStrategyFactory(options) {
 
 module.exports = BrickMapStrategyFactory;
 
-},{"./DiffStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js","./LatestVersionStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js","./builtinBrickMapStrategies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js":[function(require,module,exports){
+},{"./DiffStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js","./LatestVersionStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js","./builtinBrickMapStrategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js":[function(require,module,exports){
 'use strict';
 
 
@@ -7284,19 +7558,7 @@ function Service(options) {
 
         ingestFilesRecursive(files, callback);
     };
-
-    this.createEmbedSSIFromData = (data, options, callback) => {
-        if (typeof options === "function") {
-            callback = options;
-            options = undefined;
-        }
-        try {
-            const embedSSI = SSIKeys.createEmbedSSI(this.keySSI.getDLDomain(), data);
-            callback(undefined, {hashLink: embedSSI.getIdentifier()})
-        } catch (e) {
-            callback(e);
-        }
-    }
+    
     /**
      * Copy the contents of folder into a single brick
      *
@@ -7716,14 +7978,14 @@ function Service(options) {
 
 module.exports = Service;
 
-},{"../../utils/isStream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/utils/isStream.js","../Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","opendsu":"opendsu","overwrite-require":"overwrite-require","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js":[function(require,module,exports){
+},{"../../utils/isStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/isStream.js","../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","opendsu":"opendsu","overwrite-require":"overwrite-require","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js":[function(require,module,exports){
 'use strict'
 
 module.exports = {
     Service: require('./Service')
 };
 
-},{"./Service":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Manifest.js":[function(require,module,exports){
+},{"./Service":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Manifest.js":[function(require,module,exports){
 const MANIFEST_PATH = "/manifest";
 
 function Manifest(archive, options, callback) {
@@ -7875,7 +8137,7 @@ function Manifest(archive, options, callback) {
     }
 
     function persist(callback) {
-        archive.writeFile(MANIFEST_PATH, JSON.stringify(manifest), callback);
+        archive.writeFile(MANIFEST_PATH, JSON.stringify(manifest), {embed: true}, callback);
     }
 
     function init(callback) {
@@ -7902,7 +8164,7 @@ module.exports.getManifest = function getManifest(archive, options, callback) {
 };
 
 
-},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js":[function(require,module,exports){
 const zlib = require("zlib");
 
 function CompressionTransformation(config) {
@@ -7956,11 +8218,11 @@ function CompressionTransformation(config) {
 module.exports = CompressionTransformation;
 
 
-},{"zlib":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js":[function(require,module,exports){
+},{"zlib":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadApi("crypto");
 
-function EncryptionTransformation() {
+function EncryptionTransformation(options) {
     this.do = (keySSI, data, callback) => {
         const encrypt = crypto.getCryptoFunctionForKeySSI(keySSI, "encryption");
         let encryptedData;
@@ -7969,7 +8231,7 @@ function EncryptionTransformation() {
                 return callback(err);
             }
             try {
-                encryptedData = encrypt(data, encryptionKey);
+                encryptedData = encrypt(data, encryptionKey, options);
             } catch (e) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to encrypt data`, e));
             }
@@ -7995,13 +8257,13 @@ function EncryptionTransformation() {
 }
 
 module.exports = EncryptionTransformation;
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/index.js":[function(require,module,exports){
 const CompressionTransformation = require("./CompressionTransformation");
 const EncryptionTransformation = require("./EncryptionTransformation");
 
 const createBrickTransformation = (options) => {
     options = options || {};
-    return new EncryptionTransformation();
+    return new EncryptionTransformation(options);
 };
 
 
@@ -8010,7 +8272,7 @@ module.exports = {
 };
 
 
-},{"./CompressionTransformation":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js","./EncryptionTransformation":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/constants.js":[function(require,module,exports){
+},{"./CompressionTransformation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js","./EncryptionTransformation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/constants.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -8025,7 +8287,7 @@ module.exports = {
     }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js":[function(require,module,exports){
 const Brick = require("../Brick");
 const util = require("../../utils/utilities");
 const pathModule = "path";
@@ -8160,7 +8422,7 @@ function FileBrickMap(header) {
 
 module.exports = FileBrickMap;
 
-},{"../../utils/utilities":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js":[function(require,module,exports){
+},{"../../utils/utilities":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js":[function(require,module,exports){
 function FileBrickStorage(filePath) {
     const fsModuleName = "fs";
     const fs = require(fsModuleName);
@@ -8379,7 +8641,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/utilities":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","./FileBrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js":[function(require,module,exports){
+},{"../../utils/utilities":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./FileBrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js":[function(require,module,exports){
 const BrickMap = require("../BrickMap");
 const Brick = require("../Brick");
 
@@ -8479,7 +8741,7 @@ module.exports = {
     }
 };
 
-},{"../Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js","fs":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/utils/isStream.js":[function(require,module,exports){
+},{"../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","fs":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/isStream.js":[function(require,module,exports){
 function isStream(stream){
     return stream !== null && typeof stream === 'object' && typeof stream.pipe === 'function';
 }
@@ -8511,7 +8773,7 @@ module.exports = {
     isDuplex
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/utils/utilities.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/utilities.js":[function(require,module,exports){
 const OFFSET_SIZE = 8;
 
 function getBrickMapOffsetSize() {
@@ -8530,7 +8792,7 @@ function ensureFileDoesNotExist(filePath, callback) {
 }
 
 module.exports = {getBrickMapOffsetSize, ensureFileDoesNotExist};
-},{"fs":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/OBFTImplementation.js":[function(require,module,exports){
+},{"fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/OBFTImplementation.js":[function(require,module,exports){
 let pskcrypto = require("pskcrypto");
 let fs = require("fs");
 
@@ -8689,7 +8951,7 @@ exports.createConsensusManager = function (delegatedAgentName, communicationOutl
     return instance;
 }
 
-},{"./transactionsUtil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","fs":false,"pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/PulseUtil.js":[function(require,module,exports){
+},{"./transactionsUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","fs":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/PulseUtil.js":[function(require,module,exports){
 function PulseUtil(signer, currentPulseNumber, block, newTransactions, vsd, top, last) {
     this.signer         = signer;               //a.k.a. delegatedAgentName
     this.currentPulse   = currentPulseNumber;
@@ -8713,7 +8975,7 @@ function PulseHistory(){
 module.exports.createPulseHistory = function () {
     return new PulseHistory();
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js":[function(require,module,exports){
 /*
 consensus helper functions when working with transactions
 */
@@ -8741,7 +9003,7 @@ module.exports.orderCRTransactions = function (pset) { //order in place the pset
     return arr;
 }
 
-},{"pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/asset_swarm_template.js":[function(require,module,exports){
+},{"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/asset_swarm_template.js":[function(require,module,exports){
 var CNST = require("../moduleConstants");
 
 exports.createForObject = function(valueObject, thisObject, localId){
@@ -8788,7 +9050,7 @@ exports.createForObject = function(valueObject, thisObject, localId){
 
 	return ret;
 };
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js","callflow":"callflow"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/transaction_swarm_template.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js","callflow":"callflow"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/transaction_swarm_template.js":[function(require,module,exports){
 let CNST = require("../moduleConstants");
 
 exports.createForObject = function(valueObject, thisObject, localId){
@@ -8835,7 +9097,7 @@ exports.createForObject = function(valueObject, thisObject, localId){
 
 	return ret;
 };
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js","callflow":"callflow"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/ACLScope.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js","callflow":"callflow"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/ACLScope.js":[function(require,module,exports){
 
 $$.asset.describe("ACLScope", {
     public:{
@@ -8858,7 +9120,7 @@ $$.asset.describe("ACLScope", {
         return true;
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Agent.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Agent.js":[function(require,module,exports){
 
 $$.asset.describe("Agent", {
     public:{
@@ -8884,7 +9146,7 @@ $$.asset.describe("Agent", {
 
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Backup.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Backup.js":[function(require,module,exports){
 
 $$.asset.describe("Backup", {
     public:{
@@ -8898,7 +9160,7 @@ $$.asset.describe("Backup", {
     }
 });
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/BarAnchor.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/BarAnchor.js":[function(require,module,exports){
 $$.asset.describe("BarAnchor", {
     public: {
         alias: "string",
@@ -8925,7 +9187,7 @@ $$.asset.describe("BarAnchor", {
         this.writeList.push(agentId);
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/CSBMeta.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/CSBMeta.js":[function(require,module,exports){
 
 $$.asset.describe("CSBMeta", {
 	public:{
@@ -8948,7 +9210,7 @@ $$.asset.describe("CSBMeta", {
 
 });
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainConfig.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainConfig.js":[function(require,module,exports){
 
 $$.asset.describe("DomainConfig", {
     public:{
@@ -8990,7 +9252,7 @@ $$.asset.describe("DomainConfig", {
         this.workerStrategy = workerStrategy;
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainReference.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainReference.js":[function(require,module,exports){
 
 $$.asset.describe("DomainReference", {
     public:{
@@ -9016,7 +9278,7 @@ $$.asset.describe("DomainReference", {
         return this.workspace;
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/FileAnchor.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/FileAnchor.js":[function(require,module,exports){
 $$.asset.describe("FileAnchor", {
     public: {
         alias: "string",
@@ -9035,7 +9297,7 @@ $$.asset.describe("FileAnchor", {
 });
 
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Key.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Key.js":[function(require,module,exports){
 
 $$.asset.describe("key", {
     public:{
@@ -9049,7 +9311,7 @@ $$.asset.describe("key", {
         this.value = value;
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/index.js":[function(require,module,exports){
 module.exports = $$.library(function(){
     require("./DomainReference");
     require("./DomainConfig");
@@ -9062,7 +9324,7 @@ module.exports = $$.library(function(){
     require("./FileAnchor");
     require('./CSBMeta');
 });
-},{"../transactions/transactions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/transactions.js","./ACLScope":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/ACLScope.js","./Agent":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Agent.js","./Backup":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Backup.js","./BarAnchor":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/BarAnchor.js","./CSBMeta":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/CSBMeta.js","./DomainConfig":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainConfig.js","./DomainReference":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainReference.js","./FileAnchor":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/FileAnchor.js","./Key":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Key.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/swarms/index.js":[function(require,module,exports){
+},{"../transactions/transactions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/transactions.js","./ACLScope":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/ACLScope.js","./Agent":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Agent.js","./Backup":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Backup.js","./BarAnchor":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/BarAnchor.js","./CSBMeta":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/CSBMeta.js","./DomainConfig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainConfig.js","./DomainReference":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/DomainReference.js","./FileAnchor":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/FileAnchor.js","./Key":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/Key.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/swarms/index.js":[function(require,module,exports){
 if($$.swarms){
     $$.swarms.describe("transactionHandler", {
         start: function (identity, transactionName, methodName, ...args) {
@@ -9074,7 +9336,7 @@ if($$.swarms){
     });
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/agentTransaction.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/agentTransaction.js":[function(require,module,exports){
 const sharedPhases = require('./sharedPhases');
 
 $$.transaction.describe("Agents", {
@@ -9095,7 +9357,7 @@ $$.transaction.describe("Agents", {
     getAgents: sharedPhases.getAllAssetsFactory('global.Agent')
 });
 
-},{"./sharedPhases":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainConfigTransaction.js":[function(require,module,exports){
+},{"./sharedPhases":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainConfigTransaction.js":[function(require,module,exports){
 const sharedPhases = require('./sharedPhases');
 
 $$.transaction.describe("DomainConfigTransaction", {
@@ -9129,7 +9391,7 @@ $$.transaction.describe("DomainConfigTransaction", {
     getDomains: sharedPhases.getAllAssetsFactory('global.DomainConfig')
 });
 
-},{"./sharedPhases":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainTransaction.js":[function(require,module,exports){
+},{"./sharedPhases":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainTransaction.js":[function(require,module,exports){
 const sharedPhases = require('./sharedPhases');
 
 $$.transaction.describe("Domain", {
@@ -9232,7 +9494,7 @@ $$.transaction.describe("Domain", {
     getDomains: sharedPhases.getAllAssetsFactory('global.DomainReference')
 });
 
-},{"./sharedPhases":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/firstTransactionWorkaroundDeleteThis.js":[function(require,module,exports){
+},{"./sharedPhases":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/firstTransactionWorkaroundDeleteThis.js":[function(require,module,exports){
 /**
  * FIXME
  * The first block in the blockchain is 0.
@@ -9252,13 +9514,13 @@ $$.transaction.describe("TooShortBlockChainWorkaroundDeleteThis", {
         this.commit();
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/index.js":[function(require,module,exports){
 require('./domainTransaction');
 require('./agentTransaction');
 require('./standardCSBTransactions');
 require('./domainConfigTransaction');
 require('./firstTransactionWorkaroundDeleteThis');
-},{"./agentTransaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/agentTransaction.js","./domainConfigTransaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainConfigTransaction.js","./domainTransaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainTransaction.js","./firstTransactionWorkaroundDeleteThis":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/firstTransactionWorkaroundDeleteThis.js","./standardCSBTransactions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/standardCSBTransactions.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js":[function(require,module,exports){
+},{"./agentTransaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/agentTransaction.js","./domainConfigTransaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainConfigTransaction.js","./domainTransaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/domainTransaction.js","./firstTransactionWorkaroundDeleteThis":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/firstTransactionWorkaroundDeleteThis.js","./standardCSBTransactions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/standardCSBTransactions.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/sharedPhases.js":[function(require,module,exports){
 module.exports = {
     getAssetFactory: function(assetType) {
         return function(alias) {
@@ -9282,7 +9544,7 @@ module.exports = {
         };
     }
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/standardCSBTransactions.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/standardCSBTransactions.js":[function(require,module,exports){
 $$.transaction.describe("StandardCSBTransactions", {
     addBarAnchor: function (mountPoint, brickMapDigest) {
         this.transaction.createAsset("BarAnchor", "init", mountPoint, brickMapDigest);
@@ -9327,7 +9589,7 @@ $$.transaction.describe("StandardCSBTransactions", {
         }
     }
 });
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/transactions.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/transactions.js":[function(require,module,exports){
 $$.transaction.describe("transactions", {
     updateKey: function (key, value) {
         var transaction = $$.blockchain.beginTransaction(this);
@@ -9384,7 +9646,7 @@ usages:
 
  */
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js":[function(require,module,exports){
 module.exports = {
     ALIAS:"alias",
     ALIASES : '/aliases',
@@ -9399,7 +9661,7 @@ module.exports = {
     SWARMID:"swarmId",
     SWARMTYPE:"swarmTypeName"
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleExports.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleExports.js":[function(require,module,exports){
 module.exports = {
     createBlockchain:function(worldStateCache, historyStorage, consensusAlgorithm, signatureProvider, loadDefaultConstitution, forcedBoot){
         return require("./pskdb").startDefaultDB(worldStateCache, historyStorage, consensusAlgorithm, signatureProvider, loadDefaultConstitution, forcedBoot);
@@ -9456,7 +9718,7 @@ module.exports = {
         return require("./strategies/votingStrategies/votingStrategiesRegistry").createVotingStrategy(name,...args);
     }
 }
-},{"./pskdb":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/index.js","./strategies/consensusAlgortims/consensusAlgoritmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/consensusAlgortims/consensusAlgoritmsRegistry.js","./strategies/historyStorages/historyStoragesRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/historyStoragesRegistry.js","./strategies/networkCommunication/networkCommunicationStrategiesRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/networkCommunication/networkCommunicationStrategiesRegistry.js","./strategies/signatureProvidersRegistry/signatureProvidersRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/signatureProvidersRegistry/signatureProvidersRegistry.js","./strategies/votingStrategies/votingStrategiesRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/votingStrategies/votingStrategiesRegistry.js","./strategies/worldStateCaches/worldStateCacheRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/worldStateCaches/worldStateCacheRegistry.js","pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/Blockchain.js":[function(require,module,exports){
+},{"./pskdb":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/index.js","./strategies/consensusAlgortims/consensusAlgoritmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/consensusAlgortims/consensusAlgoritmsRegistry.js","./strategies/historyStorages/historyStoragesRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/historyStoragesRegistry.js","./strategies/networkCommunication/networkCommunicationStrategiesRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/networkCommunication/networkCommunicationStrategiesRegistry.js","./strategies/signatureProvidersRegistry/signatureProvidersRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/signatureProvidersRegistry/signatureProvidersRegistry.js","./strategies/votingStrategies/votingStrategiesRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/votingStrategies/votingStrategiesRegistry.js","./strategies/worldStateCaches/worldStateCacheRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/worldStateCaches/worldStateCacheRegistry.js","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/Blockchain.js":[function(require,module,exports){
 const bm = require('../moduleExports');
 var CNST = require("../moduleConstants");
 
@@ -9659,7 +9921,7 @@ function Transaction(blockchain, pdsHandler, transactionSwarm, worldStateCache, 
 }
 
 module.exports = Blockchain;
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js","../moduleExports":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleExports.js","./securityParadigms/securityParadigmRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/securityParadigmRegistry.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js","../moduleExports":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleExports.js","./securityParadigms/securityParadigmRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/securityParadigmRegistry.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/index.js":[function(require,module,exports){
 const Blockchain = require('./Blockchain');
 
 module.exports = {
@@ -9688,7 +9950,7 @@ module.exports = {
     }
 };
 
-},{"../defaultConstitution/assets/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/assets/index.js","../defaultConstitution/swarms/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/swarms/index.js","../defaultConstitution/transactions/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/index.js","./Blockchain":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/Blockchain.js","./pskdb":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/pskdb.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/pskdb.js":[function(require,module,exports){
+},{"../defaultConstitution/assets/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/assets/index.js","../defaultConstitution/swarms/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/swarms/index.js","../defaultConstitution/transactions/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/defaultConstitution/transactions/index.js","./Blockchain":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/Blockchain.js","./pskdb":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/pskdb.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/pskdb.js":[function(require,module,exports){
 let CNST = require("../moduleConstants");
 let cutil = require("../OBFT/transactionsUtil");
 // let bm = require("../moduleExports");
@@ -10082,7 +10344,7 @@ function VerificationKeySpaceHandler(parentStorage, worldStateCache, blockchain)
 exports.newPSKDB = function (worldStateCache, historyStorage) {
     return new PSKDB(worldStateCache, historyStorage);
 };
-},{"../OBFT/transactionsUtil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js","./securityParadigms/localExecutionCache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/localExecutionCache.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/localExecutionCache.js":[function(require,module,exports){
+},{"../OBFT/transactionsUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js","./securityParadigms/localExecutionCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/localExecutionCache.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/localExecutionCache.js":[function(require,module,exports){
 let CNST=require("../../moduleConstants");
 let cache = {};
 
@@ -10157,7 +10419,7 @@ module.exports = {
     }
 };
 
-},{"../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/securityParadigmRegistry.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/pskdb/securityParadigms/securityParadigmRegistry.js":[function(require,module,exports){
 
 var CNST = require("../../moduleConstants");
 
@@ -10265,7 +10527,7 @@ module.exports = {
         return new Registry();
     }
 }
-},{"../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/signsensus/SignSensusImplementation.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/signsensus/SignSensusImplementation.js":[function(require,module,exports){
 let pskcrypto = require("pskcrypto");
 let fs = require("fs");
 
@@ -10500,7 +10762,7 @@ exports.createConsensusManager = function (delegatedAgentName, communicationOutl
     return instance;
 }
 
-},{"../OBFT/transactionsUtil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","fs":false,"pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/consensusAlgortims/consensusAlgoritmsRegistry.js":[function(require,module,exports){
+},{"../OBFT/transactionsUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/transactionsUtil.js","fs":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/consensusAlgortims/consensusAlgoritmsRegistry.js":[function(require,module,exports){
 var mod = require("../../moduleExports");
 
 function DirectCommitAlgorithm() {
@@ -10577,7 +10839,7 @@ module.exports = {
         }
     }
 };
-},{"../../OBFT/OBFTImplementation":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/OBFTImplementation.js","../../moduleExports":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleExports.js","../../signsensus/SignSensusImplementation":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/signsensus/SignSensusImplementation.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/BarHistoryStorage.js":[function(require,module,exports){
+},{"../../OBFT/OBFTImplementation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/OBFTImplementation.js","../../moduleExports":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleExports.js","../../signsensus/SignSensusImplementation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/signsensus/SignSensusImplementation.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/BarHistoryStorage.js":[function(require,module,exports){
 const LatestHashTracker = require("./LatestHashTracker");
 
 function BarHistoryStorage(archive) {
@@ -10650,7 +10912,7 @@ function BarHistoryStorage(archive) {
 }
 
 module.exports = BarHistoryStorage;
-},{"./LatestHashTracker":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/FsHistoryStorage.js":[function(require,module,exports){
+},{"./LatestHashTracker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/FsHistoryStorage.js":[function(require,module,exports){
 const LatestHashTracker = require("./LatestHashTracker");
 
 function FsHistoryStorage(folder) {
@@ -10755,7 +11017,7 @@ function FsHistoryStorage(folder) {
 
 module.exports = FsHistoryStorage;
 
-},{"./LatestHashTracker":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js","fs":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js":[function(require,module,exports){
+},{"./LatestHashTracker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js","fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js":[function(require,module,exports){
 function LatestHashTracker() {
     let hlb = "none";
     let maxBlockNumber = 0;
@@ -10772,7 +11034,7 @@ function LatestHashTracker() {
 }
 
 module.exports = LatestHashTracker;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/MemoryHistoryStorage.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/MemoryHistoryStorage.js":[function(require,module,exports){
 const LatestHashTracker = require("./LatestHashTracker");
 
 function MemoryHistoryStorage() {
@@ -10799,7 +11061,7 @@ function MemoryHistoryStorage() {
 }
 
 module.exports = MemoryHistoryStorage;
-},{"./LatestHashTracker":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/historyStoragesRegistry.js":[function(require,module,exports){
+},{"./LatestHashTracker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/LatestHashTracker.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/historyStoragesRegistry.js":[function(require,module,exports){
 const FsHistoryStorage = require("./FsHistoryStorage");
 const MemoryHistoryStorage = require("./MemoryHistoryStorage");
 const BarHistoryStorage = require("./BarHistoryStorage");
@@ -10818,7 +11080,7 @@ module.exports = {
         }
     }
 };
-},{"./BarHistoryStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/BarHistoryStorage.js","./FsHistoryStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/FsHistoryStorage.js","./MemoryHistoryStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/historyStorages/MemoryHistoryStorage.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/networkCommunication/networkCommunicationStrategiesRegistry.js":[function(require,module,exports){
+},{"./BarHistoryStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/BarHistoryStorage.js","./FsHistoryStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/FsHistoryStorage.js","./MemoryHistoryStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/historyStorages/MemoryHistoryStorage.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/networkCommunication/networkCommunicationStrategiesRegistry.js":[function(require,module,exports){
 const mc = require("../../moduleConstants");
 let pulseUtil = require("../../OBFT/PulseUtil");
 
@@ -10881,7 +11143,7 @@ module.exports = {
         }
     }
 }
-},{"../../OBFT/PulseUtil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/OBFT/PulseUtil.js","../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/signatureProvidersRegistry/signatureProvidersRegistry.js":[function(require,module,exports){
+},{"../../OBFT/PulseUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/OBFT/PulseUtil.js","../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/signatureProvidersRegistry/signatureProvidersRegistry.js":[function(require,module,exports){
 function PermissiveSignatureProvider(){
     /*
     return a signature of message ms for agent agentId
@@ -10908,7 +11170,7 @@ module.exports = {
     }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/votingStrategies/votingStrategiesRegistry.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/votingStrategies/votingStrategiesRegistry.js":[function(require,module,exports){
 
 function SimpleMajoritarianStrategy(shareHoldersCounter){
     this.refreshShares = function(){
@@ -10958,7 +11220,7 @@ module.exports = {
         }
     }
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/strategies/worldStateCaches/worldStateCacheRegistry.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/strategies/worldStateCaches/worldStateCacheRegistry.js":[function(require,module,exports){
 (function (setImmediate){(function (){
 const mc = require("../../moduleConstants");
 
@@ -11116,7 +11378,7 @@ module.exports = {
 };
 }).call(this)}).call(this,require("timers").setImmediate)
 
-},{"../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleConstants.js","fs":false,"timers":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/constants.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleConstants.js","fs":false,"timers":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/constants.js":[function(require,module,exports){
 $$.CONSTANTS = {
     SWARM_FOR_EXECUTION:"swarm_for_execution",//TODO: remove
     INBOUND:"inbound",//TODO: remove
@@ -11138,7 +11400,7 @@ $$.CONSTANTS.mixIn = function(otherConstants){
     }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/InterceptorRegistry.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/InterceptorRegistry.js":[function(require,module,exports){
 (function (global){(function (){
 // related to: SwarmSpace.SwarmDescription.createPhase()
 
@@ -11333,7 +11595,7 @@ exports.createInterceptorRegistry = function () {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/loadLibrary.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/loadLibrary.js":[function(require,module,exports){
 /*
 Initial License: (c) Axiologic Research & Alboaie Sînică.
 Contributors: Axiologic Research , PrivateSky project
@@ -11437,7 +11699,7 @@ exports.loadLibrary = function(prefixName, folder){
 }
 
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js":[function(require,module,exports){
 
 var globalJoinCounter = 0;
 
@@ -11574,7 +11836,7 @@ exports.createJoinPoint = function(swarm, callback, args){
     jp.__setProxyObject(p);
     return p;
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js":[function(require,module,exports){
 
 var joinCounter = 0;
 
@@ -11699,7 +11961,7 @@ exports.createSerialJoinPoint = function(swarm, callback, args){
     jp.setProxyObject(p);
     return p;
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/swarmDescription.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/swarmDescription.js":[function(require,module,exports){
 const swarmDescriptionsRegistry = {};
 let currentInlineCounter = 0;
 
@@ -12064,7 +12326,7 @@ exports.createSwarmEngine = function(swarmType, utils){
 };
 
 
-},{"./utilityFunctions/callflow":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/callflow.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/SwarmDebug.js":[function(require,module,exports){
+},{"./utilityFunctions/callflow":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/callflow.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/SwarmDebug.js":[function(require,module,exports){
 (function (global){(function (){
 /*
  Initial License: (c) Axiologic Research & Alboaie Sînică.
@@ -12263,7 +12525,7 @@ function localLog (logType, message, err) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"fs":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js":[function(require,module,exports){
+},{"fs":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js":[function(require,module,exports){
 exports.createForObject = function(valueObject, thisObject, localId){
 	var swarmDebug = require("./SwarmDebug");
 	let ret = {};
@@ -12392,12 +12654,12 @@ exports.createForObject = function(valueObject, thisObject, localId){
 
 };
 
-},{"../parallelJoinPoint":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js","../serialJoinPoint":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js","./SwarmDebug":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/SwarmDebug.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/callflow.js":[function(require,module,exports){
+},{"../parallelJoinPoint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js","../serialJoinPoint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js","./SwarmDebug":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/SwarmDebug.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/callflow.js":[function(require,module,exports){
 exports.createForObject = function(valueObject, thisObject, localId){
 	var ret = require("./base").createForObject(valueObject, thisObject, localId);
 	return ret;
 };
-},{"./base":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js":[function(require,module,exports){
+},{"./base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js":[function(require,module,exports){
 function CryptoAlgorithmsMixin(target) {
     target = target || {};
     const crypto = require("pskcrypto");
@@ -12511,7 +12773,7 @@ function CryptoAlgorithmsMixin(target) {
 
 module.exports = CryptoAlgorithmsMixin;
 
-},{"pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js":[function(require,module,exports){
+},{"pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js":[function(require,module,exports){
 const SSITypes = require("../KeySSIs/SSITypes");
 const CryptoFunctionTypes = require("./CryptoFunctionTypes");
 const CryptoAlgorithmsMixin = require("./CryptoAlgorithmsMixin");
@@ -12632,7 +12894,7 @@ CryptoAlgorithmsRegistry.prototype.registerCryptoInterface(SSITypes.CONSENSUS_SS
 CryptoAlgorithmsRegistry.prototype.registerCryptoInterface(SSITypes.PUBLIC_KEY_SSI, 'v0', new CryptoAlgorithmsMixin());
 
 
-},{"../KeySSIs/SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CryptoAlgorithmsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./CryptoFunctionTypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./SeedSSICryptoAlgorithms":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js":[function(require,module,exports){
+},{"../KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CryptoAlgorithmsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./CryptoFunctionTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./SeedSSICryptoAlgorithms":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js":[function(require,module,exports){
 module.exports = {
     HASH: "hash",
     ENCRYPTION: "encryption",
@@ -12658,7 +12920,7 @@ module.exports = {
     SET_IES_CONFIG: "setConfigForIES",
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js":[function(require,module,exports){
 function SeedSSICryptoAlgorithms() {
     const crypto = require("pskcrypto");
     const CryptoAlgorithmsMixin = require("./CryptoAlgorithmsMixin");
@@ -12688,7 +12950,7 @@ function SeedSSICryptoAlgorithms() {
 
 module.exports = SeedSSICryptoAlgorithms;
 
-},{"./CryptoAlgorithmsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js":[function(require,module,exports){
+},{"./CryptoAlgorithmsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -12758,7 +13020,7 @@ function ConsensusDSUFactory(options) {
 
 module.exports = ConsensusDSUFactory;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -12793,6 +13055,7 @@ function ConstDSUFactory(options) {
         //preventing default mechanism that forces an anchor at the dsu creation
         options.addLog = false;
         //testing if a constDSU already exists in order to prevent new instances
+        options.disableTimeMetadata = true;
         this.barFactory.load(keySSI, options, (err, loadedInstance)=>{
             if(!err){
                 return callback(new Error("ConstDSU already exists! Can't be created again."));
@@ -12823,6 +13086,11 @@ function ConstDSUFactory(options) {
             options = {};
         }
 
+        if (typeof options === "undefined") {
+            options = {};
+        }
+
+        options.disableTimeMetadata = true;
         // enable options.validationRules.preWrite to stop content update
         this.barFactory.load(keySSI, options, callback);
     };
@@ -12830,13 +13098,13 @@ function ConstDSUFactory(options) {
 
 module.exports = ConstDSUFactory;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
  * @param {BrickMapStrategyFactory} options.brickMapStrategyFactory
  */
-const cache = require('psk-cache').factory();
+const cache = require('psk-cache').getDefaultInstance();
 
 function DSUFactory(options) {
     const barModule = require('bar');
@@ -12863,9 +13131,6 @@ function DSUFactory(options) {
         return ssi;
     }
 
-    let forcedArchiveSingletonsCache = {};
-
-
     ////////////////////////////////////////////////////////////
     // Private methods
     ////////////////////////////////////////////////////////////
@@ -12887,14 +13152,10 @@ function DSUFactory(options) {
         let bar;
         try {
             let identifier = keySSI;
-            if (typeof identifier == "string") {
-                let bar = forcedArchiveSingletonsCache[identifier];
-                if (bar) return bar;
-            }
 
             const ArchiveConfigurator = barModule.ArchiveConfigurator;
             ArchiveConfigurator.prototype.registerFsAdapter("FsAdapter", fsAdapter.createFsAdapter);
-            const archiveConfigurator = new ArchiveConfigurator();
+            const archiveConfigurator = new ArchiveConfigurator(options);
             archiveConfigurator.setCache(cache);
             const envTypes = require("overwrite-require").constants;
             if ($$.environmentType !== envTypes.BROWSER_ENVIRONMENT_TYPE &&
@@ -12921,7 +13182,6 @@ function DSUFactory(options) {
             bar = barModule.createArchive(archiveConfigurator);
             const DSUBase = require("./mixins/DSUBase");
             DSUBase(bar);
-            forcedArchiveSingletonsCache[identifier] = bar;
 
         } catch (err) {
             return callback(err);
@@ -13050,7 +13310,7 @@ function DSUFactory(options) {
 
 module.exports = DSUFactory;
 
-},{"../KeySSIs/KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./mixins/DSUBase":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js":[function(require,module,exports){
+},{"../KeySSIs/KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./mixins/DSUBase":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -13120,7 +13380,7 @@ function OwnershipDSUFactory(options) {
 
 module.exports = OwnershipDSUFactory;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -13293,7 +13553,7 @@ function WalletFactory(options) {
 
 module.exports = WalletFactory;
 
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js":[function(require,module,exports){
 const BarFactory = require('./DSUFactory');
 const SSITypes = require("../KeySSIs/SSITypes");
 /**
@@ -13429,7 +13689,7 @@ Registry.prototype.getDSUFactory = (dsuType) => {
 
 module.exports = Registry;
 
-},{"../KeySSIs/SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConsensusDSUFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js","./ConstDSUFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js","./DSUFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js","./OwnershipDSUFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js","./WalletFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js":[function(require,module,exports){
+},{"../KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConsensusDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js","./ConstDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js","./DSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js","./OwnershipDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js","./WalletFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js":[function(require,module,exports){
 module.exports = function(archive){
 	archive.call = (functionName, ...args) => {
 		if(args.length === 0){
@@ -13490,7 +13750,7 @@ module.exports = function(archive){
 	return archive;
 }
 
-},{"overwrite-require":"overwrite-require"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js":[function(require,module,exports){
+},{"overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js":[function(require,module,exports){
 /**
  * @param {BrickMapStrategyFactory} options.brickMapStrategyFactory
  * @param {DSUFactory} options.dsuFactory
@@ -13580,7 +13840,7 @@ function KeySSIResolver(options) {
 
 module.exports = KeySSIResolver;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js":[function(require,module,exports){
 function ArraySSI(enclave, identifier) {
     if (typeof enclave === "string") {
         identifier = enclave;
@@ -13650,7 +13910,7 @@ module.exports = {
     createArraySSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -13690,7 +13950,7 @@ module.exports = {
     createCZaSSI
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const CZaSSI = require("./CZaSSI");
 const SSITypes = require("../SSITypes");
@@ -13757,7 +14017,7 @@ module.exports = {
     createConstSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ConstSSI = require("./ConstSSI");
 const SSITypes = require("../SSITypes");
@@ -13805,7 +14065,7 @@ module.exports = {
     createPasswordSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -13830,13 +14090,13 @@ module.exports = {
     createConsensusSSI,
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js":[function(require,module,exports){
 const DSURepresentationNames = {
     "seed": "RawDossier"
 }
 
 module.exports = DSURepresentationNames;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const {createHashLinkSSI} = require("../OtherKeySSIs/HashLinkSSI");
 const SSITypes = require("../SSITypes");
@@ -13929,7 +14189,7 @@ module.exports = {
     createSignedHashLinkSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../OtherKeySSIs/HashLinkSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../OtherKeySSIs/HashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js":[function(require,module,exports){
 const constants = require("./constants");
 
 function Hint(hintSerialisation) {
@@ -14004,7 +14264,7 @@ function Hint(hintSerialisation) {
 
 module.exports = Hint;
 
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js":[function(require,module,exports){
 const createSecretSSI = require("./SecretSSIs/SecretSSI").createSecretSSI;
 const createAnchorSSI = require("./SecretSSIs/AnchorSSI").createAnchorSSI;
 const createReadSSI = require("./SecretSSIs/ReadSSI").createReadSSI;
@@ -14226,7 +14486,7 @@ KeySSIFactory.prototype.registerFactory(SSITypes.SIZE_SSI, 'v0', undefined, crea
 
 module.exports = new KeySSIFactory();
 
-},{"./ConstSSIs/ArraySSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js","./ConstSSIs/CZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js","./ConstSSIs/ConstSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js","./ConstSSIs/PasswordSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js","./ContractSSIs/ConsensusSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js","./HashLinkSSIs/SignedHashLinkSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js","./KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./OtherKeySSIs/AliasSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js","./OtherKeySSIs/EmbedSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js","./OtherKeySSIs/HashLinkSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js","./OtherKeySSIs/PublicKeySSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js","./OtherKeySSIs/SizeSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js","./OtherKeySSIs/SymmetricalEncryptionSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js","./OtherKeySSIs/WalletSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js","./OwnershipSSIs/OReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js","./OwnershipSSIs/OwnershipSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js","./OwnershipSSIs/ZATSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js","./SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SecretSSIs/AnchorSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js","./SecretSSIs/PublicSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js","./SecretSSIs/ReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js","./SecretSSIs/SecretSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js","./SecretSSIs/ZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js","./SeedSSIs/PathKeySSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js","./SeedSSIs/SReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js","./SeedSSIs/SZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js","./SeedSSIs/SeedSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","./TokenSSIs/TokenSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js","./TransferSSIs/TransferSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js":[function(require,module,exports){
+},{"./ConstSSIs/ArraySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js","./ConstSSIs/CZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js","./ConstSSIs/ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js","./ConstSSIs/PasswordSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js","./ContractSSIs/ConsensusSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js","./HashLinkSSIs/SignedHashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js","./KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./OtherKeySSIs/AliasSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js","./OtherKeySSIs/EmbedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js","./OtherKeySSIs/HashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js","./OtherKeySSIs/PublicKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js","./OtherKeySSIs/SizeSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js","./OtherKeySSIs/SymmetricalEncryptionSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js","./OtherKeySSIs/WalletSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js","./OwnershipSSIs/OReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js","./OwnershipSSIs/OwnershipSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js","./OwnershipSSIs/ZATSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js","./SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SecretSSIs/AnchorSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js","./SecretSSIs/PublicSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js","./SecretSSIs/ReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js","./SecretSSIs/SecretSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js","./SecretSSIs/ZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js","./SeedSSIs/PathKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js","./SeedSSIs/SReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js","./SeedSSIs/SZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js","./SeedSSIs/SeedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","./TokenSSIs/TokenSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js","./TransferSSIs/TransferSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js":[function(require,module,exports){
 const cryptoRegistry = require("../CryptoAlgorithms/CryptoAlgorithmsRegistry");
 const pskCrypto = require("pskcrypto");
 const SSITypes = require("./SSITypes");
@@ -14561,7 +14821,7 @@ function keySSIMixin(target, enclave) {
 
 module.exports = keySSIMixin;
 
-},{"../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./DSURepresentationNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js","./Hint":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js","./KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu","pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js":[function(require,module,exports){
+},{"../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./DSURepresentationNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js","./Hint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js","./KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js":[function(require,module,exports){
 const SSITypes = require("../SSITypes");
 
 function AliasSSI(enclave, identifier) {
@@ -14628,7 +14888,7 @@ const createAliasSSI = (enclave, identifier) => {
 module.exports = {
     createAliasSSI
 };
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -14680,7 +14940,7 @@ module.exports = {
     createEmbedSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/HashLinkSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -14725,7 +14985,7 @@ module.exports = {
     createHashLinkSSI
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -14778,7 +15038,7 @@ module.exports = {
     createPublicKeySSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js":[function(require,module,exports){
 const SSITypes = require("../SSITypes");
 const KeySSIMixin = require("../KeySSIMixin");
 
@@ -14838,7 +15098,7 @@ module.exports = {
     createSizeSSI,
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -14889,7 +15149,7 @@ module.exports = {
     createSymmetricalEncryptionSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js":[function(require,module,exports){
 const ArraySSI = require("./../ConstSSIs/ArraySSI");
 const SSITypes = require("../SSITypes");
 
@@ -14912,7 +15172,7 @@ module.exports = {
     createWalletSSI
 }
 
-},{"../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./../ConstSSIs/ArraySSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js":[function(require,module,exports){
+},{"../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./../ConstSSIs/ArraySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ZATSSI = require("./ZATSSI");
 const SSITypes = require("../SSITypes");
@@ -14986,7 +15246,7 @@ module.exports = {
     createOReadSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZATSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZATSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const OReadSSI = require("./OReadSSI");
 const SSITypes = require("../SSITypes");
@@ -15153,7 +15413,7 @@ module.exports = {
     createOwnershipSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./OReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./OReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -15186,7 +15446,7 @@ module.exports = {
     createZATSSI
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js":[function(require,module,exports){
 module.exports = {
     DEFAULT: "default",
     SECRET_SSI: "secret",
@@ -15218,7 +15478,7 @@ module.exports = {
     EMBED_SSI: "embed"
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ReadSSI = require("./ReadSSI");
 const SSITypes = require("../SSITypes");
@@ -15253,7 +15513,7 @@ module.exports = {
     createAnchorSSI
 }
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ZaSSI = require("./ZaSSI");
 const SSITypes = require("../SSITypes");
@@ -15282,7 +15542,7 @@ module.exports = {
     createPublicSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const PublicSSI = require("./PublicSSI");
 const SSITypes = require("../SSITypes");
@@ -15311,7 +15571,7 @@ module.exports = {
     createReadSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./PublicSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./PublicSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const AnchorSSI = require("./AnchorSSI");
 const SSITypes = require("../SSITypes");
@@ -15339,7 +15599,7 @@ module.exports = {
     createSecretSSI
 }
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./AnchorSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./AnchorSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 function ZaSSI(identifier) {
     KeySSIMixin(this);
@@ -15360,7 +15620,7 @@ function createZaSSI(identifier) {
 module.exports = {
     createZaSSI
 };
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SeedSSI = require("./SeedSSI");
 const SSITypes = require("../SSITypes");
@@ -15490,7 +15750,7 @@ module.exports = {
     createPathKeySSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SeedSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SeedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SZaSSI = require("./SZaSSI");
 const SSITypes = require("../SSITypes");
@@ -15543,7 +15803,7 @@ module.exports = {
     createSReadSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SZaSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -15586,7 +15846,7 @@ module.exports = {
     createSZaSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SReadSSI = require("./SReadSSI");
 const SSITypes = require("../SSITypes");
@@ -15716,7 +15976,7 @@ module.exports = {
     createSeedSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SReadSSI":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -15784,7 +16044,7 @@ module.exports = {
     createTokenSSI
 };
 
-},{"../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -15884,17 +16144,18 @@ module.exports = {
     createTransferSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js":[function(require,module,exports){
 module.exports = {
     DSU_VERSION_KEY: "dsuVersion",
     EMBEDDED_DATA_KEY: "embedded"
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js":[function(require,module,exports){
+const {SmartUrl} = require("../utils");
+
 function RemotePersistence() {
     const openDSU = require("opendsu");
     const keySSISpace = openDSU.loadAPI("keyssi");
     const resolver = openDSU.loadAPI("resolver");
-    const http = openDSU.loadAPI("http");
     const promiseRunner = require("../utils/promise-runner");
 
     const getAnchoringServices = (dlDomain, callback) => {
@@ -15949,7 +16210,10 @@ function RemotePersistence() {
     const getAnchorHandler = (anchorId, anchorValue, dlDomain, anchorAction) => {
         return function (service) {
             return new Promise((resolve, reject) => {
-                const putResult = http.doPut(`${service}/anchor/${dlDomain}/${anchorAction}/${anchorId}/${anchorValue}`, "", (err, data) => {
+                let smartUrl = new SmartUrl(service);
+                smartUrl = smartUrl.concatWith(`/anchor/${dlDomain}/${anchorAction}/${anchorId}/${anchorValue}`);
+
+                const putResult = smartUrl.doPut("", (err, data) => {
                     if (err) {
                         return reject({
                             statusCode: err.statusCode,
@@ -15982,7 +16246,11 @@ function RemotePersistence() {
     const getFetchAnchor = (anchorId, dlDomain, actionName, callback) => {
         return function (service) {
             return new Promise((resolve, reject) => {
-                http.doGet(`${service}/anchor/${dlDomain}/${actionName}/${anchorId}`, (err, data) => {
+
+                let smartUrl = new SmartUrl(service);
+                smartUrl = smartUrl.concatWith(`/anchor/${dlDomain}/${actionName}/${anchorId}`);
+
+                smartUrl.doGet((err, data) => {
                     if (err) {
                         return reject(err);
                     }
@@ -16036,7 +16304,10 @@ function RemotePersistence() {
     }
 
     this.createOrUpdateMultipleAnchors = (anchors, callback) => {
-        http.doPut(`/anchor/create-or-update-multiple-anchors`, JSON.stringify(anchors), (err, data) => {
+        let smartUrl = new SmartUrl(service);
+        smartUrl = smartUrl.concatWith(`/anchor/create-or-update-multiple-anchors`);
+
+        smartUrl.doPut(JSON.stringify(anchors), (err, data) => {
             if (err) {
                 return callback(err);
             }
@@ -16047,7 +16318,7 @@ function RemotePersistence() {
 }
 
 module.exports = RemotePersistence;
-},{"../utils/promise-runner":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/promise-runner.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
 function validateHashLinks(keySSI, hashLinks, callback) {
@@ -16141,12 +16412,15 @@ module.exports = {
     verifySignature
 };
 
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js":[function(require,module,exports){
 const {createOpenDSUErrorWrapper} = require("../error");
+const fakeHistory = {};
+const fakeLastVersion = {};
 
 function AnchoringAbstractBehaviour(persistenceStrategy) {
     const self = this;
     const keySSISpace = require("opendsu").loadAPI("keyssi");
+
     self.createAnchor = function (anchorId, anchorValueSSI, callback) {
         if (typeof anchorId === 'undefined' || typeof anchorValueSSI === 'undefined' || anchorId === null || anchorValueSSI === null) {
             return callback(Error(`Invalid call for create anchor ${anchorId}:${anchorValueSSI}`));
@@ -16161,10 +16435,19 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
             anchorValueSSIKeySSI = keySSISpace.parse(anchorValueSSI);
         }
 
+
+
         anchorIdKeySSI.getAnchorId((err, _anchorId) => {
             if (err) {
                 return callback(err);
             }
+
+            let fakeLastVersionForAnchorId = fakeLastVersion[_anchorId];
+            if(fakeLastVersionForAnchorId){
+                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                return callback(undefined);
+            }
+
             if (!anchorIdKeySSI.canAppend()) {
                 return persistenceStrategy.createAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), callback);
             }
@@ -16175,9 +16458,7 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
             if (!signer.verify(dataToVerify, signature)) {
                 return callback(Error("Failed to verify signature"));
             }
-            persistenceStrategy.createAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), (err) => {
-                return callback(err);
-            });
+            persistenceStrategy.createAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), callback);
         });
     }
 
@@ -16199,34 +16480,47 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
             if (!anchorIdKeySSI.canAppend()) {
                 return callback(Error(`Cannot append anchor for ${anchorId} because of the keySSI type`));
             }
-            persistenceStrategy.getAllVersions(anchorId, (err, data) => {
-                // throw Error("Get all versions callback");
+
+            anchorIdKeySSI.getAnchorId((err, _anchorId) => {
                 if (err) {
                     return callback(err);
                 }
-                if (typeof data === 'undefined' || data === null) {
-                    data = [];
-                }
-                const historyOfKeySSI = data.map(el => keySSISpace.parse(el));
-                const signer = determineSigner(anchorIdKeySSI, historyOfKeySSI);
-                const signature = anchorValueSSIKeySSI.getSignature();
-                if (typeof data[data.length - 1] === 'undefined') {
-                    return callback(`Cannot update non existing anchor ${anchorId}`);
-                }
-                const lastSignedHashLinkKeySSI = keySSISpace.parse(data[data.length - 1]);
-                const dataToVerify = anchorValueSSIKeySSI.getDataToSign(anchorIdKeySSI, lastSignedHashLinkKeySSI);
-                if (!signer.verify(dataToVerify, signature)) {
-                    return callback({statusCode: 428, message: "Versions out of sync"});
-                }
 
-                anchorIdKeySSI.getAnchorId((err, _anchorId) => {
+                let verifySignaturesAndAppend = (err, data) => {
+                    // throw Error("Get all versions callback");
                     if (err) {
                         return callback(err);
                     }
+                    if (typeof data === 'undefined' || data === null) {
+                        data = [];
+                    }
+
+                    if(!self.testIfRecoveryActiveFor(_anchorId)){
+                        const historyOfKeySSI = data.map(el => keySSISpace.parse(el));
+                        const signer = determineSigner(anchorIdKeySSI, historyOfKeySSI);
+                        const signature = anchorValueSSIKeySSI.getSignature();
+                        if (typeof data[data.length - 1] === 'undefined') {
+                            return callback(`Cannot update non existing anchor ${anchorId}`);
+                        }
+                        const lastSignedHashLinkKeySSI = keySSISpace.parse(data[data.length - 1]);
+                        const dataToVerify = anchorValueSSIKeySSI.getDataToSign(anchorIdKeySSI, lastSignedHashLinkKeySSI);
+                        if (!signer.verify(dataToVerify, signature)) {
+                            return callback({statusCode: 428, message: "Versions out of sync"});
+                        }
+                    }
+
                     persistenceStrategy.appendAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), callback);
-                });
-            })
+                }
+
+                let fakeHistoryAvailable = fakeHistory[_anchorId];
+                if(fakeHistoryAvailable){
+                    return verifySignaturesAndAppend(undefined, fakeHistoryAvailable);
+                }
+
+                persistenceStrategy.getAllVersions(anchorId, verifySignaturesAndAppend)
+            });
         }
+
         if (typeof persistenceStrategy.prepareAnchoring === "function") {
             persistenceStrategy.prepareAnchoring(anchorId, err => {
                 if (err) {
@@ -16244,9 +16538,15 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
         if (typeof anchorId === "string") {
             anchorIdKeySSI = keySSISpace.parse(anchorId);
         }
+
         anchorIdKeySSI.getAnchorId((err, anchorId) => {
             if (err) {
                 return callback(err);
+            }
+
+            let fakeHistoryAvailable = fakeHistory[anchorId];
+            if(fakeHistoryAvailable){
+                return callback(undefined, fakeHistoryAvailable);
             }
 
             persistenceStrategy.getAllVersions(anchorId, (err, data) => {
@@ -16292,10 +16592,17 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
         if (typeof anchorId === "string") {
             anchorIdKeySSI = keySSISpace.parse(anchorId);
         }
+
         anchorIdKeySSI.getAnchorId((err, anchorId) => {
             if (err) {
                 return callback(err);
             }
+
+            let fakeLastVersionForAnchorId = fakeLastVersion[anchorId];
+            if(fakeLastVersionForAnchorId){
+                return callback(undefined, fakeLastVersionForAnchorId);
+            }
+
             persistenceStrategy.getLastVersion(anchorId, (err, data) => {
                 if (err) {
                     return callback(err);
@@ -16312,6 +16619,15 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
                 callback(undefined, anchorValueSSI);
             });
         });
+    }
+
+    self.markAnchorForRecovery = function(anchorId, anchorFakeHistory, anchorFakeLastVersion){
+        fakeHistory[anchorId] = anchorFakeHistory;
+        fakeLastVersion[anchorId] = anchorFakeLastVersion;
+    }
+
+    self.testIfRecoveryActiveFor = function(anchorId){
+        return !!fakeHistory[anchorId];
     }
 
     function determineSigner(anchorIdKeySSI, historyOfKeySSIValues) {
@@ -16345,12 +16661,14 @@ module.exports = {
     AnchoringAbstractBehaviour
 }
 
-},{"../error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/index.js":[function(require,module,exports){
-const keyssi = require("../keyssi");
-const {fetch, doPut} = require("../http");
-const constants = require("../moduleConstants");
-const promiseRunner = require("../utils/promise-runner");
-const config = require("../config");
+},{"../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js":[function(require,module,exports){
+const openDSU = require("opendsu")
+const keyssi = openDSU.loadAPI("keyssi");
+const utils = openDSU.loadAPI("utils");
+const SmartUrl = utils.SmartUrl;
+const constants = openDSU.constants;
+const promiseRunner = utils.promiseRunner;
+const config = openDSU.loadAPI("config");
 const {validateHashLinks, verifySignature} = require("./anchoring-utils");
 
 const getAnchoringBehaviour = (persistenceStrategy) => {
@@ -16391,7 +16709,9 @@ const buildGetVersionFunction = function(processingFunction){
 
                 //TODO: security issue (which response we trust)
                 const fetchAnchor = (service) => {
-                    return fetch(`${service}/anchor/${dlDomain}/get-all-versions/${anchorId}`).then(processingFunction);
+                    let smartUrl = new SmartUrl(service);
+                    smartUrl = smartUrl.concatWith(`/anchor/${dlDomain}/get-all-versions/${anchorId}`);
+                    return smartUrl.fetch().then(processingFunction);
                 };
 
                 promiseRunner.runOneSuccessful(anchoringServicesArray, fetchAnchor, callback, new Error("get Anchoring Service"));
@@ -16522,7 +16842,11 @@ const addVersion = (SSICapableOfSigning, newSSI, lastSSI, zkpValue, callback) =>
 
                 const addAnchor = (service) => {
                     return new Promise((resolve, reject) => {
-                        const putResult = doPut(`${service}/anchor/${dlDomain}/${anchorAction}/${anchorId}`, JSON.stringify(body), (err, data) => {
+
+                        let smartUrl = new SmartUrl(service);
+                        smartUrl = smartUrl.concatWith(`/anchor/${dlDomain}/${anchorAction}/${anchorId}`);
+
+                        const putResult = smartUrl.doPut(JSON.stringify(body), (err, data) => {
                             if (err) {
                                 return reject({
                                     statusCode: err.statusCode,
@@ -16625,7 +16949,7 @@ module.exports = {
     getAnchoringX
 }
 
-},{"../bdns":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bdns/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/index.js","../http":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js","../keyssi":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/keyssi/index.js","../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/promise-runner":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/promise-runner.js","./RemotePersistence":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js","./anchoring-utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js","./anchoringAbstractBehaviour":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bdns/index.js":[function(require,module,exports){
+},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","./RemotePersistence":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js","./anchoring-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js","./anchoringAbstractBehaviour":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 const PendingCallMixin = require("../utils/PendingCallMixin");
 const getBaseURL = require("../utils/getBaseURL");
@@ -16738,7 +17062,7 @@ function BDNS() {
 
 module.exports = new BDNS();
 
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","../utils/getBaseURL":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/BootEngine.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js":[function(require,module,exports){
 (function (global){(function (){
 function BootEngine(getKeySSI) {
     if (typeof getKeySSI !== "function") {
@@ -16870,7 +17194,7 @@ module.exports = BootEngine;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js":[function(require,module,exports){
 function boot(keySSI) {
     const worker_threads = "worker_threads";
     const { parentPort } = require(worker_threads);
@@ -16912,7 +17236,7 @@ function boot(keySSI) {
 
 module.exports = boot;
 
-},{"./BootEngine.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js":[function(require,module,exports){
+},{"./BootEngine.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js":[function(require,module,exports){
 function boot(keySSI) {
     const { handleMessage } = require("./boot-utils.js");
 
@@ -16945,7 +17269,7 @@ function boot(keySSI) {
 
 module.exports = boot;
 
-},{"./BootEngine.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/boot-utils.js":[function(require,module,exports){
+},{"./BootEngine.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/boot-utils.js":[function(require,module,exports){
 function handleMessage(message, onHandleMessage) {
     // console.log("[worker] Received message", message);
 
@@ -16984,7 +17308,7 @@ module.exports = {
     handleMessage,
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/index.js":[function(require,module,exports){
 let { ENVIRONMENT_TYPES } = require("../moduleConstants.js");
 
 function getBootScript() {
@@ -17000,12 +17324,12 @@ function getBootScript() {
 
 module.exports = getBootScript();
 
-},{"../moduleConstants.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./NodeBootScript":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js","./WorkerBootScript":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bricking/index.js":[function(require,module,exports){
+},{"../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./NodeBootScript":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js","./WorkerBootScript":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bricking/index.js":[function(require,module,exports){
 const openDSU = require("opendsu");
-const {fetch, doPut} = openDSU.loadApi("http");
 const constants = require("../moduleConstants");
 const cache = require("../cache/").getCacheForVault(constants.CACHE.ENCRYPTED_BRICKS_CACHE);
 const promiseRunner = require("../utils/promise-runner");
+const {SmartUrl} = require("../utils");
 
 const isValidBrickHash = (hashLinkSSI, brickData) => {
     const ensureIsBuffer = require("swarmutils").ensureIsBuffer;
@@ -17055,17 +17379,19 @@ const getBrick = (hashLinkSSI, authToken, callback) => {
             }
 
             const fetchBrick = (storage) => {
-                return fetch(`${storage}/bricking/${dlDomain}/get-brick/${brickHash}`)
-                    .then(async (response) => {
-                        const brickData = await response.arrayBuffer();
-                        if (isValidBrickHash(hashLinkSSI, brickData)) {
-                            if (typeof cache !== "undefined") {
-                                cache.put(brickHash, brickData);
-                            }
-                            return brickData;
+                let smartUrl = new SmartUrl(storage);
+                smartUrl = smartUrl.concatWith(`/bricking/${dlDomain}/get-brick/${brickHash}`);
+
+                return smartUrl.fetch().then(async (response) => {
+                    const brickData = await response.arrayBuffer();
+                    if (isValidBrickHash(hashLinkSSI, brickData)) {
+                        if (typeof cache !== "undefined") {
+                            cache.put(brickHash, brickData);
                         }
-                        throw Error(`Failed to validate brick <${brickHash}>`);
-                    });
+                        return brickData;
+                    }
+                    throw Error(`Failed to validate brick <${brickHash}>`);
+                });
             };
 
             const runnerCallback = (error, result) => {
@@ -17144,7 +17470,10 @@ const putBrick = (domain, brick, authToken, callback) => {
         }
         const setBrickInStorage = (storage) => {
             return new Promise((resolve, reject) => {
-                const putResult = doPut(`${storage}/bricking/${domain}/put-brick`, brick, (err, data) => {
+                let smartUrl = new SmartUrl(storage);
+                smartUrl = smartUrl.concatWith(`/bricking/${domain}/put-brick`);
+
+                const putResult = smartUrl.doPut(brick, (err, data) => {
                     if (err) {
                         return reject(err);
                     }
@@ -17220,7 +17549,7 @@ const constructBricksFromData = (keySSI, data, options, callback) => {
 
 module.exports = {getBrick, putBrick, getMultipleBricks, constructBricksFromData};
 
-},{"../cache/":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/promise-runner":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/promise-runner.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/FSCache.js":[function(require,module,exports){
+},{"../cache/":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/FSCache.js":[function(require,module,exports){
 let stores = {};
 const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
@@ -17300,7 +17629,7 @@ function FSCache(folderName) {
 
 
 module.exports.FSCache = FSCache;
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js":[function(require,module,exports){
 let stores = {};
 const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
@@ -17421,11 +17750,11 @@ function IndexedDBCache(storeName, lifetime) {
 
 
 module.exports.IndexedDBCache  = IndexedDBCache;
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/MemoryCache.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/MemoryCache.js":[function(require,module,exports){
 
 const constants = require("../moduleConstants");
 
-function MemoryCache() {
+function MemoryCache(useWeakRef) {
     let storage = {};
     const self = this;
 
@@ -17433,15 +17762,23 @@ function MemoryCache() {
         if(typeof key !== "string"){
             throw new Error("Keys should be strings");
         }
-        if(callback){
-            callback(undefined, storage[key])
+
+        let value = storage[key];
+        if(value && useWeakRef){
+            value = value.deref();
         }
-        return storage[key];
+        if(callback){
+            callback(undefined, value);
+        }
+        return value;
     };
 
     self.put = function (key, value, callback) {
         if(typeof key !== "string"){
             throw new Error("Keys should be strings");
+        }
+        if(useWeakRef){
+            value = value ? new WeakRef(value) : value;
         }
         storage[key] = value;
         if(callback){
@@ -17454,7 +17791,7 @@ function MemoryCache() {
 
 
 module.exports.MemoryCache = MemoryCache;
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js":[function(require,module,exports){
 let stores = {};
 const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
@@ -17487,14 +17824,24 @@ function getCacheForVault(storeName, lifetime) {
 }
 
 function getMemoryCache(storeName){
-    return stores[storeName] = new MemoryCache(storeName);
+    return stores[storeName] = new MemoryCache();
+}
+
+function getWeakRefMemoryCache(storeName){
+    let cache = stores[storeName];
+    if(!cache){
+        cache = new MemoryCache(true);
+        stores[storeName] = cache;
+    }
+    return cache;
 }
 
 module.exports = {
     getCacheForVault,
-    getMemoryCache
+    getMemoryCache,
+    getWeakRefMemoryCache
 }
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./FSCache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/FSCache.js","./IndexeDBCache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js","./MemoryCache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/MemoryCache.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/autoConfig.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./FSCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/FSCache.js","./IndexeDBCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js","./MemoryCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/MemoryCache.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfig.js":[function(require,module,exports){
 const config = require("./index");
 const constants = require("../moduleConstants");
 const system = require("../system");
@@ -17531,7 +17878,7 @@ setGlobalVariable("printOpenDSUError", errorModule.printOpenDSUError);
 
 
 
-},{"../error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/system/index.js","../utils/getBaseURL":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js":[function(require,module,exports){
+},{"../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js","../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js":[function(require,module,exports){
 
 module.exports = function(environment){
         const config = require("./index.js");
@@ -17548,7 +17895,7 @@ module.exports = function(environment){
         }
         console.log("Environment for vault", environment.appName,  config.get(constants.CACHE.VAULT_TYPE))
 }
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./index.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./index.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 const config = {};
 
@@ -17637,7 +17984,7 @@ module.exports = {
 };
 
 
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./autoConfigFromEnvironment":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/contracts/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./autoConfigFromEnvironment":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/index.js":[function(require,module,exports){
 const getBaseURL = require("../utils/getBaseURL");
 
 const {
@@ -17784,7 +18131,7 @@ module.exports = {
     generateNoncedCommandForSpecificServer,
 };
 
-},{"../utils/getBaseURL":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/contracts/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/contracts/utils.js":[function(require,module,exports){
+},{"../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/utils.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const { fetch, doPost } = require("../http");
 const promiseRunner = require("../utils/promise-runner");
@@ -17945,7 +18292,7 @@ module.exports = {
 
 }).call(this)}).call(this,{"isBuffer":require("../../../node_modules/is-buffer/index.js")})
 
-},{"../../../node_modules/is-buffer/index.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/node_modules/is-buffer/index.js","../http":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js","../utils/promise-runner":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/promise-runner.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js":[function(require,module,exports){
+},{"../../../node_modules/is-buffer/index.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js":[function(require,module,exports){
 function InstanceReadyMixin(target) {
 
 	target.isInstanceReady = false;
@@ -17974,7 +18321,7 @@ function InstanceReadyMixin(target) {
 }
 
 module.exports = InstanceReadyMixin;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js":[function(require,module,exports){
 const JWT_ERRORS = {
 	EMPTY_JWT_PROVIDED: 'EMPTY_JWT_PROVIDED',
 	INVALID_JWT_FORMAT: 'INVALID_JWT_FORMAT',
@@ -18043,7 +18390,7 @@ module.exports = {
 	getDefaultJWTOptions: getDefaultJWTOptions,
 	VALIDATION_STRATEGIES
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/index.js":[function(require,module,exports){
 const {createJWTVc, loadJWTVc} = require('./vc/jwtVc');
 const {createJWTVp, loadJWTVp} = require('./vp/jwtVp');
 const validationStrategies = require('./validationStrategies');
@@ -18132,7 +18479,7 @@ module.exports = {
     parseJWTSegments,
     JWT_ERRORS: require('./constants').JWT_ERRORS
 };
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","./validationStrategies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js","./vc/jwtVc":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js","./vp/jwtVp":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/index.js":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./validationStrategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js","./vc/jwtVc":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js","./vp/jwtVp":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/index.js":[function(require,module,exports){
 const { JWT_ERRORS, IMMUTABLE_PUBLIC_CLAIMS } = require('../constants');
 const { base64UrlEncode } = require('../utils');
 const { signJWT } = require('./sign');
@@ -18216,7 +18563,7 @@ class JWT {
 }
 
 module.exports = JWT;
-},{"../InstanceReadyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js","../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","./sign":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/model.js":[function(require,module,exports){
+},{"../InstanceReadyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js","../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/model.js":[function(require,module,exports){
 const { JWT_DEFAULTS, JWT_ERRORS, getDefaultJWTOptions } = require('../constants');
 const utils = require('../utils');
 
@@ -18296,7 +18643,7 @@ function defaultJWTParser(encodedJWT, callback) {
 module.exports = {
 	defaultJWTBuilder, defaultJWTParser
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js":[function(require,module,exports){
 const openDSU = require('opendsu');
 const w3cDID = openDSU.loadAPI('w3cdid');
 const crypto = openDSU.loadAPI('crypto');
@@ -18390,7 +18737,7 @@ function signUsingDID(issuer, dataToSign, callback) {
 module.exports = {
     signJWT
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js":[function(require,module,exports){
 const opendsu = require('opendsu');
 const w3cDID = opendsu.loadAPI('w3cdid');
 const crypto = opendsu.loadAPI('crypto');
@@ -18582,7 +18929,7 @@ module.exports = {
     verifyRootsOfTrust,
     verifyEncryptedCredential
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js":[function(require,module,exports){
 const opendsu = require('opendsu');
 const w3cDID = opendsu.loadAPI('w3cdid');
 const scAPI = opendsu.loadAPI('sc');
@@ -18904,7 +19251,7 @@ module.exports = {
     asymmetricalEncryption,
     asymmetricalDecryption
 };
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js":[function(require,module,exports){
 const {JWT_ERRORS} = require("../constants");
 const utils = require("../utils");
 
@@ -18973,7 +19320,7 @@ class DefaultValidationStrategy {
 }
 
 module.exports = DefaultValidationStrategy;
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js":[function(require,module,exports){
 const VALIDATION_STRATEGIES = require('../constants').VALIDATION_STRATEGIES;
 const DefaultValidationStrategy = require("./defaultValidationStrategy");
 const RootOfTrustValidationStrategy = require("./rootOfTrustValidationStrategy");
@@ -19082,7 +19429,7 @@ module.exports = {
 
     VALIDATION_STRATEGIES
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","./defaultValidationStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js","./rootOfTrustValidationStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","./defaultValidationStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js","./rootOfTrustValidationStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js":[function(require,module,exports){
 const {JWT_ERRORS, LABELS} = require("../constants");
 const utils = require("../utils");
 
@@ -19152,7 +19499,7 @@ class RootOfTrustValidationStrategy {
 }
 
 module.exports = RootOfTrustValidationStrategy;
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js":[function(require,module,exports){
 const JWT = require('../jwt');
 const JWT_ERRORS = require('../constants').JWT_ERRORS;
 const { dateTimeFormatter, isValidURL } = require('../utils');
@@ -19322,7 +19669,7 @@ function loadJWTVc(encodedJWTVc) {
 module.exports = {
 	createJWTVc, loadJWTVc
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vc/model.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vc/model.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/model.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/model.js":[function(require,module,exports){
 const {JWT_DEFAULTS, JWT_ERRORS} = require('../constants');
 const {defaultJWTParser, defaultJWTBuilder} = require('../jwt/model');
 const utils = require('../utils');
@@ -19402,7 +19749,7 @@ function jwtVcVerifier(decodedJWT, rootsOfTrust, callback) {
 module.exports = {
     jwtVcBuilder, jwtVcParser, jwtVcVerifier
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js":[function(require,module,exports){
 const JWT = require('../jwt');
 const JWT_ERRORS = require('../constants').JWT_ERRORS;
 const { jwtVpBuilder, jwtVpParser, jwtVpVerifier } = require('./model');
@@ -19526,7 +19873,7 @@ function loadJWTVp(encodedJWTVp) {
 module.exports = {
 	createJWTVp, loadJWTVp
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vp/model.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/vp/model.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/model.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/model.js":[function(require,module,exports){
 const {JWT_DEFAULTS, JWT_ERRORS} = require('../constants');
 const {defaultJWTParser, defaultJWTBuilder} = require('../jwt/model');
 const utils = require('../utils');
@@ -19600,7 +19947,7 @@ function jwtVpVerifier(decodedJWT, rootsOfTrust, callback) {
 module.exports = {
     jwtVpBuilder, jwtVpParser, jwtVpVerifier
 };
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/index.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js":[function(require,module,exports){
 const keySSIResolver = require("key-ssi-resolver");
 const crypto = require("pskcrypto");
 const cryptoRegistry = keySSIResolver.CryptoAlgorithmsRegistry;
@@ -19961,7 +20308,7 @@ module.exports = {
     convertMnemonicToKeySSIIdentifier
 };
 
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/index.js","./jwt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/jwt.js","./mnemonic":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/mnemonic.js","key-ssi-resolver":"key-ssi-resolver","psk-dbf":false,"pskcrypto":"pskcrypto"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/jwt.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js","./jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jwt.js","./mnemonic":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/mnemonic.js","key-ssi-resolver":"key-ssi-resolver","psk-dbf":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jwt.js":[function(require,module,exports){
 const keySSIResolver = require("key-ssi-resolver");
 const cryptoRegistry = keySSIResolver.CryptoAlgorithmsRegistry;
 const SSITypes = keySSIResolver.SSITypes;
@@ -20313,7 +20660,7 @@ module.exports = {
     verifyDID_JWT
 };
 
-},{"../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/mnemonic.js":[function(require,module,exports){
+},{"../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/mnemonic.js":[function(require,module,exports){
 let WORDLISTS = {};
 WORDLISTS["english"] = [
     "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse",
@@ -20693,11 +21040,11 @@ module.exports = {
     Mnemonic
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js":[function(require,module,exports){
 module.exports.TimestampMergingStrategy = function(){
 
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js":[function(require,module,exports){
 /*
     An OpenDSU  BasicDB is a simple noSQL database
     The DB is used with a concept of "table" and rows (records) that have multiple versions
@@ -20945,7 +21292,7 @@ function BasicDB(storageStrategy, conflictSolvingStrategy, options) {
 
 module.exports = BasicDB;
 
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js":[function(require,module,exports){
 module.exports = {
     ensure_WalletDB_DSU_Initialisation: function (keySSI, dbName, callback) {
         let resolver = require("../../resolver");
@@ -21112,7 +21459,7 @@ module.exports = {
     }
 }
 
-},{"../../keyssi":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/keyssi/index.js","../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../../resolver":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/resolver/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/index.js":[function(require,module,exports){
+},{"../../keyssi":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js","../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/index.js":[function(require,module,exports){
 let util = require("./impl/DSUDBUtil")
 
 function getBasicDB(storageStrategy, conflictSolvingStrategy, options) {
@@ -21207,7 +21554,7 @@ module.exports = {
     getSharedEnclaveDB
 }
 
-},{"./conflictSolvingStrategies/timestampMergingStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js","./impl/BasicDB":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js","./impl/DSUDBUtil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js","./storageStrategies/MemoryStorageStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js","./storageStrategies/SingleDSUStorageStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js":[function(require,module,exports){
+},{"./conflictSolvingStrategies/timestampMergingStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js","./impl/BasicDB":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js","./impl/DSUDBUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js","./storageStrategies/MemoryStorageStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js","./storageStrategies/SingleDSUStorageStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js":[function(require,module,exports){
 (function (Buffer){(function (){
 function MemoryStorageStrategy() {
     const ObservableMixin = require("../../utils/ObservableMixin");
@@ -21470,7 +21817,7 @@ function MemoryStorageStrategy() {
 module.exports = MemoryStorageStrategy;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js":[function(require,module,exports){
 function Query(queryArray) {
     let conditions = [];
     const operators = require("./operators");
@@ -21574,7 +21921,7 @@ function Query(queryArray) {
 }
 
 module.exports = Query;
-},{"./operators":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js":[function(require,module,exports){
+},{"./operators":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const ObservableMixin = require("../../utils/ObservableMixin");
 const Query = require("./Query");
@@ -22234,7 +22581,7 @@ function SingleDSUStorageStrategy() {
 module.exports.SingleDSUStorageStrategy = SingleDSUStorageStrategy;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js","buffer":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js","buffer":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js":[function(require,module,exports){
 module.exports = {
     "<": function (x, y) {
         return x < y
@@ -22277,7 +22624,7 @@ module.exports = {
     }
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js":[function(require,module,exports){
 function getCompareFunction(sortOrder) {
     if (sortOrder === "asc" || sortOrder === "ascending") {
         return function (a, b) {
@@ -22322,11 +22669,11 @@ module.exports = {
     getCompareFunction,
     getCompareFunctionForObjects
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dc/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dc/index.js":[function(require,module,exports){
 /*
 html API space
 */
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -22881,7 +23228,7 @@ function AppBuilderService(environment, opts) {
     }
 }
 module.exports = AppBuilderService;
-},{"./DossierBuilder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./FileService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/FileService.js","./commands/utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/BuildWallet.js":[function(require,module,exports){
+},{"./DossierBuilder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./FileService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/FileService.js","./commands/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/BuildWallet.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const resolver = openDSU.loadAPI("resolver");
 const keySSISpace = openDSU.loadAPI("keyssi");
@@ -23015,7 +23362,7 @@ const initialiseWallet = (callback) => {
 module.exports = {
     initialiseWallet
 };
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -23248,7 +23595,7 @@ const DossierBuilder = function (sourceDSU, varStore) {
 
 module.exports = DossierBuilder;
 
-},{"./commands":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/index.js","./commands/VarStore":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js","./commands/utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js","./index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/FileService.js":[function(require,module,exports){
+},{"./commands":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js","./commands/VarStore":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js","./commands/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/FileService.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -23369,7 +23716,7 @@ function FileService(options) {
 }
 
 module.exports = FileService;
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23474,7 +23821,7 @@ class Command {
 }
 
 module.exports = Command;
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Registry.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js":[function(require,module,exports){
 /**
  * List of all available commands to the Dossier Builder
  * Without being here, they can't be used
@@ -23508,7 +23855,7 @@ const _getByName = function(cmdName){
 }
 
 module.exports = _getByName;
-},{"./addFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js":[function(require,module,exports){
+},{"./addFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js":[function(require,module,exports){
 /**
  * @module commands
  * A simple variable store
@@ -23553,7 +23900,7 @@ const VarStore = function(){
 }
 
 module.exports = VarStore;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFile.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFile.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23641,7 +23988,7 @@ class AddFileCommand extends Command{
 }
 
 module.exports = AddFileCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23712,7 +24059,7 @@ class AddFolderCommand extends Command {
 }
 
 module.exports = AddFolderCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23903,7 +24250,7 @@ class CreateDSUCommand extends Command{
 }
 
 module.exports = CreateDSUCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./genKey":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createFile.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./genKey":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createFile.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23969,7 +24316,7 @@ class CreateFileCommand extends Command{
 }
 
 module.exports = CreateFileCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/define.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/define.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24051,7 +24398,7 @@ class DefineCommand extends Command {
 }
 
 module.exports = DefineCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/delete.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/delete.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24106,7 +24453,7 @@ class DeleteCommand extends Command {
 
 module.exports = DeleteCommand;
 
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/derive.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/derive.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24167,7 +24514,7 @@ class DeriveCommand extends Command{
 }
 
 module.exports = DeriveCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/endWith.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/endWith.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24219,7 +24566,7 @@ class EndWithCommand extends Command{
 }
 
 module.exports = EndWithCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/genKey.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24368,7 +24715,7 @@ class GenKeyCommand extends Command {
 }
 
 module.exports = GenKeyCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24440,7 +24787,7 @@ class GetIdentifierCommand extends Command{
 }
 
 module.exports = GetIdentifierCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/index.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24463,7 +24810,7 @@ module.exports = {
     WithCommand: require('./with'),
     _getByName: require('./Registry')
 }
-},{"./Registry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./addFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/mount.js":[function(require,module,exports){
+},{"./Registry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./addFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/mount.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24598,7 +24945,7 @@ class MountCommand extends Command {
 }
 
 module.exports = MountCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./readFile":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./readFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24655,7 +25002,7 @@ class ObjToArrayCommand extends Command{
 }
 
 module.exports = ObjToArrayCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/readFile.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24717,7 +25064,7 @@ class ReadFileCommand extends Command{
 }
 
 module.exports = ReadFileCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js":[function(require,module,exports){
 /**
  * @module Commands
  */
@@ -24828,7 +25175,7 @@ module.exports = {
     KEY_TYPE,
     DSU_TYPE
 };
-},{"fs":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/with.js":[function(require,module,exports){
+},{"fs":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/with.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -24955,7 +25302,7 @@ class WithCommand extends Command {
 }
 
 module.exports = WithCommand;
-},{"./Command":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/index.js":[function(require,module,exports){
+},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/index.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -24989,7 +25336,7 @@ module.exports = {
     AppBuilderService: require('./AppBuilderService')
 }
 
-},{"./AppBuilderService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js","./BuildWallet":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/BuildWallet.js","./DossierBuilder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./commands":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/commands/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js":[function(require,module,exports){
+},{"./AppBuilderService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js","./BuildWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/BuildWallet.js","./DossierBuilder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./commands":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js":[function(require,module,exports){
 const {createCommandObject} = require("./lib/createCommandObject");
 
 function APIHUBProxy(domain, did) {
@@ -25041,7 +25388,7 @@ function APIHUBProxy(domain, did) {
 }
 
 module.exports = APIHUBProxy;
-},{".././../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js":[function(require,module,exports){
+},{".././../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js":[function(require,module,exports){
 const constants = require("./constants");
 
 function Enclave_Mixin(target, did, keySSI) {
@@ -25556,7 +25903,10 @@ function Enclave_Mixin(target, did, keySSI) {
                 keySSISpace[fnName](...args);
             }
         } else if (fnName.startsWith("createTemplate")) {
-            target[fnName] = keySSISpace[fnName];
+            target[fnName] = (...args) => {
+                args.shift();
+                keySSISpace[fnName](...args);
+            }
         }
     })
 
@@ -25655,10 +26005,14 @@ function Enclave_Mixin(target, did, keySSI) {
             callback(undefined, dsu);
         })
     }
+
+    target.loadDSURecoveryMode = (forDID, ssi, contentRecoveryFnc, callback)=>{
+        target.loadDSU(forDID, ssi, {contentRecoveryFnc, recoveryMode: true}, callback);
+    }
 }
 
 module.exports = Enclave_Mixin;
-},{"../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createCommandObject} = require("./lib/createCommandObject");
 
@@ -25720,7 +26074,7 @@ function HighSecurityProxy(domain, did) {
 module.exports = HighSecurityProxy;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{".././../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","buffer":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js":[function(require,module,exports){
+},{".././../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","buffer":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js":[function(require,module,exports){
 function MemoryEnclave() {
     const EnclaveMixin = require("./Enclave_Mixin");
     EnclaveMixin(this);
@@ -25747,7 +26101,7 @@ function MemoryEnclave() {
 }
 
 module.exports = MemoryEnclave;
-},{"./Enclave_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js":[function(require,module,exports){
+},{"./Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js":[function(require,module,exports){
 function PathKeyMapping(enclaveHandler) {
     const utils = require("./utils");
     const openDSU = require("opendsu");
@@ -25859,7 +26213,7 @@ function PathKeyMapping(enclaveHandler) {
 }
 
 module.exports = PathKeyMapping;
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createOpenDSUErrorWrapper} = require("../../error");
 
@@ -26069,7 +26423,7 @@ function ProxyMixin(target) {
 module.exports = ProxyMixin;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./lib/commandsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js","buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js":[function(require,module,exports){
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./lib/commandsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js":[function(require,module,exports){
 const { createCommandObject } = require("./lib/createCommandObject");
 const ProxyMixin = require("./ProxyMixin");
 const openDSU = require('../../index');
@@ -26170,7 +26524,7 @@ function RemoteEnclave(clientDID, remoteDID, requestTimeout) {
 }
 
 module.exports = RemoteEnclave;
-},{"../../index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/index.js","./ProxyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js":[function(require,module,exports){
+},{"../../index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/index.js","./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js":[function(require,module,exports){
 function WalletDBEnclave(keySSI, did) {
     const openDSU = require("opendsu");
     const constants = require("./constants");
@@ -26265,7 +26619,7 @@ function WalletDBEnclave(keySSI, did) {
 }
 
 module.exports = WalletDBEnclave;
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./Enclave_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js":[function(require,module,exports){
 const pathModule = require("path");
 const constants = require("./constants");
 
@@ -26436,7 +26790,7 @@ function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
 }
 
 module.exports = WalletDBEnclaveHandler;
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/constants.js":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js":[function(require,module,exports){
 module.exports = {
     TABLE_NAMES: {
         KEY_SSIS: "keyssis",
@@ -26453,7 +26807,7 @@ module.exports = {
         WALLET_DB_ENCLAVE: "walletdb_enclave"
     }
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js":[function(require,module,exports){
 module.exports = {
     INSERT_RECORD: "insertRecord",
     UPDATE_RECORD: "updateRecord",
@@ -26481,7 +26835,7 @@ module.exports = {
     DECRYPT_MESSAGE: "decryptMessage",
     GET_PRIVATE_INFO_FOR_DID:"getPrivateInfoForDID"
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js":[function(require,module,exports){
 const createCommandObject = (commandName, ...args) => {
     const commandID = require('crypto').randomBytes(32).toString("base64")
 
@@ -26497,7 +26851,7 @@ const createCommandObject = (commandName, ...args) => {
 module.exports = {
     createCommandObject
 }
-},{"crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/utils.js":[function(require,module,exports){
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/utils.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const keySSISpace = openDSU.loadAPI("keyssi");
 
@@ -26592,7 +26946,7 @@ module.exports = {
     getKeySSIMapping,
     mergeMappings
 }
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
 function initialiseWalletDBEnclave(keySSI, did) {
@@ -26657,7 +27011,7 @@ module.exports = {
     ProxyMixin: require("./impl/ProxyMixin")
 }
 
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./impl/APIHUBProxy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js","./impl/Enclave_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./impl/HighSecurityProxy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js","./impl/MemoryEnclave":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js","./impl/ProxyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./impl/RemoteEnclave":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js","./impl/WalletDBEnclave":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./impl/APIHUBProxy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js","./impl/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./impl/HighSecurityProxy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js","./impl/MemoryEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js","./impl/ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./impl/RemoteEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js","./impl/WalletDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js":[function(require,module,exports){
 function ErrorWrapper(message, err, otherErrors){
     let newErr = {};
 
@@ -26845,7 +27199,7 @@ module.exports = {
     DB_INSERT_EXISTING_RECORD_ERROR
 }
 
-},{"./../utils/observable":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/browser/index.js":[function(require,module,exports){
+},{"./../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js":[function(require,module,exports){
 function generateMethodForRequestWithData(httpMethod) {
 	return function (url, data, options, callback) {
 		if(typeof options === "function"){
@@ -26926,7 +27280,7 @@ module.exports = {
 	doPut: generateMethodForRequestWithData('PUT'),
 	doGet
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js":[function(require,module,exports){
 /**
  * http API space
  */
@@ -26961,7 +27315,7 @@ module.exports.unpoll = function(request){
 	rm.cancelRequest(request);
 }
 
-},{"./browser":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/browser/index.js","./node":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/index.js","./serviceWorker":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js","./utils/PollRequestManager":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js","./utils/interceptors":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/utils/interceptors.js","overwrite-require":"overwrite-require"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/common.js":[function(require,module,exports){
+},{"./browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js","./node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/index.js","./serviceWorker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js","./utils/PollRequestManager":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js","./utils/interceptors":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/interceptors.js","overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/common.js":[function(require,module,exports){
 const userAgent = 'PSK NodeAgent/0.0.1';
 const signatureHeaderName = process.env.vmq_signature_header_name || "x-signature";
 
@@ -27051,7 +27405,7 @@ module.exports = {
 	buildOptions,
 	getNetworkForOptions
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/fetch.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/fetch.js":[function(require,module,exports){
 const http = require("http");
 const https = require("https");
 const URL = require("url");
@@ -27285,7 +27639,7 @@ module.exports = {
 	fetch
 }
 
-},{"http":false,"https":false,"url":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/index.js":[function(require,module,exports){
+},{"http":false,"https":false,"url":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/index.js":[function(require,module,exports){
 
 const {setContentTypeByData,buildOptions,getNetworkForOptions} = require("./common.js");
 
@@ -27373,7 +27727,7 @@ module.exports = {
 	doPut: generateMethodForRequestWithData('PUT')
 }
 
-},{"./common.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/common.js","./fetch":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/node/fetch.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js":[function(require,module,exports){
+},{"./common.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/common.js","./fetch":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/fetch.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js":[function(require,module,exports){
 function generateMethodForRequestWithData(httpMethod) {
 	return function (url, data, options, callback) {
 		if(typeof options === "function"){
@@ -27421,7 +27775,7 @@ module.exports = {
 	doGet: require("./../browser").doGet
 }
 
-},{"./../browser":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/browser/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js":[function(require,module,exports){
+},{"./../browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js":[function(require,module,exports){
 function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTimeout = 1000){
 
 	const requests = new Map();
@@ -27617,7 +27971,7 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 
 module.exports = PollRequestManager;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/utils/interceptors.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/interceptors.js":[function(require,module,exports){
 let interceptors = [];
 
 function registerInterceptor(interceptor){
@@ -27723,7 +28077,7 @@ function enable(handler){
 }
 
 module.exports = {enable};
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/keyssi/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js":[function(require,module,exports){
 const keySSIResolver = require("key-ssi-resolver");
 const keySSIFactory = keySSIResolver.KeySSIFactory;
 const SSITypes = keySSIResolver.SSITypes;
@@ -27874,7 +28228,7 @@ const we_createConstSSI = (enclave, domain, constString, vn, hint, callback) => 
     constSSI.initialize(domain, constString, vn, hint);
     if (typeof callback === "function") {
         if (enclave) {
-            enclave.storeKeySSI(undefined, constSSI, callback);
+            enclave.storeKeySSI(undefined, constSSI, (err) => callback(err, constSSI));
         } else {
             callback(undefined, constSSI);
         }
@@ -27891,7 +28245,7 @@ const we_createArraySSI = (enclave, domain, arr, vn, hint, callback) => {
     arraySSI.initialize(domain, arr, vn, hint);
     if (typeof callback === "function") {
         if (enclave) {
-            enclave.storeKeySSI(undefined, arraySSI, callback);
+            enclave.storeKeySSI(undefined, arraySSI, (err) => callback(err, arraySSI));
         } else {
             callback(undefined, arraySSI);
         }
@@ -28048,7 +28402,7 @@ module.exports = {
     createEmbedSSI
 };
 
-},{"../anchoring":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js":[function(require,module,exports){
+},{"../anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js":[function(require,module,exports){
 const apis = {};
 function defineApi(name, implementation){
 	if(typeof implementation !== "function"){
@@ -28062,7 +28416,7 @@ function getApis(){
 }
 
 module.exports = {defineApi, getApis}
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js":[function(require,module,exports){
 const registry = require("../apisRegistry");
 
 /*
@@ -28279,7 +28633,50 @@ registry.defineApi("getResolver", function (domain, ssiType, options) {
 });
 
 
-},{"../apisRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js":[function(require,module,exports){
+registry.defineApi("testAndRecoverBrickMap", function (ssi, callback) {
+    const opendsu = require("opendsu");
+    const keyssi = opendsu.loadApi("keyssi");
+    const anchoring = opendsu.loadApi("anchoring");
+    const bricking = opendsu.loadApi("bricking");
+    const identifier = keyssi.parse(ssi);
+    let anchorId = identifier.getAnchorId();
+
+    anchoring.getAnchoringX.getLastVersion(anchorId, (err, lastVersion)=>{
+        if(err){
+            return callback(err);
+        }
+
+        bricking.getBrick(lastVersion, (err, brickMap)=>{
+            //if all good let's skip the rest of the code
+            if(brickMap){
+                return callback(undefined, brickMap);
+            }
+
+            if(err){
+                //needs better error handling... some errors need to be handled here and some need to be thrown up
+                // no domain replicas needs to be thrown
+                // no brick available or corrupted is our role to handle it
+                let possibleErrors = ["Failed to validate brick", "Failed to get brick"];
+                let ourResponsibility = false;
+                possibleErrors.forEach((possibleErr)=>{
+                    if(err.message.indexOf(possibleErr) !== -1){
+                        ourResponsibility = true;
+                    }
+                });
+                if(!ourResponsibility){
+                    return callback(err);
+                }
+            }
+
+            //... let's start the patching process
+
+        });
+    });
+
+});
+
+
+},{"../apisRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js":[function(require,module,exports){
 const mappingRegistry = require("./../mappingRegistry.js");
 
 async function validateMessage(message){
@@ -28291,7 +28688,7 @@ async function digestMessage(message){
 }
 
 mappingRegistry.defineMapping(validateMessage, digestMessage);
-},{"./../mappingRegistry.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js":[function(require,module,exports){
+},{"./../mappingRegistry.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js":[function(require,module,exports){
 errorTypes = {
   "UNKNOWN": {
     errorCode: 0,
@@ -28456,7 +28853,7 @@ module.exports = {
   addNewErrorType
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/index.js":[function(require,module,exports){
 const mappingRegistry = require("./mappingRegistry.js");
 const apisRegistry = require("./apisRegistry.js");
 const errMap = require("./errorsMap.js")
@@ -28480,6 +28877,16 @@ function MappingEngine(storageService, options) {
   //the purpose of the method is to create a "this" instance to be used during a message mapping process
   function buildMappingInstance() {
     let instance = {storageService, options};
+
+    let recoveryMode = false;
+    instance.setRecovery = function(value){
+      recoveryMode = !!value;
+    }
+
+    instance.isRecoveryActive = function(){
+      return recoveryMode;
+    }
+
     const apis = apisRegistry.getApis();
 
     //we inject all the registered apis on the instance that will become the "this" for a mapping
@@ -28544,6 +28951,7 @@ function MappingEngine(storageService, options) {
       if (mappingFnc) {
         const instance = buildMappingInstance();
         try {
+          instance.setRecovery(message.force);
           await mappingFnc.call(instance, message);
         } catch (err) {
           //we need to return the list of touched DSUs for partial rollback procedure
@@ -28721,7 +29129,7 @@ module.exports = {
   defineApi: apisRegistry.defineApi
 }
 
-},{"./apisRegistry.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","./defaultApis":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js","./defaultMappings":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js","./errorsMap.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js","./mappingRegistry.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js","./messagesPipe":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js":[function(require,module,exports){
+},{"./apisRegistry.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","./defaultApis":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js","./defaultMappings":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js","./errorsMap.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js","./mappingRegistry.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js","./messagesPipe":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js":[function(require,module,exports){
 const mappingRegistry = [];
 function defineMapping(matchFunction, mappingFunction){
 	mappingRegistry.push({matchFunction, mappingFunction});
@@ -28735,7 +29143,7 @@ module.exports = {
 	defineMapping,
 	getMappings
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js":[function(require,module,exports){
 module.exports = function (maxGroupSize, maxQueuingTime, groupingFunction) {
 
     this.queue = [];
@@ -28796,7 +29204,7 @@ module.exports = function (maxGroupSize, maxQueuingTime, groupingFunction) {
     startWaitingMessages();
 
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js":[function(require,module,exports){
 const ENVIRONMENT_TYPES = require("../overwrite-require/moduleConstants");
 
 let cachedKeySSIResolver = undefined;
@@ -28820,6 +29228,7 @@ module.exports = {
 	VAULT_DOMAIN: "vaultDomain",
 	DOMAIN: "domain",
 	DID_DOMAIN: "didDomain",
+	MAIN_APP_DID: "mainAppDID",
 	MAIN_ENCLAVE: {
 		TYPE: "enclaveType",
 		DID: "enclaveDID",
@@ -28879,7 +29288,7 @@ module.exports = {
 
 
 
-},{"../overwrite-require/moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/moduleConstants.js","key-ssi-resolver":"key-ssi-resolver"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/mq/mqClient.js":[function(require,module,exports){
+},{"../overwrite-require/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","key-ssi-resolver":"key-ssi-resolver"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/mq/mqClient.js":[function(require,module,exports){
 /*
 Message Queues API space
 */
@@ -29147,7 +29556,6 @@ function MQHandler(didDocument, domain, pollingTimeout) {
                     let options = { headers: { Authorization: token } };
 
                     async function makeRequest() {
-                        
                         let request = http.poll(url, options, connectionTimeout, timeout);
                         callback.__requestInProgress = request;
 
@@ -29242,7 +29650,7 @@ module.exports = {
     unsubscribe,
     getMQHandlerForDID
 }
-},{"../bdns":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/observable.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/notifications/index.js":[function(require,module,exports){
+},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/notifications/index.js":[function(require,module,exports){
 /*
 KeySSI Notification API space
 */
@@ -29354,7 +29762,7 @@ module.exports = {
     isSubscribed
 }
 
-},{"../bdns":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/index.js":[function(require,module,exports){
+},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/index.js":[function(require,module,exports){
 const createOIDC = (options) => {
     const OIDC = require("./src/oidc/OIDC");
     return new OIDC(options);
@@ -29366,7 +29774,7 @@ module.exports = {
     constants: require("./src/oidc/constants"),
 
 }
-},{"./src/oidc/OIDC":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js","./src/oidc/constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js","./src/util/Storage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js":[function(require,module,exports){
+},{"./src/oidc/OIDC":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js","./src/oidc/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js","./src/util/Storage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js":[function(require,module,exports){
 class Client {
     constructor(options) {
         this.options = options;
@@ -29395,7 +29803,7 @@ class Client {
 
 
 module.exports = Client;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js":[function(require,module,exports){
 class Issuer {
     constructor(options) {
         this.options = options;
@@ -29419,7 +29827,7 @@ class Issuer {
 
 
 module.exports = Issuer;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js":[function(require,module,exports){
 const RedirectInteraction = require('./interactions/Redirect');
 const IFrameInteraction = require('./interactions/IFrame');
 const PopupInteraction = require('./interactions/Popup');
@@ -29750,7 +30158,7 @@ class OIDC {
 
 OIDC.utils = {Browser};
 module.exports = OIDC;
-},{"../util/Browser":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js","../util/Crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js","../util/Storage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js","./Client":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js","./Issuer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js","./grants/AuthorizationCode":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js","./grants/RefreshToken":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js","./interactions/IFrame":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js","./interactions/Popup":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js","./interactions/Redirect":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js":[function(require,module,exports){
+},{"../util/Browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js","../util/Crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js","../util/Storage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js","./Client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js","./Issuer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js","./grants/AuthorizationCode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js","./grants/RefreshToken":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js","./interactions/IFrame":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js","./interactions/Popup":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js","./interactions/Redirect":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js":[function(require,module,exports){
 module.exports = {
     ID_TOKEN: 'session.idToken',
     ACCESS_TOKEN: 'session.accessToken',
@@ -29767,7 +30175,7 @@ module.exports = {
     TOKEN_CHECK_INTERVAL: 1000 * 30,
     TOKEN_EXPIRATION_THRESHOLD: 1000 * 60,
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js":[function(require,module,exports){
 const Crypto = require('../../util/Crypto');
 
 
@@ -29818,7 +30226,7 @@ class AuthorizationCode {
 
 
 module.exports = AuthorizationCode;
-},{"../../util/Crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js":[function(require,module,exports){
+},{"../../util/Crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js":[function(require,module,exports){
 class RefreshToken {
     static refreshToken(issuer, client, options) {
         const params = new URLSearchParams();
@@ -29839,7 +30247,7 @@ class RefreshToken {
 
 
 module.exports = RefreshToken;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js":[function(require,module,exports){
 const Promises = require('../../util/Promises');
 const Interaction = require('./Interaction');
 
@@ -29913,7 +30321,7 @@ class IFrame extends Interaction {
 
 
 module.exports = IFrame;
-},{"../../util/Promises":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js":[function(require,module,exports){
+},{"../../util/Promises":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js":[function(require,module,exports){
 const Browser = require('../../util/Browser');
 
 
@@ -29945,7 +30353,7 @@ class Interaction {
 
 
 module.exports = Interaction;
-},{"../../util/Browser":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js":[function(require,module,exports){
+},{"../../util/Browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js":[function(require,module,exports){
 const Interaction = require('./Interaction');
 const Promises = require('../../util/Promises');
 
@@ -30000,7 +30408,7 @@ class Popup extends Interaction {
 
 
 module.exports = Popup;
-},{"../../util/Promises":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js":[function(require,module,exports){
+},{"../../util/Promises":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js":[function(require,module,exports){
 const Interaction = require('./Interaction');
 const Promises = require('../../util/Promises');
 
@@ -30025,7 +30433,7 @@ class Redirect extends Interaction {
 
 
 module.exports = Redirect;
-},{"../../util/Promises":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js":[function(require,module,exports){
+},{"../../util/Promises":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js":[function(require,module,exports){
 function parseUrlHash(hash) {
     return parseUrlParams(hash.substring(1));
 }
@@ -30085,7 +30493,7 @@ module.exports = {
     getCurrentLocation,
     isItMe
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadAPI("crypto");
 
@@ -30117,7 +30525,7 @@ module.exports = {
     generateCodeChallenge,
     decodeBase64EncodedData
 }
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js":[function(require,module,exports){
 function flatPromise() {
     let resolve, reject;
     let promise = new Promise((_resolve, _reject) => {
@@ -30132,7 +30540,7 @@ function flatPromise() {
 module.exports = {
     flatPromise
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js":[function(require,module,exports){
 const {prettyByte} = require("@msgpack/msgpack/dist/utils/prettyByte");
 
 class Storage {
@@ -30172,22 +30580,17 @@ const getStorage = () => {
 module.exports = {
     getStorage
 };
-},{"@msgpack/msgpack/dist/utils/prettyByte":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/resolver/index.js":[function(require,module,exports){
+},{"@msgpack/msgpack/dist/utils/prettyByte":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const KeySSIResolver = require("key-ssi-resolver");
 const keySSISpace = require("opendsu").loadApi("keyssi");
-const cache = require("../cache");
 
-let dsuCache = cache.getMemoryCache("DSUs");
 let {ENVIRONMENT_TYPES, KEY_SSIS} = require("../moduleConstants.js");
 const {getWebWorkerBootScript, getNodeWorkerBootScript} = require("./resolver-utils");
-let recoveryMode = false;
+const cache = require("../cache");
+let dsuCache = cache.getWeakRefMemoryCache("mainDSUsCache");
 
-function setRecoveryMode(enabled) {
-    recoveryMode = enabled;
-}
-
-const initializeResolver = (options) => {
+const getResolver = (options) => {
     options = options || {};
     return KeySSIResolver.initialize(options);
 };
@@ -30195,21 +30598,6 @@ const initializeResolver = (options) => {
 const registerDSUFactory = (type, factory) => {
     KeySSIResolver.DSUFactory.prototype.registerDSUType(type, factory);
 };
-
-function addDSUInstanceInCache(dsuInstance, callback) {
-    dsuInstance.getKeySSIAsObject((err, keySSI) => {
-        if (err) {
-            return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to retrieve keySSI`, err));
-        }
-        keySSI.getAnchorId((err, cacheKey) => {
-            if (err) {
-                return callback(err);
-            }
-            dsuCache.set(cacheKey, dsuInstance);
-            callback(undefined, dsuInstance);
-        });
-    });
-}
 
 const createDSU = (templateKeySSI, options, callback) => {
     if (typeof options === "function") {
@@ -30233,20 +30621,13 @@ const createDSU = (templateKeySSI, options, callback) => {
         }
     }
 
-    const keySSIResolver = initializeResolver(options);
+    const keySSIResolver = getResolver(options);
     keySSIResolver.createDSU(templateKeySSI, options, (err, dsuInstance) => {
         if (err) {
             return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to create DSU instance`, err));
         }
 
-        function addInCache(err, result) {
-            if (err) {
-                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to create DSU instance`, err));
-            }
-            addDSUInstanceInCache(dsuInstance, callback);
-        }
-
-        addInCache(undefined, dsuInstance);
+        addDSUInstanceInCache(dsuInstance, callback);
     });
 };
 
@@ -30339,7 +30720,7 @@ const loadDSUVersion = (keySSI, versionHashlink, options, callback) => {
         }
     }
 
-    const keySSIResolver = initializeResolver(options);
+    const keySSIResolver = getResolver(options);
     options.versionHashlink = versionHashlink;
     keySSIResolver.loadDSU(keySSI, options, callback);
 }
@@ -30401,6 +30782,38 @@ const loadDSUVersionBasedOnVersionNumber = (keySSI, versionNumber, callback) => 
     })
 }
 
+let tryToRunRecoveryContentFnc = (keySSI, recoveredInstance, options, anchorFakeHistory, anchorFakeLastVersion,  callback)=>{
+    if(typeof options.contentRecoveryFnc === "function"){
+        let ignoreError = false;
+        try{
+            let cb = (err)=>{
+                ignoreError = true;
+                if(err){
+                    return callback(createOpenDSUErrorWrapper(`Failed to recover fallback DSU for keySSI ${keySSI.getIdentifier()}`, err));
+                }
+
+                return callback(undefined, recoveredInstance);
+            };
+            keySSI.getAnchorId((err, anchorId)=>{
+                if(err){
+                   throw createOpenDSUErrorWrapper(`Surprise error!`, err);
+                }
+                require("opendsu").loadApi("anchoring").getAnchoringX().markAnchorForRecovery(anchorId, anchorFakeHistory, anchorFakeLastVersion);
+                options.contentRecoveryFnc(recoveredInstance, cb);
+            });
+
+        }catch(err){
+            if(!ignoreError){
+                return callback(createOpenDSUErrorWrapper(`Caught an error in contentRecoveryFunction`, err));
+            }
+            throw err;
+        }
+        //callback already called above
+        return;
+    }
+    callback(undefined, recoveredInstance);
+}
+
 const loadFallbackDSU = (keySSI, options, callback) => {
     if (typeof keySSI === "string") {
         try {
@@ -30429,14 +30842,24 @@ const loadFallbackDSU = (keySSI, options, callback) => {
             const __loadFallbackDSURecursively = (index) => {
                 const versionHashlink = versions[index];
                 if (typeof versionHashlink === "undefined") {
-                    return callback(createOpenDSUErrorWrapper(`Failed to load fallback DSU for keySSI ${keySSI.getIdentifier()}`));
+                    //we weren't able to load any version of the dsu (const or not)
+                    options.addLog = false;
+                    return createDSUForExistingSSI(keySSI, options, (err, recoveredInstance) => {
+                        if(err){
+                            return callback(err);
+                        }
+
+                        return tryToRunRecoveryContentFnc (keySSI, recoveredInstance, options, [], versions[versions.length-1],  callback);
+                    });
                 }
 
                 loadDSUVersion(keySSI, versionHashlink, options, (err, dsuInstance) => {
                     if (err) {
                         return __loadFallbackDSURecursively(index - 1);
                     }
-
+                    if(index < versions.length - 1){
+                        return tryToRunRecoveryContentFnc (keySSI, dsuInstance, options, versions.slice(0, index), versions[versions.length-1], callback);
+                    }
                     callback(undefined, dsuInstance);
                 })
             }
@@ -30465,12 +30888,13 @@ const loadDSU = (keySSI, options, callback) => {
         return loadDSUVersionBasedOnVersionNumber(keySSI, versionNumber, callback);
     }
 
-    if (recoveryMode) {
+    if (options && options.recoveryMode) {
         return loadFallbackDSU(keySSI, options, callback);
     }
+
     const loadDSU = (addInCache) => {
 
-        const keySSIResolver = initializeResolver(options);
+        const keySSIResolver = getResolver(options);
         keySSIResolver.loadDSU(keySSI, options, (err, dsuInstance) => {
             if (err) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load DSU`, err));
@@ -30498,7 +30922,6 @@ const loadDSU = (keySSI, options, callback) => {
         }
         loadDSU(true);
     })
-
 };
 
 /*
@@ -30680,6 +31103,22 @@ function invalidateDSUCache(dsuKeySSI, callback) {
     });
 }
 
+function addDSUInstanceInCache(dsuInstance, callback) {
+    dsuInstance.getKeySSIAsObject((err, keySSI) => {
+        if (err) {
+            return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to retrieve keySSI`, err));
+        }
+        keySSI.getAnchorId((err, cacheKey) => {
+            if (err) {
+                return callback(err);
+            }
+            dsuCache.set(cacheKey, dsuInstance);
+            callback(undefined, dsuInstance);
+        });
+    });
+}
+
+
 module.exports = {
     createDSU,
     createDSUx,
@@ -30691,13 +31130,12 @@ module.exports = {
     getDSUHandler,
     registerDSUFactory,
     invalidateDSUCache,
-    setRecoveryMode,
     loadDSUVersion
 };
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../cache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./resolver-utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js","buffer":false,"key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","syndicate":"syndicate"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js":[function(require,module,exports){
+},{"../cache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./resolver-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js","buffer":false,"key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","syndicate":"syndicate"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js":[function(require,module,exports){
 (function (global){(function (){
 function getWebWorkerBootScript(dsuKeySSI) {
     const scriptLocation = document.currentScript
@@ -30732,7 +31170,7 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/index.js":[function(require,module,exports){
 /*
     Security Context related functionalities
 
@@ -30943,7 +31381,7 @@ module.exports = {
         isPINNeeded
     };
     
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./lib/MainDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js","./lib/SecurityContext":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./lib/MainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js","./lib/SecurityContext":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js":[function(require,module,exports){
 (function (Buffer){(function (){
 function InMemoryMainDSU() {
     const obj = {};
@@ -30977,7 +31415,7 @@ function InMemoryMainDSU() {
 module.exports = InMemoryMainDSU;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js":[function(require,module,exports){
+},{"buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js":[function(require,module,exports){
 const constants = require("../../moduleConstants");
 const {getURLForSsappContext} = require("../../utils/getURLForSsappContext");
 const openDSU = require("opendsu");
@@ -31065,7 +31503,7 @@ module.exports = {
     setMainDSU
 }
 
-},{"../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/getURLForSsappContext":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js","./InMemoryMainDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/getURLForSsappContext":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js","./InMemoryMainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js":[function(require,module,exports){
 const constants = require("../../moduleConstants");
 
 function SecurityContext(target, PIN) {
@@ -31405,7 +31843,7 @@ function SecurityContext(target, PIN) {
 
 module.exports = SecurityContext;
 
-},{"../../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/DSUStorage.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/DSUStorage.js":[function(require,module,exports){
 const { fetch } = require("./utils");
 
 // helpers
@@ -31715,12 +32153,12 @@ function getDSUStorage() {
 
 module.exports = getDSUStorage;
 
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/utils.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/index.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/index.js":[function(require,module,exports){
 module.exports = {
   getDSUStorage: require("./DSUStorage")
 };
 
-},{"./DSUStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/DSUStorage.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/utils.js":[function(require,module,exports){
+},{"./DSUStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/DSUStorage.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/utils.js":[function(require,module,exports){
 function promisify(fun) {
   return function (...args) {
     return new Promise((resolve, reject) => {
@@ -31763,7 +32201,7 @@ module.exports = {
   fetch: executeFetch,
 };
 
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/system/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js":[function(require,module,exports){
 const envVariables = {};
 function getEnvironmentVariable(name){
     if (typeof envVariables[name] !== "undefined") {
@@ -31796,7 +32234,7 @@ module.exports = {
     getBaseURL
 }
 
-},{"../utils/getBaseURL":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getBaseURL.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js":[function(require,module,exports){
+},{"../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js":[function(require,module,exports){
 const PendingCallMixin = require("./PendingCallMixin");
 /*
     Utility to make classes that depend on some initialisation easier to use.
@@ -31848,7 +32286,43 @@ module.exports.bindAutoPendingFunctions = function(obj, exceptionList){
     return obj;
 };
 
-},{"./PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js":[function(require,module,exports){
+module.exports.bindParallelAutoPendingFunctions = function(obj, exceptionList){
+    let originalFunctions = {};
+
+    for(let m in obj){
+        if(typeof obj[m] == "function"){
+            if(!exceptionList || exceptionList.indexOf(m) === -1){
+                originalFunctions[m] = obj[m];
+            }
+        }
+    }
+    PendingCallMixin(obj);
+    let isInitialised = false;
+
+    obj.finishInitialisation = function(){
+        isInitialised = true;
+        obj.executePendingCalls();
+    };
+
+    function getWrapper(func){
+        return function(...args){
+            if(isInitialised){
+                return func(...args);
+            } else {
+                obj.addPendingCall( function(){
+                    return func(...args);
+                })
+            }
+        }.bind(obj);
+    }
+
+    for(let m in originalFunctions){
+        obj[m] = getWrapper(originalFunctions[m]);
+    }
+    return obj;
+};
+
+},{"./PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js":[function(require,module,exports){
 function ObservableMixin(target) {
     let observers = {};
 
@@ -31906,7 +32380,7 @@ function ObservableMixin(target) {
 
 module.exports = ObservableMixin;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js":[function(require,module,exports){
 function PendingCallMixin(target) {
     let pendingCalls = [];
     let serialPendingCalls = [];
@@ -31955,7 +32429,71 @@ function PendingCallMixin(target) {
 }
 
 module.exports = PendingCallMixin;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/array.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/SmartUrl.js":[function(require,module,exports){
+function SmartUrl(bdnsEntry){
+    const {fetch, doPut, doPost, doGet} = require("opendsu").loadAPI("http");
+    let url = typeof bdnsEntry === "string" ? bdnsEntry : bdnsEntry.url;
+
+    if(!url){
+        console.debug(`<${JSON.stringify(bdnsEntry)}> BDNS entry wrong configuration.`);
+        throw new Error(`<${JSON.stringify(bdnsEntry)}> BDNS entry wrong configuration.`);
+    }
+
+    function getOptions(options){
+        let opts = options || {};
+        if(url !== bdnsEntry && bdnsEntry.headers){
+            if(!opts.headers){
+                opts.headers = {};
+            }
+            Object.assign(opts.headers, bdnsEntry.headers);
+        }
+        return opts;
+    }
+
+    this.fetch = (options)=>{
+        return fetch(url, getOptions(options));
+    }
+
+    this.doPut = (body, options, callback)=>{
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+       return doPut(url, body, getOptions(options), callback);
+    }
+
+    this.doPost = (body, options, callback)=>{
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+       return doPost(url, body, getOptions(options), callback);
+    }
+
+    this.doGet = (options, callback)=>{
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+        return doGet(url, getOptions(options), callback);
+    }
+
+    function concatUrls(base, path){
+        let returnUrl = base;
+        if(returnUrl.endsWith("/") && path.startsWith("/")){
+            returnUrl = returnUrl.slice(0, returnUrl.length-1);
+        }
+        returnUrl += path;
+        return returnUrl;
+    }
+
+    this.concatWith = (path) => {
+        return new SmartUrl(bdnsEntry === url ? concatUrls(url, path) :{url: concatUrls(url, path), headers:bdnsEntry.headers});
+    }
+}
+
+module.exports = SmartUrl;
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/array.js":[function(require,module,exports){
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -31965,7 +32503,7 @@ function shuffle(array) {
 
 module.exports.shuffle = shuffle;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getBaseURL.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 const system = require("../system");
 function getBaseURL(){
@@ -32004,7 +32542,7 @@ function getBaseURL(){
 }
 
 module.exports = getBaseURL;
-},{"../moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/system/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js":[function(require,module,exports){
 function getURLForSsappContext(relativePath) {
     if (window["$$"] && $$.SSAPP_CONTEXT && $$.SSAPP_CONTEXT.BASE_URL && $$.SSAPP_CONTEXT.SEED) {
         // if we have a BASE_URL then we prefix the fetch url with BASE_URL
@@ -32019,13 +32557,16 @@ module.exports = {
     getURLForSsappContext
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js":[function(require,module,exports){
 module.exports = {
     bindAutoPendingFunctions: require("./BindAutoPendingFunctions").bindAutoPendingFunctions,
+    bindParallelAutoPendingFunctions: require("./BindAutoPendingFunctions").bindParallelAutoPendingFunctions,
     ObservableMixin: require("./ObservableMixin"),
-    PendingCallMixin: require('./PendingCallMixin')
+    PendingCallMixin: require('./PendingCallMixin'),
+    SmartUrl: require("./SmartUrl"),
+    promiseRunner: require("./promise-runner")
 }
-},{"./BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./PendingCallMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/observable.js":[function(require,module,exports){
+},{"./BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./SmartUrl":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/SmartUrl.js","./promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js":[function(require,module,exports){
 module.exports.createObservable = function(){
 	let observableMixin = require("./ObservableMixin");
 	let obs = {};
@@ -32033,7 +32574,7 @@ module.exports.createObservable = function(){
 	observableMixin(obs);
 	return obs;
 }
-},{"./ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/promise-runner.js":[function(require,module,exports){
+},{"./ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js":[function(require,module,exports){
 const arrayUtils = require("./array");
 const { OpenDSUSafeCallback, createOpenDSUErrorWrapper } = require('./../error')
 
@@ -32192,7 +32733,7 @@ module.exports = {
   runEnoughForMajority,
 };
 
-},{"./../error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","./array":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/array.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js":[function(require,module,exports){
+},{"./../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","./array":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/array.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js":[function(require,module,exports){
 const cryptoSkillsRegistry = {};
 const methodsNames = require("../didMethodsNames");
 const KeyDID_CryptographicSkills = require("./KeyDID_CryptographicSkills");
@@ -32221,7 +32762,7 @@ module.exports = {
     NAMES: require("./cryptographicSkillsNames"),
     CryptographicSkillsMixin: require("./CryptographicSkillsMixin")
 };
-},{"../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js","./GroupDID_CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js","./KeyDID_CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js","./NameDID_CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js","./SReadDID_CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js","./SSI_KeyDID_CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js","./cryptographicSkillsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js":[function(require,module,exports){
+},{"../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js","./GroupDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js","./KeyDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js","./NameDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js","./SReadDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js","./SSI_KeyDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js","./cryptographicSkillsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js":[function(require,module,exports){
 function CryptographicSkillsMixin(target) {
     target = target || {};
     const crypto = require("pskcrypto");
@@ -32417,7 +32958,7 @@ function CryptographicSkillsMixin(target) {
 
 module.exports = CryptographicSkillsMixin;
 
-},{"opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js":[function(require,module,exports){
+},{"opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function GroupDID_CryptographicSkills() {
@@ -32430,7 +32971,7 @@ function GroupDID_CryptographicSkills() {
 }
 
 module.exports = GroupDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function KeyDID_CryptographicSkills() {
@@ -32443,7 +32984,7 @@ function KeyDID_CryptographicSkills() {
 }
 
 module.exports = KeyDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function NameDID_CryptographicSkills() {
@@ -32456,7 +32997,7 @@ function NameDID_CryptographicSkills() {
 }
 
 module.exports = NameDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function SReadDID_CryptographicSkills() {
@@ -32469,7 +33010,7 @@ function SReadDID_CryptographicSkills() {
 }
 
 module.exports = SReadDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function SSI_KeyDID_CryptographicSkills() {
@@ -32482,7 +33023,7 @@ function SSI_KeyDID_CryptographicSkills() {
 }
 
 module.exports = SSI_KeyDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js":[function(require,module,exports){
 module.exports = {
     CREATE_DID_DOCUMENT:"createDID_Document",
     SIGN: "sign",
@@ -32490,7 +33031,7 @@ module.exports = {
     ENCRYPT_MESSAGE: "encryptMessage",
     DECRYPT_MESSAGE: "decryptMessage"
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js":[function(require,module,exports){
 /*
     W3CDID Minxin is abstracting the DID document for OpenDSU compatible DID methods
 
@@ -32569,7 +33110,7 @@ function W3CDID_Mixin(target, enclave) {
             try {
                 message = message.getSerialisation();
             } catch (e) {
-                return callback(e);
+                message = JSON.stringify(message);
             }
         }
 
@@ -32697,7 +33238,7 @@ function W3CDID_Mixin(target, enclave) {
 
 module.exports = W3CDID_Mixin;
 
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js":[function(require,module,exports){
 
 /*
     W3CVC Mixin is abstracting a JWT based credential
@@ -32724,7 +33265,7 @@ function W3CVC_Mixin(){
 
 module.exports = W3CVC_Mixin;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js":[function(require,module,exports){
 const methodsNames = require("./didMethodsNames");
 const createNameDIDDocument = require("./didssi/NameDID_Document").initiateDIDDocument;
 const createGroupDID_Document = require("./didssi/GroupDID_Document").initiateDIDDocument;
@@ -32752,7 +33293,7 @@ module.exports = {
     registerDID_Document_Constructor,
     createDID_Document
 }
-},{"./didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/GroupDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./didssi/KeyDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./didssi/NameDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./didssi/SReadDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","./w3cdids/KeyDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js":[function(require,module,exports){
+},{"./didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/GroupDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./didssi/KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./didssi/NameDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./didssi/SReadDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","./w3cdids/KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js":[function(require,module,exports){
 module.exports = {
     OPENDSU_METHOD_NAME: "ssi",
     KEY_SUBTYPE: "key",
@@ -32762,7 +33303,7 @@ module.exports = {
     GROUP_METHOD_NAME: "ssi:group",
     DEMO_METHOD_NAME: "demo"
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createOpenDSUErrorWrapper} = require("../../error");
 
@@ -32914,7 +33455,7 @@ module.exports = ConstDID_Document_Mixin;
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","buffer":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js":[function(require,module,exports){
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","buffer":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 
 function GroupDID_Document(enclave, domain, groupName, isInitialisation) {
@@ -33127,7 +33668,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 const {bindAutoPendingFunctions} = require("../../utils/BindAutoPendingFunctions");
 
@@ -33217,7 +33758,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../W3CDID_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 
 function NameDID_Document(enclave, domain, name, isInitialisation) {
@@ -33261,7 +33802,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 
 function SReadDID_Document(enclave, isInitialisation, seedSSI) {
@@ -33372,7 +33913,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js":[function(require,module,exports){
 function storeDIDInSC(didDocument, callback) {
     const securityContext = require("opendsu").loadAPI("sc").getSecurityContext();
     const __registerDID = () => {
@@ -33526,7 +34067,273 @@ module.exports = {
     create_GroupDID_Method
 }
 
-},{"./GroupDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./KeyDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./NameDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./SReadDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/index.js":[function(require,module,exports){
+},{"./GroupDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./NameDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./SReadDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js":[function(require,module,exports){
+function CommunicationHub() {
+    const pubSub = require("soundpubsub").soundPubSub;
+    const didAPI = require("opendsu").loadAPI("w3cdid");
+    const connectedToMQ = {};
+    let strongPubSub;
+    const getChannelName = (did, messageType) => {
+        return `${did.getIdentifier()}/${messageType}`;
+    }
+
+    const ensureDIDDocumentIsLoadedThenExecute = (did, fnToExecute) => {
+        if (typeof did === "string") {
+            return didAPI.resolveDID(did, (err, resolvedDID) => {
+                if (err) {
+                    console.error(err)
+                }
+
+                did = resolvedDID;
+                fnToExecute(did);
+            })
+        }
+
+        fnToExecute(did);
+    }
+
+    this.subscribe = (did, messageType, callback) => {
+        const __subscribe = (did) => {
+            if (!connectedToMQ[did.getIdentifier()]) {
+                connectedToMQ[did.getIdentifier()] = true;
+                did.waitForMessages((err, message) => {
+                    if (err) {
+                        console.error(err);
+                    }
+
+                    try {
+                        message = JSON.parse(message);
+                    } catch (e) {
+                        console.error(e);
+                    }
+
+                    const channelName = getChannelName(did, message.messageType);
+                    if (!pubSub.hasChannel(channelName)) {
+                        pubSub.addChannel(channelName);
+                    }
+
+                    pubSub.publish(channelName, message);
+                });
+            }
+            const channel = getChannelName(did, messageType);
+            pubSub.subscribe(channel, callback);
+        }
+
+        ensureDIDDocumentIsLoadedThenExecute(did, __subscribe);
+    };
+
+    this.unsubscribe = (did, messageType, callback) => {
+        const stopWaitingForMessages = (did) => {
+            did.stopWaitingForMessages();
+            const channel = getChannelName(did, messageType);
+            delete connectedToMQ[did.getIdentifier()];
+            pubSub.unsubscribe(channel, callback);
+        }
+
+        ensureDIDDocumentIsLoadedThenExecute(did, stopWaitingForMessages);
+    };
+
+    const subscribers = {};
+    // soundpubSub keeps WeakRefs
+    this.strongSubscribe = (did, messageType, callback) => {
+        const __strongSubscribe = (did) => {
+            const channelName = getChannelName(did, messageType);
+            if (!subscribers[channelName]) {
+                subscribers[channelName] = [];
+            }
+
+            const index = subscribers[channelName].findIndex(sub => sub === callback);
+            if (index === -1) {
+                subscribers[channelName].push(callback);
+            }
+
+            this.subscribe(did, messageType, callback);
+        }
+
+        ensureDIDDocumentIsLoadedThenExecute(did, __strongSubscribe);
+    }
+
+    this.strongUnsubscribe = (did, messageType, callback) => {
+        const channelName = getChannelName(did, messageType);
+        const __strongUnsubscribe = (did) => {
+            if (!subscribers[channelName]) {
+                return callback();
+            }
+
+            const index = subscribers[channelName].findIndex(sub => sub === callback);
+            if (index === -1) {
+                return callback();
+            }
+
+            subscribers[channelName].splice(index);
+            if (subscribers[channelName].length === 0) {
+                delete subscribers[channelName];
+                return callback();
+            }
+
+            this.unsubscribe(did, messageType, callback);
+        }
+
+        ensureDIDDocumentIsLoadedThenExecute(did, __strongUnsubscribe);
+    }
+
+    this.getPubSub = () => {
+        return pubSub;
+    }
+
+    const createStrongPubSub = (_pubSub) => {
+        const strongPubSub = Object.assign({}, _pubSub);
+        strongPubSub.subscribe = (target, callback, waitForMore, filter) => {
+            if (!subscribers[target]) {
+                subscribers[target] = [];
+            }
+
+            const index = subscribers[target].findIndex(sub => sub === callback);
+            if (index === -1) {
+                subscribers[target].push(callback);
+            }
+
+            if (!_pubSub.hasChannel(target)) {
+                _pubSub.addChannel(target);
+            }
+
+            _pubSub.subscribe(target, callback, waitForMore, filter);
+        }
+
+        strongPubSub.unsubscribe = (target, callback, filter) => {
+            if (!strongPubSub[target]) {
+                return callback();
+            }
+
+            const index = subscribers[target].findIndex(sub => sub === callback);
+            if (index === -1) {
+                return callback();
+            }
+
+            subscribers[target].splice(index);
+            if (subscribers[target].length === 0) {
+                delete subscribers[target];
+                return callback();
+            }
+
+            _pubSub.unsubscribe(target, callback, filter);
+        }
+
+        return strongPubSub;
+    }
+
+    this.getStrongPubSub = () => {
+        if (!strongPubSub) {
+            strongPubSub = createStrongPubSub(pubSub);
+        }
+
+        return strongPubSub;
+    }
+}
+
+const getCommunicationHub = () => {
+    if (!$$.CommunicationHub) {
+        $$.CommunicationHub = new CommunicationHub();
+    }
+
+    return $$.CommunicationHub;
+}
+
+module.exports = {
+    getCommunicationHub
+}
+},{"opendsu":"opendsu","soundpubsub":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/TypicalBusinessLogicHub.js":[function(require,module,exports){
+const {createOpenDSUErrorWrapper} = require("../../error");
+const getCheckVariableFunction = function (envVariableName, hubContext, selector,  callback) {
+    if (hubContext[selector]) {
+        hubContext.self.finishInitialisation();
+        return callback(undefined, hubContext[selector]);
+    }
+    hubContext.configAPI.getEnv(envVariableName, (err, envValue) => {
+        if (err || !envValue) {
+            return callback(undefined, false);
+        }
+
+        hubContext[selector] = envValue;
+        hubContext.self.finishInitialisation();
+        callback(undefined, envValue);
+    });
+};
+
+const setVariable = function (envVariableName, value, hubContext, selector, callback) {
+    hubContext[selector] = value;
+    hubContext.configAPI.setEnv(envVariableName, value, err => {
+        if (err) {
+            return callback(createOpenDSUErrorWrapper(`Failed to initialise app`, err));
+        }
+
+        hubContext.self.finishInitialisation();
+        callback(undefined);
+    });
+};
+function TypicalBusinessLogicHub() {
+    const openDSU = require("opendsu");
+    const didAPI = openDSU.loadAPI("w3cdid");
+    const configAPI = openDSU.loadAPI("config");
+    const utilsAPI = openDSU.loadAPI("utils");
+    const constants = openDSU.constants;
+    const APP_MAIN_DID = "appMainDID";
+    const SHARED_ENCLAVE = "sharedEnclave";
+    let hubContext = {
+        appMainDID: undefined,
+        sharedEnclave: undefined,
+        self: this,
+        configAPI
+    }
+    const commHub = didAPI.getCommunicationHub();
+
+    this.mainDIDCreated = (callback) => {
+        getCheckVariableFunction(constants.MAIN_APP_DID, hubContext, APP_MAIN_DID, callback);
+    }
+
+    this.setMainDID = (appMainDID, callback) => {
+        setVariable(constants.MAIN_APP_DID, appMainDID, hubContext, APP_MAIN_DID, callback);
+    }
+
+    this.sharedEnclaveIsSet = (callback) => {
+        getCheckVariableFunction(constants.SHARED_ENCLAVE, hubContext, SHARED_ENCLAVE, callback);
+    }
+
+    this.setSharedEnclave = (sharedEnclaveKeySSI, callback) => {
+        setVariable(constants.SHARED_ENCLAVE, sharedEnclaveKeySSI, hubContext, SHARED_ENCLAVE, callback);
+    }
+
+    this.subscribe = (messageType, checkSecurityMethod, callback) => {
+        commHub.subscribe(hubContext.appMainDID, messageType, checkSecurityMethod, callback);
+    }
+
+    this.unsubscribe = (messageType, callback) => {
+        commHub.unsubscribe(hubContext.appMainDID, messageType, callback);
+    }
+
+    this.strongSubscribe = (messageType, callback) => {
+        commHub.strongSubscribe(hubContext.appMainDID, messageType, callback);
+    }
+
+    this.strongUnsubscribe = (messageType, callback) => {
+        commHub.strongUnsubscribe(hubContext.appMainDID, messageType, callback);
+    }
+
+    utilsAPI.bindParallelAutoPendingFunctions(this, ["mainDIDCreated", "setMainDID", "sharedEnclaveIsSet", "setSharedEnclave"]);
+}
+
+const getTypicalBusinessLogicHub = () => {
+    if (!$$.TypicalBusinessLogicHub) {
+        $$.TypicalBusinessLogicHub = new TypicalBusinessLogicHub();
+    }
+
+    return $$.TypicalBusinessLogicHub;
+}
+
+module.exports = {
+    getTypicalBusinessLogicHub
+}
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/index.js":[function(require,module,exports){
 /*
     OpenDSU W3C compatible  ID pluginisable resolver  that can resolve arbitrary DID methods.
 
@@ -33653,10 +34460,12 @@ module.exports = {
     registerDIDMethod,
     CryptographicSkills: require("./CryptographicSkills/CryptographicSkills"),
     W3CDIDMixin: require('./W3CDID_Mixin'),
-    W3CCVCMixin: require('./W3CVC_Mixin')
+    W3CCVCMixin: require('./W3CVC_Mixin'),
+    getCommunicationHub: require("./hubs/CommunicationHub").getCommunicationHub,
+    getTypicalBusinessLogicHub: require("./hubs/TypicalBusinessLogicHub").getTypicalBusinessLogicHub
 }
 
-},{"./CryptographicSkills/CryptographicSkills":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js","./W3CDID_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","./W3CVC_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js","./didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/ssiMethods":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js","./w3cdids/didMethods":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js","opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js":[function(require,module,exports){
+},{"./CryptographicSkills/CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js","./W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","./W3CVC_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js","./didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/ssiMethods":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js","./hubs/CommunicationHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js","./hubs/TypicalBusinessLogicHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/TypicalBusinessLogicHub.js","./w3cdids/didMethods":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const methodsNames = require("../didMethodsNames");
 
@@ -33749,7 +34558,7 @@ module.exports = {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../utils/ObservableMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","buffer":false,"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","buffer":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js":[function(require,module,exports){
 function KeyDID_Method() {
     let KeyDIDDocument = require("./KeyDID_Document");
     this.create = function (enclave, publicKey, privateKey, callback) {
@@ -33779,7 +34588,7 @@ module.exports = {
         return new KeyDID_Method();
     }
 }
-},{"./KeyDID_Document":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/bootScript/node.js":[function(require,module,exports){
+},{"./KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/node.js":[function(require,module,exports){
 module.exports = () => {
     const worker_threads = "worker_threads";
     const { parentPort } = require(worker_threads);
@@ -33803,7 +34612,7 @@ module.exports = () => {
         setTimeout(() => process.exit(1), 100);
     });
 }
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/bootScript/web.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/web.js":[function(require,module,exports){
 module.exports = () => {
     addEventListener('message', (event) => {
         const { functionName, payload } = event.data;
@@ -33824,7 +34633,7 @@ module.exports = () => {
         console.error("[workers] web worker error", error);
     });
 }
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/functions.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/functions.js":[function(require,module,exports){
 function runSyncFunction({ apiSpaceName, functionName, params }) {
     const openDSU = require("opendsu");
     const api = openDSU.loadAPI(apiSpaceName);
@@ -33844,7 +34653,7 @@ module.exports = {
     runSyncFunction,
     runSyncFunctionOnlyFromWorker
 }
-},{"opendsu":"opendsu"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/index.js":[function(require,module,exports){
 (function (global){(function (){
 function getWebWorkerBootScript() {
     const scriptLocation = document.currentScript
@@ -34023,11 +34832,14 @@ module.exports = {
 }
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../moduleConstants.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./bootScript/node":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/bootScript/node.js","./bootScript/web":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/bootScript/web.js","./functions":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/functions.js","opendsu":"opendsu","syndicate":"syndicate"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
+},{"../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./bootScript/node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/node.js","./bootScript/web":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/web.js","./functions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/functions.js","opendsu":"opendsu","syndicate":"syndicate"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
+const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
+if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined" ) {
+    process.env.OPENDSU_ENABLE_DEBUG = IS_DEV_MODE.toString();
+}
 const DEBUG_LOG_ENABLED = process.env.OPENDSU_ENABLE_DEBUG === "true";
-
 if ($$.environmentType === envTypes.NODEJS_ENVIRONMENT_TYPE) {
     const logger = new Logger("Logger", "overwrite-require");
     if (DEBUG_LOG_ENABLED) {
@@ -34040,7 +34852,6 @@ if ($$.environmentType === envTypes.NODEJS_ENVIRONMENT_TYPE) {
 
 function Logger(className, moduleName, logFile) {
     const MAX_STRING_LENGTH = 11;
-    const IS_DEV_MODE = process.env.DEV === "true";
     const getPaddingForArg = (arg, maxLen = MAX_STRING_LENGTH) => {
         let noSpaces = Math.abs(maxLen - arg.length);
         let spaces = String(" ").repeat(noSpaces);
@@ -34116,7 +34927,7 @@ function Logger(className, moduleName, logFile) {
 
     const stripCodeFromArgs = (...args) => {
         let code = args[0];
-        if (typeof code !== "number") {
+        if (typeof code !== "number" || args.length === 1) {
             code = 0;
         } else {
             args.shift();
@@ -34199,7 +35010,7 @@ module.exports = {
     getLogger
 }
 
-},{"./moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
+},{"./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
 module.exports = {
   BROWSER_ENVIRONMENT_TYPE: 'browser',
   MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
@@ -34210,7 +35021,7 @@ module.exports = {
   NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
 (function (global){(function (){
 let logger = console;
 
@@ -34533,7 +35344,7 @@ $$.registerGlobalSymbol("throttlingEvent", function (...args) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"buffer":false,"psklogger":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-cache/lib/Cache.js":[function(require,module,exports){
+},{"buffer":false,"psklogger":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-cache/lib/Cache.js":[function(require,module,exports){
 const DEFAULT_ITEMS_LIMIT = 1000;
 const DEFAULT_STORAGE_LEVELS = 3;
 
@@ -34573,6 +35384,10 @@ function Cache(options) {
     }
 
     this.storage = this.createStorage(this.maxLevels);
+
+    this.resetCache = ()=>{
+        this.storage = this.createStorage(this.maxLevels);
+    }
 
     /**
      * @param {*} key
@@ -34652,7 +35467,7 @@ function Cache(options) {
 
 module.exports = Cache;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -34757,7 +35572,7 @@ module.exports = {
     convertKeysToKeyObjects
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js":[function(require,module,exports){
 module.exports = {
     curveName: 'secp256k1',
     encodingFormat: 'base64',
@@ -34773,7 +35588,7 @@ module.exports = {
     publicKeyType: 'spki'
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -34811,7 +35626,7 @@ module.exports = {
     symmetricDecrypt
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -34848,7 +35663,7 @@ module.exports = {
     verifyDigitalSignature
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -34886,7 +35701,7 @@ class ECEphemeralKeyAgreement {
 
 module.exports = ECEphemeralKeyAgreement
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js":[function(require,module,exports){
 'use strict';
 
 const cipher = require('./cipher')
@@ -34916,7 +35731,7 @@ module.exports = {
     PublicKeyDeserializer: require('./pkdeserializer')
 }
 
-},{"./cipher":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js","./digitalsig":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js","./ecephka":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js","./kdf":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js","./kmac":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js","./pkdeserializer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js","./pkserializer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js":[function(require,module,exports){
+},{"./cipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js","./digitalsig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js","./ecephka":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js","./kdf":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js","./kmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js","./pkdeserializer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js","./pkserializer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -34947,7 +35762,7 @@ module.exports = {
     KDF2
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -34974,7 +35789,7 @@ module.exports = {
     verifyKMAC
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","./index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto')
@@ -35008,7 +35823,7 @@ function PublicKeyDeserializer() {
 
 module.exports = new PublicKeyDeserializer()
 
-},{"../../lib/ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js":[function(require,module,exports){
+},{"../../lib/ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js":[function(require,module,exports){
 const config = require('../config');
 
 function PublicKeySerializer() {
@@ -35037,7 +35852,7 @@ function PublicKeySerializer() {
 
 module.exports = new PublicKeySerializer()
 
-},{"../../lib/ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js":[function(require,module,exports){
+},{"../../lib/ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -35106,7 +35921,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     };
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -35166,7 +35981,7 @@ module.exports.encrypt = function (senderECSigningKeyPair, receiverECDHPublicKey
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 };
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -35174,7 +35989,7 @@ module.exports = {
   decrypt: require('./decrypt').decrypt,
   getDecodedECDHPublicKeyFromEncEnvelope: require('../common').getDecodedECDHPublicKeyFromEncEnvelope
 }
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto');
@@ -35239,7 +36054,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     };
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto');
@@ -35294,9 +36109,9 @@ module.exports.encrypt = function (senderECDHKeyPair, receiverECDHPublicKey, mes
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 };
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -35348,7 +36163,7 @@ module.exports.decrypt = function (receiverECDHKeyPair, encEnvelope, options) {
     return mycrypto.symmetricDecrypt(symmetricCipherKey, ciphertext, iv, options)
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const utils = require('../utils')
@@ -35409,7 +36224,7 @@ module.exports.encrypt = function (message, ...receiverECDHPublicKeys) {
     }
 }
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -35418,7 +36233,7 @@ module.exports = {
   getRecipientECDHPublicKeysFromEncEnvelope: require('../utils').getRecipientECDHPublicKeysFromEncEnvelope
 }
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -35469,7 +36284,7 @@ module.exports.decrypt = function (receiverECDHKeyPair, encEnvelope, options) {
     }
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -35518,9 +36333,9 @@ module.exports.encrypt = function (senderECSigningKeyPair, message, ...receiverE
     return eciesGEEnvelope;
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"][0].apply(exports,arguments)
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"][0].apply(exports,arguments)
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js":[function(require,module,exports){
 'use strict';
 
 const sender = require('./sender')
@@ -35536,7 +36351,7 @@ module.exports = {
 
 
 
-},{"./recipient":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js","./sender":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js":[function(require,module,exports){
+},{"./recipient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js","./sender":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -35620,7 +36435,7 @@ module.exports.parseKeyBuffer = function (keyBuffer, options) {
     }
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -35658,7 +36473,7 @@ module.exports.senderMultiRecipientECIESEncrypt = function(message, ...receiverE
     return $$.Buffer.from(JSON.stringify(eciesInstancesArray))
 }
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -35709,7 +36524,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     return mycrypto.symmetricDecrypt(symmetricEncryptionKey, ciphertext, iv, options)
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -35751,9 +36566,9 @@ module.exports.encrypt = function (receiverECDHPublicKey, message, options) {
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
-},{"../common":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js":[function(require,module,exports){
 module.exports = {
     ecies_encrypt: require("./ecies").encrypt,
     ecies_decrypt: require("./ecies").decrypt,
@@ -35769,7 +36584,7 @@ module.exports = {
     ecies_group_getRecipientECDHPublicKeysFromEncEnvelope: require("./ecies-group-encryption/ecies-ge-doa").getRecipientECDHPublicKeysFromEncEnvelope
 }
 
-},{"./ecies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js","./ecies-doa-ds":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js","./ecies-doa-kmac":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js","./ecies-group-encryption/ecies-ge-anon":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js","./ecies-group-encryption/ecies-ge-doa":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js","./ecies/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js":[function(require,module,exports){
+},{"./ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js","./ecies-doa-ds":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js","./ecies-doa-kmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js","./ecies-group-encryption/ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js","./ecies-group-encryption/ecies-ge-doa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js","./ecies/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js":[function(require,module,exports){
 var jws = require('./jws');
 
 module.exports = function (jwt, options) {
@@ -35800,7 +36615,7 @@ module.exports = function (jwt, options) {
     }
     return payload;
 };
-},{"./jws":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js":[function(require,module,exports){
+},{"./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js":[function(require,module,exports){
 module.exports = {
     verify: require('./verify'),
     sign: require('./sign'),
@@ -35811,7 +36626,7 @@ Object.defineProperty(module.exports, 'decode', {
     value: require('./decode'),
 });
 
-},{"./decode":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./sign":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js","./verify":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js":[function(require,module,exports){
+},{"./decode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js","./verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js":[function(require,module,exports){
 var getParamBytesForAlg = require('./param-bytes-for-alg');
 
 var MAX_OCTET = 0x80,
@@ -35995,7 +36810,7 @@ module.exports = {
     derToJose: derToJose,
     joseToDer: joseToDer
 };
-},{"./param-bytes-for-alg":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js":[function(require,module,exports){
+},{"./param-bytes-for-alg":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js":[function(require,module,exports){
 var crypto = require('crypto');
 var formatEcdsa = require('./ecdsa-sig-formatter');
 var util = require('util');
@@ -36246,7 +37061,7 @@ module.exports = function jwa(algorithm) {
         verify: verifierFactories[algo](bits),
     }
 };
-},{"./ecdsa-sig-formatter":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js","crypto":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js":[function(require,module,exports){
+},{"./ecdsa-sig-formatter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js","crypto":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js":[function(require,module,exports){
 'use strict';
 
 function getParamSize(keySize) {
@@ -36270,7 +37085,7 @@ function getParamBytesForAlg(alg) {
 }
 
 module.exports = getParamBytesForAlg;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js":[function(require,module,exports){
 var asn = require('../../lib/asn1/asn1');
 var crypto = require('crypto')
 var BN = asn.bignum
@@ -36323,7 +37138,7 @@ function factor(e, d, n) {
 }
 
 module.exports = factor
-},{"../../lib/asn1/asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js":[function(require,module,exports){
+},{"../../lib/asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var asn = require('../../lib/asn1/asn1')
 var factor = require('./factor')
@@ -36560,7 +37375,7 @@ module.exports = {
 }
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../lib/asn1/asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./factor":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js","buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js":[function(require,module,exports){
+},{"../../lib/asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./factor":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js":[function(require,module,exports){
 /*global module, process*/
 var Stream = require('stream');
 var util = require('util');
@@ -36615,7 +37430,7 @@ DataStream.prototype.end = function end(data) {
 };
 
 module.exports = DataStream;
-},{"stream":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js":[function(require,module,exports){
+},{"stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js":[function(require,module,exports){
 /*global exports*/
 var SignStream = require('./sign-stream');
 var VerifyStream = require('./verify-stream');
@@ -36638,7 +37453,7 @@ exports.createSign = function createSign(opts) {
 exports.createVerify = function createVerify(opts) {
     return new VerifyStream(opts);
 };
-},{"./sign-stream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js","./verify-stream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js":[function(require,module,exports){
+},{"./sign-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js","./verify-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js":[function(require,module,exports){
 var DataStream = require('./data-stream');
 var jwa = require('../jwa');
 var Stream = require('stream');
@@ -36715,7 +37530,7 @@ SignStream.prototype.sign = function sign() {
 SignStream.sign = jwsSign;
 
 module.exports = SignStream;
-},{"../jwa":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js":[function(require,module,exports){
+},{"../jwa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js":[function(require,module,exports){
 module.exports = function toString(obj) {
     if (typeof obj === 'string')
         return obj;
@@ -36723,7 +37538,7 @@ module.exports = function toString(obj) {
         return obj.toString();
     return JSON.stringify(obj);
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js":[function(require,module,exports){
 /*global module*/
 var DataStream = require('./data-stream');
 var jwa = require('../jwa');
@@ -36843,7 +37658,7 @@ VerifyStream.isValid = isValidJws;
 VerifyStream.verify = jwsVerify;
 
 module.exports = VerifyStream;
-},{"../jwa":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js":[function(require,module,exports){
+},{"../jwa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js":[function(require,module,exports){
 var JsonWebTokenError = function (message, error) {
     Error.call(this, message);
     if(Error.captureStackTrace) {
@@ -36858,7 +37673,7 @@ JsonWebTokenError.prototype = Object.create(Error.prototype);
 JsonWebTokenError.prototype.constructor = JsonWebTokenError;
 
 module.exports = JsonWebTokenError;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js":[function(require,module,exports){
 var JsonWebTokenError = require('./JsonWebTokenError');
 
 var NotBeforeError = function (message, date) {
@@ -36872,7 +37687,7 @@ NotBeforeError.prototype = Object.create(JsonWebTokenError.prototype);
 NotBeforeError.prototype.constructor = NotBeforeError;
 
 module.exports = NotBeforeError;
-},{"./JsonWebTokenError":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js":[function(require,module,exports){
+},{"./JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js":[function(require,module,exports){
 var JsonWebTokenError = require('./JsonWebTokenError');
 
 var TokenExpiredError = function (message, expiredAt) {
@@ -36886,7 +37701,7 @@ TokenExpiredError.prototype = Object.create(JsonWebTokenError.prototype);
 TokenExpiredError.prototype.constructor = TokenExpiredError;
 
 module.exports = TokenExpiredError;
-},{"./JsonWebTokenError":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js":[function(require,module,exports){
+},{"./JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js":[function(require,module,exports){
 module.exports = function (time, iat) {
     var timestamp = iat || Math.floor(Date.now() / 1000);
 
@@ -36897,7 +37712,7 @@ module.exports = function (time, iat) {
     }
 
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var timespan = require('./lib/timespan');
 var jws = require('./jws');
@@ -37031,7 +37846,7 @@ module.exports = function (payload, secretOrPrivateKey, options, callback) {
 };
 }).call(this)}).call(this,{"isBuffer":require("../../../node_modules/is-buffer/index.js")})
 
-},{"../../../node_modules/is-buffer/index.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/node_modules/is-buffer/index.js","./jws":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/timespan":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js":[function(require,module,exports){
+},{"../../../node_modules/is-buffer/index.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js","./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/timespan":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js":[function(require,module,exports){
 var JsonWebTokenError = require('./lib/JsonWebTokenError');
 var NotBeforeError = require('./lib/NotBeforeError');
 var TokenExpiredError = require('./lib/TokenExpiredError');
@@ -37257,7 +38072,7 @@ module.exports = function (jwtString, secretOrPublicKey, options, callback) {
         return done(null, payload);
     });
 };
-},{"./decode":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./jwkToPemConverter":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js","./jws":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/JsonWebTokenError":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js","./lib/NotBeforeError":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js","./lib/TokenExpiredError":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js","./lib/timespan":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js":[function(require,module,exports){
+},{"./decode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./jwkToPemConverter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js","./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js","./lib/NotBeforeError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js","./lib/TokenExpiredError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js","./lib/timespan":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js":[function(require,module,exports){
 const utils = require("./utils/cryptoUtils");
 
 function ECKeyGenerator() {
@@ -37403,7 +38218,7 @@ exports.createECKeyGenerator = () => {
     return new ECKeyGenerator();
 };
 
-},{"./keyEncoder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js":[function(require,module,exports){
+},{"./keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js":[function(require,module,exports){
 function PskCrypto() {
     const crypto = require('crypto');
     const utils = require("./utils/cryptoUtils");
@@ -37623,7 +38438,7 @@ module.exports = new PskCrypto();
 
 
 
-},{"../js-mutual-auth-ecies/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js","../jsonWebToken":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js","../signsensusDS/ssutil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js","./ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","./PskEncryption":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js","./utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","./utils/eth":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js":[function(require,module,exports){
+},{"../js-mutual-auth-ecies/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js","../jsonWebToken":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js","../signsensusDS/ssutil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js","./ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","./PskEncryption":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js","./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","./utils/eth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js":[function(require,module,exports){
 function PskEncryption(algorithm) {
     const crypto = require("crypto");
     const utils = require("./utils/cryptoUtils");
@@ -37649,10 +38464,19 @@ function PskEncryption(algorithm) {
         if (typeof encryptionKey === "string") {
             encryptionKey = $$.Buffer.from(encryptionKey);
         }
-        iv = iv || crypto.randomBytes(16);
+        if(options && options.avoidRandom){
+            iv = utils.generateSalt(encryptionKey, 16);
+        }else{
+            iv = iv || crypto.randomBytes(16);
+        }
+
         const cipher = crypto.createCipheriv(algorithm, encryptionKey, iv, options);
         if (encryptionIsAuthenticated) {
-            aad = crypto.randomBytes(encryptionKey.length);
+            if(options && options.avoidRandom){
+                aad = utils.generateSalt(encryptionKey, encryptionKey.length);
+            }else{
+                aad = crypto.randomBytes(encryptionKey.length);
+            }
             cipher.setAAD(aad);
         }
 
@@ -37723,7 +38547,7 @@ function PskEncryption(algorithm) {
 
 module.exports = PskEncryption;
 
-},{"./utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js":[function(require,module,exports){
+},{"./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js":[function(require,module,exports){
 var asn1 = require('./asn1');
 var inherits = require('util').inherits;
 
@@ -37784,7 +38608,7 @@ Entity.prototype.encode = function encode(data, enc, /* internal */ reporter) {
   return this._getEncoder(enc).encode(data, reporter);
 };
 
-},{"./asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false,"vm":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js":[function(require,module,exports){
+},{"./asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false,"vm":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js":[function(require,module,exports){
 var asn1 = exports;
 
 asn1.bignum = require('./bignum/bn');
@@ -37795,7 +38619,7 @@ asn1.constants = require('./constants/index');
 asn1.decoders = require('./decoders/index');
 asn1.encoders = require('./encoders/index');
 
-},{"./api":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js","./base/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","./bignum/bn":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","./constants/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js","./decoders/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js","./encoders/index":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js":[function(require,module,exports){
+},{"./api":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js","./base/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","./bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","./constants/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js","./decoders/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js","./encoders/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 const Reporter = require('../base').Reporter;
 
@@ -37914,7 +38738,7 @@ EncoderBuffer.prototype.join = function join(out, offset) {
     return out;
 };
 
-},{"../base":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js":[function(require,module,exports){
+},{"../base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js":[function(require,module,exports){
 var base = exports;
 
 base.Reporter = require('./reporter').Reporter;
@@ -37922,7 +38746,7 @@ base.DecoderBuffer = require('./buffer').DecoderBuffer;
 base.EncoderBuffer = require('./buffer').EncoderBuffer;
 base.Node = require('./node');
 
-},{"./buffer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js","./node":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js","./reporter":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js":[function(require,module,exports){
+},{"./buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js","./node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js","./reporter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js":[function(require,module,exports){
 var Reporter = require('../base').Reporter;
 var EncoderBuffer = require('../base').EncoderBuffer;
 //var assert = require('double-check').assert;
@@ -38522,7 +39346,7 @@ Node.prototype._encodePrimitive = function encodePrimitive(tag, data) {
     throw new Error('Unsupported tag: ' + tag);
 };
 
-},{"../base":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js":[function(require,module,exports){
+},{"../base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 function Reporter(options) {
@@ -38626,7 +39450,7 @@ ReporterError.prototype.rethrow = function rethrow(msg) {
   return this;
 };
 
-},{"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js":[function(require,module,exports){
+},{"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js":[function(require,module,exports){
 (function (module, exports) {
 
 'use strict';
@@ -41069,7 +41893,7 @@ Mont.prototype.invm = function invm(a) {
 
 })(typeof module === 'undefined' || module, this);
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js":[function(require,module,exports){
 var constants = require('../constants');
 
 exports.tagClass = {
@@ -41113,7 +41937,7 @@ exports.tag = {
 };
 exports.tagByName = constants._reverse(exports.tag);
 
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js":[function(require,module,exports){
 var constants = exports;
 
 // Helper
@@ -41134,7 +41958,7 @@ constants._reverse = function reverse(map) {
 
 constants.der = require('./der');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 var asn1 = require('../asn1');
@@ -41427,13 +42251,13 @@ function derDecodeLen(buf, primitive, fail) {
   return len;
 }
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js":[function(require,module,exports){
 var decoders = exports;
 
 decoders.der = require('./der');
 decoders.pem = require('./pem');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","./pem":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 
 const asn1 = require('../asn1');
@@ -41483,7 +42307,7 @@ PEMDecoder.prototype.decode = function decode(data, options) {
     return DERDecoder.prototype.decode.call(this, input, options);
 };
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 const asn1 = require('../asn1');
 const base = asn1.base;
@@ -41753,13 +42577,13 @@ function encodeTag(tag, primitive, cls, reporter) {
     return res;
 }
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js":[function(require,module,exports){
 var encoders = exports;
 
 encoders.der = require('./der');
 encoders.pem = require('./pem');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","./pem":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 var asn1 = require('../asn1');
@@ -41783,7 +42607,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
   return out.join('\n');
 };
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js":[function(require,module,exports){
 'use strict'
 
 const asn1 = require('./asn1/asn1');
@@ -41956,7 +42780,7 @@ KeyEncoder.prototype.encodePublic = function (publicKey, originalFormat, destina
 
 module.exports = KeyEncoder;
 
-},{"./asn1/asn1":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./asn1/bignum/bn":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js":[function(require,module,exports){
+},{"./asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./asn1/bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js":[function(require,module,exports){
 const stream = require('stream');
 const util = require('util');
 
@@ -41981,7 +42805,7 @@ DuplexStream.prototype._read = function (n) {
 };
 
 module.exports = DuplexStream;
-},{"stream":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js":[function(require,module,exports){
+},{"stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js":[function(require,module,exports){
 const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 const BASE = ALPHABET.length;
 const LEADER = ALPHABET.charAt(0);
@@ -42116,7 +42940,7 @@ module.exports = {
     encode,
     decode
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const BASE_MAP = {};
@@ -42236,7 +43060,7 @@ module.exports = {
 }
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js":[function(require,module,exports){
+},{"buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js":[function(require,module,exports){
 const base58 = require('./base58');
 const base64 = require('./base64');
 const keyEncoder = require("../keyEncoder");
@@ -42375,7 +43199,7 @@ module.exports = {
 };
 
 
-},{"../keyEncoder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./base58":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js","./base64":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js":[function(require,module,exports){
+},{"../keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./base58":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js","./base64":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const keyEncoder = require("../keyEncoder");
 const BN = require('../asn1/bignum/bn');
@@ -42468,7 +43292,7 @@ module.exports = {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../PskCrypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","../asn1/bignum/bn":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","../keyEncoder":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","../utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","buffer":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js":[function(require,module,exports){
+},{"../ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../PskCrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","../asn1/bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","../keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","../utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js":[function(require,module,exports){
 const stream = require('stream');
 
 
@@ -42496,7 +43320,7 @@ module.exports            = isStream;
 module.exports.isReadable = isReadable;
 module.exports.isWritable = isWritable;
 module.exports.isDuplex   = isDuplex;
-},{"stream":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js":[function(require,module,exports){
+},{"stream":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js":[function(require,module,exports){
 /*
  SignSens helper functions
  */
@@ -42695,7 +43519,7 @@ exports.createSignature = function (agent,counter, nextPublic, arr, size){
 
     return agent + ":" + counter + ":" + nextPublic + ":" + result;
 }
-},{"crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
 function product(args) {
     if(!args.length){
         return [ [] ];
@@ -42721,7 +43545,7 @@ function objectProduct(obj) {
 }
 
 module.exports = objectProduct;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
 var meta = "meta";
 
 function OwM(serialized){
@@ -42812,7 +43636,7 @@ OwM.prototype.setMetaFor = function(obj, name, value){
 };
 
 module.exports = OwM;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
 function QueueElement(content) {
 	this.content = content;
 	this.next = null;
@@ -42913,7 +43737,7 @@ Queue.prototype.inspect = Queue.prototype.toString;
 
 module.exports = Queue;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
 const HEADER_SIZE_RESEARVED = 4;
 
 function SwarmPacker(){
@@ -43062,7 +43886,7 @@ SwarmPacker.getHeader = function(pack){
     return header;
 };
 module.exports = SwarmPacker;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
 
 function TaskCounter(finalCallback) {
 	let results = [];
@@ -43112,7 +43936,7 @@ function TaskCounter(finalCallback) {
 }
 
 module.exports = TaskCounter;
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
 const OwM = require("./OwM");
 
 /*
@@ -43168,7 +43992,7 @@ exports.jsonToNative = function(serialisedValues, result){
     };
 
 };
-},{"./OwM":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
+},{"./OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
 function replaceAll(str, search, replacement) {
     return str.split(search).join(replacement);
 }
@@ -43355,7 +44179,7 @@ module.exports = {
     extname
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
 const PING = "PING";
 const PONG = "PONG";
 
@@ -43447,7 +44271,7 @@ module.exports.enableLifeLine = function(timeout){
         }
     }, interval);
 };
-},{"child_process":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
+},{"child_process":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
 var commands = {};
 var commands_help = {};
 
@@ -43518,7 +44342,7 @@ module.exports = {
 };
 
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
 const removeDir = (...args) => {
     const fs = require("fs");
     if (typeof fs.rm !== "function") {
@@ -43539,7 +44363,7 @@ module.exports = {
     removeDirSync,
     removeDir
 }
-},{"fs":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
+},{"fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
 
 function encode(buffer) {
     return buffer.toString('base64')
@@ -43606,7 +44430,7 @@ exports.short_uuid = function(callback) {
         callback(null, encode(buf));
     });
 };
-},{"crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
 function UidGenerator(minBuffers, buffersSize) {
     const Queue = require("./Queue");
     var PSKBuffer = typeof $$ !== "undefined" && $$.PSKBuffer ? $$.PSKBuffer : $$.Buffer;
@@ -43708,7 +44532,7 @@ module.exports.createUidGenerator = function (minBuffers, bufferSize) {
     return new UidGenerator(minBuffers, bufferSize);
 };
 
-},{"./Queue":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/AbstractPool.js":[function(require,module,exports){
+},{"./Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/AbstractPool.js":[function(require,module,exports){
 (function (setImmediate){(function (){
 const {assert} = require('./utils');
 const util = require('util');
@@ -43820,7 +44644,7 @@ module.exports = AbstractPool;
 
 }).call(this)}).call(this,require("timers").setImmediate)
 
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/utils.js","events":false,"timers":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Isolates.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/utils.js","events":false,"timers":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Isolates.js":[function(require,module,exports){
 const AbstractPool = require('./AbstractPool');
 const util = require('util');
 /**
@@ -43856,7 +44680,7 @@ util.inherits(PoolIsolates, AbstractPool);
 
 module.exports = PoolIsolates;
 
-},{"./AbstractPool":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Threads.js":[function(require,module,exports){
+},{"./AbstractPool":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Threads.js":[function(require,module,exports){
 const AbstractPool = require('./AbstractPool');
 const util = require('util');
 
@@ -43909,7 +44733,7 @@ util.inherits(PoolThreads, AbstractPool);
 
 module.exports = PoolThreads;
 
-},{"./AbstractPool":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Web-Workers.js":[function(require,module,exports){
+},{"./AbstractPool":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Web-Workers.js":[function(require,module,exports){
 const AbstractPool = require('./AbstractPool');
 const util = require('util');
 
@@ -43963,7 +44787,7 @@ util.inherits(PoolWebWorkers, AbstractPool);
 
 module.exports = PoolWebWorkers;
 
-},{"./AbstractPool":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","overwrite-require":"overwrite-require","util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/PoolConfig.js":[function(require,module,exports){
+},{"./AbstractPool":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/AbstractPool.js","overwrite-require":"overwrite-require","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/PoolConfig.js":[function(require,module,exports){
 const os = require('os');
 const util = require('util');
 const WorkerStrategies = require('./WorkerStrategies');
@@ -44065,7 +44889,7 @@ PoolConfig.createByOverwritingDefaults = function (config = {}, options = {allow
 };
 
 module.exports = PoolConfig;
-},{"./WorkerStrategies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js","os":false,"util":false}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/QueueShim.js":[function(require,module,exports){
+},{"./WorkerStrategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js","os":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/QueueShim.js":[function(require,module,exports){
 function Queue() {
     const backingStorage = [];
 
@@ -44127,7 +44951,7 @@ function Queue() {
 
 module.exports = Queue;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/WorkerPool.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/WorkerPool.js":[function(require,module,exports){
 /** @param pool {AbstractPool} */
 function WorkerPool(pool) {
     const { assert } = require("./utils");
@@ -44261,7 +45085,7 @@ function WorkerPool(pool) {
 
 module.exports = WorkerPool;
 
-},{"./QueueShim.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/QueueShim.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/utils.js","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js":[function(require,module,exports){
+},{"./QueueShim.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/QueueShim.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/utils.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js":[function(require,module,exports){
 const WorkerStrategies = {
     THREADS: 'threads',
     ISOLATES: 'isolates',
@@ -44270,7 +45094,7 @@ const WorkerStrategies = {
 
 module.exports = Object.freeze(WorkerStrategies);
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/utils.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/utils.js":[function(require,module,exports){
 function assert(condition, {ifFails}) {
     if (condition === false) {
         console.error(ifFails);
@@ -44281,7 +45105,7 @@ module.exports = {
     assert
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/node_modules/is-buffer/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js":[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -44309,7 +45133,7 @@ module.exports.createFsAdapter = () => {
     const FsAdapter = require("./lib/FsAdapter");
     return new FsAdapter();
 };
-},{"./lib/FsAdapter":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js"}],"bar":[function(require,module,exports){
+},{"./lib/FsAdapter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js"}],"bar":[function(require,module,exports){
 
 const ArchiveConfigurator = require("./lib/ArchiveConfigurator");
 const createFolderBrickStorage = require("./lib/obsolete/FolderBrickStorage").createFolderBrickStorage;
@@ -44390,7 +45214,7 @@ module.exports.createBrickStorageService = (archiveConfigurator, keySSI) => {
 
     return brickStorageService;
 };
-},{"./lib/Archive":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Archive.js","./lib/ArchiveConfigurator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js","./lib/Brick":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/Brick.js","./lib/BrickMap":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMap.js","./lib/BrickMapController":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapController.js","./lib/BrickMapDiff":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./lib/BrickMapStrategy":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./lib/BrickMapStrategy/BrickMapStrategyMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","./lib/BrickStorageService":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./lib/obsolete/FileBrickStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js","./lib/obsolete/FolderBrickStorage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js"}],"blockchain":[function(require,module,exports){
+},{"./lib/Archive":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Archive.js","./lib/ArchiveConfigurator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js","./lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./lib/BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./lib/BrickMapController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js","./lib/BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./lib/BrickMapStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./lib/BrickMapStrategy/BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","./lib/BrickStorageService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./lib/obsolete/FileBrickStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js","./lib/obsolete/FolderBrickStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js"}],"blockchain":[function(require,module,exports){
 ___DISABLE_OBSOLETE_ZIP_ARCHIVER_WAIT_FOR_BARS = true;
 //require("../../../psknode/bundles/pskruntime.js");
 var callflowModule = require("callflow");
@@ -44404,7 +45228,7 @@ $$.transaction      = $$.transactions;
 module.exports = require('./moduleExports');
 
 
-},{"./blockchainSwarmTypes/asset_swarm_template":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/asset_swarm_template.js","./blockchainSwarmTypes/transaction_swarm_template":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/transaction_swarm_template.js","./moduleExports":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/blockchain/moduleExports.js","callflow":"callflow"}],"callflow":[function(require,module,exports){
+},{"./blockchainSwarmTypes/asset_swarm_template":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/asset_swarm_template.js","./blockchainSwarmTypes/transaction_swarm_template":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/blockchainSwarmTypes/transaction_swarm_template.js","./moduleExports":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/blockchain/moduleExports.js","callflow":"callflow"}],"callflow":[function(require,module,exports){
 (function (global){(function (){
 function initialise() {
     if($$.callflow){
@@ -44492,7 +45316,7 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./constants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/constants.js","./lib/InterceptorRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/InterceptorRegistry.js","./lib/loadLibrary":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/loadLibrary.js","./lib/parallelJoinPoint":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js","./lib/serialJoinPoint":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js","./lib/swarmDescription":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/swarmDescription.js","./lib/utilityFunctions/base":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js","crypto":false,"path":false,"soundpubsub":false}],"key-ssi-resolver":[function(require,module,exports){
+},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/constants.js","./lib/InterceptorRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/InterceptorRegistry.js","./lib/loadLibrary":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/loadLibrary.js","./lib/parallelJoinPoint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/parallelJoinPoint.js","./lib/serialJoinPoint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/serialJoinPoint.js","./lib/swarmDescription":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/swarmDescription.js","./lib/utilityFunctions/base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/callflow/lib/utilityFunctions/base.js","crypto":false,"path":false,"soundpubsub":false}],"key-ssi-resolver":[function(require,module,exports){
 const KeySSIResolver = require('./lib/KeySSIResolver');
 const DSUFactory = require("./lib/DSUFactoryRegistry");
 
@@ -44532,7 +45356,7 @@ module.exports = {
     CryptoAlgorithmsMixin: require('./lib/CryptoAlgorithms/CryptoAlgorithmsMixin')
 };
 
-},{"./lib/CryptoAlgorithms/CryptoAlgorithmsMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./lib/CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./lib/CryptoAlgorithms/CryptoFunctionTypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./lib/DSUFactoryRegistry":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js","./lib/KeySSIResolver":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js","./lib/KeySSIs/KeySSIFactory":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./lib/KeySSIs/KeySSIMixin":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./lib/KeySSIs/SSITypes":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","bar":"bar"}],"opendsu":[function(require,module,exports){
+},{"./lib/CryptoAlgorithms/CryptoAlgorithmsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./lib/CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./lib/CryptoAlgorithms/CryptoFunctionTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./lib/DSUFactoryRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js","./lib/KeySSIResolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js","./lib/KeySSIs/KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./lib/KeySSIs/KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./lib/KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","bar":"bar"}],"opendsu":[function(require,module,exports){
 (function (global){(function (){
 /*
 html API space
@@ -44669,7 +45493,7 @@ module.exports = PREVENT_DOUBLE_LOADING_OF_OPENDSU;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./anchoring":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/anchoring/index.js","./bdns":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bdns/index.js","./boot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/boot/index.js","./bricking":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/bricking/index.js","./cache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/cache/index.js","./config":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/index.js","./config/autoConfig":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/config/autoConfig.js","./contracts":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/contracts/index.js","./credentials":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/credentials/index.js","./crypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/crypto/index.js","./db":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/db/index.js","./dc":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dc/index.js","./dt":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/dt/index.js","./enclave":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/enclave/index.js","./error":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/error/index.js","./http":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/http/index.js","./keyssi":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/keyssi/index.js","./m2dsu":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/m2dsu/index.js","./moduleConstants.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/moduleConstants.js","./mq/mqClient":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/mq/mqClient.js","./notifications":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/notifications/index.js","./oauth":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/oauth/index.js","./resolver":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/resolver/index.js","./sc":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/sc/index.js","./storage":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/storage/index.js","./system":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/system/index.js","./utils":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/utils/index.js","./w3cdid":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/w3cdid/index.js","./workers":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/opendsu/workers/index.js"}],"overwrite-require":[function(require,module,exports){
+},{"./anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js","./bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","./boot":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/index.js","./bricking":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bricking/index.js","./cache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","./config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js","./config/autoConfig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfig.js","./contracts":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/index.js","./credentials":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/index.js","./crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js","./db":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/index.js","./dc":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dc/index.js","./dt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/index.js","./enclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js","./error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","./http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","./keyssi":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js","./m2dsu":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/index.js","./moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./mq/mqClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/mq/mqClient.js","./notifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/notifications/index.js","./oauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/index.js","./resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js","./sc":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/index.js","./storage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/index.js","./system":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","./w3cdid":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/index.js","./workers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/index.js"}],"overwrite-require":[function(require,module,exports){
 (function (global){(function (){
 /*
  require and $$.require are overwriting the node.js defaults in loading modules for increasing security, speed and making it work to the privatesky runtime build with browserify.
@@ -45079,7 +45903,7 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./Logger":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js"}],"psk-cache":[function(require,module,exports){
+},{"./Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js"}],"psk-cache":[function(require,module,exports){
 const Cache = require("./lib/Cache")
 let cacheInstance;
 
@@ -45116,7 +45940,7 @@ module.exports = {
     }
 };
 
-},{"./lib/Cache":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/psk-cache/lib/Cache.js"}],"pskcrypto":[function(require,module,exports){
+},{"./lib/Cache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-cache/lib/Cache.js"}],"pskcrypto":[function(require,module,exports){
 const PskCrypto = require("./lib/PskCrypto");
 const ssutil = require("./signsensusDS/ssutil");
 
@@ -45127,7 +45951,7 @@ module.exports.hashValues = ssutil.hashValues;
 module.exports.DuplexStream = require("./lib/utils/DuplexStream");
 
 module.exports.isStream = require("./lib/utils/isStream");
-},{"./lib/PskCrypto":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","./lib/utils/DuplexStream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js","./lib/utils/isStream":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js","./signsensusDS/ssutil":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js"}],"swarmutils":[function(require,module,exports){
+},{"./lib/PskCrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","./lib/utils/DuplexStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js","./lib/utils/isStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js","./signsensusDS/ssutil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js"}],"swarmutils":[function(require,module,exports){
 
 let cachedUIDGenerator = undefined;
 let cachedSafeUid = undefined;
@@ -45182,7 +46006,7 @@ module.exports.ensureIsBuffer = function (data) {
 module.exports.removeDir = require("./lib/removeDir").removeDir;
 module.exports.removeDirSync = require("./lib/removeDir").removeDirSync;
 
-},{"./lib/Combos":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}],"syndicate":[function(require,module,exports){
+},{"./lib/Combos":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}],"syndicate":[function(require,module,exports){
 const PoolConfig = require('./lib/PoolConfig');
 const WorkerPool = require('./lib/WorkerPool');
 const WorkerStrategies = require('./lib/WorkerStrategies');
@@ -45238,8 +46062,8 @@ module.exports = {
     registerWorkerStrategy
 };
 
-},{"./lib/Pool-Isolates":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Isolates.js","./lib/Pool-Threads":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Threads.js","./lib/Pool-Web-Workers":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/Pool-Web-Workers.js","./lib/PoolConfig":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/PoolConfig.js","./lib/WorkerPool":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/WorkerPool.js","./lib/WorkerStrategies":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js"}]},{},["/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/builds/tmp/openDSU.js"])
+},{"./lib/Pool-Isolates":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Isolates.js","./lib/Pool-Threads":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Threads.js","./lib/Pool-Web-Workers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/Pool-Web-Workers.js","./lib/PoolConfig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/PoolConfig.js","./lib/WorkerPool":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/WorkerPool.js","./lib/WorkerStrategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/lib/WorkerStrategies.js"}]},{},["/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/openDSU.js"])
                     ;(function(global) {
-                        global.bundlePaths = {"webshims":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/webshims.js","pskruntime":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/pskruntime.js","pskWebServer":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/pskWebServer.js","consoleTools":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/consoleTools.js","blockchain":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/blockchain.js","openDSU":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/openDSU.js","nodeBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/nodeBoot.js","testsRuntime":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/testsRuntime.js","bindableModel":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/bindableModel.js","loaderBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/loaderBoot.js","swBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/swBoot.js","iframeBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/iframeBoot.js","launcherBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/launcherBoot.js","testRunnerBoot":"/home/skutner/WebstormProjects/work/epi-28-11/opendsu-sdk/psknode/bundles/testRunnerBoot.js"};
+                        global.bundlePaths = {"webshims":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/webshims.js","pskruntime":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/pskruntime.js","pskWebServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/pskWebServer.js","consoleTools":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/consoleTools.js","blockchain":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/blockchain.js","openDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/openDSU.js","nodeBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/nodeBoot.js","testsRuntime":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/testsRuntime.js","bindableModel":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/bindableModel.js","loaderBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/loaderBoot.js","swBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/swBoot.js","iframeBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/iframeBoot.js","launcherBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/launcherBoot.js","testRunnerBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/testRunnerBoot.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
                 
