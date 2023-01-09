@@ -4567,12 +4567,17 @@ function BrickMapController(options) {
                             anchoring.appendToAnchor(keySSI, signedHashLink, currentAnchoredHashLink, updateAnchorCallback);
                         }*/
 
-                        //TODO: update the smart contract and after that uncomment the above code and eliminate the following if statement
-                        if (!currentAnchoredHashLink) {
-                            if (anchoringx.testIfRecoveryActiveFor(anchorId) && !keySSI.canAppend()) {
+                        if(anchoringx.testIfRecoveryActiveFor(anchorId)){
+                            if(!keySSI.canAppend()){
                                 //if we are in recovery mode, and we are const keyssi type then we don't create the anchor
                                 return updateAnchorCallback();
                             }
+                            //if in recovery then we faked the last hashlink even if we couldn't load...
+                            return anchoringx.appendAnchor(anchorId, anchorValue, updateAnchorCallback);
+                        }
+
+                        //TODO: update the smart contract and after that uncomment the above code and eliminate the following if statement
+                        if (!currentAnchoredHashLink) {
                             anchoringx.getLastVersion(keySSI, (err, version) => {
                                 if (err) {
                                     // return OpenDSUSafeCallback(listener)(createOpenDSUErrorWrapper(`Failed to retrieve versions of anchor`, err));
@@ -4616,7 +4621,7 @@ function BrickMapController(options) {
                         });
                     }
 
-                    if (state.getCurrentAnchoredHashLink()) {
+                    if (state.getCurrentAnchoredHashLink() || anchoringx.testIfRecoveryActiveFor(anchorId)) {
                         return getCurrentHashLink((err, lastHashLink) => {
                             if (err) {
                                 //ignorable error. can't happen
@@ -12627,7 +12632,7 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
                         const lastSignedHashLinkKeySSI = keySSISpace.parse(data[data.length - 1]);
                         const dataToVerify = anchorValueSSIKeySSI.getDataToSign(anchorIdKeySSI, lastSignedHashLinkKeySSI);
                         if (!signer.verify(dataToVerify, signature)) {
-                            return callback({statusCode: 428, message: "Versions out of sync"});
+                            return callback({statusCode: 428, code: 428, message: "Versions out of sync"});
                         }
                     }
 
@@ -12746,6 +12751,11 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
     self.markAnchorForRecovery = function(anchorId, anchorFakeHistory, anchorFakeLastVersion){
         fakeHistory[anchorId] = anchorFakeHistory;
         fakeLastVersion[anchorId] = anchorFakeLastVersion;
+    }
+
+    self.unmarkAnchorForRecovery = function(anchorId){
+        fakeHistory[anchorId] = undefined;
+        fakeLastVersion[anchorId] = undefined;
     }
 
     self.testIfRecoveryActiveFor = function(anchorId){
@@ -24667,7 +24677,7 @@ registry.defineApi("createDSU", async function (domain, ssiType, options) {
     return this.registerDSU(dsu);
 });
 
-registry.defineApi("createPathSSIDSU", async function (domain, path, options) {
+registry.defineApi("createPathSSI", async function (domain, path, options) {
     const scAPI = require("opendsu").loadAPI("sc");
     let enclave;
     try{
@@ -24677,6 +24687,12 @@ registry.defineApi("createPathSSIDSU", async function (domain, path, options) {
     }
     const pathKeySSI = await $$.promisify(enclave.createPathKeySSI)(domain, path);
     const seedSSI = await $$.promisify(pathKeySSI.derive)();
+
+    return seedSSI;
+});
+
+registry.defineApi("createPathSSIDSU", async function (domain, path, options) {
+    const seedSSI = await this.createPathSSI(domain, path, options);
     let resolver = await this.getResolver();
     let dsu = await resolver.createDSUForExistingSSI(seedSSI, options);
     //take note that this.registerDSU returns a Proxy Object over the DSU and this Proxy we need to return also
@@ -24737,46 +24753,18 @@ registry.defineApi("getResolver", function (domain, ssiType, options) {
 });
 
 
-registry.defineApi("testAndRecoverBrickMap", function (ssi, callback) {
-    const opendsu = require("opendsu");
-    const keyssi = opendsu.loadApi("keyssi");
-    const anchoring = opendsu.loadApi("anchoring");
-    const bricking = opendsu.loadApi("bricking");
-    const identifier = keyssi.parse(ssi);
-    let anchorId = identifier.getAnchorId();
+registry.defineApi("recoverDSU", function (ssi, recoveryFnc, callback) {
+    if(!this.storageService.loadDSURecoveryMode){
+        return callback(new Error("Not able to run recovery mode due to misconfiguration of mapping engine."));
+    }
 
-    anchoring.getAnchoringX.getLastVersion(anchorId, (err, lastVersion)=>{
+    this.storageService.loadDSURecoveryMode(ssi, recoveryFnc, (err, dsu)=>{
         if(err){
             return callback(err);
         }
 
-        bricking.getBrick(lastVersion, (err, brickMap)=>{
-            //if all good let's skip the rest of the code
-            if(brickMap){
-                return callback(undefined, brickMap);
-            }
-
-            if(err){
-                //needs better error handling... some errors need to be handled here and some need to be thrown up
-                // no domain replicas needs to be thrown
-                // no brick available or corrupted is our role to handle it
-                let possibleErrors = ["Failed to validate brick", "Failed to get brick"];
-                let ourResponsibility = false;
-                possibleErrors.forEach((possibleErr)=>{
-                    if(err.message.indexOf(possibleErr) !== -1){
-                        ourResponsibility = true;
-                    }
-                });
-                if(!ourResponsibility){
-                    return callback(err);
-                }
-            }
-
-            //... let's start the patching process
-
-        });
+        return callback(undefined, this.registerDSU(dsu));
     });
-
 });
 
 
@@ -26901,8 +26889,15 @@ let tryToRunRecoveryContentFnc = (keySSI, recoveredInstance, options, anchorFake
                 if(err){
                    throw createOpenDSUErrorWrapper(`Surprise error!`, err);
                 }
-                require("opendsu").loadApi("anchoring").getAnchoringX().markAnchorForRecovery(anchorId, anchorFakeHistory, anchorFakeLastVersion);
-                options.contentRecoveryFnc(recoveredInstance, cb);
+                let {markAnchorForRecovery, unmarkAnchorForRecovery} = require("opendsu").loadApi("anchoring").getAnchoringX();
+                markAnchorForRecovery(anchorId, anchorFakeHistory, anchorFakeLastVersion);
+                options.contentRecoveryFnc(recoveredInstance, (err, dsu)=>{
+                    if(!err){
+                        //we clean the fake history after the successful recovery in order to let
+                        unmarkAnchorForRecovery(anchorId);
+                    }
+                    cb(err, dsu);
+                });
             });
 
         }catch(err){
