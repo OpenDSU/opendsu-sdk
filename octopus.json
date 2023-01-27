@@ -54,10 +54,6 @@
             "src": "https://github.com/opendsu/pskdb.git"
         },
         {
-            "name": "default-enclave",
-            "src": "https://github.com/opendsu/DefaultEnclave.git"
-        },
-        {
             "name": "psklogger",
             "src": "https://github.com/opendsu/psklogger.git"
         },
