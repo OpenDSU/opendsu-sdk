@@ -17599,6 +17599,8 @@ const hashSync = (keySSI, data) => {
 }
 
 const encrypt = (data, encryptionKey) => {
+    const logger = $$.getLogger("encrypt", "opendsu/crypto");
+    logger.info(0x900, "DSUs are encrypted using AES-GCM 256bit");
     const pskEncryption = crypto.createPskEncryption("aes-256-gcm");
     return pskEncryption.encrypt(data, encryptionKey);
 };
@@ -23397,19 +23399,57 @@ function Enclave_Mixin(target, did, keySSI) {
     }
 
     target.generateDID = (forDID, didMethod, ...args) => {
-
+        args.unshift(target, didMethod);
+        w3cDID.we_createIdentity(...args);
     }
 
     target.storePrivateKey = (forDID, privateKey, type, alias, callback) => {
+        if (typeof alias == "function") {
+            callback = alias;
+            alias = undefined;
+        }
+
+        if (typeof alias === "undefined") {
+            const generateUid = require("swarmutils").generateUid;
+            alias = generateUid(10).toString("hex");
+        }
+
+        target.storageDB.insertRecord(constants.TABLE_NAMES.PRIVATE_KEYS, alias, {
+            privateKey: privateKey,
+            type: type
+        }, callback)
 
     }
 
     target.storeSecretKey = (forDID, secretKey, alias, callback) => {
+        if (typeof alias == "function") {
+            callback = alias;
+            alias = undefined;
+        }
 
+        if (typeof alias === "undefined") {
+            const generateUid = require("swarmutils").generateUid;
+            alias = generateUid(10).toString("hex");
+        }
+
+        target.storageDB.insertRecord(constants.TABLE_NAMES.SECRET_KEYS, alias, { secretKey: secretKey }, callback)
     };
 
     target.generateSecretKey = (forDID, secretKeyAlias, callback) => {
+        if (typeof secretKeyAlias == "function") {
+            callback = secretKeyAlias;
+            secretKeyAlias = undefined;
+        }
 
+        if (typeof secretKeyAlias === "undefined") {
+            const generateUid = require("swarmutils").generateUid;
+            secretKeyAlias = generateUid(10).toString("hex");
+        }
+
+        const crypto = openDSU.loadAPI("crypto");
+        const key = crypto.generateRandom(32);
+
+        target.storeSecretKey(forDID, key, secretKeyAlias, callback);
     }
 
     target.signForDID = (forDID, didThatIsSigning, hash, callback) => {
@@ -23481,6 +23521,44 @@ function Enclave_Mixin(target, did, keySSI) {
     }
 
     target.encryptAES = (forDID, secretKeyAlias, message, AESParams, callback) => {
+
+        if (typeof AESParams == "function") {
+            callback = AESParams;
+            AESParams = undefined;
+        }
+
+        target.storageDB.getRecord(constants.TABLE_NAMES.SECRET_KEYS, secretKeyAlias, (err, keyRecord) => {
+            if (err !== undefined) {
+                callback(err, undefined);
+                return;
+            }
+            const crypto = require("pskcrypto"); // opendsu crypto does not receive aes options
+            const pskEncryption = crypto.createPskEncryption('aes-256-gcm');
+
+            const encryptedMessage = pskEncryption.encrypt(message, keyRecord.secretKey, AESParams);
+            callback(undefined, encryptedMessage);
+        })
+
+    }
+
+    target.decryptAES = (forDID, secretKeyAlias, encryptedMessage, AESParams, callback) => {
+       
+        if (typeof AESParams == "function") {
+            callback = AESParams;
+            AESParams = undefined;
+        }
+
+        target.storageDB.getRecord(constants.TABLE_NAMES.SECRET_KEYS, secretKeyAlias, (err, keyRecord) => {
+            if (err !== undefined) {
+                callback(err, undefined);
+                return;
+            }
+            const crypto = require("pskcrypto"); // opendsu crypto does not receive aes options
+            const pskEncryption = crypto.createPskEncryption('aes-256-gcm');
+
+            const decryptedMessage = pskEncryption.decrypt(encryptedMessage, keyRecord.secretKey, 0, AESParams);
+            callback(undefined, decryptedMessage);
+        })
 
     }
 
@@ -23635,7 +23713,7 @@ function Enclave_Mixin(target, did, keySSI) {
 }
 
 module.exports = Enclave_Mixin;
-},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","pskcrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/index.js","swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createCommandObject} = require("./lib/createCommandObject");
 
@@ -24420,7 +24498,9 @@ module.exports = {
         SREAD_SSIS: "sreadssis",
         SEED_SSIS: "seedssis",
         DIDS_PRIVATE_KEYS: "dids_private",
-        PATH_KEY_SSI_PRIVATE_KEYS: "path-keyssi-private-keys"
+        PATH_KEY_SSI_PRIVATE_KEYS: "path-keyssi-private-keys",
+        PRIVATE_KEYS: "private-keys",
+        SECRET_KEYS: "secret-keys"
     },
     PATHS: {
         SCATTERED_PATH_KEYS: "/paths/scatteredPathKeys",
@@ -24492,13 +24572,16 @@ const mergeMappings = (dest, source) => {
 
 const getKeySSIsMappingFromPathKeys = (pathKeyMap, callback) => {
     let keySSIMap = {};
-    const props = Object.keys(pathKeyMap);
-    const __deriveAllKeySSIsFromPathKeysRecursively = (index) => {
-        const pth = props[index];
-        if (typeof pth === "undefined") {
-            return callback(undefined, keySSIMap);
-        }
-
+    const paths = Object.keys(pathKeyMap);
+    if (paths.length === 0) {
+        return callback(undefined, keySSIMap);
+    }
+    const TaskCounter = require("swarmutils").TaskCounter;
+    const taskCounter = new TaskCounter(()=>{
+        return callback(undefined, keySSIMap);
+    })
+    taskCounter.increment(paths.length);
+    paths.forEach(pth => {
         const pathSSIIdentifier = pathKeyMap[pth];
         let keySSI;
         try {
@@ -24513,12 +24596,9 @@ const getKeySSIsMappingFromPathKeys = (pathKeyMap, callback) => {
             }
 
             keySSIMap = mergeMappings(keySSIMap, derivedKeySSIs);
-            __deriveAllKeySSIsFromPathKeysRecursively(index + 1);
+            taskCounter.decrement();
         })
-
-    }
-
-    __deriveAllKeySSIsFromPathKeysRecursively(0);
+    })
 }
 
 const getKeySSIMapping = (keySSI, callback) => {
@@ -24569,7 +24649,7 @@ module.exports = {
     getKeySSIMapping,
     mergeMappings
 }
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
 function initialiseWalletDBEnclave(keySSI, did) {
@@ -24823,6 +24903,12 @@ module.exports = {
 }
 
 },{"./../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js":[function(require,module,exports){
+function callGlobalHandler(res){
+	if($$.httpUnknownResponseGlobalHandler){
+		$$.httpUnknownResponseGlobalHandler(res);
+	}
+}
+
 function generateMethodForRequestWithData(httpMethod) {
 	return function (url, data, options, callback) {
 		if(typeof options === "function"){
@@ -24837,11 +24923,15 @@ function generateMethodForRequestWithData(httpMethod) {
 				const data = xhr.response;
 				callback(undefined, data);
 			} else {
-				if(xhr.status>=400){
+				if(xhr.status >= 400){
 					const error = new Error("An error occured. StatusCode: " + xhr.status);
 					callback({error: error, statusCode: xhr.status});
 				} else {
-					console.log(`Status code ${xhr.status} received, response is ignored.`);
+					if(xhr.status >= 300 && xhr.status < 400){
+						callGlobalHandler(xhr);
+					}else{
+						console.log(`Status code ${xhr.status} received, response is ignored.`);
+					}
 				}
 			}
 		};
@@ -24884,21 +24974,32 @@ function generateMethodForRequestWithData(httpMethod) {
 	};
 }
 
+function customFetch(...args){
+	return fetch(...args).then(res=>{
+		if(res.status >= 300 && res.status < 400){
+			callGlobalHandler(res);
+		}
+		return res;
+	}).catch(err=>{
+		callGlobalHandler({status: 503, err});
+		throw err;
+	});
+}
+
 function doGet(url, options, callback){
 	if (typeof options === "function") {
 		callback = options;
 		options = undefined;
 	}
 
-	fetch(url, options)
+	customFetch(url, options)
 		.then(response => response.text())
 		.then(data => callback(undefined, data))
 		.catch(err => callback(err));
-
 }
 
 module.exports = {
-	fetch: fetch,
+	fetch: customFetch,
 	doPost: generateMethodForRequestWithData('POST'),
 	doPut: generateMethodForRequestWithData('PUT'),
 	doGet
@@ -25446,11 +25547,14 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 			if(typeof currentState !== "undefined"){
 				currentState = undefined;
 			}
-			promiseHandlers.resolve = () => {};
-			promiseHandlers.reject = () => {};
+			promiseHandlers.resolve = (...args) => {console.log("(not important) Resolve called after cancel execution with the following args", ...args)};
+			promiseHandlers.reject = (...args) => {console.log("(not important) Reject called after cancel execution with the following args", ...args)};
 		}
 
 		this.setExecutor = function(resolve, reject) {
+			if(promiseHandlers.resolve){
+				return reject(new Error("Request already in progress"));
+			}
 			promiseHandlers.resolve = resolve;
 			promiseHandlers.reject = reject;
 		}
@@ -25458,11 +25562,15 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 		this.resolve = function(...args) {
 			promiseHandlers.resolve(...args);
 			this.destroy();
+			promiseHandlers = {};
 		}
 
 		this.reject = function(...args) {
-			promiseHandlers.reject(...args);
+			if(promiseHandlers.reject){
+				promiseHandlers.reject(...args);
+			}
 			this.destroy();
+			promiseHandlers = {};
 		}
 
 		this.destroy = function(removeFromPool = true) {
@@ -25545,15 +25653,16 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 			reArm();
 		}
 
-		function endSafePeriod() {
-			serverResponded = true;
+		function endSafePeriod(serverHasResponded) {
+			serverResponded = serverHasResponded;
+
 			clearTimeout(safePeriodTimeoutHandler);
 		}
 
 		function reArm() {
 			request.execute().then( (response) => {
 				if (!response.ok) {
-					endSafePeriod();
+					endSafePeriod(true);
 
 					//todo check for http errors like 404
 					if (response.status === 403) {
@@ -25564,7 +25673,7 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 				}
 
 				if (response.status === 204) {
-					endSafePeriod();
+					endSafePeriod(true);
 					beginSafePeriod();
 					return;
 				}
@@ -25575,15 +25684,21 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 
 				request.resolve(response);
 			}).catch( (err) => {
-				switch(err.code){
+				switch (err.code) {
 					case "ETIMEDOUT":
 					case "ECONNREFUSED":
-						endSafePeriod();
+						endSafePeriod(true);
 						beginSafePeriod();
 						break;
 					case 20:
+					case "ERR_NETWORK_IO_SUSPENDED":
+					//reproduced when user is idle on ios (chrome).
+					case "ERR_INTERNET_DISCONNECTED":
+						//indicates a general network failure.
 						break;
 					default:
+						console.log("abnormal error: ", err);
+						endSafePeriod(true);
 						request.reject(err);
 				}
 			});
@@ -27171,7 +27286,9 @@ function MQHandler(didDocument, domain, pollingTimeout) {
                                 }
                             })
                             .catch((err) => {
-                                callback(err);
+                                if (callback.on) {
+                                    makeRequest();
+                                }
                             });
                     }
 
@@ -27254,6 +27371,7 @@ module.exports = {
     unsubscribe,
     getMQHandlerForDID
 }
+
 },{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/notifications/index.js":[function(require,module,exports){
 /*
 KeySSI Notification API space
@@ -28283,7 +28401,7 @@ const getLatestDSUVersion = (dsu, callback) => {
                 return callback(err);
             }
 
-            if (current.getHash() === latest.getHash()) {
+            if (current && current.getHash() === latest.getHash()) {
                 // No new version detected
                 return callback(undefined, dsu);
             }
@@ -31001,7 +31119,7 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
         target.dispatchEvent("initialised");
     };
 
-    target.init = async () => {
+    let init = async () => {
         if (!domain) {
             try {
                 domain = await $$.promisify(scAPI.getDIDDomain)();
@@ -31032,6 +31150,11 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
             target.finishInitialisation();
             target.dispatchEvent("initialised");
         });
+    }
+
+    target.init = () => {
+        //this settimeout is to allow proper event setup before initialization
+        setTimeout(init, 0);
     }
 
     target.getPrivateKeys = () => {
@@ -31698,7 +31821,8 @@ function CommunicationHub() {
         if (typeof did === "string") {
             return didAPI.resolveDID(did, (err, resolvedDID) => {
                 if (err) {
-                    console.error(err)
+                    console.error(err);
+                    return;
                 }
 
                 did = resolvedDID;
@@ -31716,12 +31840,14 @@ function CommunicationHub() {
                 did.waitForMessages((err, message) => {
                     if (err) {
                         console.error(err);
+                        return;
                     }
 
                     try {
                         message = JSON.parse(message);
                     } catch (e) {
                         console.error(e);
+                        return;
                     }
 
                     const channelName = getChannelName(did, message.messageType);
@@ -31859,6 +31985,7 @@ const getCommunicationHub = () => {
 module.exports = {
     getCommunicationHub
 }
+
 },{"opendsu":"opendsu","soundpubsub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/soundpubsub/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/TypicalBusinessLogicHub.js":[function(require,module,exports){
 const {createOpenDSUErrorWrapper} = require("../../error");
 const getCheckVariableFunction = function (envVariableName, hubContext, selector,  callback) {
@@ -32457,7 +32584,7 @@ module.exports = {
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
-if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined" ) {
+if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined") {
     process.env.OPENDSU_ENABLE_DEBUG = IS_DEV_MODE.toString();
 }
 const DEBUG_LOG_ENABLED = process.env.OPENDSU_ENABLE_DEBUG === "true";
@@ -32466,9 +32593,24 @@ if ($$.environmentType === envTypes.NODEJS_ENVIRONMENT_TYPE) {
     if (DEBUG_LOG_ENABLED) {
         logger.log = logger.debug;
     } else {
-        logger.log = () => {}
+        logger.log = () => {
+        }
     }
     Object.assign(console, logger);
+} else {
+    $$.memoryLogger = new MemoryFileMock();
+    const logger = new Logger("Logger", "overwrite-require", $$.memoryLogger);
+    Object.assign(console, logger);
+}
+
+function MemoryFileMock() {
+    let arr = [];
+    this.append = (logLine) => {
+        arr.push(logLine);
+    }
+    this.dump = () => {
+        return JSON.stringify(arr);
+    }
 }
 
 function Logger(className, moduleName, logFile) {
@@ -32495,10 +32637,23 @@ function Logger(className, moduleName, logFile) {
         }
     }
 
+    const getLogMessage = (data) => {
+        let msg;
+        try {
+            if (typeof data === "object") {
+                msg = JSON.stringify(data) + " ";
+            } else {
+                msg = data + " "
+            }
+        } catch (e) {
+            msg = e.message + " ";
+        }
+        return msg;
+    }
     const createLogObject = (functionName, code = 0, ...args) => {
         let message = "";
         for (let i = 0; i < args.length; i++) {
-            message += args[i] + " ";
+            message += getLogMessage(args[i]);
         }
 
         message = message.trimEnd();
@@ -32573,8 +32728,12 @@ function Logger(className, moduleName, logFile) {
     }
 
     const executeFunctionFromConsole = (functionName, ...args) => {
-        const log = getLogAsString(functionName, false, ...args);
-        originalConsole[getConsoleFunction(functionName)](log);
+        if ($$.memoryLogger) {
+            originalConsole[getConsoleFunction(functionName)](...args);
+        } else {
+            const log = getLogAsString(functionName, false, ...args);
+            originalConsole[getConsoleFunction(functionName)](log);
+        }
     }
 
     const writeToFile = (functionName, ...args) => {
@@ -32585,6 +32744,10 @@ function Logger(className, moduleName, logFile) {
         }
 
         let log = getLogAsString(functionName, true, ...args);
+        if (logFile instanceof MemoryFileMock) {
+            logFile.append(log);
+            return;
+        }
         try {
             fs.accessSync(path.dirname(logFile));
         } catch (e) {
@@ -32596,9 +32759,7 @@ function Logger(className, moduleName, logFile) {
 
     const printToConsoleAndFile = (functionName, ...args) => {
         executeFunctionFromConsole(functionName, ...args);
-        if ($$.environmentType === envTypes.NODEJS_ENVIRONMENT_TYPE) {
-            writeToFile(functionName, ...args);
-        }
+        writeToFile(functionName, ...args);
     }
 
     const functions = {
@@ -32619,7 +32780,8 @@ function Logger(className, moduleName, logFile) {
     }
 
     if (!DEBUG_LOG_ENABLED) {
-        this[functions.TRACE] = this[functions.DEBUG] = () => {};
+        this[functions.TRACE] = this[functions.DEBUG] = () => {
+        };
     }
 }
 
@@ -32966,6 +33128,14 @@ function enableForEnvironment(envType){
             case moduleConstants.BROWSER_ENVIRONMENT_TYPE:
                 makeBrowserRequire();
                 $$.require = require;
+                let possibleRedirects = [301, 302];
+                $$.httpUnknownResponseGlobalHandler = function(res){
+                    console.log("Global handler for unknown http errors was called", res.status, res);
+                    if(possibleRedirects.indexOf(res.status)!==-1){
+                        window.location = "/";
+                        return;
+                    }
+                };
                 break;
             case moduleConstants.WEB_WORKER_ENVIRONMENT_TYPE:
                 makeBrowserRequire();

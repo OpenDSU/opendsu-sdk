@@ -2356,7 +2356,7 @@ function setRequestKeySSIFromSSAppToken(request, response, next) {
     const { keySSI } = request.params;
     const ssappTokenCookieValue = getSSappTokenCookieValue(request);
     if (ssappTokenCookieValue[keySSI]) {
-        logger.info(`Found match for walletAnchorId ${keySSI} to sReadSSI ${ssappTokenCookieValue[keySSI]}`);
+        logger.info(`Found match for walletAnchorId ${keySSI}`);
         request.keySSI = ssappTokenCookieValue[keySSI];
         request.walletAnchorId = keySSI;
     }
@@ -4423,10 +4423,13 @@ function SecretsService(serverRootFolder) {
             }
 
             if (latestEncryptionKey !== encryptionKey) {
+                logger.info(0x501, "Secrets Encryption Key rotation detected");
                 writeSecrets(appName, decryptedSecret.toString(), err => {
                     if (err) {
+                        logger.info(0x501, `Re-encrypting Recovery Passphases on disk file ${getSecretFilePath(appName)} failed due to error: ${err}`);
                         return callback(err);
                     }
+                    logger.info(0x501, `Re-encrypting Recovery Passphases on disk file ${getSecretFilePath(appName)} completed`)
                     callback(undefined, decryptedSecret);
                 });
 
@@ -4514,6 +4517,7 @@ function SecretsService(serverRootFolder) {
 }
 
 module.exports = SecretsService;
+
 }).call(this)}).call(this,require('_process'))
 
 },{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js","opendsu":"opendsu","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js":[function(require,module,exports){
@@ -4589,7 +4593,28 @@ function secrets(server) {
             response.end();
         });
     }
+    
+    const logEncryptionTest = () => {
+        const key = "presetEncryptionKeyForInitialLog";
+        const text = "TheQuickBrownFoxJumpedOverTheLazyDog";
 
+        logger.info(0x500, "Recovery Passphrase Encryption Check\nPlain text: " + text);
+        logger.info(0x500, "Preset encryption key: " + key);
+
+        const filePath = require("path").join(server.rootFolder, "initialEncryptionTest");
+        const encryptedText = require("opendsu").loadAPI("crypto").encrypt(text, key).toString("hex");
+
+        logger.info(0x500, "Writing encrypted file on disk: " + filePath);
+        logger.info(0x500, "Cipher text(file contents): " + encryptedText);
+
+        require("fs").writeFile(filePath, encryptedText, (err) => {
+            if (err) {
+                logger.info(0x500, "Failed to write file: " + filePath + " Error: " + err);
+            }
+        });
+    }
+
+    logEncryptionTest();
     server.put('/putSSOSecret/*', httpUtils.bodyParser);
     server.get("/getSSOSecret/:appName", getSSOSecret);
     server.put('/putSSOSecret/:appName', putSSOSecret);
@@ -4599,7 +4624,7 @@ function secrets(server) {
 
 module.exports = secrets;
 
-},{"../../libs/http-wrapper/src/httpUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js","./SecretsService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js":[function(require,module,exports){
+},{"../../libs/http-wrapper/src/httpUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js","./SecretsService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js","fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js","opendsu":"opendsu","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js":[function(require,module,exports){
 function StaticServer(server) {
     const fs = require("fs");
     const path = require('swarmutils').path;
@@ -5704,7 +5729,7 @@ module.exports = {getConfig, getTokenIssuers, getConfiguredDomains, getDomainCon
 const logger = $$.getLogger("HttpServer", "apihub");
 
 process.on('uncaughtException', err => {
-	logger.critical('There was an uncaught error', err);
+	logger.critical('There was an uncaught error', err, err.message, err.stack);
 });
 
 process.on('SIGTERM', (signal)=>{
@@ -5893,6 +5918,7 @@ function HttpServer({ listeningPort, rootFolder, sslConfig, dynamicPort, restart
 			const AuthorisationMiddleware = require('./middlewares/authorisation');
 			const Throttler = require('./middlewares/throttler');
 			const OAuth = require('./middlewares/oauth');
+			const FixedUrls = require('./middlewares/fixedUrls');
 			const ResponseHeaderMiddleware = require('./middlewares/responseHeader');
 			const genericErrorMiddleware = require('./middlewares/genericErrorMiddleware');
 			const requestEnhancements = require('./middlewares/requestEnhancements');
@@ -5917,6 +5943,7 @@ function HttpServer({ listeningPort, rootFolder, sslConfig, dynamicPort, restart
 			genericErrorMiddleware(server);
 			requestEnhancements(server);
 			Throttler(server);
+			FixedUrls(server);
 
             if(conf.enableJWTAuthorisation) {
                 new AuthorisationMiddleware(server);
@@ -6083,7 +6110,7 @@ module.exports.anchoringStrategies = require("./components/anchoring/strategies"
 
 }).call(this)}).call(this,require('_process'))
 
-},{"./components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./components/anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/index.js","./components/anchoring/strategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./components/bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bdns/index.js","./components/bricking":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/index.js","./components/bricksFabric":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/index.js","./components/cloudWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/cloudWallet/index.js","./components/config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/config/index.js","./components/contracts":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/contracts/index.js","./components/debugLogger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/debugLogger/index.js","./components/enclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/enclave/index.js","./components/fileManager":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/fileManager/index.js","./components/installation-details":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/installation-details/index.js","./components/keySsiNotifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/keySsiNotifications/index.js","./components/mainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mainDSU/index.js","./components/mqHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/index.js","./components/requestForwarder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/requestForwarder/index.js","./components/secrets":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js","./components/staticServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js","./components/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/index.js","./config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./libs/http-wrapper":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/index.js","./middlewares/authorisation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/authorisation/index.js","./middlewares/genericErrorMiddleware":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js","./middlewares/logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/logger/index.js","./middlewares/oauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/index.js","./middlewares/requestEnhancements":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js","./middlewares/responseHeader":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/responseHeader/index.js","./middlewares/throttler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/throttler/index.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/Notifications.js":[function(require,module,exports){
+},{"./components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./components/anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/index.js","./components/anchoring/strategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./components/bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bdns/index.js","./components/bricking":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/index.js","./components/bricksFabric":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricksFabric/index.js","./components/cloudWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/cloudWallet/index.js","./components/config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/config/index.js","./components/contracts":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/contracts/index.js","./components/debugLogger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/debugLogger/index.js","./components/enclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/enclave/index.js","./components/fileManager":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/fileManager/index.js","./components/installation-details":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/installation-details/index.js","./components/keySsiNotifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/keySsiNotifications/index.js","./components/mainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mainDSU/index.js","./components/mqHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/index.js","./components/requestForwarder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/requestForwarder/index.js","./components/secrets":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js","./components/staticServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js","./components/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/index.js","./config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./libs/http-wrapper":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/index.js","./middlewares/authorisation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/authorisation/index.js","./middlewares/fixedUrls":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/fixedUrls/index.js","./middlewares/genericErrorMiddleware":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js","./middlewares/logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/logger/index.js","./middlewares/oauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/index.js","./middlewares/requestEnhancements":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js","./middlewares/responseHeader":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/responseHeader/index.js","./middlewares/throttler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/throttler/index.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/Notifications.js":[function(require,module,exports){
 const stateStorageFileName = 'queues.json';
 
 function NotificationsManager(workingFolderPath, storageFolderPath) {
@@ -7245,7 +7272,413 @@ function Authorisation(server) {
 
 module.exports = Authorisation;
 
-},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/fixedUrls/index.js":[function(require,module,exports){
+(function (Buffer){(function (){
+const REQUEST_IDENTIFIER = "fixedurlrequest";
+const INTERVAL_TIME = 1 * 1000; //ms aka 1 sec
+const DEFAULT_MAX_AGE = 10; //seconds aka 10 sec
+const TASKS_TABLE = "tasks";
+const HISTORY_TABLE = "history";
+const DATABASE = "FixedUrls.db";
+
+const LokiDatabase = require("loki-enclave-facade");
+const fsname = "fs";
+const fs = require(fsname);
+const pathname = "path";
+const path = require(pathname);
+
+module.exports = function (server) {
+
+    const workingDir = path.join(server.rootFolder, "external-volume", "fixed-urls");
+    const storage = path.join(workingDir, "storage");
+    const databasePersistence = path.join(workingDir, DATABASE);
+    let database;
+
+    let watchedUrls = [];
+    //we inject a helper function that can be called by different components or middleware to signal that their requests
+    // can be watched by us
+    server.allowFixedUrl = function (url) {
+        if (!url) {
+            throw new Error("Expected an Array of strings or single string representing url prefix");
+        }
+        if (Array.isArray(url)) {
+            watchedUrls = watchedUrls.concat(url);
+            return;
+        }
+        watchedUrls.push(url);
+    }
+
+    function ensureURLUniformity(req) {
+        let base = "https://non.relevant.url.com";
+        //we add the base to get a valid url
+        let converter = new URL(base + req.url);
+        //we ensure that the searchParams are sorted
+        converter.searchParams.sort();
+        //we remove our artificial base
+        let newString = converter.toString().replaceAll(base, "");
+        return newString;
+    }
+
+    function respond(res, content) {
+        res.write(content);
+        res.statusCode = 200;
+        const fixedURLExpiry = server.config.fixedURLExpiry || DEFAULT_MAX_AGE;
+        res.setHeader("cache-control", `max-age=${fixedURLExpiry}`);
+        res.end();
+    }
+
+    function getIdentifier(fixedUrl){
+        return Buffer.from(fixedUrl).toString("base64");
+    }
+
+    const indexer = {
+        getFileName: function (fixedUrl) {
+            return path.join(storage, getIdentifier(fixedUrl));
+        },
+        persist:function(fixedUrl, content, callback){
+            fs.writeFile(indexer.getFileName(fixedUrl), content, callback);
+        },
+        get:function(fixedUrl, callback){
+            fs.readFile(indexer.getFileName(fixedUrl), callback);
+        },
+        clean:function(fixedUrl, callback){
+            fs.unlink(indexer.getFileName(fixedUrl), callback);
+        }
+    };
+
+    const taskRegistry = {
+        inProgress:{},
+        createModel:function(fixedUrl){
+            return {url: fixedUrl, pk: getIdentifier(fixedUrl)};
+        },
+        register:function(task, callback){
+            let newRecord = taskRegistry.createModel(task);
+            database.getRecord(undefined, HISTORY_TABLE, newRecord.pk, function (err, record){
+                if(err || !record){
+                    database.insertRecord(undefined, HISTORY_TABLE, newRecord.pk, newRecord, callback);
+                }
+                return callback(undefined);
+            });
+        },
+        add:function(task, callback){
+            let newRecord = taskRegistry.createModel(task);
+            database.getRecord(undefined, TASKS_TABLE, newRecord.pk, function (err, record){
+                if(err || !record){
+                    database.insertRecord(undefined, TASKS_TABLE, newRecord.pk, newRecord, callback);
+                }
+                return callback(undefined);
+            });
+        },
+        remove:function(task, callback){
+            let toBeRemoved = taskRegistry.createModel(task);
+            database.getRecord(undefined, TASKS_TABLE, toBeRemoved.pk, function(err, record){
+                if(err || !record){
+                    return callback(undefined);
+                }
+                database.deleteRecord(undefined, TASKS_TABLE, toBeRemoved.pk, callback);
+            });
+        },
+        getOneTask:function(callback){
+            database.filter(undefined, TASKS_TABLE, "__timestamp > 0", "asc", 1, function(err, task){
+                if(err){
+                    return callback(err);
+                }
+                if(task.length === 0){
+                    return callback(undefined);
+                }
+                task = task[0];
+                if(taskRegistry.inProgress[task.url]){
+                    //we already have this task in progress, we need to wait
+                    return callback(undefined);
+                }
+                taskRegistry.inProgress[task.url] = true;
+                callback(undefined, task);
+            });
+        },
+        isInProgress:function(task){
+            return !!taskRegistry.inProgress[task];
+        },
+        markAsDone:function(task, callback){
+            taskRegistry.inProgress[task] = undefined;
+            delete taskRegistry.inProgress[task];
+            taskRegistry.remove(task, callback);
+        },
+        isKnown:function(task, callback){
+            let target = taskRegistry.createModel(task);
+            database.getRecord(undefined, HISTORY_TABLE, target.pk, callback);
+        },
+        schedule:function(criteria, callback){
+            database.filter(undefined, HISTORY_TABLE, criteria, function(err, records){
+                if(err){
+                    return callback(err);
+                }
+
+                function createTask(){
+                    if(records.length === 0){
+                        return callback(undefined);
+                    }
+
+                    let record = records.pop();
+                    taskRegistry.add(record.url, function (err){
+                        if(err){
+                            return callback(err);
+                        }
+                        createTask();
+                    });
+                }
+
+                createTask();
+            });
+        },
+        cancel:function(criteria, callback){
+            database.filter(undefined, TASKS_TABLE, criteria, async function(err, tasks){
+                if(err){
+                    if(err.code === 404){
+                        return callback();
+                    }
+                    return callback(err);
+                }
+
+                try{
+                    let markAsDone = $$.promisify(taskRegistry.markAsDone);
+                    let clean = $$.promisify(indexer.clean);
+                    for(let task of tasks){
+                        let url = task.url;
+                        //by marking it as done the task is removed from pending and database also
+                        await markAsDone(url);
+                        try{
+                            await clean(url);
+                        }catch(err){
+                            //we ignore any errors related to file not found...
+                            if(err.code !== "ENOENT"){
+                                throw err;
+                            }
+                        }
+                    }
+                }catch(err){
+                    return callback(err);
+                }
+
+                callback(undefined);
+            });
+        }
+    };
+    const taskRunner = {
+        execute:function(){
+            taskRegistry.getOneTask(function(err, task){
+                if(err || !task){
+                    return;
+                }
+
+                const fixedUrl = task.url;
+                //we need to do the request and save the result into the cache
+                let urlBase = `http://localhost`;
+                let url = urlBase;
+                if (!fixedUrl.startsWith("/")) {
+                    url += "/";
+                }
+                url += fixedUrl;
+
+                //let's create an url object from our string
+                let converter = new URL(url);
+                //we inject the request identifier
+                converter.searchParams.append(REQUEST_IDENTIFIER, "true");
+                //this new url will contain our flag that prevents resolving in our middleware
+                url = converter.toString().replace(urlBase, "");
+
+                //executing the request
+                server.makeLocalRequest("GET", url, "", {}, function (err, result) {
+                    if (err) {
+                        return taskRegistry.markAsDone(task.url, (err)=>{
+                            if (err) {
+                                console.log("Failed to remove a task that we weren't able to resolve");
+                            }
+                        });
+                    }
+                    //got result... we need to store it for future requests, and we need to resolve any pending request waiting for it
+                    if (result) {
+                        //let's resolve as fast as possible any pending request for the current task
+                        taskRunner.resolvePendingReq(task.url, result);
+
+                        if(!taskRegistry.isInProgress(task.url)){
+                            //if somebody canceled the task before we finished the request we stop!
+                            return ;
+                        }
+
+                        indexer.persist(task.url, result, function (err) {
+                            if (err) {
+                                console.log("Not able to persist fixed url", task);
+                            }
+
+                            taskRegistry.markAsDone(task.url, (err) => {
+                                if (err) {
+                                    console.log("May be not really important, but ... Not able to mark as done task ", task);
+                                }
+                            });
+
+                            //let's test if we have other tasks that need to be executed...
+                            taskRunner.execute();
+                        });
+                    }
+                });
+            })
+        },
+        pendingRequests:{},
+        registerReq: function(url, req, res){
+            if(!taskRunner.pendingRequests[url]){
+                taskRunner.pendingRequests[url] = [];
+            }
+            taskRunner.pendingRequests[url].push({req, res});
+        },
+        resolvePendingReq: function(url, content){
+            let pending = taskRunner.pendingRequests[url];
+            if(!pending){
+                return;
+            }
+            while(pending.length>0){
+                let delayed = pending.shift();
+                try{
+                    respond(delayed.res, content);
+                }catch(err){
+                    //we ignore any errors at this stage... timeouts, client aborts etc.
+                }
+            }
+        }
+    };
+
+    fs.mkdir(storage, {recursive: true}, (err) => {
+        if (err) {
+            console.log("Failed to ensure folder structure due to", err);
+        }
+        database = new LokiDatabase(databasePersistence, INTERVAL_TIME);
+
+        setInterval(taskRunner.execute, INTERVAL_TIME);
+    });
+
+    server.put("/registerFixedURLs", require("./../../utils/middlewares").bodyReaderMiddleware);
+    server.put("/registerFixedURLs", function register(req, res, next){
+        if(!database){
+            return setTimeout(()=>{
+                register(req, res, next);
+            }, 100);
+        }
+        let body = req.body;
+        try{
+            body = JSON.parse(body);
+        }catch(err){
+            console.log(err);
+        }
+
+        if(!Array.isArray(body)){
+            body = [body];
+        }
+
+        function recursiveRegistry(){
+            if(body.length === 0){
+                res.statusCode = 200;
+                res.end();
+                return;
+            }
+            let fixedUrl = body.pop();
+            taskRegistry.register(fixedUrl, function(err){
+                if(err){
+                    res.statusCode = 500;
+                    return res.end(err.message);
+                }
+                recursiveRegistry();
+            });
+        }
+
+        recursiveRegistry();
+    });
+
+    server.put("/activateFixedURL", require("./../../utils/middlewares").bodyReaderMiddleware);
+    server.put("/activateFixedURL", function activate(req, res, next){
+        if(!database){
+            return setTimeout(()=>{
+                activate(req, res, next);
+            }, 100);
+        }
+        taskRegistry.schedule(req.body.toString(), function (err){
+            if(err){
+                console.log(err);
+                res.statusCode = 500;
+                return res.end();
+            }
+            res.statusCode = 200;
+            res.end();
+        });
+    });
+
+    server.put("/deactivateFixedURL", require("./../../utils/middlewares").bodyReaderMiddleware);
+    server.put("/deactivateFixedURL", function deactivate(req, res, next){
+        if(!database){
+            return setTimeout(()=>{
+                deactivate(req, res, next);
+            }, 100);
+        }
+        taskRegistry.cancel(req.body.toString(), function (err){
+            if(err){
+                console.log(err);
+                res.statusCode = 500;
+                return res.end();
+            }
+            res.statusCode = 200;
+            res.end();
+        });
+    });
+
+    //register a middleware to intercept all the requests
+    server.use("*", function (req, res, next) {
+
+        if (req.method !== "GET") {
+            //not our responsibility... for the moment we resolve only GET methods that have query params...
+            return next();
+        }
+
+        let possibleFixedUrl = false;
+        for (let url of watchedUrls) {
+            if (req.url.startsWith(url)) {
+                possibleFixedUrl = true;
+            }
+        }
+
+        if (!possibleFixedUrl) {
+            //not our responsibility
+            return next();
+        }
+
+        if (req.query && req.query[REQUEST_IDENTIFIER]) {
+            //this REQUEST_IDENTIFIER query param is set by our runner, and we should let this request to be executed
+            return next();
+        }
+
+        //if we reached this line of code means that we need to do our "thing"
+        let fixedUrl = ensureURLUniformity(req);
+        if(taskRegistry.isInProgress(fixedUrl)){
+            //there is a task for it... let's wait
+            return taskRunner.registerReq(fixedUrl, req, res);
+        }
+
+        taskRegistry.isKnown(fixedUrl, (err, known) => {
+            if (known) {
+                //there is no task in progress for this url... let's test even more...
+                return indexer.get(fixedUrl, (err, content) => {
+                    if (err) {
+                        //no current task and no cache... let's move on to resolving the req
+                        return next();
+                    }
+                    //known fixed url let's respond to the client
+                    respond(res, content);
+                });
+            }
+            next();
+        });
+    });
+}
+}).call(this)}).call(this,require("buffer").Buffer)
+
+},{"./../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","loki-enclave-facade":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/loki-enclave-facade/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js":[function(require,module,exports){
 function setupGenericErrorMiddleware(server) {
     const constants = require("./../../moduleConstants");
     const logger = $$.getLogger("setupGenericErrorMiddleware", "apihub/genericErrorMiddleware");
@@ -7407,33 +7840,24 @@ function OAuthMiddleware(server) {
   const logger = $$.getLogger("OAuthMiddleware", "apihub/oauth");
 
   logger.debug(`Registering OAuthMiddleware`);
-  const fs = require("fs");
   const config = require("../../../config");
   const oauthConfig = config.getConfig("oauthConfig");
   const path = require("path");
   const ENCRYPTION_KEYS_LOCATION = oauthConfig.encryptionKeysLocation || path.join(server.rootFolder, "external-volume", "encryption-keys");
-  const PREVIOUS_ENCRYPTION_KEY_PATH = path.join(ENCRYPTION_KEYS_LOCATION, "previousEncryptionKey.secret");
-  const CURRENT_ENCRYPTION_KEY_PATH = path.join(ENCRYPTION_KEYS_LOCATION, "currentEncryptionKey.secret");
   const urlsToSkip = util.getUrlsToSkip();
 
   const WebClient = require("./WebClient");
   const webClient = new WebClient(oauthConfig);
   const errorMessages = require("./errorMessages");
-  try {
-    fs.accessSync(ENCRYPTION_KEYS_LOCATION);
-  } catch (e) {
-    fs.mkdirSync(ENCRYPTION_KEYS_LOCATION, {recursive: true});
-  }
-  setInterval(() => {
-    util.rotateKey(CURRENT_ENCRYPTION_KEY_PATH, PREVIOUS_ENCRYPTION_KEY_PATH, () => {
-    })
-  }, oauthConfig.keyTTL);
+
+  //we let KeyManager to boot and prepare ...
+  util.initializeKeyManager(ENCRYPTION_KEYS_LOCATION, oauthConfig.keyTTL);
 
   function startAuthFlow(req, res) {
     printDebugLog("Starting authentication flow");
     const loginContext = webClient.getLoginInfo(oauthConfig);
     printDebugLog("Login info", JSON.stringify(loginContext));
-    util.encryptLoginInfo(CURRENT_ENCRYPTION_KEY_PATH, loginContext, (err, encryptedContext) => {
+    util.encryptLoginInfo(loginContext, (err, encryptedContext) => {
       if (err) {
         return sendUnauthorizedResponse(req, res, "Unable to encrypt login info");
       }
@@ -7456,7 +7880,7 @@ function OAuthMiddleware(server) {
       printDebugLog("Logout because loginContextCookie is missing.")
       return logout(res);
     }
-    util.decryptLoginInfo(CURRENT_ENCRYPTION_KEY_PATH, PREVIOUS_ENCRYPTION_KEY_PATH, loginContextCookie, (err, loginContext) => {
+    util.decryptLoginInfo(loginContextCookie, (err, loginContext) => {
       if (err) {
         return sendUnauthorizedResponse(req, res, "Unable to decrypt login info", err);
       }
@@ -7485,7 +7909,7 @@ function OAuthMiddleware(server) {
         }
 
         printDebugLog("Access token", tokenSet.access_token);
-        util.encryptTokenSet(CURRENT_ENCRYPTION_KEY_PATH, tokenSet, (err, encryptedTokenSet) => {
+        util.encryptTokenSet(tokenSet, (err, encryptedTokenSet) => {
           if (err) {
             return sendUnauthorizedResponse(req, res, "Unable to encrypt access token", err);
           }
@@ -7566,6 +7990,11 @@ function OAuthMiddleware(server) {
       return;
     }
 
+    //this if is meant to help debugging "special" situation of wrong localhost req being checked with sso even if localhostAuthorization is disabled
+    if (!config.getConfig("enableLocalhostAuthorization") && req.headers.host.indexOf("localhost") !== -1){
+      logger.debug("SSO verification activated on 'local' request", "host header", req.headers.headers.host, JSON.stringify(req.headers));
+    }
+
     if (isCallbackPhaseActive()) {
       return loginCallbackRoute(req, res);
     }
@@ -7591,14 +8020,14 @@ function OAuthMiddleware(server) {
     }
 
     const jwksEndpoint = config.getConfig("oauthJWKSEndpoint");
-    util.validateEncryptedAccessToken(CURRENT_ENCRYPTION_KEY_PATH, PREVIOUS_ENCRYPTION_KEY_PATH, jwksEndpoint, accessTokenCookie, oauthConfig.sessionTimeout, (err) => {
+    util.validateEncryptedAccessToken(jwksEndpoint, accessTokenCookie, oauthConfig.sessionTimeout, (err) => {
       if (err) {
         if (err.message === errorMessages.ACCESS_TOKEN_DECRYPTION_FAILED || err.message === errorMessages.SESSION_EXPIRED) {
           printDebugLog("Logout because accessTokenCookie decryption failed or session has expired.")
           return startLogoutPhase(res);
         }
 
-        return webClient.refreshToken(CURRENT_ENCRYPTION_KEY_PATH, PREVIOUS_ENCRYPTION_KEY_PATH, refreshTokenCookie, (err, tokenSet) => {
+        return webClient.refreshToken(refreshTokenCookie, (err, tokenSet) => {
           if (err) {
             if (err.message === errorMessages.REFRESH_TOKEN_DECRYPTION_FAILED || err.message === errorMessages.SESSION_EXPIRED) {
               printDebugLog("Logout because refreshTokenCookie decryption failed or session has expired.")
@@ -7613,7 +8042,7 @@ function OAuthMiddleware(server) {
         })
       }
 
-      util.getSSODetectedIdFromEncryptedToken(CURRENT_ENCRYPTION_KEY_PATH, PREVIOUS_ENCRYPTION_KEY_PATH, accessTokenCookie, (err, SSODetectedId)=>{
+      util.getSSODetectedIdFromEncryptedToken(accessTokenCookie, (err, SSODetectedId)=>{
         if (err) {
             printDebugLog("Logout because accessTokenCookie decryption failed or session has expired.")
             return startLogoutPhase(res);
@@ -7624,7 +8053,7 @@ function OAuthMiddleware(server) {
         if (url.includes("/mq/")) {
           return next();
         }
-        util.updateAccessTokenExpiration(CURRENT_ENCRYPTION_KEY_PATH, PREVIOUS_ENCRYPTION_KEY_PATH, accessTokenCookie, (err, encryptedAccessToken)=>{
+        util.updateAccessTokenExpiration(accessTokenCookie, (err, encryptedAccessToken)=>{
           if (err) {
             printDebugLog("Logout because accessTokenCookie decryption failed.")
             return startLogoutPhase(res);
@@ -7642,7 +8071,7 @@ function OAuthMiddleware(server) {
 
 module.exports = OAuthMiddleware;
 
-},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./WebClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js","./errorMessages":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","./util":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js","url":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/url/url.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./WebClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js","./errorMessages":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","./util":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js","url":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/url/url.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const url = require('url');
 const util = require("./util");
@@ -7775,9 +8204,152 @@ const crypto = openDSU.loadAPI("crypto");
 const http = openDSU.loadAPI("http");
 const fs = require("fs");
 const errorMessages = require("./errorMessages");
-let currentEncryptionKey;
-let previousEncryptionKey;
+
 let publicKey;
+
+const PREVIOUS_ENCRYPTION_KEY_FILE = "previousEncryptionKey.secret";
+const CURRENT_ENCRYPTION_KEY_FILE = "currentEncryptionKey.secret";
+
+function KeyManager(storage, rotationInterval){
+    let current;
+    let previous;
+
+    const logger = $$.getLogger("OAuthMiddleware", "oauth/keyManager");
+
+    function getPath(filename){
+        const path = require("path");
+        return path.join(storage, filename);
+    }
+
+    function persist(filename, key, callback){
+        logger.debug("Writing", filename);
+        fs.writeFile(getPath(filename), key, callback);
+    }
+
+    function getAge(lastModificationTime){
+        let timestamp = new Date().getTime();
+        let converted = new Date(lastModificationTime).getTime();
+        let age = timestamp - converted;
+        //logger.debug("age seems to be", age);
+        return age;
+    }
+
+    function checkIfExpired(lastModificationTime){
+        let res = getAge(lastModificationTime) > rotationInterval;
+        logger.debug("expired", res);
+        return res;
+    }
+
+    let self = this;
+    function tic(){
+        fs.stat(getPath(CURRENT_ENCRYPTION_KEY_FILE), (err, stats)=>{
+            if(stats && checkIfExpired(stats.mtime)){
+                self.rotate();
+            }
+
+            if(err || !stats){
+                //for any error we try as soon as possible again
+                setTimeout(tic, 0);
+            }
+        });
+    }
+
+    function generateKey(){
+        logger.debug("generating new key");
+        return crypto.generateRandom(32);
+    }
+
+    this.init = ()=>{
+        let stats;
+        try {
+            stats = fs.statSync(getPath(CURRENT_ENCRYPTION_KEY_FILE));
+            if(stats){
+                logger.debug("mtime of current encryption key is", stats.mtime);
+                if(checkIfExpired(stats.mtime)){
+                    throw new Error("Current key is to old");
+                }
+                logger.info("Loading encryption keys");
+                current = fs.readFileSync(getPath(CURRENT_ENCRYPTION_KEY_FILE));
+                try{
+                    previous = fs.readFileSync(getPath(PREVIOUS_ENCRYPTION_KEY_FILE));
+                }catch(e){
+                    logger.debug("Caught an error during previous key loading. This could mean that a restart was performed before any rotation and the previous key file doesn't exit.", e.message, e.code);
+                }
+
+                // let's schedule a quick check of key age
+                setTimeout(tic, getAge(stats.mtime));
+            }else{
+                logger.info("Initializing...");
+                throw new Error("Initialization required");
+            }
+        } catch (e) {
+            logger.debug(e.message);
+            //for any reason we try to ensure folder structure...
+            fs.mkdirSync(storage, {recursive: true});
+
+            this.rotate();
+        }
+
+        //we split the "big" interval in smaller intervals
+        setInterval(tic, Math.round(rotationInterval/12));
+    }
+
+    this.getCurrentEncryptionKey = ()=>{
+        return current;
+    }
+
+    this.getPreviousEncryptionKey = ()=>{
+        return previous;
+    }
+
+    this.rotate = ()=>{
+        if(!current && !previous){
+            logger.info("No current or previous key, there we generate current ant persist");
+            current = generateKey();
+            return persist(CURRENT_ENCRYPTION_KEY_FILE, current, (err)=>{
+                if(err){
+                    logger.error("Failed to persist key");
+                }
+            });
+        }
+        logger.debug("saving current key as previous");
+        previous = current;
+        current = generateKey();
+
+        function saveState(lastGeneratedKey){
+            if(lastGeneratedKey !== current){
+                logger.error("Unable to persist keys until a new rotation time achieved");
+                //we weren't able to save the state until a new rotation
+                return;
+            }
+            persist(PREVIOUS_ENCRYPTION_KEY_FILE, previous, (err)=>{
+                if(err){
+                    logger.debug("Caught error during key rotation", err);
+                    return saveState(lastGeneratedKey);
+                }
+                persist(CURRENT_ENCRYPTION_KEY_FILE, current, (err)=>{
+                    if(err){
+                        logger.debug("Caught error during key rotation", err);
+                        saveState(lastGeneratedKey);
+                    }
+                    logger.info("Successful key rotation");
+                });
+            });
+        }
+
+        saveState(current);
+    }
+
+    this.init();
+    return this;
+}
+
+let keyManager;
+function initializeKeyManager(storage, rotationInterval){
+    if(!keyManager){
+        keyManager =  new KeyManager(storage, rotationInterval);
+    }
+}
 
 function pkce() {
     const codeVerifier = crypto.generateRandom(32).toString('hex');
@@ -7843,68 +8415,23 @@ function parseAccessToken(rawAccessToken) {
     }
 }
 
-function getEncryptionKey(encryptionKeyPath, callback) {
-    fs.readFile(encryptionKeyPath, (err, _encKey) => {
-        if (err) {
-            _encKey = crypto.generateRandom(32);
-            fs.writeFile(encryptionKeyPath, _encKey, (err) => callback(undefined, _encKey));
-            return
-        }
-
-        callback(undefined, _encKey);
-    });
-}
-
-function getCurrentEncryptionKey(currentEncryptionKeyPath, callback) {
-    if (currentEncryptionKey) {
-        return callback(undefined, currentEncryptionKey);
+function getCurrentEncryptionKey(callback) {
+    if(!keyManager){
+        return callback(new Error("keyManager not instantiated"));
     }
 
-    getEncryptionKey(currentEncryptionKeyPath, (err, _currentEncryptionKey) => {
-        if (err) {
-            return callback(err);
-        }
-
-        currentEncryptionKey = _currentEncryptionKey;
-        callback(undefined, currentEncryptionKey);
-    });
+    return callback(undefined, keyManager.getCurrentEncryptionKey());
 }
 
-function getPreviousEncryptionKey(previousEncryptionKeyPath, callback) {
-    if (previousEncryptionKey) {
-        return callback(undefined, previousEncryptionKey);
+function getPreviousEncryptionKey(callback) {
+    if(!keyManager){
+        return callback(new Error("keyManager not instantiated"));
     }
 
-    getEncryptionKey(previousEncryptionKeyPath, (err, _previousEncryptionKey) => {
-        if (err) {
-            return callback(err);
-        }
-
-        previousEncryptionKey = _previousEncryptionKey;
-        callback(undefined, previousEncryptionKey);
-    });
+    return callback(undefined, keyManager.getPreviousEncryptionKey());
 }
 
-function rotateKey(currentEncryptionKeyPath, previousEncryptionKeyPath, callback) {
-    // fs.copyFile(currentEncryptionKeyPath, previousEncryptionKeyPath, (err) => {
-    fs.readFile(currentEncryptionKeyPath, (err, currentEncryptionKey) => {
-        let newEncryptionKey = crypto.generateRandom(32);
-        currentEncryptionKey = newEncryptionKey;
-        if (err) {
-            return fs.writeFile(currentEncryptionKeyPath, newEncryptionKey, callback);
-        }
-
-        fs.writeFile(previousEncryptionKeyPath, currentEncryptionKey, (err) => {
-            if (err) {
-                return callback(err);
-            }
-
-            fs.writeFile(currentEncryptionKeyPath, newEncryptionKey, callback);
-        });
-    })
-}
-
-function encryptTokenSet(currentEncryptionKeyPath, tokenSet, callback) {
+function encryptTokenSet(tokenSet, callback) {
     const accessTokenPayload = {
         date: Date.now(),
         token: tokenSet.access_token
@@ -7916,7 +8443,7 @@ function encryptTokenSet(currentEncryptionKeyPath, tokenSet, callback) {
     }
 
 
-    getCurrentEncryptionKey(currentEncryptionKeyPath, (err, encryptionKey) => {
+    getCurrentEncryptionKey((err, encryptionKey) => {
         if (err) {
             return callback(err);
         }
@@ -7936,8 +8463,8 @@ function encryptTokenSet(currentEncryptionKeyPath, tokenSet, callback) {
     })
 }
 
-function encryptLoginInfo(currentEncryptionKeyPath, loginInfo, callback) {
-    getCurrentEncryptionKey(currentEncryptionKeyPath, (err, encryptionKey) => {
+function encryptLoginInfo(loginInfo, callback) {
+    getCurrentEncryptionKey((err, encryptionKey) => {
         if (err) {
             return callback(err);
         }
@@ -7953,13 +8480,13 @@ function encryptLoginInfo(currentEncryptionKeyPath, loginInfo, callback) {
     })
 }
 
-function encryptAccessToken(currentEncryptionKeyPath, accessToken, callback) {
+function encryptAccessToken(accessToken, callback) {
     const accessTokenTimestamp = Date.now();
     const accessTokenPayload = {
         date: accessTokenTimestamp, token: accessToken
     }
 
-    getCurrentEncryptionKey(currentEncryptionKeyPath, (err, currentEncryptionKey) => {
+    getCurrentEncryptionKey((err, currentEncryptionKey) => {
         if (err) {
             return callback(err);
         }
@@ -7986,8 +8513,8 @@ function decryptData(encryptedData, encryptionKey, callback) {
     callback(undefined, plainData);
 }
 
-function decryptDataWithCurrentKey(encryptionKeyPath, encryptedData, callback) {
-    getCurrentEncryptionKey(encryptionKeyPath, (err, currentEncryptionKey) => {
+function decryptDataWithCurrentKey(encryptedData, callback) {
+    getCurrentEncryptionKey((err, currentEncryptionKey) => {
         if (err) {
             return callback(err);
         }
@@ -7996,8 +8523,8 @@ function decryptDataWithCurrentKey(encryptionKeyPath, encryptedData, callback) {
     })
 }
 
-function decryptDataWithPreviousKey(encryptionKeyPath, encryptedData, callback) {
-    getPreviousEncryptionKey(encryptionKeyPath, (err, previousEncryptionKey) => {
+function decryptDataWithPreviousKey(encryptedData, callback) {
+    getPreviousEncryptionKey((err, previousEncryptionKey) => {
         if (err) {
             return callback(err);
         }
@@ -8006,7 +8533,7 @@ function decryptDataWithPreviousKey(encryptionKeyPath, encryptedData, callback) 
     })
 }
 
-function decryptAccessTokenCookie(currentEncryptionKeyPath, previousEncryptionKeyPath, accessTokenCookie, callback) {
+function decryptAccessTokenCookie(accessTokenCookie, callback) {
     function parseAccessTokenCookie(accessTokenCookie, callback) {
         let parsedAccessTokenCookie;
         try {
@@ -8018,9 +8545,9 @@ function decryptAccessTokenCookie(currentEncryptionKeyPath, previousEncryptionKe
         callback(undefined, parsedAccessTokenCookie);
     }
 
-    decryptDataWithCurrentKey(currentEncryptionKeyPath, decodeCookie(accessTokenCookie), (err, plainAccessTokenCookie) => {
+    decryptDataWithCurrentKey(decodeCookie(accessTokenCookie), (err, plainAccessTokenCookie) => {
         if (err) {
-            decryptDataWithPreviousKey(previousEncryptionKeyPath, decodeCookie(accessTokenCookie), (err, plainAccessTokenCookie) => {
+            decryptDataWithPreviousKey(decodeCookie(accessTokenCookie), (err, plainAccessTokenCookie) => {
                 if (err) {
                     return callback(err);
                 }
@@ -8036,8 +8563,8 @@ function decryptAccessTokenCookie(currentEncryptionKeyPath, previousEncryptionKe
     })
 }
 
-function getDecryptedAccessToken(currentEncryptionKeyPath, previousEncryptionKeyPath, accessTokenCookie, callback) {
-    decryptAccessTokenCookie(currentEncryptionKeyPath, previousEncryptionKeyPath, accessTokenCookie, (err, decryptedAccessTokenCookie) => {
+function getDecryptedAccessToken(accessTokenCookie, callback) {
+    decryptAccessTokenCookie(accessTokenCookie, (err, decryptedAccessTokenCookie) => {
         if (err) {
             return callback(err);
         }
@@ -8057,8 +8584,8 @@ function getSSODetectedIdFromDecryptedToken(decryptedToken) {
     return SSODetectedId;
 }
 
-function getSSODetectedIdFromEncryptedToken(currentEncryptionKeyPath, previousEncryptionKeyPath, accessTokenCookie, callback) {
-    getDecryptedAccessToken(currentEncryptionKeyPath, previousEncryptionKeyPath, accessTokenCookie, (err, token) => {
+function getSSODetectedIdFromEncryptedToken( accessTokenCookie, callback) {
+    getDecryptedAccessToken(accessTokenCookie, (err, token) => {
         if (err) {
             return callback(err);
         }
@@ -8067,14 +8594,14 @@ function getSSODetectedIdFromEncryptedToken(currentEncryptionKeyPath, previousEn
     })
 }
 
-function decryptRefreshTokenCookie(currentEncryptionKeyPath, previousEncryptionKeyPath, encryptedRefreshToken, callback) {
+function decryptRefreshTokenCookie(encryptedRefreshToken, callback) {
     if (!encryptedRefreshToken) {
         return callback(Error(errorMessages.REFRESH_TOKEN_UNDEFINED));
     }
 
-    decryptDataWithCurrentKey(currentEncryptionKeyPath, encryptedRefreshToken, (err, refreshToken) => {
+    decryptDataWithCurrentKey(encryptedRefreshToken, (err, refreshToken) => {
         if (err) {
-            decryptDataWithPreviousKey(previousEncryptionKeyPath, encryptedRefreshToken, (err, refreshToken) => {
+            decryptDataWithPreviousKey(encryptedRefreshToken, (err, refreshToken) => {
                 if (err) {
                     err.message = errorMessages.REFRESH_TOKEN_DECRYPTION_FAILED;
                     return callback(err);
@@ -8123,8 +8650,8 @@ function validateAccessToken(jwksEndpoint, accessToken, callback) {
     })
 }
 
-function validateEncryptedAccessToken(currentEncryptionKeyPath, previousEncryptionKeyPath, jwksEndpoint, accessTokenCookie, sessionTimeout, callback) {
-    decryptAccessTokenCookie(currentEncryptionKeyPath, previousEncryptionKeyPath, accessTokenCookie, (err, decryptedAccessTokenCookie) => {
+function validateEncryptedAccessToken(jwksEndpoint, accessTokenCookie, sessionTimeout, callback) {
+    decryptAccessTokenCookie(accessTokenCookie, (err, decryptedAccessTokenCookie) => {
         if (err) {
             return callback(Error(errorMessages.ACCESS_TOKEN_DECRYPTION_FAILED));
         }
@@ -8136,8 +8663,8 @@ function validateEncryptedAccessToken(currentEncryptionKeyPath, previousEncrypti
     })
 }
 
-function decryptLoginInfo(currentEncryptionKeyPath, previousEncryptionKeyPath, encryptedLoginInfo, callback) {
-    decryptDataWithCurrentKey(currentEncryptionKeyPath, decodeCookie(encryptedLoginInfo), (err, loginContext) => {
+function decryptLoginInfo(encryptedLoginInfo, callback) {
+    decryptDataWithCurrentKey(decodeCookie(encryptedLoginInfo), (err, loginContext) => {
         function parseLoginContext(loginContext, callback) {
             let parsedLoginContext;
             try {
@@ -8150,7 +8677,7 @@ function decryptLoginInfo(currentEncryptionKeyPath, previousEncryptionKeyPath, e
         }
 
         if (err) {
-            decryptDataWithPreviousKey(previousEncryptionKeyPath, decodeCookie(encryptedLoginInfo), (err, loginContext) => {
+            decryptDataWithPreviousKey(decodeCookie(encryptedLoginInfo), (err, loginContext) => {
                 if (err) {
                     return callback(err);
                 }
@@ -8180,13 +8707,13 @@ function getUrlsToSkip() {
     return urlsToSkip;
 }
 
-function updateAccessTokenExpiration(currentEncryptionKeyPath, previousEncryptionKeyPath, accessTokenCookie, callback) {
-    decryptAccessTokenCookie(currentEncryptionKeyPath, previousEncryptionKeyPath, accessTokenCookie, (err, decryptedTokenCookie)=>{
+function updateAccessTokenExpiration(accessTokenCookie, callback) {
+    decryptAccessTokenCookie(accessTokenCookie, (err, decryptedTokenCookie)=>{
         if (err) {
             return callback(err);
         }
 
-        encryptAccessToken(currentEncryptionKeyPath, decryptedTokenCookie.token, callback);
+        encryptAccessToken(decryptedTokenCookie.token, callback);
     })
 }
 
@@ -8197,7 +8724,7 @@ module.exports = {
     encodeCookie,
     decodeCookie,
     parseCookies,
-    getEncryptionKey,
+    initializeKeyManager,
     parseAccessToken,
     encryptTokenSet,
     encryptAccessToken,
@@ -8209,14 +8736,13 @@ module.exports = {
     validateAccessToken,
     validateEncryptedAccessToken,
     getUrlsToSkip,
-    rotateKey,
     getSSODetectedIdFromDecryptedToken,
     getSSODetectedIdFromEncryptedToken,
     getSSOUserIdFromDecryptedToken,
     updateAccessTokenExpiration
 }
 
-},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./errorMessages":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./errorMessages":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js","opendsu":"opendsu","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js":[function(require,module,exports){
 function setupRequestEnhancements(server) {
     const logger = $$.getLogger("setupRequestEnhancements", "apihub/requestEnhancements");
 
@@ -39012,6 +39538,8 @@ const hashSync = (keySSI, data) => {
 }
 
 const encrypt = (data, encryptionKey) => {
+    const logger = $$.getLogger("encrypt", "opendsu/crypto");
+    logger.info(0x900, "DSUs are encrypted using AES-GCM 256bit");
     const pskEncryption = crypto.createPskEncryption("aes-256-gcm");
     return pskEncryption.encrypt(data, encryptionKey);
 };
@@ -44810,19 +45338,57 @@ function Enclave_Mixin(target, did, keySSI) {
     }
 
     target.generateDID = (forDID, didMethod, ...args) => {
-
+        args.unshift(target, didMethod);
+        w3cDID.we_createIdentity(...args);
     }
 
     target.storePrivateKey = (forDID, privateKey, type, alias, callback) => {
+        if (typeof alias == "function") {
+            callback = alias;
+            alias = undefined;
+        }
+
+        if (typeof alias === "undefined") {
+            const generateUid = require("swarmutils").generateUid;
+            alias = generateUid(10).toString("hex");
+        }
+
+        target.storageDB.insertRecord(constants.TABLE_NAMES.PRIVATE_KEYS, alias, {
+            privateKey: privateKey,
+            type: type
+        }, callback)
 
     }
 
     target.storeSecretKey = (forDID, secretKey, alias, callback) => {
+        if (typeof alias == "function") {
+            callback = alias;
+            alias = undefined;
+        }
 
+        if (typeof alias === "undefined") {
+            const generateUid = require("swarmutils").generateUid;
+            alias = generateUid(10).toString("hex");
+        }
+
+        target.storageDB.insertRecord(constants.TABLE_NAMES.SECRET_KEYS, alias, { secretKey: secretKey }, callback)
     };
 
     target.generateSecretKey = (forDID, secretKeyAlias, callback) => {
+        if (typeof secretKeyAlias == "function") {
+            callback = secretKeyAlias;
+            secretKeyAlias = undefined;
+        }
 
+        if (typeof secretKeyAlias === "undefined") {
+            const generateUid = require("swarmutils").generateUid;
+            secretKeyAlias = generateUid(10).toString("hex");
+        }
+
+        const crypto = openDSU.loadAPI("crypto");
+        const key = crypto.generateRandom(32);
+
+        target.storeSecretKey(forDID, key, secretKeyAlias, callback);
     }
 
     target.signForDID = (forDID, didThatIsSigning, hash, callback) => {
@@ -44894,6 +45460,44 @@ function Enclave_Mixin(target, did, keySSI) {
     }
 
     target.encryptAES = (forDID, secretKeyAlias, message, AESParams, callback) => {
+
+        if (typeof AESParams == "function") {
+            callback = AESParams;
+            AESParams = undefined;
+        }
+
+        target.storageDB.getRecord(constants.TABLE_NAMES.SECRET_KEYS, secretKeyAlias, (err, keyRecord) => {
+            if (err !== undefined) {
+                callback(err, undefined);
+                return;
+            }
+            const crypto = require("pskcrypto"); // opendsu crypto does not receive aes options
+            const pskEncryption = crypto.createPskEncryption('aes-256-gcm');
+
+            const encryptedMessage = pskEncryption.encrypt(message, keyRecord.secretKey, AESParams);
+            callback(undefined, encryptedMessage);
+        })
+
+    }
+
+    target.decryptAES = (forDID, secretKeyAlias, encryptedMessage, AESParams, callback) => {
+       
+        if (typeof AESParams == "function") {
+            callback = AESParams;
+            AESParams = undefined;
+        }
+
+        target.storageDB.getRecord(constants.TABLE_NAMES.SECRET_KEYS, secretKeyAlias, (err, keyRecord) => {
+            if (err !== undefined) {
+                callback(err, undefined);
+                return;
+            }
+            const crypto = require("pskcrypto"); // opendsu crypto does not receive aes options
+            const pskEncryption = crypto.createPskEncryption('aes-256-gcm');
+
+            const decryptedMessage = pskEncryption.decrypt(encryptedMessage, keyRecord.secretKey, 0, AESParams);
+            callback(undefined, decryptedMessage);
+        })
 
     }
 
@@ -45048,7 +45652,7 @@ function Enclave_Mixin(target, did, keySSI) {
 }
 
 module.exports = Enclave_Mixin;
-},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createCommandObject} = require("./lib/createCommandObject");
 
@@ -45833,7 +46437,9 @@ module.exports = {
         SREAD_SSIS: "sreadssis",
         SEED_SSIS: "seedssis",
         DIDS_PRIVATE_KEYS: "dids_private",
-        PATH_KEY_SSI_PRIVATE_KEYS: "path-keyssi-private-keys"
+        PATH_KEY_SSI_PRIVATE_KEYS: "path-keyssi-private-keys",
+        PRIVATE_KEYS: "private-keys",
+        SECRET_KEYS: "secret-keys"
     },
     PATHS: {
         SCATTERED_PATH_KEYS: "/paths/scatteredPathKeys",
@@ -45905,13 +46511,16 @@ const mergeMappings = (dest, source) => {
 
 const getKeySSIsMappingFromPathKeys = (pathKeyMap, callback) => {
     let keySSIMap = {};
-    const props = Object.keys(pathKeyMap);
-    const __deriveAllKeySSIsFromPathKeysRecursively = (index) => {
-        const pth = props[index];
-        if (typeof pth === "undefined") {
-            return callback(undefined, keySSIMap);
-        }
-
+    const paths = Object.keys(pathKeyMap);
+    if (paths.length === 0) {
+        return callback(undefined, keySSIMap);
+    }
+    const TaskCounter = require("swarmutils").TaskCounter;
+    const taskCounter = new TaskCounter(()=>{
+        return callback(undefined, keySSIMap);
+    })
+    taskCounter.increment(paths.length);
+    paths.forEach(pth => {
         const pathSSIIdentifier = pathKeyMap[pth];
         let keySSI;
         try {
@@ -45926,12 +46535,9 @@ const getKeySSIsMappingFromPathKeys = (pathKeyMap, callback) => {
             }
 
             keySSIMap = mergeMappings(keySSIMap, derivedKeySSIs);
-            __deriveAllKeySSIsFromPathKeysRecursively(index + 1);
+            taskCounter.decrement();
         })
-
-    }
-
-    __deriveAllKeySSIsFromPathKeysRecursively(0);
+    })
 }
 
 const getKeySSIMapping = (keySSI, callback) => {
@@ -45982,7 +46588,7 @@ module.exports = {
     getKeySSIMapping,
     mergeMappings
 }
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
 function initialiseWalletDBEnclave(keySSI, did) {
@@ -46236,6 +46842,12 @@ module.exports = {
 }
 
 },{"./../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js":[function(require,module,exports){
+function callGlobalHandler(res){
+	if($$.httpUnknownResponseGlobalHandler){
+		$$.httpUnknownResponseGlobalHandler(res);
+	}
+}
+
 function generateMethodForRequestWithData(httpMethod) {
 	return function (url, data, options, callback) {
 		if(typeof options === "function"){
@@ -46250,11 +46862,15 @@ function generateMethodForRequestWithData(httpMethod) {
 				const data = xhr.response;
 				callback(undefined, data);
 			} else {
-				if(xhr.status>=400){
+				if(xhr.status >= 400){
 					const error = new Error("An error occured. StatusCode: " + xhr.status);
 					callback({error: error, statusCode: xhr.status});
 				} else {
-					console.log(`Status code ${xhr.status} received, response is ignored.`);
+					if(xhr.status >= 300 && xhr.status < 400){
+						callGlobalHandler(xhr);
+					}else{
+						console.log(`Status code ${xhr.status} received, response is ignored.`);
+					}
 				}
 			}
 		};
@@ -46297,21 +46913,32 @@ function generateMethodForRequestWithData(httpMethod) {
 	};
 }
 
+function customFetch(...args){
+	return fetch(...args).then(res=>{
+		if(res.status >= 300 && res.status < 400){
+			callGlobalHandler(res);
+		}
+		return res;
+	}).catch(err=>{
+		callGlobalHandler({status: 503, err});
+		throw err;
+	});
+}
+
 function doGet(url, options, callback){
 	if (typeof options === "function") {
 		callback = options;
 		options = undefined;
 	}
 
-	fetch(url, options)
+	customFetch(url, options)
 		.then(response => response.text())
 		.then(data => callback(undefined, data))
 		.catch(err => callback(err));
-
 }
 
 module.exports = {
-	fetch: fetch,
+	fetch: customFetch,
 	doPost: generateMethodForRequestWithData('POST'),
 	doPut: generateMethodForRequestWithData('PUT'),
 	doGet
@@ -46859,11 +47486,14 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 			if(typeof currentState !== "undefined"){
 				currentState = undefined;
 			}
-			promiseHandlers.resolve = () => {};
-			promiseHandlers.reject = () => {};
+			promiseHandlers.resolve = (...args) => {console.log("(not important) Resolve called after cancel execution with the following args", ...args)};
+			promiseHandlers.reject = (...args) => {console.log("(not important) Reject called after cancel execution with the following args", ...args)};
 		}
 
 		this.setExecutor = function(resolve, reject) {
+			if(promiseHandlers.resolve){
+				return reject(new Error("Request already in progress"));
+			}
 			promiseHandlers.resolve = resolve;
 			promiseHandlers.reject = reject;
 		}
@@ -46871,11 +47501,15 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 		this.resolve = function(...args) {
 			promiseHandlers.resolve(...args);
 			this.destroy();
+			promiseHandlers = {};
 		}
 
 		this.reject = function(...args) {
-			promiseHandlers.reject(...args);
+			if(promiseHandlers.reject){
+				promiseHandlers.reject(...args);
+			}
 			this.destroy();
+			promiseHandlers = {};
 		}
 
 		this.destroy = function(removeFromPool = true) {
@@ -46958,15 +47592,16 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 			reArm();
 		}
 
-		function endSafePeriod() {
-			serverResponded = true;
+		function endSafePeriod(serverHasResponded) {
+			serverResponded = serverHasResponded;
+
 			clearTimeout(safePeriodTimeoutHandler);
 		}
 
 		function reArm() {
 			request.execute().then( (response) => {
 				if (!response.ok) {
-					endSafePeriod();
+					endSafePeriod(true);
 
 					//todo check for http errors like 404
 					if (response.status === 403) {
@@ -46977,7 +47612,7 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 				}
 
 				if (response.status === 204) {
-					endSafePeriod();
+					endSafePeriod(true);
 					beginSafePeriod();
 					return;
 				}
@@ -46988,15 +47623,21 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 
 				request.resolve(response);
 			}).catch( (err) => {
-				switch(err.code){
+				switch (err.code) {
 					case "ETIMEDOUT":
 					case "ECONNREFUSED":
-						endSafePeriod();
+						endSafePeriod(true);
 						beginSafePeriod();
 						break;
 					case 20:
+					case "ERR_NETWORK_IO_SUSPENDED":
+					//reproduced when user is idle on ios (chrome).
+					case "ERR_INTERNET_DISCONNECTED":
+						//indicates a general network failure.
 						break;
 					default:
+						console.log("abnormal error: ", err);
+						endSafePeriod(true);
 						request.reject(err);
 				}
 			});
@@ -48584,7 +49225,9 @@ function MQHandler(didDocument, domain, pollingTimeout) {
                                 }
                             })
                             .catch((err) => {
-                                callback(err);
+                                if (callback.on) {
+                                    makeRequest();
+                                }
                             });
                     }
 
@@ -48667,6 +49310,7 @@ module.exports = {
     unsubscribe,
     getMQHandlerForDID
 }
+
 },{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/notifications/index.js":[function(require,module,exports){
 /*
 KeySSI Notification API space
@@ -49696,7 +50340,7 @@ const getLatestDSUVersion = (dsu, callback) => {
                 return callback(err);
             }
 
-            if (current.getHash() === latest.getHash()) {
+            if (current && current.getHash() === latest.getHash()) {
                 // No new version detected
                 return callback(undefined, dsu);
             }
@@ -52414,7 +53058,7 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
         target.dispatchEvent("initialised");
     };
 
-    target.init = async () => {
+    let init = async () => {
         if (!domain) {
             try {
                 domain = await $$.promisify(scAPI.getDIDDomain)();
@@ -52445,6 +53089,11 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
             target.finishInitialisation();
             target.dispatchEvent("initialised");
         });
+    }
+
+    target.init = () => {
+        //this settimeout is to allow proper event setup before initialization
+        setTimeout(init, 0);
     }
 
     target.getPrivateKeys = () => {
@@ -53111,7 +53760,8 @@ function CommunicationHub() {
         if (typeof did === "string") {
             return didAPI.resolveDID(did, (err, resolvedDID) => {
                 if (err) {
-                    console.error(err)
+                    console.error(err);
+                    return;
                 }
 
                 did = resolvedDID;
@@ -53129,12 +53779,14 @@ function CommunicationHub() {
                 did.waitForMessages((err, message) => {
                     if (err) {
                         console.error(err);
+                        return;
                     }
 
                     try {
                         message = JSON.parse(message);
                     } catch (e) {
                         console.error(e);
+                        return;
                     }
 
                     const channelName = getChannelName(did, message.messageType);
@@ -53272,6 +53924,7 @@ const getCommunicationHub = () => {
 module.exports = {
     getCommunicationHub
 }
+
 },{"opendsu":"opendsu","soundpubsub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/soundpubsub/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/TypicalBusinessLogicHub.js":[function(require,module,exports){
 const {createOpenDSUErrorWrapper} = require("../../error");
 const getCheckVariableFunction = function (envVariableName, hubContext, selector,  callback) {
@@ -53870,7 +54523,7 @@ module.exports = {
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
-if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined" ) {
+if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined") {
     process.env.OPENDSU_ENABLE_DEBUG = IS_DEV_MODE.toString();
 }
 const DEBUG_LOG_ENABLED = process.env.OPENDSU_ENABLE_DEBUG === "true";
@@ -53879,9 +54532,24 @@ if ($$.environmentType === envTypes.NODEJS_ENVIRONMENT_TYPE) {
     if (DEBUG_LOG_ENABLED) {
         logger.log = logger.debug;
     } else {
-        logger.log = () => {}
+        logger.log = () => {
+        }
     }
     Object.assign(console, logger);
+} else {
+    $$.memoryLogger = new MemoryFileMock();
+    const logger = new Logger("Logger", "overwrite-require", $$.memoryLogger);
+    Object.assign(console, logger);
+}
+
+function MemoryFileMock() {
+    let arr = [];
+    this.append = (logLine) => {
+        arr.push(logLine);
+    }
+    this.dump = () => {
+        return JSON.stringify(arr);
+    }
 }
 
 function Logger(className, moduleName, logFile) {
@@ -53908,10 +54576,23 @@ function Logger(className, moduleName, logFile) {
         }
     }
 
+    const getLogMessage = (data) => {
+        let msg;
+        try {
+            if (typeof data === "object") {
+                msg = JSON.stringify(data) + " ";
+            } else {
+                msg = data + " "
+            }
+        } catch (e) {
+            msg = e.message + " ";
+        }
+        return msg;
+    }
     const createLogObject = (functionName, code = 0, ...args) => {
         let message = "";
         for (let i = 0; i < args.length; i++) {
-            message += args[i] + " ";
+            message += getLogMessage(args[i]);
         }
 
         message = message.trimEnd();
@@ -53986,8 +54667,12 @@ function Logger(className, moduleName, logFile) {
     }
 
     const executeFunctionFromConsole = (functionName, ...args) => {
-        const log = getLogAsString(functionName, false, ...args);
-        originalConsole[getConsoleFunction(functionName)](log);
+        if ($$.memoryLogger) {
+            originalConsole[getConsoleFunction(functionName)](...args);
+        } else {
+            const log = getLogAsString(functionName, false, ...args);
+            originalConsole[getConsoleFunction(functionName)](log);
+        }
     }
 
     const writeToFile = (functionName, ...args) => {
@@ -53998,6 +54683,10 @@ function Logger(className, moduleName, logFile) {
         }
 
         let log = getLogAsString(functionName, true, ...args);
+        if (logFile instanceof MemoryFileMock) {
+            logFile.append(log);
+            return;
+        }
         try {
             fs.accessSync(path.dirname(logFile));
         } catch (e) {
@@ -54009,9 +54698,7 @@ function Logger(className, moduleName, logFile) {
 
     const printToConsoleAndFile = (functionName, ...args) => {
         executeFunctionFromConsole(functionName, ...args);
-        if ($$.environmentType === envTypes.NODEJS_ENVIRONMENT_TYPE) {
-            writeToFile(functionName, ...args);
-        }
+        writeToFile(functionName, ...args);
     }
 
     const functions = {
@@ -54032,7 +54719,8 @@ function Logger(className, moduleName, logFile) {
     }
 
     if (!DEBUG_LOG_ENABLED) {
-        this[functions.TRACE] = this[functions.DEBUG] = () => {};
+        this[functions.TRACE] = this[functions.DEBUG] = () => {
+        };
     }
 }
 
@@ -54379,6 +55067,14 @@ function enableForEnvironment(envType){
             case moduleConstants.BROWSER_ENVIRONMENT_TYPE:
                 makeBrowserRequire();
                 $$.require = require;
+                let possibleRedirects = [301, 302];
+                $$.httpUnknownResponseGlobalHandler = function(res){
+                    console.log("Global handler for unknown http errors was called", res.status, res);
+                    if(possibleRedirects.indexOf(res.status)!==-1){
+                        window.location = "/";
+                        return;
+                    }
+                };
                 break;
             case moduleConstants.WEB_WORKER_ENVIRONMENT_TYPE:
                 makeBrowserRequire();

@@ -71,7 +71,7 @@ if (typeof $$ !== "undefined") {
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
-if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined" ) {
+if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined") {
     process.env.OPENDSU_ENABLE_DEBUG = IS_DEV_MODE.toString();
 }
 const DEBUG_LOG_ENABLED = process.env.OPENDSU_ENABLE_DEBUG === "true";
@@ -80,9 +80,24 @@ if ($$.environmentType === envTypes.NODEJS_ENVIRONMENT_TYPE) {
     if (DEBUG_LOG_ENABLED) {
         logger.log = logger.debug;
     } else {
-        logger.log = () => {}
+        logger.log = () => {
+        }
     }
     Object.assign(console, logger);
+} else {
+    $$.memoryLogger = new MemoryFileMock();
+    const logger = new Logger("Logger", "overwrite-require", $$.memoryLogger);
+    Object.assign(console, logger);
+}
+
+function MemoryFileMock() {
+    let arr = [];
+    this.append = (logLine) => {
+        arr.push(logLine);
+    }
+    this.dump = () => {
+        return JSON.stringify(arr);
+    }
 }
 
 function Logger(className, moduleName, logFile) {
@@ -109,10 +124,23 @@ function Logger(className, moduleName, logFile) {
         }
     }
 
+    const getLogMessage = (data) => {
+        let msg;
+        try {
+            if (typeof data === "object") {
+                msg = JSON.stringify(data) + " ";
+            } else {
+                msg = data + " "
+            }
+        } catch (e) {
+            msg = e.message + " ";
+        }
+        return msg;
+    }
     const createLogObject = (functionName, code = 0, ...args) => {
         let message = "";
         for (let i = 0; i < args.length; i++) {
-            message += args[i] + " ";
+            message += getLogMessage(args[i]);
         }
 
         message = message.trimEnd();
@@ -187,8 +215,12 @@ function Logger(className, moduleName, logFile) {
     }
 
     const executeFunctionFromConsole = (functionName, ...args) => {
-        const log = getLogAsString(functionName, false, ...args);
-        originalConsole[getConsoleFunction(functionName)](log);
+        if ($$.memoryLogger) {
+            originalConsole[getConsoleFunction(functionName)](...args);
+        } else {
+            const log = getLogAsString(functionName, false, ...args);
+            originalConsole[getConsoleFunction(functionName)](log);
+        }
     }
 
     const writeToFile = (functionName, ...args) => {
@@ -199,6 +231,10 @@ function Logger(className, moduleName, logFile) {
         }
 
         let log = getLogAsString(functionName, true, ...args);
+        if (logFile instanceof MemoryFileMock) {
+            logFile.append(log);
+            return;
+        }
         try {
             fs.accessSync(path.dirname(logFile));
         } catch (e) {
@@ -210,9 +246,7 @@ function Logger(className, moduleName, logFile) {
 
     const printToConsoleAndFile = (functionName, ...args) => {
         executeFunctionFromConsole(functionName, ...args);
-        if ($$.environmentType === envTypes.NODEJS_ENVIRONMENT_TYPE) {
-            writeToFile(functionName, ...args);
-        }
+        writeToFile(functionName, ...args);
     }
 
     const functions = {
@@ -233,7 +267,8 @@ function Logger(className, moduleName, logFile) {
     }
 
     if (!DEBUG_LOG_ENABLED) {
-        this[functions.TRACE] = this[functions.DEBUG] = () => {};
+        this[functions.TRACE] = this[functions.DEBUG] = () => {
+        };
     }
 }
 
@@ -42134,6 +42169,14 @@ function enableForEnvironment(envType){
             case moduleConstants.BROWSER_ENVIRONMENT_TYPE:
                 makeBrowserRequire();
                 $$.require = require;
+                let possibleRedirects = [301, 302];
+                $$.httpUnknownResponseGlobalHandler = function(res){
+                    console.log("Global handler for unknown http errors was called", res.status, res);
+                    if(possibleRedirects.indexOf(res.status)!==-1){
+                        window.location = "/";
+                        return;
+                    }
+                };
                 break;
             case moduleConstants.WEB_WORKER_ENVIRONMENT_TYPE:
                 makeBrowserRequire();
