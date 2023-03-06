@@ -1,4 +1,4 @@
-webshimsRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/builds/tmp/webshims.js":[function(require,module,exports){
+webshimsRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/webshims.js":[function(require,module,exports){
 (function (global){(function (){
 if (typeof(window) !== "undefined") {
     if (typeof(global) !== "undefined") {
@@ -32,7 +32,7 @@ if (typeof($$.__runtimeModules) == "undefined") {
 require("./webshims_intermediar");
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./webshims_intermediar":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/builds/tmp/webshims_intermediar.js","overwrite-require":"overwrite-require"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/builds/tmp/webshims_intermediar.js":[function(require,module,exports){
+},{"./webshims_intermediar":"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/webshims_intermediar.js","overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/webshims_intermediar.js":[function(require,module,exports){
 (function (global){(function (){
 global.webshimsLoadModules = function(){ 
 
@@ -66,7 +66,7 @@ if (typeof $$ !== "undefined") {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"buffer":"buffer","crypto":"crypto","overwrite-require":"overwrite-require","pskcrypto":"pskcrypto","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
+},{"buffer":"buffer","crypto":"crypto","overwrite-require":"overwrite-require","pskcrypto":"pskcrypto","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
 (function (process){(function (){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
@@ -265,6 +265,8 @@ function Logger(className, moduleName, logFile) {
             printToConsoleAndFile(functions[fnName], ...args);
         }
     }
+    //adding alias for warn fnc
+    this.warning = this.warn;
 
     if (!DEBUG_LOG_ENABLED) {
         this[functions.TRACE] = this[functions.DEBUG] = () => {
@@ -282,7 +284,7 @@ module.exports = {
 
 }).call(this)}).call(this,require('_process'))
 
-},{"./moduleConstants":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/overwrite-require/moduleConstants.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","fs":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify/lib/_empty.js","os":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/os-browserify/browser.js","path":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/path-browserify/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
+},{"./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js","os":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/os-browserify/browser.js","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
 module.exports = {
   BROWSER_ENVIRONMENT_TYPE: 'browser',
   MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
@@ -293,7 +295,7 @@ module.exports = {
   NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
 (function (process,global){(function (){
 let logger = console;
 
@@ -616,7 +618,7 @@ $$.registerGlobalSymbol("throttlingEvent", function (...args) {
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer","psklogger":false,"swarmutils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer","psklogger":false,"swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -721,7 +723,7 @@ module.exports = {
     convertKeysToKeyObjects
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js":[function(require,module,exports){
 module.exports = {
     curveName: 'secp256k1',
     encodingFormat: 'base64',
@@ -737,7 +739,7 @@ module.exports = {
     publicKeyType: 'spki'
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -775,7 +777,7 @@ module.exports = {
     symmetricDecrypt
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -812,7 +814,7 @@ module.exports = {
     verifyDigitalSignature
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -850,7 +852,7 @@ class ECEphemeralKeyAgreement {
 
 module.exports = ECEphemeralKeyAgreement
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js":[function(require,module,exports){
 'use strict';
 
 const cipher = require('./cipher')
@@ -880,7 +882,7 @@ module.exports = {
     PublicKeyDeserializer: require('./pkdeserializer')
 }
 
-},{"./cipher":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js","./digitalsig":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js","./ecephka":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js","./kdf":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js","./kmac":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js","./pkdeserializer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js","./pkserializer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js":[function(require,module,exports){
+},{"./cipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js","./digitalsig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js","./ecephka":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js","./kdf":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js","./kmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js","./pkdeserializer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js","./pkserializer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -911,7 +913,7 @@ module.exports = {
     KDF2
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -938,7 +940,7 @@ module.exports = {
     verifyKMAC
 }
 
-},{"../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","./index":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js":[function(require,module,exports){
+},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto')
@@ -972,7 +974,7 @@ function PublicKeyDeserializer() {
 
 module.exports = new PublicKeyDeserializer()
 
-},{"../../lib/ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js":[function(require,module,exports){
+},{"../../lib/ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js":[function(require,module,exports){
 const config = require('../config');
 
 function PublicKeySerializer() {
@@ -1001,7 +1003,7 @@ function PublicKeySerializer() {
 
 module.exports = new PublicKeySerializer()
 
-},{"../../lib/ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js":[function(require,module,exports){
+},{"../../lib/ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -1070,7 +1072,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     };
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -1130,7 +1132,7 @@ module.exports.encrypt = function (senderECSigningKeyPair, receiverECDHPublicKey
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 };
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -1138,7 +1140,7 @@ module.exports = {
   decrypt: require('./decrypt').decrypt,
   getDecodedECDHPublicKeyFromEncEnvelope: require('../common').getDecodedECDHPublicKeyFromEncEnvelope
 }
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto');
@@ -1203,7 +1205,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     };
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto');
@@ -1258,9 +1260,9 @@ module.exports.encrypt = function (senderECDHKeyPair, receiverECDHPublicKey, mes
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 };
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -1312,7 +1314,7 @@ module.exports.decrypt = function (receiverECDHKeyPair, encEnvelope, options) {
     return mycrypto.symmetricDecrypt(symmetricCipherKey, ciphertext, iv, options)
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const utils = require('../utils')
@@ -1373,7 +1375,7 @@ module.exports.encrypt = function (message, ...receiverECDHPublicKeys) {
     }
 }
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -1382,7 +1384,7 @@ module.exports = {
   getRecipientECDHPublicKeysFromEncEnvelope: require('../utils').getRecipientECDHPublicKeysFromEncEnvelope
 }
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -1433,7 +1435,7 @@ module.exports.decrypt = function (receiverECDHKeyPair, encEnvelope, options) {
     }
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -1482,9 +1484,9 @@ module.exports.encrypt = function (senderECSigningKeyPair, message, ...receiverE
     return eciesGEEnvelope;
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"][0].apply(exports,arguments)
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"][0].apply(exports,arguments)
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js":[function(require,module,exports){
 'use strict';
 
 const sender = require('./sender')
@@ -1500,7 +1502,7 @@ module.exports = {
 
 
 
-},{"./recipient":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js","./sender":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js":[function(require,module,exports){
+},{"./recipient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js","./sender":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -1584,7 +1586,7 @@ module.exports.parseKeyBuffer = function (keyBuffer, options) {
     }
 }
 
-},{"../../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js":[function(require,module,exports){
+},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -1622,7 +1624,7 @@ module.exports.senderMultiRecipientECIESEncrypt = function(message, ...receiverE
     return $$.Buffer.from(JSON.stringify(eciesInstancesArray))
 }
 
-},{"../../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -1673,7 +1675,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     return mycrypto.symmetricDecrypt(symmetricEncryptionKey, ciphertext, iv, options)
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -1715,9 +1717,9 @@ module.exports.encrypt = function (receiverECDHPublicKey, message, options) {
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js","./encrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js":[function(require,module,exports){
 module.exports = {
     ecies_encrypt: require("./ecies").encrypt,
     ecies_decrypt: require("./ecies").decrypt,
@@ -1733,7 +1735,7 @@ module.exports = {
     ecies_group_getRecipientECDHPublicKeysFromEncEnvelope: require("./ecies-group-encryption/ecies-ge-doa").getRecipientECDHPublicKeysFromEncEnvelope
 }
 
-},{"./ecies":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js","./ecies-doa-ds":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js","./ecies-doa-kmac":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js","./ecies-group-encryption/ecies-ge-anon":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js","./ecies-group-encryption/ecies-ge-doa":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js","./ecies/index":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js":[function(require,module,exports){
+},{"./ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js","./ecies-doa-ds":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js","./ecies-doa-kmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js","./ecies-group-encryption/ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js","./ecies-group-encryption/ecies-ge-doa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js","./ecies/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js":[function(require,module,exports){
 var jws = require('./jws');
 
 module.exports = function (jwt, options) {
@@ -1764,7 +1766,7 @@ module.exports = function (jwt, options) {
     }
     return payload;
 };
-},{"./jws":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js":[function(require,module,exports){
+},{"./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js":[function(require,module,exports){
 module.exports = {
     verify: require('./verify'),
     sign: require('./sign'),
@@ -1775,7 +1777,7 @@ Object.defineProperty(module.exports, 'decode', {
     value: require('./decode'),
 });
 
-},{"./decode":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./sign":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js","./verify":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js":[function(require,module,exports){
+},{"./decode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js","./verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js":[function(require,module,exports){
 var getParamBytesForAlg = require('./param-bytes-for-alg');
 
 var MAX_OCTET = 0x80,
@@ -1959,7 +1961,7 @@ module.exports = {
     derToJose: derToJose,
     joseToDer: joseToDer
 };
-},{"./param-bytes-for-alg":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js":[function(require,module,exports){
+},{"./param-bytes-for-alg":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js":[function(require,module,exports){
 var crypto = require('crypto');
 var formatEcdsa = require('./ecdsa-sig-formatter');
 var util = require('util');
@@ -2210,7 +2212,7 @@ module.exports = function jwa(algorithm) {
         verify: verifierFactories[algo](bits),
     }
 };
-},{"./ecdsa-sig-formatter":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js","crypto":"crypto","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js":[function(require,module,exports){
+},{"./ecdsa-sig-formatter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js","crypto":"crypto","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js":[function(require,module,exports){
 'use strict';
 
 function getParamSize(keySize) {
@@ -2234,7 +2236,7 @@ function getParamBytesForAlg(alg) {
 }
 
 module.exports = getParamBytesForAlg;
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js":[function(require,module,exports){
 var asn = require('../../lib/asn1/asn1');
 var crypto = require('crypto')
 var BN = asn.bignum
@@ -2287,7 +2289,7 @@ function factor(e, d, n) {
 }
 
 module.exports = factor
-},{"../../lib/asn1/asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js":[function(require,module,exports){
+},{"../../lib/asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var asn = require('../../lib/asn1/asn1')
 var factor = require('./factor')
@@ -2524,7 +2526,7 @@ module.exports = {
 }
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../lib/asn1/asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./factor":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js","buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js":[function(require,module,exports){
+},{"../../lib/asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./factor":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js","buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js":[function(require,module,exports){
 (function (process){(function (){
 /*global module, process*/
 var Stream = require('stream');
@@ -2582,7 +2584,7 @@ DataStream.prototype.end = function end(data) {
 module.exports = DataStream;
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/stream-browserify/index.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js":[function(require,module,exports){
 /*global exports*/
 var SignStream = require('./sign-stream');
 var VerifyStream = require('./verify-stream');
@@ -2605,7 +2607,7 @@ exports.createSign = function createSign(opts) {
 exports.createVerify = function createVerify(opts) {
     return new VerifyStream(opts);
 };
-},{"./sign-stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js","./verify-stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js":[function(require,module,exports){
+},{"./sign-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js","./verify-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js":[function(require,module,exports){
 var DataStream = require('./data-stream');
 var jwa = require('../jwa');
 var Stream = require('stream');
@@ -2682,7 +2684,7 @@ SignStream.prototype.sign = function sign() {
 SignStream.sign = jwsSign;
 
 module.exports = SignStream;
-},{"../jwa":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/stream-browserify/index.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js":[function(require,module,exports){
+},{"../jwa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js":[function(require,module,exports){
 module.exports = function toString(obj) {
     if (typeof obj === 'string')
         return obj;
@@ -2690,7 +2692,7 @@ module.exports = function toString(obj) {
         return obj.toString();
     return JSON.stringify(obj);
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js":[function(require,module,exports){
 /*global module*/
 var DataStream = require('./data-stream');
 var jwa = require('../jwa');
@@ -2810,7 +2812,7 @@ VerifyStream.isValid = isValidJws;
 VerifyStream.verify = jwsVerify;
 
 module.exports = VerifyStream;
-},{"../jwa":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/stream-browserify/index.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js":[function(require,module,exports){
+},{"../jwa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js":[function(require,module,exports){
 var JsonWebTokenError = function (message, error) {
     Error.call(this, message);
     if(Error.captureStackTrace) {
@@ -2825,7 +2827,7 @@ JsonWebTokenError.prototype = Object.create(Error.prototype);
 JsonWebTokenError.prototype.constructor = JsonWebTokenError;
 
 module.exports = JsonWebTokenError;
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js":[function(require,module,exports){
 var JsonWebTokenError = require('./JsonWebTokenError');
 
 var NotBeforeError = function (message, date) {
@@ -2839,7 +2841,7 @@ NotBeforeError.prototype = Object.create(JsonWebTokenError.prototype);
 NotBeforeError.prototype.constructor = NotBeforeError;
 
 module.exports = NotBeforeError;
-},{"./JsonWebTokenError":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js":[function(require,module,exports){
+},{"./JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js":[function(require,module,exports){
 var JsonWebTokenError = require('./JsonWebTokenError');
 
 var TokenExpiredError = function (message, expiredAt) {
@@ -2853,7 +2855,7 @@ TokenExpiredError.prototype = Object.create(JsonWebTokenError.prototype);
 TokenExpiredError.prototype.constructor = TokenExpiredError;
 
 module.exports = TokenExpiredError;
-},{"./JsonWebTokenError":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js":[function(require,module,exports){
+},{"./JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js":[function(require,module,exports){
 module.exports = function (time, iat) {
     var timestamp = iat || Math.floor(Date.now() / 1000);
 
@@ -2864,7 +2866,7 @@ module.exports = function (time, iat) {
     }
 
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var timespan = require('./lib/timespan');
 var jws = require('./jws');
@@ -2998,7 +3000,7 @@ module.exports = function (payload, secretOrPrivateKey, options, callback) {
 };
 }).call(this)}).call(this,{"isBuffer":require("../../../node_modules/is-buffer/index.js")})
 
-},{"../../../node_modules/is-buffer/index.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/is-buffer/index.js","./jws":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/timespan":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js":[function(require,module,exports){
+},{"../../../node_modules/is-buffer/index.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js","./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/timespan":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js":[function(require,module,exports){
 var JsonWebTokenError = require('./lib/JsonWebTokenError');
 var NotBeforeError = require('./lib/NotBeforeError');
 var TokenExpiredError = require('./lib/TokenExpiredError');
@@ -3224,7 +3226,7 @@ module.exports = function (jwtString, secretOrPublicKey, options, callback) {
         return done(null, payload);
     });
 };
-},{"./decode":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./jwkToPemConverter":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js","./jws":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/JsonWebTokenError":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js","./lib/NotBeforeError":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js","./lib/TokenExpiredError":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js","./lib/timespan":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js":[function(require,module,exports){
+},{"./decode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./jwkToPemConverter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js","./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js","./lib/NotBeforeError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js","./lib/TokenExpiredError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js","./lib/timespan":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js":[function(require,module,exports){
 const utils = require("./utils/cryptoUtils");
 
 function ECKeyGenerator() {
@@ -3370,7 +3372,7 @@ exports.createECKeyGenerator = () => {
     return new ECKeyGenerator();
 };
 
-},{"./keyEncoder":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js":[function(require,module,exports){
+},{"./keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js":[function(require,module,exports){
 function PskCrypto() {
     const crypto = require('crypto');
     const utils = require("./utils/cryptoUtils");
@@ -3590,7 +3592,7 @@ module.exports = new PskCrypto();
 
 
 
-},{"../js-mutual-auth-ecies/index":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js","../jsonWebToken":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js","../signsensusDS/ssutil":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js","./ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","./PskEncryption":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js","./utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","./utils/eth":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js":[function(require,module,exports){
+},{"../js-mutual-auth-ecies/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js","../jsonWebToken":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js","../signsensusDS/ssutil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js","./ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","./PskEncryption":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js","./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","./utils/eth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js":[function(require,module,exports){
 function PskEncryption(algorithm) {
     const crypto = require("crypto");
     const utils = require("./utils/cryptoUtils");
@@ -3699,7 +3701,7 @@ function PskEncryption(algorithm) {
 
 module.exports = PskEncryption;
 
-},{"./utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js":[function(require,module,exports){
+},{"./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js":[function(require,module,exports){
 var asn1 = require('./asn1');
 var inherits = require('util').inherits;
 
@@ -3760,7 +3762,7 @@ Entity.prototype.encode = function encode(data, enc, /* internal */ reporter) {
   return this._getEncoder(enc).encode(data, reporter);
 };
 
-},{"./asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":"util","vm":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/vm-browserify/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js":[function(require,module,exports){
+},{"./asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":"util","vm":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/vm-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js":[function(require,module,exports){
 var asn1 = exports;
 
 asn1.bignum = require('./bignum/bn');
@@ -3771,7 +3773,7 @@ asn1.constants = require('./constants/index');
 asn1.decoders = require('./decoders/index');
 asn1.encoders = require('./encoders/index');
 
-},{"./api":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js","./base/index":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","./bignum/bn":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","./constants/index":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js","./decoders/index":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js","./encoders/index":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js":[function(require,module,exports){
+},{"./api":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js","./base/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","./bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","./constants/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js","./decoders/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js","./encoders/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 const Reporter = require('../base').Reporter;
 
@@ -3890,7 +3892,7 @@ EncoderBuffer.prototype.join = function join(out, offset) {
     return out;
 };
 
-},{"../base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js":[function(require,module,exports){
+},{"../base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js":[function(require,module,exports){
 var base = exports;
 
 base.Reporter = require('./reporter').Reporter;
@@ -3898,7 +3900,7 @@ base.DecoderBuffer = require('./buffer').DecoderBuffer;
 base.EncoderBuffer = require('./buffer').EncoderBuffer;
 base.Node = require('./node');
 
-},{"./buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js","./node":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js","./reporter":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js":[function(require,module,exports){
+},{"./buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js","./node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js","./reporter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js":[function(require,module,exports){
 var Reporter = require('../base').Reporter;
 var EncoderBuffer = require('../base').EncoderBuffer;
 //var assert = require('double-check').assert;
@@ -4498,7 +4500,7 @@ Node.prototype._encodePrimitive = function encodePrimitive(tag, data) {
     throw new Error('Unsupported tag: ' + tag);
 };
 
-},{"../base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js":[function(require,module,exports){
+},{"../base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 function Reporter(options) {
@@ -4602,7 +4604,7 @@ ReporterError.prototype.rethrow = function rethrow(msg) {
   return this;
 };
 
-},{"util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js":[function(require,module,exports){
+},{"util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js":[function(require,module,exports){
 (function (module, exports) {
 
 'use strict';
@@ -7045,7 +7047,7 @@ Mont.prototype.invm = function invm(a) {
 
 })(typeof module === 'undefined' || module, this);
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js":[function(require,module,exports){
 var constants = require('../constants');
 
 exports.tagClass = {
@@ -7089,7 +7091,7 @@ exports.tag = {
 };
 exports.tagByName = constants._reverse(exports.tag);
 
-},{"../constants":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js":[function(require,module,exports){
+},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js":[function(require,module,exports){
 var constants = exports;
 
 // Helper
@@ -7110,7 +7112,7 @@ constants._reverse = function reverse(map) {
 
 constants.der = require('./der');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 var asn1 = require('../asn1');
@@ -7403,13 +7405,13 @@ function derDecodeLen(buf, primitive, fail) {
   return len;
 }
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js":[function(require,module,exports){
 var decoders = exports;
 
 decoders.der = require('./der');
 decoders.pem = require('./pem');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","./pem":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 
 const asn1 = require('../asn1');
@@ -7459,7 +7461,7 @@ PEMDecoder.prototype.decode = function decode(data, options) {
     return DERDecoder.prototype.decode.call(this, input, options);
 };
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 const asn1 = require('../asn1');
 const base = asn1.base;
@@ -7729,13 +7731,13 @@ function encodeTag(tag, primitive, cls, reporter) {
     return res;
 }
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js":[function(require,module,exports){
 var encoders = exports;
 
 encoders.der = require('./der');
 encoders.pem = require('./pem');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","./pem":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 var asn1 = require('../asn1');
@@ -7759,7 +7761,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
   return out.join('\n');
 };
 
-},{"../asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js":[function(require,module,exports){
+},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js":[function(require,module,exports){
 'use strict'
 
 const asn1 = require('./asn1/asn1');
@@ -7932,7 +7934,7 @@ KeyEncoder.prototype.encodePublic = function (publicKey, originalFormat, destina
 
 module.exports = KeyEncoder;
 
-},{"./asn1/asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./asn1/bignum/bn":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js":[function(require,module,exports){
+},{"./asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./asn1/bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js":[function(require,module,exports){
 const stream = require('stream');
 const util = require('util');
 
@@ -7957,7 +7959,7 @@ DuplexStream.prototype._read = function (n) {
 };
 
 module.exports = DuplexStream;
-},{"stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/stream-browserify/index.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js":[function(require,module,exports){
+},{"stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js":[function(require,module,exports){
 const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 const BASE = ALPHABET.length;
 const LEADER = ALPHABET.charAt(0);
@@ -8092,7 +8094,7 @@ module.exports = {
     encode,
     decode
 };
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const BASE_MAP = {};
@@ -8212,7 +8214,7 @@ module.exports = {
 }
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js":[function(require,module,exports){
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js":[function(require,module,exports){
 const base58 = require('./base58');
 const base64 = require('./base64');
 const keyEncoder = require("../keyEncoder");
@@ -8351,7 +8353,7 @@ module.exports = {
 };
 
 
-},{"../keyEncoder":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./base58":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js","./base64":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js":[function(require,module,exports){
+},{"../keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./base58":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js","./base64":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const keyEncoder = require("../keyEncoder");
 const BN = require('../asn1/bignum/bn');
@@ -8444,7 +8446,7 @@ module.exports = {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../ECKeyGenerator":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../PskCrypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","../asn1/bignum/bn":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","../keyEncoder":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","../utils/cryptoUtils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js":[function(require,module,exports){
+},{"../ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../PskCrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","../asn1/bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","../keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","../utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js":[function(require,module,exports){
 const stream = require('stream');
 
 
@@ -8472,7 +8474,7 @@ module.exports            = isStream;
 module.exports.isReadable = isReadable;
 module.exports.isWritable = isWritable;
 module.exports.isDuplex   = isDuplex;
-},{"stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/stream-browserify/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js":[function(require,module,exports){
+},{"stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js":[function(require,module,exports){
 /*
  SignSens helper functions
  */
@@ -8671,7 +8673,7 @@ exports.createSignature = function (agent,counter, nextPublic, arr, size){
 
     return agent + ":" + counter + ":" + nextPublic + ":" + result;
 }
-},{"crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/index.js":[function(require,module,exports){
+},{"crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js":[function(require,module,exports){
 
 let cachedUIDGenerator = undefined;
 let cachedSafeUid = undefined;
@@ -8726,7 +8728,7 @@ module.exports.ensureIsBuffer = function (data) {
 module.exports.removeDir = require("./lib/removeDir").removeDir;
 module.exports.removeDirSync = require("./lib/removeDir").removeDirSync;
 
-},{"./lib/Combos":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
+},{"./lib/Combos":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
 function product(args) {
     if(!args.length){
         return [ [] ];
@@ -8752,7 +8754,7 @@ function objectProduct(obj) {
 }
 
 module.exports = objectProduct;
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
 var meta = "meta";
 
 function OwM(serialized){
@@ -8843,7 +8845,7 @@ OwM.prototype.setMetaFor = function(obj, name, value){
 };
 
 module.exports = OwM;
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
 function QueueElement(content) {
 	this.content = content;
 	this.next = null;
@@ -8944,7 +8946,7 @@ Queue.prototype.inspect = Queue.prototype.toString;
 
 module.exports = Queue;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
 const HEADER_SIZE_RESEARVED = 4;
 
 function SwarmPacker(){
@@ -9093,7 +9095,7 @@ SwarmPacker.getHeader = function(pack){
     return header;
 };
 module.exports = SwarmPacker;
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
 
 function TaskCounter(finalCallback) {
 	let results = [];
@@ -9143,7 +9145,7 @@ function TaskCounter(finalCallback) {
 }
 
 module.exports = TaskCounter;
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
 const OwM = require("./OwM");
 
 /*
@@ -9199,7 +9201,7 @@ exports.jsonToNative = function(serialisedValues, result){
     };
 
 };
-},{"./OwM":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
+},{"./OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
 (function (process){(function (){
 function replaceAll(str, search, replacement) {
     return str.split(search).join(replacement);
@@ -9389,7 +9391,7 @@ module.exports = {
 
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
 (function (process){(function (){
 const PING = "PING";
 const PONG = "PONG";
@@ -9484,7 +9486,7 @@ module.exports.enableLifeLine = function(timeout){
 };
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","child_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify/lib/_empty.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","child_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
 (function (process){(function (){
 var commands = {};
 var commands_help = {};
@@ -9558,7 +9560,7 @@ module.exports = {
 
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
 const removeDir = (...args) => {
     const fs = require("fs");
     if (typeof fs.rm !== "function") {
@@ -9579,7 +9581,7 @@ module.exports = {
     removeDirSync,
     removeDir
 }
-},{"fs":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify/lib/_empty.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
+},{"fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
 
 function encode(buffer) {
     return buffer.toString('base64')
@@ -9646,7 +9648,7 @@ exports.short_uuid = function(callback) {
         callback(null, encode(buf));
     });
 };
-},{"crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
+},{"crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
 function UidGenerator(minBuffers, buffersSize) {
     const Queue = require("./Queue");
     var PSKBuffer = typeof $$ !== "undefined" && $$.PSKBuffer ? $$.PSKBuffer : $$.Buffer;
@@ -9748,7 +9750,7 @@ module.exports.createUidGenerator = function (minBuffers, bufferSize) {
     return new UidGenerator(minBuffers, bufferSize);
 };
 
-},{"./Queue":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1.js":[function(require,module,exports){
+},{"./Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1.js":[function(require,module,exports){
 'use strict';
 
 const asn1 = exports;
@@ -9761,7 +9763,7 @@ asn1.constants = require('./asn1/constants');
 asn1.decoders = require('./asn1/decoders');
 asn1.encoders = require('./asn1/encoders');
 
-},{"./asn1/api":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/api.js","./asn1/base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/index.js","./asn1/constants":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/index.js","./asn1/decoders":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/index.js","./asn1/encoders":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/index.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/api.js":[function(require,module,exports){
+},{"./asn1/api":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/api.js","./asn1/base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/index.js","./asn1/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/index.js","./asn1/decoders":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/index.js","./asn1/encoders":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/index.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/api.js":[function(require,module,exports){
 'use strict';
 
 const encoders = require('./encoders');
@@ -9820,7 +9822,7 @@ Entity.prototype.encode = function encode(data, enc, /* internal */ reporter) {
   return this._getEncoder(enc).encode(data, reporter);
 };
 
-},{"./decoders":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/index.js","./encoders":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/index.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/buffer.js":[function(require,module,exports){
+},{"./decoders":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/index.js","./encoders":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/buffer.js":[function(require,module,exports){
 'use strict';
 
 const inherits = require('inherits');
@@ -9975,7 +9977,7 @@ EncoderBuffer.prototype.join = function join(out, offset) {
   return out;
 };
 
-},{"../base/reporter":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/reporter.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safer-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safer-buffer/safer.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/index.js":[function(require,module,exports){
+},{"../base/reporter":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/reporter.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safer-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safer-buffer/safer.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/index.js":[function(require,module,exports){
 'use strict';
 
 const base = exports;
@@ -9985,7 +9987,7 @@ base.DecoderBuffer = require('./buffer').DecoderBuffer;
 base.EncoderBuffer = require('./buffer').EncoderBuffer;
 base.Node = require('./node');
 
-},{"./buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/buffer.js","./node":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/node.js","./reporter":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/reporter.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/node.js":[function(require,module,exports){
+},{"./buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/buffer.js","./node":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/node.js","./reporter":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/reporter.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/node.js":[function(require,module,exports){
 'use strict';
 
 const Reporter = require('../base/reporter').Reporter;
@@ -10625,7 +10627,7 @@ Node.prototype._isPrintstr = function isPrintstr(str) {
   return /^[A-Za-z0-9 '()+,-./:=?]*$/.test(str);
 };
 
-},{"../base/buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/buffer.js","../base/reporter":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/reporter.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/reporter.js":[function(require,module,exports){
+},{"../base/buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/buffer.js","../base/reporter":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/reporter.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/reporter.js":[function(require,module,exports){
 'use strict';
 
 const inherits = require('inherits');
@@ -10750,7 +10752,7 @@ ReporterError.prototype.rethrow = function rethrow(msg) {
   return this;
 };
 
-},{"inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/der.js":[function(require,module,exports){
+},{"inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/der.js":[function(require,module,exports){
 'use strict';
 
 // Helper
@@ -10810,7 +10812,7 @@ exports.tag = {
 };
 exports.tagByName = reverse(exports.tag);
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/index.js":[function(require,module,exports){
 'use strict';
 
 const constants = exports;
@@ -10833,7 +10835,7 @@ constants._reverse = function reverse(map) {
 
 constants.der = require('./der');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/der.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/der.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/der.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/der.js":[function(require,module,exports){
 'use strict';
 
 const inherits = require('inherits');
@@ -11170,7 +11172,7 @@ function derDecodeLen(buf, primitive, fail) {
   return len;
 }
 
-},{"../base/buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/buffer.js","../base/node":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/node.js","../constants/der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/der.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/index.js":[function(require,module,exports){
+},{"../base/buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/buffer.js","../base/node":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/node.js","../constants/der":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/der.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/index.js":[function(require,module,exports){
 'use strict';
 
 const decoders = exports;
@@ -11178,7 +11180,7 @@ const decoders = exports;
 decoders.der = require('./der');
 decoders.pem = require('./pem');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/der.js","./pem":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/pem.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/pem.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/pem.js":[function(require,module,exports){
 'use strict';
 
 const inherits = require('inherits');
@@ -11231,7 +11233,7 @@ PEMDecoder.prototype.decode = function decode(data, options) {
   return DERDecoder.prototype.decode.call(this, input, options);
 };
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/der.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safer-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safer-buffer/safer.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/der.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/decoders/der.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safer-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safer-buffer/safer.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/der.js":[function(require,module,exports){
 'use strict';
 
 const inherits = require('inherits');
@@ -11528,7 +11530,7 @@ function encodeTag(tag, primitive, cls, reporter) {
   return res;
 }
 
-},{"../base/node":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/node.js","../constants/der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/der.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safer-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safer-buffer/safer.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/index.js":[function(require,module,exports){
+},{"../base/node":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/base/node.js","../constants/der":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/constants/der.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safer-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safer-buffer/safer.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/index.js":[function(require,module,exports){
 'use strict';
 
 const encoders = exports;
@@ -11536,7 +11538,7 @@ const encoders = exports;
 encoders.der = require('./der');
 encoders.pem = require('./pem');
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/der.js","./pem":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/pem.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/pem.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/pem.js":[function(require,module,exports){
 'use strict';
 
 const inherits = require('inherits');
@@ -11561,7 +11563,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
   return out.join('\n');
 };
 
-},{"./der":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/der.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1/encoders/der.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -15009,7 +15011,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
   };
 })(typeof module === 'undefined' || module, this);
 
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/base64-js/index.js":[function(require,module,exports){
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/base64-js/index.js":[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -15161,7 +15163,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -18710,7 +18712,7 @@ function fromByteArray (uint8) {
   };
 })(typeof module === 'undefined' || module, this);
 
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/brorand/index.js":[function(require,module,exports){
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/brorand/index.js":[function(require,module,exports){
 var r;
 
 module.exports = function rand(len) {
@@ -18777,9 +18779,9 @@ if (typeof self === 'object') {
   }
 }
 
-},{"crypto":"crypto"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browser-resolve/empty.js":[function(require,module,exports){
+},{"crypto":"crypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browser-resolve/empty.js":[function(require,module,exports){
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/aes.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/aes.js":[function(require,module,exports){
 // based on the aes implimentation in triple sec
 // https://github.com/keybase/triplesec
 // which is in turn based on the one from crypto-js
@@ -19009,7 +19011,7 @@ AES.prototype.scrub = function () {
 
 module.exports.AES = AES
 
-},{"safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/authCipher.js":[function(require,module,exports){
+},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/authCipher.js":[function(require,module,exports){
 var aes = require('./aes')
 var Buffer = require('safe-buffer').Buffer
 var Transform = require('cipher-base')
@@ -19128,7 +19130,7 @@ StreamCipher.prototype.setAAD = function setAAD (buf) {
 
 module.exports = StreamCipher
 
-},{"./aes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/aes.js","./ghash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/ghash.js","./incr32":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/incr32.js","buffer-xor":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/buffer-xor/index.js","cipher-base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/cipher-base/index.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/browser.js":[function(require,module,exports){
+},{"./aes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/aes.js","./ghash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/ghash.js","./incr32":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/incr32.js","buffer-xor":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer-xor/index.js","cipher-base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/browser.js":[function(require,module,exports){
 var ciphers = require('./encrypter')
 var deciphers = require('./decrypter')
 var modes = require('./modes/list.json')
@@ -19143,7 +19145,7 @@ exports.createDecipher = exports.Decipher = deciphers.createDecipher
 exports.createDecipheriv = exports.Decipheriv = deciphers.createDecipheriv
 exports.listCiphers = exports.getCiphers = getCiphers
 
-},{"./decrypter":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/decrypter.js","./encrypter":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/encrypter.js","./modes/list.json":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/list.json"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/decrypter.js":[function(require,module,exports){
+},{"./decrypter":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/decrypter.js","./encrypter":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/encrypter.js","./modes/list.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/list.json"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/decrypter.js":[function(require,module,exports){
 var AuthCipher = require('./authCipher')
 var Buffer = require('safe-buffer').Buffer
 var MODES = require('./modes')
@@ -19269,7 +19271,7 @@ function createDecipher (suite, password) {
 exports.createDecipher = createDecipher
 exports.createDecipheriv = createDecipheriv
 
-},{"./aes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/aes.js","./authCipher":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/authCipher.js","./modes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/index.js","./streamCipher":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/streamCipher.js","cipher-base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/cipher-base/index.js","evp_bytestokey":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/evp_bytestokey/index.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/encrypter.js":[function(require,module,exports){
+},{"./aes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/aes.js","./authCipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/authCipher.js","./modes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/index.js","./streamCipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/streamCipher.js","cipher-base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js","evp_bytestokey":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/evp_bytestokey/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/encrypter.js":[function(require,module,exports){
 var MODES = require('./modes')
 var AuthCipher = require('./authCipher')
 var Buffer = require('safe-buffer').Buffer
@@ -19385,7 +19387,7 @@ function createCipher (suite, password) {
 exports.createCipheriv = createCipheriv
 exports.createCipher = createCipher
 
-},{"./aes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/aes.js","./authCipher":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/authCipher.js","./modes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/index.js","./streamCipher":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/streamCipher.js","cipher-base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/cipher-base/index.js","evp_bytestokey":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/evp_bytestokey/index.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/ghash.js":[function(require,module,exports){
+},{"./aes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/aes.js","./authCipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/authCipher.js","./modes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/index.js","./streamCipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/streamCipher.js","cipher-base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js","evp_bytestokey":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/evp_bytestokey/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/ghash.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 var ZEROES = Buffer.alloc(16, 0)
 
@@ -19476,7 +19478,7 @@ GHASH.prototype.final = function (abl, bl) {
 
 module.exports = GHASH
 
-},{"safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/incr32.js":[function(require,module,exports){
+},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/incr32.js":[function(require,module,exports){
 function incr32 (iv) {
   var len = iv.length
   var item
@@ -19493,7 +19495,7 @@ function incr32 (iv) {
 }
 module.exports = incr32
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/cbc.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/cbc.js":[function(require,module,exports){
 var xor = require('buffer-xor')
 
 exports.encrypt = function (self, block) {
@@ -19512,7 +19514,7 @@ exports.decrypt = function (self, block) {
   return xor(out, pad)
 }
 
-},{"buffer-xor":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/buffer-xor/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/cfb.js":[function(require,module,exports){
+},{"buffer-xor":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer-xor/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/cfb.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 var xor = require('buffer-xor')
 
@@ -19547,7 +19549,7 @@ exports.encrypt = function (self, data, decrypt) {
   return out
 }
 
-},{"buffer-xor":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/buffer-xor/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/cfb1.js":[function(require,module,exports){
+},{"buffer-xor":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer-xor/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/cfb1.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 
 function encryptByte (self, byteParam, decrypt) {
@@ -19591,7 +19593,7 @@ exports.encrypt = function (self, chunk, decrypt) {
   return out
 }
 
-},{"safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/cfb8.js":[function(require,module,exports){
+},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/cfb8.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 
 function encryptByte (self, byteParam, decrypt) {
@@ -19618,7 +19620,7 @@ exports.encrypt = function (self, chunk, decrypt) {
   return out
 }
 
-},{"safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/ctr.js":[function(require,module,exports){
+},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/ctr.js":[function(require,module,exports){
 var xor = require('buffer-xor')
 var Buffer = require('safe-buffer').Buffer
 var incr32 = require('../incr32')
@@ -19650,7 +19652,7 @@ exports.encrypt = function (self, chunk) {
   return xor(chunk, pad)
 }
 
-},{"../incr32":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/incr32.js","buffer-xor":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/buffer-xor/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/ecb.js":[function(require,module,exports){
+},{"../incr32":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/incr32.js","buffer-xor":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer-xor/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/ecb.js":[function(require,module,exports){
 exports.encrypt = function (self, block) {
   return self._cipher.encryptBlock(block)
 }
@@ -19659,7 +19661,7 @@ exports.decrypt = function (self, block) {
   return self._cipher.decryptBlock(block)
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/index.js":[function(require,module,exports){
 var modeModules = {
   ECB: require('./ecb'),
   CBC: require('./cbc'),
@@ -19679,7 +19681,7 @@ for (var key in modes) {
 
 module.exports = modes
 
-},{"./cbc":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/cbc.js","./cfb":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/cfb.js","./cfb1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/cfb1.js","./cfb8":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/cfb8.js","./ctr":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/ctr.js","./ecb":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/ecb.js","./list.json":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/list.json","./ofb":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/ofb.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/list.json":[function(require,module,exports){
+},{"./cbc":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/cbc.js","./cfb":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/cfb.js","./cfb1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/cfb1.js","./cfb8":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/cfb8.js","./ctr":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/ctr.js","./ecb":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/ecb.js","./list.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/list.json","./ofb":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/ofb.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/list.json":[function(require,module,exports){
 module.exports={
   "aes-128-ecb": {
     "cipher": "AES",
@@ -19872,7 +19874,7 @@ module.exports={
   }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/ofb.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/ofb.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var xor = require('buffer-xor')
 
@@ -19893,7 +19895,7 @@ exports.encrypt = function (self, chunk) {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"buffer":"buffer","buffer-xor":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/buffer-xor/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/streamCipher.js":[function(require,module,exports){
+},{"buffer":"buffer","buffer-xor":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer-xor/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/streamCipher.js":[function(require,module,exports){
 var aes = require('./aes')
 var Buffer = require('safe-buffer').Buffer
 var Transform = require('cipher-base')
@@ -19922,7 +19924,7 @@ StreamCipher.prototype._final = function () {
 
 module.exports = StreamCipher
 
-},{"./aes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/aes.js","cipher-base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/cipher-base/index.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-cipher/browser.js":[function(require,module,exports){
+},{"./aes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/aes.js","cipher-base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-cipher/browser.js":[function(require,module,exports){
 var DES = require('browserify-des')
 var aes = require('browserify-aes/browser')
 var aesModes = require('browserify-aes/modes')
@@ -19991,7 +19993,7 @@ exports.createDecipher = exports.Decipher = createDecipher
 exports.createDecipheriv = exports.Decipheriv = createDecipheriv
 exports.listCiphers = exports.getCiphers = getCiphers
 
-},{"browserify-aes/browser":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/browser.js","browserify-aes/modes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/modes/index.js","browserify-des":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-des/index.js","browserify-des/modes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-des/modes.js","evp_bytestokey":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/evp_bytestokey/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-des/index.js":[function(require,module,exports){
+},{"browserify-aes/browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/browser.js","browserify-aes/modes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/modes/index.js","browserify-des":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-des/index.js","browserify-des/modes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-des/modes.js","evp_bytestokey":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/evp_bytestokey/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-des/index.js":[function(require,module,exports){
 var CipherBase = require('cipher-base')
 var des = require('des.js')
 var inherits = require('inherits')
@@ -20043,7 +20045,7 @@ DES.prototype._final = function () {
   return Buffer.from(this._des.final())
 }
 
-},{"cipher-base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/cipher-base/index.js","des.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-des/modes.js":[function(require,module,exports){
+},{"cipher-base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js","des.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-des/modes.js":[function(require,module,exports){
 exports['des-ecb'] = {
   key: 8,
   iv: 0
@@ -20069,7 +20071,7 @@ exports['des-ede'] = {
   iv: 0
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-rsa/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-rsa/index.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var BN = require('bn.js')
 var randomBytes = require('randombytes')
@@ -20109,10 +20111,10 @@ module.exports = crt
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/bn.js/lib/bn.js","buffer":"buffer","randombytes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/randombytes/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/algos.js":[function(require,module,exports){
+},{"bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/bn.js/lib/bn.js","buffer":"buffer","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/algos.js":[function(require,module,exports){
 module.exports = require('./browser/algorithms.json')
 
-},{"./browser/algorithms.json":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/algorithms.json"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/algorithms.json":[function(require,module,exports){
+},{"./browser/algorithms.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/algorithms.json"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/algorithms.json":[function(require,module,exports){
 module.exports={
   "sha224WithRSAEncryption": {
     "sign": "rsa",
@@ -20266,7 +20268,7 @@ module.exports={
   }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/curves.json":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/curves.json":[function(require,module,exports){
 module.exports={
   "1.3.132.0.10": "secp256k1",
   "1.3.132.0.33": "p224",
@@ -20276,7 +20278,7 @@ module.exports={
   "1.3.132.0.35": "p521"
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/index.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 var createHash = require('create-hash')
 var stream = require('readable-stream')
@@ -20370,7 +20372,7 @@ module.exports = {
   createVerify: createVerify
 }
 
-},{"./algorithms.json":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/algorithms.json","./sign":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/sign.js","./verify":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/verify.js","create-hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hash/browser.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/readable-browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/sign.js":[function(require,module,exports){
+},{"./algorithms.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/algorithms.json","./sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/sign.js","./verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/verify.js","create-hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/browser.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/readable-browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/sign.js":[function(require,module,exports){
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
 var Buffer = require('safe-buffer').Buffer
 var createHmac = require('create-hmac')
@@ -20515,7 +20517,7 @@ module.exports = sign
 module.exports.getKey = getKey
 module.exports.makeKey = makeKey
 
-},{"./curves.json":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/curves.json","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/bn.js/lib/bn.js","browserify-rsa":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-rsa/index.js","create-hmac":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hmac/browser.js","elliptic":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic.js","parse-asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/verify.js":[function(require,module,exports){
+},{"./curves.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/curves.json","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/bn.js/lib/bn.js","browserify-rsa":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-rsa/index.js","create-hmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hmac/browser.js","elliptic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic.js","parse-asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/verify.js":[function(require,module,exports){
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
 var Buffer = require('safe-buffer').Buffer
 var BN = require('bn.js')
@@ -20601,7 +20603,7 @@ function checkValue (b, q) {
 
 module.exports = verify
 
-},{"./curves.json":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/curves.json","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/bn.js/lib/bn.js","elliptic":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic.js","parse-asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js":[function(require,module,exports){
+},{"./curves.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/curves.json","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/bn.js/lib/bn.js","elliptic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic.js","parse-asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js":[function(require,module,exports){
 'use strict';
 
 function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
@@ -20730,7 +20732,7 @@ createErrorType('ERR_UNKNOWN_ENCODING', function (arg) {
 createErrorType('ERR_STREAM_UNSHIFT_AFTER_END_EVENT', 'stream.unshift() after end event');
 module.exports.codes = codes;
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
 (function (process){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -20752,66 +20754,54 @@ module.exports.codes = codes;
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
 // Writable.
-'use strict';
-/*<replacement>*/
 
+'use strict';
+
+/*<replacement>*/
 var objectKeys = Object.keys || function (obj) {
   var keys = [];
-
-  for (var key in obj) {
-    keys.push(key);
-  }
-
+  for (var key in obj) keys.push(key);
   return keys;
 };
 /*</replacement>*/
 
-
 module.exports = Duplex;
-
-var Readable = require('./_stream_readable');
-
-var Writable = require('./_stream_writable');
-
+const Readable = require('./_stream_readable');
+const Writable = require('./_stream_writable');
 require('inherits')(Duplex, Readable);
-
 {
   // Allow the keys array to be GC'ed.
-  var keys = objectKeys(Writable.prototype);
-
+  const keys = objectKeys(Writable.prototype);
   for (var v = 0; v < keys.length; v++) {
-    var method = keys[v];
+    const method = keys[v];
     if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
   }
 }
-
 function Duplex(options) {
   if (!(this instanceof Duplex)) return new Duplex(options);
   Readable.call(this, options);
   Writable.call(this, options);
   this.allowHalfOpen = true;
-
   if (options) {
     if (options.readable === false) this.readable = false;
     if (options.writable === false) this.writable = false;
-
     if (options.allowHalfOpen === false) {
       this.allowHalfOpen = false;
       this.once('end', onend);
     }
   }
 }
-
 Object.defineProperty(Duplex.prototype, 'writableHighWaterMark', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     return this._writableState.highWaterMark;
   }
 });
@@ -20829,51 +20819,50 @@ Object.defineProperty(Duplex.prototype, 'writableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     return this._writableState.length;
   }
-}); // the no-half-open enforcer
+});
 
+// the no-half-open enforcer
 function onend() {
   // If the writable side ended, then we're ok.
-  if (this._writableState.ended) return; // no more data can be written.
-  // But allow more writes to happen in this tick.
+  if (this._writableState.ended) return;
 
+  // no more data can be written.
+  // But allow more writes to happen in this tick.
   process.nextTick(onEndNT, this);
 }
-
 function onEndNT(self) {
   self.end();
 }
-
 Object.defineProperty(Duplex.prototype, 'destroyed', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     if (this._readableState === undefined || this._writableState === undefined) {
       return false;
     }
-
     return this._readableState.destroyed && this._writableState.destroyed;
   },
-  set: function set(value) {
+  set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (this._readableState === undefined || this._writableState === undefined) {
       return;
-    } // backward compatibility, the user is explicitly
+    }
+
+    // backward compatibility, the user is explicitly
     // managing destroyed
-
-
     this._readableState.destroyed = value;
     this._writableState.destroyed = value;
   }
 });
 }).call(this)}).call(this,require('_process'))
 
-},{"./_stream_readable":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
+},{"./_stream_readable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -20894,26 +20883,24 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
+
 'use strict';
 
 module.exports = PassThrough;
-
-var Transform = require('./_stream_transform');
-
+const Transform = require('./_stream_transform');
 require('inherits')(PassThrough, Transform);
-
 function PassThrough(options) {
   if (!(this instanceof PassThrough)) return new PassThrough(options);
   Transform.call(this, options);
 }
-
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
+},{"./_stream_transform":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -20935,49 +20922,40 @@ PassThrough.prototype._transform = function (chunk, encoding, cb) {
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 'use strict';
 
 module.exports = Readable;
-/*<replacement>*/
 
+/*<replacement>*/
 var Duplex;
 /*</replacement>*/
 
 Readable.ReadableState = ReadableState;
+
 /*<replacement>*/
-
-var EE = require('events').EventEmitter;
-
+const EE = require('events').EventEmitter;
 var EElistenerCount = function EElistenerCount(emitter, type) {
   return emitter.listeners(type).length;
 };
 /*</replacement>*/
 
 /*<replacement>*/
-
-
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-
-var Buffer = require('buffer').Buffer;
-
-var OurUint8Array = global.Uint8Array || function () {};
-
+const Buffer = require('buffer').Buffer;
+const OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
-
 function _isUint8Array(obj) {
   return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
 }
+
 /*<replacement>*/
-
-
-var debugUtil = require('util');
-
-var debug;
-
+const debugUtil = require('util');
+let debug;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
 } else {
@@ -20985,60 +20963,57 @@ if (debugUtil && debugUtil.debuglog) {
 }
 /*</replacement>*/
 
+const BufferList = require('./internal/streams/buffer_list');
+const destroyImpl = require('./internal/streams/destroy');
+const _require = require('./internal/streams/state'),
+  getHighWaterMark = _require.getHighWaterMark;
+const _require$codes = require('../errors').codes,
+  ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
+  ERR_STREAM_PUSH_AFTER_EOF = _require$codes.ERR_STREAM_PUSH_AFTER_EOF,
+  ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+  ERR_STREAM_UNSHIFT_AFTER_END_EVENT = _require$codes.ERR_STREAM_UNSHIFT_AFTER_END_EVENT;
 
-var BufferList = require('./internal/streams/buffer_list');
-
-var destroyImpl = require('./internal/streams/destroy');
-
-var _require = require('./internal/streams/state'),
-    getHighWaterMark = _require.getHighWaterMark;
-
-var _require$codes = require('../errors').codes,
-    ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
-    ERR_STREAM_PUSH_AFTER_EOF = _require$codes.ERR_STREAM_PUSH_AFTER_EOF,
-    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
-    ERR_STREAM_UNSHIFT_AFTER_END_EVENT = _require$codes.ERR_STREAM_UNSHIFT_AFTER_END_EVENT; // Lazy loaded to improve the startup performance.
-
-
-var StringDecoder;
-var createReadableStreamAsyncIterator;
-var from;
-
+// Lazy loaded to improve the startup performance.
+let StringDecoder;
+let createReadableStreamAsyncIterator;
+let from;
 require('inherits')(Readable, Stream);
-
-var errorOrDestroy = destroyImpl.errorOrDestroy;
-var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
-
+const errorOrDestroy = destroyImpl.errorOrDestroy;
+const kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
 function prependListener(emitter, event, fn) {
   // Sadly this is not cacheable as some libraries bundle their own
   // event emitter implementation with them.
-  if (typeof emitter.prependListener === 'function') return emitter.prependListener(event, fn); // This is a hack to make sure that our error handler is attached before any
+  if (typeof emitter.prependListener === 'function') return emitter.prependListener(event, fn);
+
+  // This is a hack to make sure that our error handler is attached before any
   // userland ones.  NEVER DO THIS. This is here only because this code needs
   // to continue to work with older versions of Node.js that do not include
   // the prependListener() method. The goal is to eventually remove this hack.
-
   if (!emitter._events || !emitter._events[event]) emitter.on(event, fn);else if (Array.isArray(emitter._events[event])) emitter._events[event].unshift(fn);else emitter._events[event] = [fn, emitter._events[event]];
 }
-
 function ReadableState(options, stream, isDuplex) {
   Duplex = Duplex || require('./_stream_duplex');
-  options = options || {}; // Duplex streams are both readable and writable, but share
+  options = options || {};
+
+  // Duplex streams are both readable and writable, but share
   // the same options object.
   // However, some cases require setting options to different
   // values for the readable and the writable sides of the duplex stream.
   // These options can be provided separately as readableXXX and writableXXX.
+  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex;
 
-  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex; // object stream flag. Used to make read(n) ignore n and to
+  // object stream flag. Used to make read(n) ignore n and to
   // make all the buffer merging and length checks go away
-
   this.objectMode = !!options.objectMode;
-  if (isDuplex) this.objectMode = this.objectMode || !!options.readableObjectMode; // the point at which it stops calling _read() to fill the buffer
-  // Note: 0 is a valid value, means "don't call _read preemptively ever"
+  if (isDuplex) this.objectMode = this.objectMode || !!options.readableObjectMode;
 
-  this.highWaterMark = getHighWaterMark(this, options, 'readableHighWaterMark', isDuplex); // A linked list is used to store data chunks instead of an array because the
+  // the point at which it stops calling _read() to fill the buffer
+  // Note: 0 is a valid value, means "don't call _read preemptively ever"
+  this.highWaterMark = getHighWaterMark(this, options, 'readableHighWaterMark', isDuplex);
+
+  // A linked list is used to store data chunks instead of an array because the
   // linked list can remove elements from the beginning faster than
   // array.shift()
-
   this.buffer = new BufferList();
   this.length = 0;
   this.pipes = null;
@@ -21046,141 +21021,136 @@ function ReadableState(options, stream, isDuplex) {
   this.flowing = null;
   this.ended = false;
   this.endEmitted = false;
-  this.reading = false; // a flag to be able to tell if the event 'readable'/'data' is emitted
+  this.reading = false;
+
+  // a flag to be able to tell if the event 'readable'/'data' is emitted
   // immediately, or on a later tick.  We set this to true at first, because
   // any actions that shouldn't happen until "later" should generally also
   // not happen before the first read call.
+  this.sync = true;
 
-  this.sync = true; // whenever we return null, then we set a flag to say
+  // whenever we return null, then we set a flag to say
   // that we're awaiting a 'readable' event emission.
-
   this.needReadable = false;
   this.emittedReadable = false;
   this.readableListening = false;
   this.resumeScheduled = false;
-  this.paused = true; // Should close be emitted on destroy. Defaults to true.
+  this.paused = true;
 
-  this.emitClose = options.emitClose !== false; // Should .destroy() be called after 'end' (and potentially 'finish')
+  // Should close be emitted on destroy. Defaults to true.
+  this.emitClose = options.emitClose !== false;
 
-  this.autoDestroy = !!options.autoDestroy; // has it been destroyed
+  // Should .destroy() be called after 'end' (and potentially 'finish')
+  this.autoDestroy = !!options.autoDestroy;
 
-  this.destroyed = false; // Crypto is kind of old and crusty.  Historically, its default string
+  // has it been destroyed
+  this.destroyed = false;
+
+  // Crypto is kind of old and crusty.  Historically, its default string
   // encoding is 'binary' so we have to make this configurable.
   // Everything else in the universe uses 'utf8', though.
+  this.defaultEncoding = options.defaultEncoding || 'utf8';
 
-  this.defaultEncoding = options.defaultEncoding || 'utf8'; // the number of writers that are awaiting a drain event in .pipe()s
+  // the number of writers that are awaiting a drain event in .pipe()s
+  this.awaitDrain = 0;
 
-  this.awaitDrain = 0; // if true, a maybeReadMore has been scheduled
-
+  // if true, a maybeReadMore has been scheduled
   this.readingMore = false;
   this.decoder = null;
   this.encoding = null;
-
   if (options.encoding) {
     if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
     this.decoder = new StringDecoder(options.encoding);
     this.encoding = options.encoding;
   }
 }
-
 function Readable(options) {
   Duplex = Duplex || require('./_stream_duplex');
-  if (!(this instanceof Readable)) return new Readable(options); // Checking for a Stream.Duplex instance is faster here instead of inside
+  if (!(this instanceof Readable)) return new Readable(options);
+
+  // Checking for a Stream.Duplex instance is faster here instead of inside
   // the ReadableState constructor, at least with V8 6.5
+  const isDuplex = this instanceof Duplex;
+  this._readableState = new ReadableState(options, this, isDuplex);
 
-  var isDuplex = this instanceof Duplex;
-  this._readableState = new ReadableState(options, this, isDuplex); // legacy
-
+  // legacy
   this.readable = true;
-
   if (options) {
     if (typeof options.read === 'function') this._read = options.read;
     if (typeof options.destroy === 'function') this._destroy = options.destroy;
   }
-
   Stream.call(this);
 }
-
 Object.defineProperty(Readable.prototype, 'destroyed', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     if (this._readableState === undefined) {
       return false;
     }
-
     return this._readableState.destroyed;
   },
-  set: function set(value) {
+  set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (!this._readableState) {
       return;
-    } // backward compatibility, the user is explicitly
+    }
+
+    // backward compatibility, the user is explicitly
     // managing destroyed
-
-
     this._readableState.destroyed = value;
   }
 });
 Readable.prototype.destroy = destroyImpl.destroy;
 Readable.prototype._undestroy = destroyImpl.undestroy;
-
 Readable.prototype._destroy = function (err, cb) {
   cb(err);
-}; // Manually shove something into the read() buffer.
+};
+
+// Manually shove something into the read() buffer.
 // This returns true if the highWaterMark has not been hit yet,
 // similar to how Writable.write() returns true if you should
 // write() some more.
-
-
 Readable.prototype.push = function (chunk, encoding) {
   var state = this._readableState;
   var skipChunkCheck;
-
   if (!state.objectMode) {
     if (typeof chunk === 'string') {
       encoding = encoding || state.defaultEncoding;
-
       if (encoding !== state.encoding) {
         chunk = Buffer.from(chunk, encoding);
         encoding = '';
       }
-
       skipChunkCheck = true;
     }
   } else {
     skipChunkCheck = true;
   }
-
   return readableAddChunk(this, chunk, encoding, false, skipChunkCheck);
-}; // Unshift should *always* be something directly out of read()
+};
 
-
+// Unshift should *always* be something directly out of read()
 Readable.prototype.unshift = function (chunk) {
   return readableAddChunk(this, chunk, null, true, false);
 };
-
 function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
   debug('readableAddChunk', chunk);
   var state = stream._readableState;
-
   if (chunk === null) {
     state.reading = false;
     onEofChunk(stream, state);
   } else {
     var er;
     if (!skipChunkCheck) er = chunkInvalid(state, chunk);
-
     if (er) {
       errorOrDestroy(stream, er);
     } else if (state.objectMode || chunk && chunk.length > 0) {
       if (typeof chunk !== 'string' && !state.objectMode && Object.getPrototypeOf(chunk) !== Buffer.prototype) {
         chunk = _uint8ArrayToBuffer(chunk);
       }
-
       if (addToFront) {
         if (state.endEmitted) errorOrDestroy(stream, new ERR_STREAM_UNSHIFT_AFTER_END_EVENT());else addChunk(stream, state, chunk, true);
       } else if (state.ended) {
@@ -21189,7 +21159,6 @@ function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
         return false;
       } else {
         state.reading = false;
-
         if (state.decoder && !encoding) {
           chunk = state.decoder.write(chunk);
           if (state.objectMode || chunk.length !== 0) addChunk(stream, state, chunk, false);else maybeReadMore(stream, state);
@@ -21201,14 +21170,13 @@ function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
       state.reading = false;
       maybeReadMore(stream, state);
     }
-  } // We can push more data if we are below the highWaterMark.
+  }
+
+  // We can push more data if we are below the highWaterMark.
   // Also, if we have no data yet, we can stand some more bytes.
   // This is to work around cases where hwm=0, such as the repl.
-
-
   return !state.ended && (state.length < state.highWaterMark || state.length === 0);
 }
-
 function addChunk(stream, state, chunk, addToFront) {
   if (state.flowing && state.length === 0 && !state.sync) {
     state.awaitDrain = 0;
@@ -21219,50 +21187,42 @@ function addChunk(stream, state, chunk, addToFront) {
     if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
     if (state.needReadable) emitReadable(stream);
   }
-
   maybeReadMore(stream, state);
 }
-
 function chunkInvalid(state, chunk) {
   var er;
-
   if (!_isUint8Array(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
     er = new ERR_INVALID_ARG_TYPE('chunk', ['string', 'Buffer', 'Uint8Array'], chunk);
   }
-
   return er;
 }
-
 Readable.prototype.isPaused = function () {
   return this._readableState.flowing === false;
-}; // backwards compatibility.
+};
 
-
+// backwards compatibility.
 Readable.prototype.setEncoding = function (enc) {
   if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
-  var decoder = new StringDecoder(enc);
-  this._readableState.decoder = decoder; // If setEncoding(null), decoder.encoding equals utf8
+  const decoder = new StringDecoder(enc);
+  this._readableState.decoder = decoder;
+  // If setEncoding(null), decoder.encoding equals utf8
+  this._readableState.encoding = this._readableState.decoder.encoding;
 
-  this._readableState.encoding = this._readableState.decoder.encoding; // Iterate over current buffer to convert already stored Buffers:
-
-  var p = this._readableState.buffer.head;
-  var content = '';
-
+  // Iterate over current buffer to convert already stored Buffers:
+  let p = this._readableState.buffer.head;
+  let content = '';
   while (p !== null) {
     content += decoder.write(p.data);
     p = p.next;
   }
-
   this._readableState.buffer.clear();
-
   if (content !== '') this._readableState.buffer.push(content);
   this._readableState.length = content.length;
   return this;
-}; // Don't raise the hwm > 1GB
+};
 
-
-var MAX_HWM = 0x40000000;
-
+// Don't raise the hwm > 1GB
+const MAX_HWM = 0x40000000;
 function computeNewHighWaterMark(n) {
   if (n >= MAX_HWM) {
     // TODO(ronag): Throw ERR_VALUE_OUT_OF_RANGE.
@@ -21278,55 +21238,54 @@ function computeNewHighWaterMark(n) {
     n |= n >>> 16;
     n++;
   }
-
   return n;
-} // This function is designed to be inlinable, so please take care when making
+}
+
+// This function is designed to be inlinable, so please take care when making
 // changes to the function body.
-
-
 function howMuchToRead(n, state) {
   if (n <= 0 || state.length === 0 && state.ended) return 0;
   if (state.objectMode) return 1;
-
   if (n !== n) {
     // Only flow one buffer at a time
     if (state.flowing && state.length) return state.buffer.head.data.length;else return state.length;
-  } // If we're asking for more than the current hwm, then raise the hwm.
-
-
+  }
+  // If we're asking for more than the current hwm, then raise the hwm.
   if (n > state.highWaterMark) state.highWaterMark = computeNewHighWaterMark(n);
-  if (n <= state.length) return n; // Don't have enough
-
+  if (n <= state.length) return n;
+  // Don't have enough
   if (!state.ended) {
     state.needReadable = true;
     return 0;
   }
-
   return state.length;
-} // you can override either this method, or the async _read(n) below.
+}
 
-
+// you can override either this method, or the async _read(n) below.
 Readable.prototype.read = function (n) {
   debug('read', n);
   n = parseInt(n, 10);
   var state = this._readableState;
   var nOrig = n;
-  if (n !== 0) state.emittedReadable = false; // if we're doing read(0) to trigger a readable event, but we
+  if (n !== 0) state.emittedReadable = false;
+
+  // if we're doing read(0) to trigger a readable event, but we
   // already have a bunch of data in the buffer, then just trigger
   // the 'readable' event and move on.
-
   if (n === 0 && state.needReadable && ((state.highWaterMark !== 0 ? state.length >= state.highWaterMark : state.length > 0) || state.ended)) {
     debug('read: emitReadable', state.length, state.ended);
     if (state.length === 0 && state.ended) endReadable(this);else emitReadable(this);
     return null;
   }
+  n = howMuchToRead(n, state);
 
-  n = howMuchToRead(n, state); // if we've ended, and we're now clear, then finish it up.
-
+  // if we've ended, and we're now clear, then finish it up.
   if (n === 0 && state.ended) {
     if (state.length === 0) endReadable(this);
     return null;
-  } // All the actual chunk generation logic needs to be
+  }
+
+  // All the actual chunk generation logic needs to be
   // *below* the call to _read.  The reason is that in certain
   // synthetic stream cases, such as passthrough streams, _read
   // may be a completely synchronous operation which may change
@@ -21347,40 +21306,37 @@ Readable.prototype.read = function (n) {
   // 'readable' etc.
   //
   // 3. Actually pull the requested chunks out of the buffer and return.
+
   // if we need a readable event, then we need to do some reading.
-
-
   var doRead = state.needReadable;
-  debug('need readable', doRead); // if we currently have less than the highWaterMark, then also read some
+  debug('need readable', doRead);
 
+  // if we currently have less than the highWaterMark, then also read some
   if (state.length === 0 || state.length - n < state.highWaterMark) {
     doRead = true;
     debug('length less than watermark', doRead);
-  } // however, if we've ended, then there's no point, and if we're already
+  }
+
+  // however, if we've ended, then there's no point, and if we're already
   // reading, then it's unnecessary.
-
-
   if (state.ended || state.reading) {
     doRead = false;
     debug('reading or ended', doRead);
   } else if (doRead) {
     debug('do read');
     state.reading = true;
-    state.sync = true; // if the length is currently zero, then we *need* a readable event.
-
-    if (state.length === 0) state.needReadable = true; // call internal read method
-
+    state.sync = true;
+    // if the length is currently zero, then we *need* a readable event.
+    if (state.length === 0) state.needReadable = true;
+    // call internal read method
     this._read(state.highWaterMark);
-
-    state.sync = false; // If _read pushed data synchronously, then `reading` will be false,
+    state.sync = false;
+    // If _read pushed data synchronously, then `reading` will be false,
     // and we need to re-evaluate how much data we can return to the user.
-
     if (!state.reading) n = howMuchToRead(nOrig, state);
   }
-
   var ret;
   if (n > 0) ret = fromList(n, state);else ret = null;
-
   if (ret === null) {
     state.needReadable = state.length <= state.highWaterMark;
     n = 0;
@@ -21388,34 +21344,28 @@ Readable.prototype.read = function (n) {
     state.length -= n;
     state.awaitDrain = 0;
   }
-
   if (state.length === 0) {
     // If we have nothing in the buffer, then we want to know
     // as soon as we *do* get something into the buffer.
-    if (!state.ended) state.needReadable = true; // If we tried to read() past the EOF, then emit end on the next tick.
+    if (!state.ended) state.needReadable = true;
 
+    // If we tried to read() past the EOF, then emit end on the next tick.
     if (nOrig !== n && state.ended) endReadable(this);
   }
-
   if (ret !== null) this.emit('data', ret);
   return ret;
 };
-
 function onEofChunk(stream, state) {
   debug('onEofChunk');
   if (state.ended) return;
-
   if (state.decoder) {
     var chunk = state.decoder.end();
-
     if (chunk && chunk.length) {
       state.buffer.push(chunk);
       state.length += state.objectMode ? 1 : chunk.length;
     }
   }
-
   state.ended = true;
-
   if (state.sync) {
     // if we are sync, wait until next tick to emit the data.
     // Otherwise we risk emitting data in the flow()
@@ -21424,61 +21374,56 @@ function onEofChunk(stream, state) {
   } else {
     // emit 'readable' now to make sure it gets picked up.
     state.needReadable = false;
-
     if (!state.emittedReadable) {
       state.emittedReadable = true;
       emitReadable_(stream);
     }
   }
-} // Don't emit readable right away in sync mode, because this can trigger
+}
+
+// Don't emit readable right away in sync mode, because this can trigger
 // another read() call => stack overflow.  This way, it might trigger
 // a nextTick recursion warning, but that's not so bad.
-
-
 function emitReadable(stream) {
   var state = stream._readableState;
   debug('emitReadable', state.needReadable, state.emittedReadable);
   state.needReadable = false;
-
   if (!state.emittedReadable) {
     debug('emitReadable', state.flowing);
     state.emittedReadable = true;
     process.nextTick(emitReadable_, stream);
   }
 }
-
 function emitReadable_(stream) {
   var state = stream._readableState;
   debug('emitReadable_', state.destroyed, state.length, state.ended);
-
   if (!state.destroyed && (state.length || state.ended)) {
     stream.emit('readable');
     state.emittedReadable = false;
-  } // The stream needs another readable event if
+  }
+
+  // The stream needs another readable event if
   // 1. It is not flowing, as the flow mechanism will take
   //    care of it.
   // 2. It is not ended.
   // 3. It is below the highWaterMark, so we can schedule
   //    another readable later.
-
-
   state.needReadable = !state.flowing && !state.ended && state.length <= state.highWaterMark;
   flow(stream);
-} // at this point, the user has presumably seen the 'readable' event,
+}
+
+// at this point, the user has presumably seen the 'readable' event,
 // and called read() to consume some data.  that may have triggered
 // in turn another _read(n) call, in which case reading = true if
 // it's in progress.
 // However, if we're not ended, or reading, and the length < hwm,
 // then go ahead and try to read some more preemptively.
-
-
 function maybeReadMore(stream, state) {
   if (!state.readingMore) {
     state.readingMore = true;
     process.nextTick(maybeReadMore_, stream, state);
   }
 }
-
 function maybeReadMore_(stream, state) {
   // Attempt to read more data if we should.
   //
@@ -21504,52 +21449,45 @@ function maybeReadMore_(stream, state) {
   //   read()s. The execution ends in this method again after the _read() ends
   //   up calling push() with more data.
   while (!state.reading && !state.ended && (state.length < state.highWaterMark || state.flowing && state.length === 0)) {
-    var len = state.length;
+    const len = state.length;
     debug('maybeReadMore read 0');
     stream.read(0);
-    if (len === state.length) // didn't get any data, stop spinning.
+    if (len === state.length)
+      // didn't get any data, stop spinning.
       break;
   }
-
   state.readingMore = false;
-} // abstract method.  to be overridden in specific implementation classes.
+}
+
+// abstract method.  to be overridden in specific implementation classes.
 // call cb(er, data) where data is <= n in length.
 // for virtual (non-string, non-buffer) streams, "length" is somewhat
 // arbitrary, and perhaps not very meaningful.
-
-
 Readable.prototype._read = function (n) {
   errorOrDestroy(this, new ERR_METHOD_NOT_IMPLEMENTED('_read()'));
 };
-
 Readable.prototype.pipe = function (dest, pipeOpts) {
   var src = this;
   var state = this._readableState;
-
   switch (state.pipesCount) {
     case 0:
       state.pipes = dest;
       break;
-
     case 1:
       state.pipes = [state.pipes, dest];
       break;
-
     default:
       state.pipes.push(dest);
       break;
   }
-
   state.pipesCount += 1;
   debug('pipe count=%d opts=%j', state.pipesCount, pipeOpts);
   var doEnd = (!pipeOpts || pipeOpts.end !== false) && dest !== process.stdout && dest !== process.stderr;
   var endFn = doEnd ? onend : unpipe;
   if (state.endEmitted) process.nextTick(endFn);else src.once('end', endFn);
   dest.on('unpipe', onunpipe);
-
   function onunpipe(readable, unpipeInfo) {
     debug('onunpipe');
-
     if (readable === src) {
       if (unpipeInfo && unpipeInfo.hasUnpiped === false) {
         unpipeInfo.hasUnpiped = true;
@@ -21557,23 +21495,21 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
       }
     }
   }
-
   function onend() {
     debug('onend');
     dest.end();
-  } // when the dest drains, it reduces the awaitDrain counter
+  }
+
+  // when the dest drains, it reduces the awaitDrain counter
   // on the source.  This would be more elegant with a .once()
   // handler in flow(), but adding and removing repeatedly is
   // too slow.
-
-
   var ondrain = pipeOnDrain(src);
   dest.on('drain', ondrain);
   var cleanedUp = false;
-
   function cleanup() {
-    debug('cleanup'); // cleanup event handlers once the pipe is broken
-
+    debug('cleanup');
+    // cleanup event handlers once the pipe is broken
     dest.removeListener('close', onclose);
     dest.removeListener('finish', onfinish);
     dest.removeListener('drain', ondrain);
@@ -21582,22 +21518,20 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
     src.removeListener('end', onend);
     src.removeListener('end', unpipe);
     src.removeListener('data', ondata);
-    cleanedUp = true; // if the reader is waiting for a drain event from this
+    cleanedUp = true;
+
+    // if the reader is waiting for a drain event from this
     // specific writer, then it would cause it to never start
     // flowing again.
     // So, if this is awaiting a drain, then we just call it now.
     // If we don't know, then assume that we are waiting for one.
-
     if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain)) ondrain();
   }
-
   src.on('data', ondata);
-
   function ondata(chunk) {
     debug('ondata');
     var ret = dest.write(chunk);
     debug('dest.write', ret);
-
     if (ret === false) {
       // If the user unpiped during `dest.write()`, it is possible
       // to get stuck in a permanently paused state if that write
@@ -21607,87 +21541,84 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
         debug('false write response, pause', state.awaitDrain);
         state.awaitDrain++;
       }
-
       src.pause();
     }
-  } // if the dest has an error, then stop piping into it.
+  }
+
+  // if the dest has an error, then stop piping into it.
   // however, don't suppress the throwing behavior for this.
-
-
   function onerror(er) {
     debug('onerror', er);
     unpipe();
     dest.removeListener('error', onerror);
     if (EElistenerCount(dest, 'error') === 0) errorOrDestroy(dest, er);
-  } // Make sure our error handler is attached before userland ones.
+  }
 
+  // Make sure our error handler is attached before userland ones.
+  prependListener(dest, 'error', onerror);
 
-  prependListener(dest, 'error', onerror); // Both close and finish should trigger unpipe, but only once.
-
+  // Both close and finish should trigger unpipe, but only once.
   function onclose() {
     dest.removeListener('finish', onfinish);
     unpipe();
   }
-
   dest.once('close', onclose);
-
   function onfinish() {
     debug('onfinish');
     dest.removeListener('close', onclose);
     unpipe();
   }
-
   dest.once('finish', onfinish);
-
   function unpipe() {
     debug('unpipe');
     src.unpipe(dest);
-  } // tell the dest that it's being piped to
+  }
 
+  // tell the dest that it's being piped to
+  dest.emit('pipe', src);
 
-  dest.emit('pipe', src); // start the flow if it hasn't been started already.
-
+  // start the flow if it hasn't been started already.
   if (!state.flowing) {
     debug('pipe resume');
     src.resume();
   }
-
   return dest;
 };
-
 function pipeOnDrain(src) {
   return function pipeOnDrainFunctionResult() {
     var state = src._readableState;
     debug('pipeOnDrain', state.awaitDrain);
     if (state.awaitDrain) state.awaitDrain--;
-
     if (state.awaitDrain === 0 && EElistenerCount(src, 'data')) {
       state.flowing = true;
       flow(src);
     }
   };
 }
-
 Readable.prototype.unpipe = function (dest) {
   var state = this._readableState;
   var unpipeInfo = {
     hasUnpiped: false
-  }; // if we're not piping anywhere, then do nothing.
+  };
 
-  if (state.pipesCount === 0) return this; // just one destination.  most common case.
+  // if we're not piping anywhere, then do nothing.
+  if (state.pipesCount === 0) return this;
 
+  // just one destination.  most common case.
   if (state.pipesCount === 1) {
     // passed in one, but it's not the right one.
     if (dest && dest !== state.pipes) return this;
-    if (!dest) dest = state.pipes; // got a match.
+    if (!dest) dest = state.pipes;
 
+    // got a match.
     state.pipes = null;
     state.pipesCount = 0;
     state.flowing = false;
     if (dest) dest.emit('unpipe', this, unpipeInfo);
     return this;
-  } // slow case. multiple pipe destinations.
+  }
 
+  // slow case. multiple pipe destinations.
 
   if (!dest) {
     // remove all.
@@ -21696,17 +21627,13 @@ Readable.prototype.unpipe = function (dest) {
     state.pipes = null;
     state.pipesCount = 0;
     state.flowing = false;
-
-    for (var i = 0; i < len; i++) {
-      dests[i].emit('unpipe', this, {
-        hasUnpiped: false
-      });
-    }
-
+    for (var i = 0; i < len; i++) dests[i].emit('unpipe', this, {
+      hasUnpiped: false
+    });
     return this;
-  } // try to find the right one.
+  }
 
-
+  // try to find the right one.
   var index = indexOf(state.pipes, dest);
   if (index === -1) return this;
   state.pipes.splice(index, 1);
@@ -21714,19 +21641,19 @@ Readable.prototype.unpipe = function (dest) {
   if (state.pipesCount === 1) state.pipes = state.pipes[0];
   dest.emit('unpipe', this, unpipeInfo);
   return this;
-}; // set up data events if they are asked for
+};
+
+// set up data events if they are asked for
 // Ensure readable listeners eventually get something
-
-
 Readable.prototype.on = function (ev, fn) {
-  var res = Stream.prototype.on.call(this, ev, fn);
-  var state = this._readableState;
-
+  const res = Stream.prototype.on.call(this, ev, fn);
+  const state = this._readableState;
   if (ev === 'data') {
     // update readableListening so that resume() may be a no-op
     // a few lines down. This is needed to support once('readable').
-    state.readableListening = this.listenerCount('readable') > 0; // Try start flowing on next tick if stream isn't explicitly paused
+    state.readableListening = this.listenerCount('readable') > 0;
 
+    // Try start flowing on next tick if stream isn't explicitly paused
     if (state.flowing !== false) this.resume();
   } else if (ev === 'readable') {
     if (!state.endEmitted && !state.readableListening) {
@@ -21734,7 +21661,6 @@ Readable.prototype.on = function (ev, fn) {
       state.flowing = false;
       state.emittedReadable = false;
       debug('on readable', state.length, state.reading);
-
       if (state.length) {
         emitReadable(this);
       } else if (!state.reading) {
@@ -21742,15 +21668,11 @@ Readable.prototype.on = function (ev, fn) {
       }
     }
   }
-
   return res;
 };
-
 Readable.prototype.addListener = Readable.prototype.on;
-
 Readable.prototype.removeListener = function (ev, fn) {
-  var res = Stream.prototype.removeListener.call(this, ev, fn);
-
+  const res = Stream.prototype.removeListener.call(this, ev, fn);
   if (ev === 'readable') {
     // We need to check if there is someone still listening to
     // readable and reset the state. However this needs to happen
@@ -21760,13 +21682,10 @@ Readable.prototype.removeListener = function (ev, fn) {
     // effect.
     process.nextTick(updateReadableListening, this);
   }
-
   return res;
 };
-
 Readable.prototype.removeAllListeners = function (ev) {
-  var res = Stream.prototype.removeAllListeners.apply(this, arguments);
-
+  const res = Stream.prototype.removeAllListeners.apply(this, arguments);
   if (ev === 'readable' || ev === undefined) {
     // We need to check if there is someone still listening to
     // readable and reset the state. However this needs to happen
@@ -21776,121 +21695,102 @@ Readable.prototype.removeAllListeners = function (ev) {
     // effect.
     process.nextTick(updateReadableListening, this);
   }
-
   return res;
 };
-
 function updateReadableListening(self) {
-  var state = self._readableState;
+  const state = self._readableState;
   state.readableListening = self.listenerCount('readable') > 0;
-
   if (state.resumeScheduled && !state.paused) {
     // flowing needs to be set to true now, otherwise
     // the upcoming resume will not flow.
-    state.flowing = true; // crude way to check if we should resume
+    state.flowing = true;
+
+    // crude way to check if we should resume
   } else if (self.listenerCount('data') > 0) {
     self.resume();
   }
 }
-
 function nReadingNextTick(self) {
   debug('readable nexttick read 0');
   self.read(0);
-} // pause() and resume() are remnants of the legacy readable stream API
+}
+
+// pause() and resume() are remnants of the legacy readable stream API
 // If the user uses them, then switch into old mode.
-
-
 Readable.prototype.resume = function () {
   var state = this._readableState;
-
   if (!state.flowing) {
-    debug('resume'); // we flow only if there is no one listening
+    debug('resume');
+    // we flow only if there is no one listening
     // for readable, but we still have to call
     // resume()
-
     state.flowing = !state.readableListening;
     resume(this, state);
   }
-
   state.paused = false;
   return this;
 };
-
 function resume(stream, state) {
   if (!state.resumeScheduled) {
     state.resumeScheduled = true;
     process.nextTick(resume_, stream, state);
   }
 }
-
 function resume_(stream, state) {
   debug('resume', state.reading);
-
   if (!state.reading) {
     stream.read(0);
   }
-
   state.resumeScheduled = false;
   stream.emit('resume');
   flow(stream);
   if (state.flowing && !state.reading) stream.read(0);
 }
-
 Readable.prototype.pause = function () {
   debug('call pause flowing=%j', this._readableState.flowing);
-
   if (this._readableState.flowing !== false) {
     debug('pause');
     this._readableState.flowing = false;
     this.emit('pause');
   }
-
   this._readableState.paused = true;
   return this;
 };
-
 function flow(stream) {
-  var state = stream._readableState;
+  const state = stream._readableState;
   debug('flow', state.flowing);
+  while (state.flowing && stream.read() !== null);
+}
 
-  while (state.flowing && stream.read() !== null) {
-    ;
-  }
-} // wrap an old-style stream as the async data source.
+// wrap an old-style stream as the async data source.
 // This is *not* part of the readable stream interface.
 // It is an ugly unfortunate mess of history.
-
-
 Readable.prototype.wrap = function (stream) {
-  var _this = this;
-
   var state = this._readableState;
   var paused = false;
-  stream.on('end', function () {
+  stream.on('end', () => {
     debug('wrapped end');
-
     if (state.decoder && !state.ended) {
       var chunk = state.decoder.end();
-      if (chunk && chunk.length) _this.push(chunk);
+      if (chunk && chunk.length) this.push(chunk);
     }
-
-    _this.push(null);
+    this.push(null);
   });
-  stream.on('data', function (chunk) {
+  stream.on('data', chunk => {
     debug('wrapped data');
-    if (state.decoder) chunk = state.decoder.write(chunk); // don't skip over falsy values in objectMode
+    if (state.decoder) chunk = state.decoder.write(chunk);
 
+    // don't skip over falsy values in objectMode
     if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
-
-    var ret = _this.push(chunk);
-
+    var ret = this.push(chunk);
     if (!ret) {
       paused = true;
       stream.pause();
     }
-  }); // proxy all the other methods.
-  // important when wrapping filters and duplexes.
+  });
 
+  // proxy all the other methods.
+  // important when wrapping filters and duplexes.
   for (var i in stream) {
     if (this[i] === undefined && typeof stream[i] === 'function') {
       this[i] = function methodWrap(method) {
@@ -21899,37 +21799,32 @@ Readable.prototype.wrap = function (stream) {
         };
       }(i);
     }
-  } // proxy certain important events.
+  }
 
-
+  // proxy certain important events.
   for (var n = 0; n < kProxyEvents.length; n++) {
     stream.on(kProxyEvents[n], this.emit.bind(this, kProxyEvents[n]));
-  } // when we try to consume some more bytes, simply unpause the
+  }
+
+  // when we try to consume some more bytes, simply unpause the
   // underlying stream.
-
-
-  this._read = function (n) {
+  this._read = n => {
     debug('wrapped _read', n);
-
     if (paused) {
       paused = false;
       stream.resume();
     }
   };
-
   return this;
 };
-
 if (typeof Symbol === 'function') {
   Readable.prototype[Symbol.asyncIterator] = function () {
     if (createReadableStreamAsyncIterator === undefined) {
       createReadableStreamAsyncIterator = require('./internal/streams/async_iterator');
     }
-
     return createReadableStreamAsyncIterator(this);
   };
 }
-
 Object.defineProperty(Readable.prototype, 'readableHighWaterMark', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
@@ -21961,22 +21856,24 @@ Object.defineProperty(Readable.prototype, 'readableFlowing', {
       this._readableState.flowing = state;
     }
   }
-}); // exposed for testing purposes only.
+});
 
+// exposed for testing purposes only.
 Readable._fromList = fromList;
 Object.defineProperty(Readable.prototype, 'readableLength', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     return this._readableState.length;
   }
-}); // Pluck off n bytes from an array of buffers.
+});
+
+// Pluck off n bytes from an array of buffers.
 // Length is the combined lengths of all the buffers in the list.
 // This function is designed to be inlinable, so please take care when making
 // changes to the function body.
-
 function fromList(n, state) {
   // nothing buffered
   if (state.length === 0) return null;
@@ -21991,57 +21888,49 @@ function fromList(n, state) {
   }
   return ret;
 }
-
 function endReadable(stream) {
   var state = stream._readableState;
   debug('endReadable', state.endEmitted);
-
   if (!state.endEmitted) {
     state.ended = true;
     process.nextTick(endReadableNT, state, stream);
   }
 }
-
 function endReadableNT(state, stream) {
-  debug('endReadableNT', state.endEmitted, state.length); // Check that we didn't get one last unshift.
+  debug('endReadableNT', state.endEmitted, state.length);
 
+  // Check that we didn't get one last unshift.
   if (!state.endEmitted && state.length === 0) {
     state.endEmitted = true;
     stream.readable = false;
     stream.emit('end');
-
     if (state.autoDestroy) {
       // In case of duplex streams we need a way to detect
       // if the writable side is ready for autoDestroy as well
-      var wState = stream._writableState;
-
+      const wState = stream._writableState;
       if (!wState || wState.autoDestroy && wState.finished) {
         stream.destroy();
       }
     }
   }
 }
-
 if (typeof Symbol === 'function') {
   Readable.from = function (iterable, opts) {
     if (from === undefined) {
       from = require('./internal/streams/from');
     }
-
     return from(Readable, iterable, opts);
   };
 }
-
 function indexOf(xs, x) {
   for (var i = 0, l = xs.length; i < l; i++) {
     if (xs[i] === x) return i;
   }
-
   return -1;
 }
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/async_iterator":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/async_iterator.js","./internal/streams/buffer_list":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/buffer_list.js","./internal/streams/destroy":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/from":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/from-browser.js","./internal/streams/state":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer","events":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/events/events.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","string_decoder/":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
+},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/async_iterator":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/async_iterator.js","./internal/streams/buffer_list":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/buffer_list.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/from":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/from-browser.js","./internal/streams/state":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer","events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","string_decoder/":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22062,6 +21951,7 @@ function indexOf(xs, x) {
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -22103,42 +21993,36 @@ function indexOf(xs, x) {
 // However, even in such a pathological case, only a single written chunk
 // would be consumed, and then the rest would wait (un-transformed) until
 // the results of the previous transformed chunk were consumed.
+
 'use strict';
 
 module.exports = Transform;
-
-var _require$codes = require('../errors').codes,
-    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
-    ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
-    ERR_TRANSFORM_ALREADY_TRANSFORMING = _require$codes.ERR_TRANSFORM_ALREADY_TRANSFORMING,
-    ERR_TRANSFORM_WITH_LENGTH_0 = _require$codes.ERR_TRANSFORM_WITH_LENGTH_0;
-
-var Duplex = require('./_stream_duplex');
-
+const _require$codes = require('../errors').codes,
+  ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+  ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
+  ERR_TRANSFORM_ALREADY_TRANSFORMING = _require$codes.ERR_TRANSFORM_ALREADY_TRANSFORMING,
+  ERR_TRANSFORM_WITH_LENGTH_0 = _require$codes.ERR_TRANSFORM_WITH_LENGTH_0;
+const Duplex = require('./_stream_duplex');
 require('inherits')(Transform, Duplex);
-
 function afterTransform(er, data) {
   var ts = this._transformState;
   ts.transforming = false;
   var cb = ts.writecb;
-
   if (cb === null) {
     return this.emit('error', new ERR_MULTIPLE_CALLBACK());
   }
-
   ts.writechunk = null;
   ts.writecb = null;
-  if (data != null) // single equals check for both `null` and `undefined`
+  if (data != null)
+    // single equals check for both `null` and `undefined`
     this.push(data);
   cb(er);
   var rs = this._readableState;
   rs.reading = false;
-
   if (rs.needReadable || rs.length < rs.highWaterMark) {
     this._read(rs.highWaterMark);
   }
 }
-
 function Transform(options) {
   if (!(this instanceof Transform)) return new Transform(options);
   Duplex.call(this, options);
@@ -22149,39 +22033,38 @@ function Transform(options) {
     writecb: null,
     writechunk: null,
     writeencoding: null
-  }; // start out asking for a readable event once data is transformed.
+  };
 
-  this._readableState.needReadable = true; // we have implemented the _read method, and done the other things
+  // start out asking for a readable event once data is transformed.
+  this._readableState.needReadable = true;
+
+  // we have implemented the _read method, and done the other things
   // that Readable wants before the first _read call, so unset the
   // sync guard flag.
-
   this._readableState.sync = false;
-
   if (options) {
     if (typeof options.transform === 'function') this._transform = options.transform;
     if (typeof options.flush === 'function') this._flush = options.flush;
-  } // When the writable side finishes, then flush out anything remaining.
+  }
 
-
+  // When the writable side finishes, then flush out anything remaining.
   this.on('prefinish', prefinish);
 }
-
 function prefinish() {
-  var _this = this;
-
   if (typeof this._flush === 'function' && !this._readableState.destroyed) {
-    this._flush(function (er, data) {
-      done(_this, er, data);
+    this._flush((er, data) => {
+      done(this, er, data);
     });
   } else {
     done(this, null, null);
   }
 }
-
 Transform.prototype.push = function (chunk, encoding) {
   this._transformState.needTransform = false;
   return Duplex.prototype.push.call(this, chunk, encoding);
-}; // This is the part where you do stuff!
+};
+
+// This is the part where you do stuff!
 // override this function in implementation classes.
 // 'chunk' is an input chunk.
 //
@@ -22191,33 +22074,27 @@ Transform.prototype.push = function (chunk, encoding) {
 // Call `cb(err)` when you are done with this chunk.  If you pass
 // an error, then that'll put the hurt on the whole operation.  If you
 // never call cb(), then you'll never get another chunk.
-
-
 Transform.prototype._transform = function (chunk, encoding, cb) {
   cb(new ERR_METHOD_NOT_IMPLEMENTED('_transform()'));
 };
-
 Transform.prototype._write = function (chunk, encoding, cb) {
   var ts = this._transformState;
   ts.writecb = cb;
   ts.writechunk = chunk;
   ts.writeencoding = encoding;
-
   if (!ts.transforming) {
     var rs = this._readableState;
     if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
   }
-}; // Doesn't matter what the args are here.
+};
+
+// Doesn't matter what the args are here.
 // _transform does all the work.
 // That we got here means that the readable side wants more data.
-
-
 Transform.prototype._read = function (n) {
   var ts = this._transformState;
-
   if (ts.writechunk !== null && !ts.transforming) {
     ts.transforming = true;
-
     this._transform(ts.writechunk, ts.writeencoding, ts.afterTransform);
   } else {
     // mark that we need a transform, so that any data that comes in
@@ -22225,25 +22102,25 @@ Transform.prototype._read = function (n) {
     ts.needTransform = true;
   }
 };
-
 Transform.prototype._destroy = function (err, cb) {
-  Duplex.prototype._destroy.call(this, err, function (err2) {
+  Duplex.prototype._destroy.call(this, err, err2 => {
     cb(err2);
   });
 };
-
 function done(stream, er, data) {
   if (er) return stream.emit('error', er);
-  if (data != null) // single equals check for both `null` and `undefined`
-    stream.push(data); // TODO(BridgeAR): Write a test for these two error cases
+  if (data != null)
+    // single equals check for both `null` and `undefined`
+    stream.push(data);
+
+  // TODO(BridgeAR): Write a test for these two error cases
   // if there's nothing in the write buffer, then that means
   // that nothing more will ever be provided
-
   if (stream._writableState.length) throw new ERR_TRANSFORM_WITH_LENGTH_0();
   if (stream._transformState.transforming) throw new ERR_TRANSFORM_ALREADY_TRANSFORMING();
   return stream.push(null);
 }
-},{"../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
+},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -22265,185 +22142,188 @@ function done(stream, er, data) {
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
 // the drain event emission and buffering.
+
 'use strict';
 
 module.exports = Writable;
-/* <replacement> */
 
+/* <replacement> */
 function WriteReq(chunk, encoding, cb) {
   this.chunk = chunk;
   this.encoding = encoding;
   this.callback = cb;
   this.next = null;
-} // It seems a linked list but it is not
+}
+
+// It seems a linked list but it is not
 // there will be only 2 of these for each stream
-
-
 function CorkedRequest(state) {
-  var _this = this;
-
   this.next = null;
   this.entry = null;
-
-  this.finish = function () {
-    onCorkedFinish(_this, state);
+  this.finish = () => {
+    onCorkedFinish(this, state);
   };
 }
 /* </replacement> */
 
 /*<replacement>*/
-
-
 var Duplex;
 /*</replacement>*/
 
 Writable.WritableState = WritableState;
-/*<replacement>*/
 
-var internalUtil = {
+/*<replacement>*/
+const internalUtil = {
   deprecate: require('util-deprecate')
 };
 /*</replacement>*/
 
 /*<replacement>*/
-
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-
-var Buffer = require('buffer').Buffer;
-
-var OurUint8Array = global.Uint8Array || function () {};
-
+const Buffer = require('buffer').Buffer;
+const OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
-
 function _isUint8Array(obj) {
   return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
 }
-
-var destroyImpl = require('./internal/streams/destroy');
-
-var _require = require('./internal/streams/state'),
-    getHighWaterMark = _require.getHighWaterMark;
-
-var _require$codes = require('../errors').codes,
-    ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
-    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
-    ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
-    ERR_STREAM_CANNOT_PIPE = _require$codes.ERR_STREAM_CANNOT_PIPE,
-    ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED,
-    ERR_STREAM_NULL_VALUES = _require$codes.ERR_STREAM_NULL_VALUES,
-    ERR_STREAM_WRITE_AFTER_END = _require$codes.ERR_STREAM_WRITE_AFTER_END,
-    ERR_UNKNOWN_ENCODING = _require$codes.ERR_UNKNOWN_ENCODING;
-
-var errorOrDestroy = destroyImpl.errorOrDestroy;
-
+const destroyImpl = require('./internal/streams/destroy');
+const _require = require('./internal/streams/state'),
+  getHighWaterMark = _require.getHighWaterMark;
+const _require$codes = require('../errors').codes,
+  ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
+  ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+  ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
+  ERR_STREAM_CANNOT_PIPE = _require$codes.ERR_STREAM_CANNOT_PIPE,
+  ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED,
+  ERR_STREAM_NULL_VALUES = _require$codes.ERR_STREAM_NULL_VALUES,
+  ERR_STREAM_WRITE_AFTER_END = _require$codes.ERR_STREAM_WRITE_AFTER_END,
+  ERR_UNKNOWN_ENCODING = _require$codes.ERR_UNKNOWN_ENCODING;
+const errorOrDestroy = destroyImpl.errorOrDestroy;
 require('inherits')(Writable, Stream);
-
 function nop() {}
-
 function WritableState(options, stream, isDuplex) {
   Duplex = Duplex || require('./_stream_duplex');
-  options = options || {}; // Duplex streams are both readable and writable, but share
+  options = options || {};
+
+  // Duplex streams are both readable and writable, but share
   // the same options object.
   // However, some cases require setting options to different
   // values for the readable and the writable sides of the duplex stream,
   // e.g. options.readableObjectMode vs. options.writableObjectMode, etc.
+  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex;
 
-  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex; // object stream flag to indicate whether or not this stream
+  // object stream flag to indicate whether or not this stream
   // contains buffers or objects.
-
   this.objectMode = !!options.objectMode;
-  if (isDuplex) this.objectMode = this.objectMode || !!options.writableObjectMode; // the point at which write() starts returning false
+  if (isDuplex) this.objectMode = this.objectMode || !!options.writableObjectMode;
+
+  // the point at which write() starts returning false
   // Note: 0 is a valid value, means that we always return false if
   // the entire buffer is not flushed immediately on write()
+  this.highWaterMark = getHighWaterMark(this, options, 'writableHighWaterMark', isDuplex);
 
-  this.highWaterMark = getHighWaterMark(this, options, 'writableHighWaterMark', isDuplex); // if _final has been called
+  // if _final has been called
+  this.finalCalled = false;
 
-  this.finalCalled = false; // drain event flag.
+  // drain event flag.
+  this.needDrain = false;
+  // at the start of calling end()
+  this.ending = false;
+  // when end() has been called, and returned
+  this.ended = false;
+  // when 'finish' is emitted
+  this.finished = false;
 
-  this.needDrain = false; // at the start of calling end()
+  // has it been destroyed
+  this.destroyed = false;
 
-  this.ending = false; // when end() has been called, and returned
-
-  this.ended = false; // when 'finish' is emitted
-
-  this.finished = false; // has it been destroyed
-
-  this.destroyed = false; // should we decode strings into buffers before passing to _write?
+  // should we decode strings into buffers before passing to _write?
   // this is here so that some node-core streams can optimize string
   // handling at a lower level.
-
   var noDecode = options.decodeStrings === false;
-  this.decodeStrings = !noDecode; // Crypto is kind of old and crusty.  Historically, its default string
+  this.decodeStrings = !noDecode;
+
+  // Crypto is kind of old and crusty.  Historically, its default string
   // encoding is 'binary' so we have to make this configurable.
   // Everything else in the universe uses 'utf8', though.
+  this.defaultEncoding = options.defaultEncoding || 'utf8';
 
-  this.defaultEncoding = options.defaultEncoding || 'utf8'; // not an actual buffer we keep track of, but a measurement
+  // not an actual buffer we keep track of, but a measurement
   // of how much we're waiting to get pushed to some underlying
   // socket or file.
+  this.length = 0;
 
-  this.length = 0; // a flag to see when we're in the middle of a write.
+  // a flag to see when we're in the middle of a write.
+  this.writing = false;
 
-  this.writing = false; // when true all writes will be buffered until .uncork() call
+  // when true all writes will be buffered until .uncork() call
+  this.corked = 0;
 
-  this.corked = 0; // a flag to be able to tell if the onwrite cb is called immediately,
+  // a flag to be able to tell if the onwrite cb is called immediately,
   // or on a later tick.  We set this to true at first, because any
   // actions that shouldn't happen until "later" should generally also
   // not happen before the first write call.
+  this.sync = true;
 
-  this.sync = true; // a flag to know if we're processing previously buffered items, which
+  // a flag to know if we're processing previously buffered items, which
   // may call the _write() callback in the same tick, so that we don't
   // end up in an overlapped onwrite situation.
+  this.bufferProcessing = false;
 
-  this.bufferProcessing = false; // the callback that's passed to _write(chunk,cb)
-
+  // the callback that's passed to _write(chunk,cb)
   this.onwrite = function (er) {
     onwrite(stream, er);
-  }; // the callback that the user supplies to write(chunk,encoding,cb)
+  };
 
+  // the callback that the user supplies to write(chunk,encoding,cb)
+  this.writecb = null;
 
-  this.writecb = null; // the amount that is being written when _write is called.
-
+  // the amount that is being written when _write is called.
   this.writelen = 0;
   this.bufferedRequest = null;
-  this.lastBufferedRequest = null; // number of pending user-supplied write callbacks
+  this.lastBufferedRequest = null;
+
+  // number of pending user-supplied write callbacks
   // this must be 0 before 'finish' can be emitted
+  this.pendingcb = 0;
 
-  this.pendingcb = 0; // emit prefinish if the only thing we're waiting for is _write cbs
+  // emit prefinish if the only thing we're waiting for is _write cbs
   // This is relevant for synchronous Transform streams
+  this.prefinished = false;
 
-  this.prefinished = false; // True if the error was already emitted and should not be thrown again
+  // True if the error was already emitted and should not be thrown again
+  this.errorEmitted = false;
 
-  this.errorEmitted = false; // Should close be emitted on destroy. Defaults to true.
+  // Should close be emitted on destroy. Defaults to true.
+  this.emitClose = options.emitClose !== false;
 
-  this.emitClose = options.emitClose !== false; // Should .destroy() be called after 'finish' (and potentially 'end')
+  // Should .destroy() be called after 'finish' (and potentially 'end')
+  this.autoDestroy = !!options.autoDestroy;
 
-  this.autoDestroy = !!options.autoDestroy; // count buffered requests
+  // count buffered requests
+  this.bufferedRequestCount = 0;
 
-  this.bufferedRequestCount = 0; // allocate the first CorkedRequest, there is always
+  // allocate the first CorkedRequest, there is always
   // one allocated and free to use, and we maintain at most two
-
   this.corkedRequestsFree = new CorkedRequest(this);
 }
-
 WritableState.prototype.getBuffer = function getBuffer() {
   var current = this.bufferedRequest;
   var out = [];
-
   while (current) {
     out.push(current);
     current = current.next;
   }
-
   return out;
 };
-
 (function () {
   try {
     Object.defineProperty(WritableState.prototype, 'buffer', {
@@ -22452,12 +22332,11 @@ WritableState.prototype.getBuffer = function getBuffer() {
       }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.', 'DEP0003')
     });
   } catch (_) {}
-})(); // Test _writableState for inheritance to account for Duplex streams,
+})();
+
+// Test _writableState for inheritance to account for Duplex streams,
 // whose prototype chain only points to Readable.
-
-
 var realHasInstance;
-
 if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.prototype[Symbol.hasInstance] === 'function') {
   realHasInstance = Function.prototype[Symbol.hasInstance];
   Object.defineProperty(Writable, Symbol.hasInstance, {
@@ -22472,81 +22351,73 @@ if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.protot
     return object instanceof this;
   };
 }
-
 function Writable(options) {
-  Duplex = Duplex || require('./_stream_duplex'); // Writable ctor is applied to Duplexes, too.
+  Duplex = Duplex || require('./_stream_duplex');
+
+  // Writable ctor is applied to Duplexes, too.
   // `realHasInstance` is necessary because using plain `instanceof`
   // would return false, as no `_writableState` property is attached.
+
   // Trying to use the custom `instanceof` for Writable here will also break the
   // Node.js LazyTransform implementation, which has a non-trivial getter for
   // `_writableState` that would lead to infinite recursion.
+
   // Checking for a Stream.Duplex instance is faster here instead of inside
   // the WritableState constructor, at least with V8 6.5
-
-  var isDuplex = this instanceof Duplex;
+  const isDuplex = this instanceof Duplex;
   if (!isDuplex && !realHasInstance.call(Writable, this)) return new Writable(options);
-  this._writableState = new WritableState(options, this, isDuplex); // legacy.
+  this._writableState = new WritableState(options, this, isDuplex);
 
+  // legacy.
   this.writable = true;
-
   if (options) {
     if (typeof options.write === 'function') this._write = options.write;
     if (typeof options.writev === 'function') this._writev = options.writev;
     if (typeof options.destroy === 'function') this._destroy = options.destroy;
     if (typeof options.final === 'function') this._final = options.final;
   }
-
   Stream.call(this);
-} // Otherwise people can pipe Writable streams, which is just wrong.
+}
 
-
+// Otherwise people can pipe Writable streams, which is just wrong.
 Writable.prototype.pipe = function () {
   errorOrDestroy(this, new ERR_STREAM_CANNOT_PIPE());
 };
-
 function writeAfterEnd(stream, cb) {
-  var er = new ERR_STREAM_WRITE_AFTER_END(); // TODO: defer error events consistently everywhere, not just the cb
-
+  var er = new ERR_STREAM_WRITE_AFTER_END();
+  // TODO: defer error events consistently everywhere, not just the cb
   errorOrDestroy(stream, er);
   process.nextTick(cb, er);
-} // Checks that a user-supplied chunk is valid, especially for the particular
+}
+
+// Checks that a user-supplied chunk is valid, especially for the particular
 // mode the stream is in. Currently this means that `null` is never accepted
 // and undefined/non-string values are only allowed in object mode.
-
-
 function validChunk(stream, state, chunk, cb) {
   var er;
-
   if (chunk === null) {
     er = new ERR_STREAM_NULL_VALUES();
   } else if (typeof chunk !== 'string' && !state.objectMode) {
     er = new ERR_INVALID_ARG_TYPE('chunk', ['string', 'Buffer'], chunk);
   }
-
   if (er) {
     errorOrDestroy(stream, er);
     process.nextTick(cb, er);
     return false;
   }
-
   return true;
 }
-
 Writable.prototype.write = function (chunk, encoding, cb) {
   var state = this._writableState;
   var ret = false;
-
   var isBuf = !state.objectMode && _isUint8Array(chunk);
-
   if (isBuf && !Buffer.isBuffer(chunk)) {
     chunk = _uint8ArrayToBuffer(chunk);
   }
-
   if (typeof encoding === 'function') {
     cb = encoding;
     encoding = null;
   }
-
   if (isBuf) encoding = 'buffer';else if (!encoding) encoding = state.defaultEncoding;
   if (typeof cb !== 'function') cb = nop;
   if (state.ending) writeAfterEnd(this, cb);else if (isBuf || validChunk(this, state, chunk, cb)) {
@@ -22555,20 +22426,16 @@ Writable.prototype.write = function (chunk, encoding, cb) {
   }
   return ret;
 };
-
 Writable.prototype.cork = function () {
   this._writableState.corked++;
 };
-
 Writable.prototype.uncork = function () {
   var state = this._writableState;
-
   if (state.corked) {
     state.corked--;
     if (!state.writing && !state.corked && !state.bufferProcessing && state.bufferedRequest) clearBuffer(this, state);
   }
 };
-
 Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
   // node::ParseEncoding() requires lower case.
   if (typeof encoding === 'string') encoding = encoding.toLowerCase();
@@ -22576,7 +22443,6 @@ Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
   this._writableState.defaultEncoding = encoding;
   return this;
 };
-
 Object.defineProperty(Writable.prototype, 'writableBuffer', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
@@ -22586,15 +22452,12 @@ Object.defineProperty(Writable.prototype, 'writableBuffer', {
     return this._writableState && this._writableState.getBuffer();
   }
 });
-
 function decodeChunk(state, chunk, encoding) {
   if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
     chunk = Buffer.from(chunk, encoding);
   }
-
   return chunk;
 }
-
 Object.defineProperty(Writable.prototype, 'writableHighWaterMark', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
@@ -22603,51 +22466,45 @@ Object.defineProperty(Writable.prototype, 'writableHighWaterMark', {
   get: function get() {
     return this._writableState.highWaterMark;
   }
-}); // if we're already writing something, then just put this
+});
+
+// if we're already writing something, then just put this
 // in the queue, and wait our turn.  Otherwise, call _write
 // If we return false, then we need a drain event, so set that flag.
-
 function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
   if (!isBuf) {
     var newChunk = decodeChunk(state, chunk, encoding);
-
     if (chunk !== newChunk) {
       isBuf = true;
       encoding = 'buffer';
       chunk = newChunk;
     }
   }
-
   var len = state.objectMode ? 1 : chunk.length;
   state.length += len;
-  var ret = state.length < state.highWaterMark; // we must ensure that previous needDrain will not be reset to false.
-
+  var ret = state.length < state.highWaterMark;
+  // we must ensure that previous needDrain will not be reset to false.
   if (!ret) state.needDrain = true;
-
   if (state.writing || state.corked) {
     var last = state.lastBufferedRequest;
     state.lastBufferedRequest = {
-      chunk: chunk,
-      encoding: encoding,
-      isBuf: isBuf,
+      chunk,
+      encoding,
+      isBuf,
       callback: cb,
       next: null
     };
-
     if (last) {
       last.next = state.lastBufferedRequest;
     } else {
       state.bufferedRequest = state.lastBufferedRequest;
     }
-
     state.bufferedRequestCount += 1;
   } else {
     doWrite(stream, state, false, len, chunk, encoding, cb);
   }
-
   return ret;
 }
-
 function doWrite(stream, state, writev, len, chunk, encoding, cb) {
   state.writelen = len;
   state.writecb = cb;
@@ -22656,16 +22513,14 @@ function doWrite(stream, state, writev, len, chunk, encoding, cb) {
   if (state.destroyed) state.onwrite(new ERR_STREAM_DESTROYED('write'));else if (writev) stream._writev(chunk, state.onwrite);else stream._write(chunk, encoding, state.onwrite);
   state.sync = false;
 }
-
 function onwriteError(stream, state, sync, er, cb) {
   --state.pendingcb;
-
   if (sync) {
     // defer the callback if we are being called synchronously
     // to avoid piling up things on the stack
-    process.nextTick(cb, er); // this can emit finish, and it will always happen
+    process.nextTick(cb, er);
+    // this can emit finish, and it will always happen
     // after error
-
     process.nextTick(finishMaybe, stream, state);
     stream._writableState.errorEmitted = true;
     errorOrDestroy(stream, er);
@@ -22674,20 +22529,18 @@ function onwriteError(stream, state, sync, er, cb) {
     // it is async
     cb(er);
     stream._writableState.errorEmitted = true;
-    errorOrDestroy(stream, er); // this can emit finish, but finish must
+    errorOrDestroy(stream, er);
+    // this can emit finish, but finish must
     // always follow error
-
     finishMaybe(stream, state);
   }
 }
-
 function onwriteStateUpdate(state) {
   state.writing = false;
   state.writecb = null;
   state.length -= state.writelen;
   state.writelen = 0;
 }
-
 function onwrite(stream, er) {
   var state = stream._writableState;
   var sync = state.sync;
@@ -22697,11 +22550,9 @@ function onwrite(stream, er) {
   if (er) onwriteError(stream, state, sync, er, cb);else {
     // Check if we're actually ready to finish, but don't emit yet
     var finished = needFinish(state) || stream.destroyed;
-
     if (!finished && !state.corked && !state.bufferProcessing && state.bufferedRequest) {
       clearBuffer(stream, state);
     }
-
     if (sync) {
       process.nextTick(afterWrite, stream, state, finished, cb);
     } else {
@@ -22709,29 +22560,27 @@ function onwrite(stream, er) {
     }
   }
 }
-
 function afterWrite(stream, state, finished, cb) {
   if (!finished) onwriteDrain(stream, state);
   state.pendingcb--;
   cb();
   finishMaybe(stream, state);
-} // Must force callback to be called on nextTick, so that we don't
+}
+
+// Must force callback to be called on nextTick, so that we don't
 // emit 'drain' before the write() consumer gets the 'false' return
 // value, and has a chance to attach a 'drain' listener.
-
-
 function onwriteDrain(stream, state) {
   if (state.length === 0 && state.needDrain) {
     state.needDrain = false;
     stream.emit('drain');
   }
-} // if there's something in the buffer waiting, then process it
+}
 
-
+// if there's something in the buffer waiting, then process it
 function clearBuffer(stream, state) {
   state.bufferProcessing = true;
   var entry = state.bufferedRequest;
-
   if (stream._writev && entry && entry.next) {
     // Fast case, write everything using _writev()
     var l = state.bufferedRequestCount;
@@ -22740,28 +22589,25 @@ function clearBuffer(stream, state) {
     holder.entry = entry;
     var count = 0;
     var allBuffers = true;
-
     while (entry) {
       buffer[count] = entry;
       if (!entry.isBuf) allBuffers = false;
       entry = entry.next;
       count += 1;
     }
-
     buffer.allBuffers = allBuffers;
-    doWrite(stream, state, true, state.length, buffer, '', holder.finish); // doWrite is almost always async, defer these to save a bit of time
-    // as the hot path ends with doWrite
+    doWrite(stream, state, true, state.length, buffer, '', holder.finish);
 
+    // doWrite is almost always async, defer these to save a bit of time
+    // as the hot path ends with doWrite
     state.pendingcb++;
     state.lastBufferedRequest = null;
-
     if (holder.next) {
       state.corkedRequestsFree = holder.next;
       holder.next = null;
     } else {
       state.corkedRequestsFree = new CorkedRequest(state);
     }
-
     state.bufferedRequestCount = 0;
   } else {
     // Slow case, write chunks one-by-one
@@ -22772,32 +22618,26 @@ function clearBuffer(stream, state) {
       var len = state.objectMode ? 1 : chunk.length;
       doWrite(stream, state, false, len, chunk, encoding, cb);
       entry = entry.next;
-      state.bufferedRequestCount--; // if we didn't call the onwrite immediately, then
+      state.bufferedRequestCount--;
+      // if we didn't call the onwrite immediately, then
       // it means that we need to wait until it does.
       // also, that means that the chunk and cb are currently
       // being processed, so move the buffer counter past them.
-
       if (state.writing) {
         break;
       }
     }
-
     if (entry === null) state.lastBufferedRequest = null;
   }
-
   state.bufferedRequest = entry;
   state.bufferProcessing = false;
 }
-
 Writable.prototype._write = function (chunk, encoding, cb) {
   cb(new ERR_METHOD_NOT_IMPLEMENTED('_write()'));
 };
-
 Writable.prototype._writev = null;
-
 Writable.prototype.end = function (chunk, encoding, cb) {
   var state = this._writableState;
-
   if (typeof chunk === 'function') {
     cb = chunk;
     chunk = null;
@@ -22806,47 +22646,41 @@ Writable.prototype.end = function (chunk, encoding, cb) {
     cb = encoding;
     encoding = null;
   }
+  if (chunk !== null && chunk !== undefined) this.write(chunk, encoding);
 
-  if (chunk !== null && chunk !== undefined) this.write(chunk, encoding); // .end() fully uncorks
-
+  // .end() fully uncorks
   if (state.corked) {
     state.corked = 1;
     this.uncork();
-  } // ignore unnecessary end() calls.
+  }
 
-
+  // ignore unnecessary end() calls.
   if (!state.ending) endWritable(this, state, cb);
   return this;
 };
-
 Object.defineProperty(Writable.prototype, 'writableLength', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     return this._writableState.length;
   }
 });
-
 function needFinish(state) {
   return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
 }
-
 function callFinal(stream, state) {
-  stream._final(function (err) {
+  stream._final(err => {
     state.pendingcb--;
-
     if (err) {
       errorOrDestroy(stream, err);
     }
-
     state.prefinished = true;
     stream.emit('prefinish');
     finishMaybe(stream, state);
   });
 }
-
 function prefinish(stream, state) {
   if (!state.prefinished && !state.finalCalled) {
     if (typeof stream._final === 'function' && !state.destroyed) {
@@ -22859,124 +22693,102 @@ function prefinish(stream, state) {
     }
   }
 }
-
 function finishMaybe(stream, state) {
   var need = needFinish(state);
-
   if (need) {
     prefinish(stream, state);
-
     if (state.pendingcb === 0) {
       state.finished = true;
       stream.emit('finish');
-
       if (state.autoDestroy) {
         // In case of duplex streams we need a way to detect
         // if the readable side is ready for autoDestroy as well
-        var rState = stream._readableState;
-
+        const rState = stream._readableState;
         if (!rState || rState.autoDestroy && rState.endEmitted) {
           stream.destroy();
         }
       }
     }
   }
-
   return need;
 }
-
 function endWritable(stream, state, cb) {
   state.ending = true;
   finishMaybe(stream, state);
-
   if (cb) {
     if (state.finished) process.nextTick(cb);else stream.once('finish', cb);
   }
-
   state.ended = true;
   stream.writable = false;
 }
-
 function onCorkedFinish(corkReq, state, err) {
   var entry = corkReq.entry;
   corkReq.entry = null;
-
   while (entry) {
     var cb = entry.callback;
     state.pendingcb--;
     cb(err);
     entry = entry.next;
-  } // reuse the free corkReq.
+  }
 
-
+  // reuse the free corkReq.
   state.corkedRequestsFree.next = corkReq;
 }
-
 Object.defineProperty(Writable.prototype, 'destroyed', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     if (this._writableState === undefined) {
       return false;
     }
-
     return this._writableState.destroyed;
   },
-  set: function set(value) {
+  set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (!this._writableState) {
       return;
-    } // backward compatibility, the user is explicitly
+    }
+
+    // backward compatibility, the user is explicitly
     // managing destroyed
-
-
     this._writableState.destroyed = value;
   }
 });
 Writable.prototype.destroy = destroyImpl.destroy;
 Writable.prototype._undestroy = destroyImpl.undestroy;
-
 Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/destroy":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/state":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","util-deprecate":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/util-deprecate/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/async_iterator.js":[function(require,module,exports){
+},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/state":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","util-deprecate":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util-deprecate/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/async_iterator.js":[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
-var _Object$setPrototypeO;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var finished = require('./end-of-stream');
-
-var kLastResolve = Symbol('lastResolve');
-var kLastReject = Symbol('lastReject');
-var kError = Symbol('error');
-var kEnded = Symbol('ended');
-var kLastPromise = Symbol('lastPromise');
-var kHandlePromise = Symbol('handlePromise');
-var kStream = Symbol('stream');
-
+const finished = require('./end-of-stream');
+const kLastResolve = Symbol('lastResolve');
+const kLastReject = Symbol('lastReject');
+const kError = Symbol('error');
+const kEnded = Symbol('ended');
+const kLastPromise = Symbol('lastPromise');
+const kHandlePromise = Symbol('handlePromise');
+const kStream = Symbol('stream');
 function createIterResult(value, done) {
   return {
-    value: value,
-    done: done
+    value,
+    done
   };
 }
-
 function readAndResolve(iter) {
-  var resolve = iter[kLastResolve];
-
+  const resolve = iter[kLastResolve];
   if (resolve !== null) {
-    var data = iter[kStream].read(); // we defer if data is null
+    const data = iter[kStream].read();
+    // we defer if data is null
     // we can be expecting either 'end' or
     // 'error'
-
     if (data !== null) {
       iter[kLastPromise] = null;
       iter[kLastResolve] = null;
@@ -22985,397 +22797,326 @@ function readAndResolve(iter) {
     }
   }
 }
-
 function onReadable(iter) {
   // we wait for the next tick, because it might
   // emit an error with process.nextTick
   process.nextTick(readAndResolve, iter);
 }
-
 function wrapForNext(lastPromise, iter) {
-  return function (resolve, reject) {
-    lastPromise.then(function () {
+  return (resolve, reject) => {
+    lastPromise.then(() => {
       if (iter[kEnded]) {
         resolve(createIterResult(undefined, true));
         return;
       }
-
       iter[kHandlePromise](resolve, reject);
     }, reject);
   };
 }
-
-var AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
-var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPrototypeO = {
+const AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
+const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
   get stream() {
     return this[kStream];
   },
-
-  next: function next() {
-    var _this = this;
-
+  next() {
     // if we have detected an error in the meanwhile
     // reject straight away
-    var error = this[kError];
-
+    const error = this[kError];
     if (error !== null) {
       return Promise.reject(error);
     }
-
     if (this[kEnded]) {
       return Promise.resolve(createIterResult(undefined, true));
     }
-
     if (this[kStream].destroyed) {
       // We need to defer via nextTick because if .destroy(err) is
       // called, the error will be emitted via nextTick, and
       // we cannot guarantee that there is no error lingering around
       // waiting to be emitted.
-      return new Promise(function (resolve, reject) {
-        process.nextTick(function () {
-          if (_this[kError]) {
-            reject(_this[kError]);
+      return new Promise((resolve, reject) => {
+        process.nextTick(() => {
+          if (this[kError]) {
+            reject(this[kError]);
           } else {
             resolve(createIterResult(undefined, true));
           }
         });
       });
-    } // if we have multiple next() calls
+    }
+
+    // if we have multiple next() calls
     // we will wait for the previous Promise to finish
     // this logic is optimized to support for await loops,
     // where next() is only called once at a time
-
-
-    var lastPromise = this[kLastPromise];
-    var promise;
-
+    const lastPromise = this[kLastPromise];
+    let promise;
     if (lastPromise) {
       promise = new Promise(wrapForNext(lastPromise, this));
     } else {
       // fast path needed to support multiple this.push()
       // without triggering the next() queue
-      var data = this[kStream].read();
-
+      const data = this[kStream].read();
       if (data !== null) {
         return Promise.resolve(createIterResult(data, false));
       }
-
       promise = new Promise(this[kHandlePromise]);
     }
-
     this[kLastPromise] = promise;
     return promise;
-  }
-}, _defineProperty(_Object$setPrototypeO, Symbol.asyncIterator, function () {
-  return this;
-}), _defineProperty(_Object$setPrototypeO, "return", function _return() {
-  var _this2 = this;
-
-  // destroy(err, cb) is a private API
-  // we can guarantee we have that here, because we control the
-  // Readable class this is attached to
-  return new Promise(function (resolve, reject) {
-    _this2[kStream].destroy(null, function (err) {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      resolve(createIterResult(undefined, true));
+  },
+  [Symbol.asyncIterator]() {
+    return this;
+  },
+  return() {
+    // destroy(err, cb) is a private API
+    // we can guarantee we have that here, because we control the
+    // Readable class this is attached to
+    return new Promise((resolve, reject) => {
+      this[kStream].destroy(null, err => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(createIterResult(undefined, true));
+      });
     });
-  });
-}), _Object$setPrototypeO), AsyncIteratorPrototype);
-
-var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterator(stream) {
-  var _Object$create;
-
-  var iterator = Object.create(ReadableStreamAsyncIteratorPrototype, (_Object$create = {}, _defineProperty(_Object$create, kStream, {
-    value: stream,
-    writable: true
-  }), _defineProperty(_Object$create, kLastResolve, {
-    value: null,
-    writable: true
-  }), _defineProperty(_Object$create, kLastReject, {
-    value: null,
-    writable: true
-  }), _defineProperty(_Object$create, kError, {
-    value: null,
-    writable: true
-  }), _defineProperty(_Object$create, kEnded, {
-    value: stream._readableState.endEmitted,
-    writable: true
-  }), _defineProperty(_Object$create, kHandlePromise, {
-    value: function value(resolve, reject) {
-      var data = iterator[kStream].read();
-
-      if (data) {
-        iterator[kLastPromise] = null;
-        iterator[kLastResolve] = null;
-        iterator[kLastReject] = null;
-        resolve(createIterResult(data, false));
-      } else {
-        iterator[kLastResolve] = resolve;
-        iterator[kLastReject] = reject;
-      }
+  }
+}, AsyncIteratorPrototype);
+const createReadableStreamAsyncIterator = stream => {
+  const iterator = Object.create(ReadableStreamAsyncIteratorPrototype, {
+    [kStream]: {
+      value: stream,
+      writable: true
     },
-    writable: true
-  }), _Object$create));
+    [kLastResolve]: {
+      value: null,
+      writable: true
+    },
+    [kLastReject]: {
+      value: null,
+      writable: true
+    },
+    [kError]: {
+      value: null,
+      writable: true
+    },
+    [kEnded]: {
+      value: stream._readableState.endEmitted,
+      writable: true
+    },
+    // the function passed to new Promise
+    // is cached so we avoid allocating a new
+    // closure at every run
+    [kHandlePromise]: {
+      value: (resolve, reject) => {
+        const data = iterator[kStream].read();
+        if (data) {
+          iterator[kLastPromise] = null;
+          iterator[kLastResolve] = null;
+          iterator[kLastReject] = null;
+          resolve(createIterResult(data, false));
+        } else {
+          iterator[kLastResolve] = resolve;
+          iterator[kLastReject] = reject;
+        }
+      },
+      writable: true
+    }
+  });
   iterator[kLastPromise] = null;
-  finished(stream, function (err) {
+  finished(stream, err => {
     if (err && err.code !== 'ERR_STREAM_PREMATURE_CLOSE') {
-      var reject = iterator[kLastReject]; // reject if we are waiting for data in the Promise
+      const reject = iterator[kLastReject];
+      // reject if we are waiting for data in the Promise
       // returned by next() and store the error
-
       if (reject !== null) {
         iterator[kLastPromise] = null;
         iterator[kLastResolve] = null;
         iterator[kLastReject] = null;
         reject(err);
       }
-
       iterator[kError] = err;
       return;
     }
-
-    var resolve = iterator[kLastResolve];
-
+    const resolve = iterator[kLastResolve];
     if (resolve !== null) {
       iterator[kLastPromise] = null;
       iterator[kLastResolve] = null;
       iterator[kLastReject] = null;
       resolve(createIterResult(undefined, true));
     }
-
     iterator[kEnded] = true;
   });
   stream.on('readable', onReadable.bind(null, iterator));
   return iterator;
 };
-
 module.exports = createReadableStreamAsyncIterator;
 }).call(this)}).call(this,require('_process'))
 
-},{"./end-of-stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/buffer_list.js":[function(require,module,exports){
+},{"./end-of-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/buffer_list.js":[function(require,module,exports){
 'use strict';
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var _require = require('buffer'),
-    Buffer = _require.Buffer;
-
-var _require2 = require('util'),
-    inspect = _require2.inspect;
-
-var custom = inspect && inspect.custom || 'inspect';
-
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+const _require = require('buffer'),
+  Buffer = _require.Buffer;
+const _require2 = require('util'),
+  inspect = _require2.inspect;
+const custom = inspect && inspect.custom || 'inspect';
 function copyBuffer(src, target, offset) {
   Buffer.prototype.copy.call(src, target, offset);
 }
-
-module.exports =
-/*#__PURE__*/
-function () {
-  function BufferList() {
-    _classCallCheck(this, BufferList);
-
+module.exports = class BufferList {
+  constructor() {
     this.head = null;
     this.tail = null;
     this.length = 0;
   }
-
-  _createClass(BufferList, [{
-    key: "push",
-    value: function push(v) {
-      var entry = {
-        data: v,
-        next: null
-      };
-      if (this.length > 0) this.tail.next = entry;else this.head = entry;
-      this.tail = entry;
-      ++this.length;
+  push(v) {
+    const entry = {
+      data: v,
+      next: null
+    };
+    if (this.length > 0) this.tail.next = entry;else this.head = entry;
+    this.tail = entry;
+    ++this.length;
+  }
+  unshift(v) {
+    const entry = {
+      data: v,
+      next: this.head
+    };
+    if (this.length === 0) this.tail = entry;
+    this.head = entry;
+    ++this.length;
+  }
+  shift() {
+    if (this.length === 0) return;
+    const ret = this.head.data;
+    if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
+    --this.length;
+    return ret;
+  }
+  clear() {
+    this.head = this.tail = null;
+    this.length = 0;
+  }
+  join(s) {
+    if (this.length === 0) return '';
+    var p = this.head;
+    var ret = '' + p.data;
+    while (p = p.next) ret += s + p.data;
+    return ret;
+  }
+  concat(n) {
+    if (this.length === 0) return Buffer.alloc(0);
+    const ret = Buffer.allocUnsafe(n >>> 0);
+    var p = this.head;
+    var i = 0;
+    while (p) {
+      copyBuffer(p.data, ret, i);
+      i += p.data.length;
+      p = p.next;
     }
-  }, {
-    key: "unshift",
-    value: function unshift(v) {
-      var entry = {
-        data: v,
-        next: this.head
-      };
-      if (this.length === 0) this.tail = entry;
-      this.head = entry;
-      ++this.length;
+    return ret;
+  }
+
+  // Consumes a specified amount of bytes or characters from the buffered data.
+  consume(n, hasStrings) {
+    var ret;
+    if (n < this.head.data.length) {
+      // `slice` is the same for buffers and strings.
+      ret = this.head.data.slice(0, n);
+      this.head.data = this.head.data.slice(n);
+    } else if (n === this.head.data.length) {
+      // First chunk is a perfect match.
+      ret = this.shift();
+    } else {
+      // Result spans more than one buffer.
+      ret = hasStrings ? this._getString(n) : this._getBuffer(n);
     }
-  }, {
-    key: "shift",
-    value: function shift() {
-      if (this.length === 0) return;
-      var ret = this.head.data;
-      if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
-      --this.length;
-      return ret;
-    }
-  }, {
-    key: "clear",
-    value: function clear() {
-      this.head = this.tail = null;
-      this.length = 0;
-    }
-  }, {
-    key: "join",
-    value: function join(s) {
-      if (this.length === 0) return '';
-      var p = this.head;
-      var ret = '' + p.data;
+    return ret;
+  }
+  first() {
+    return this.head.data;
+  }
 
-      while (p = p.next) {
-        ret += s + p.data;
-      }
-
-      return ret;
-    }
-  }, {
-    key: "concat",
-    value: function concat(n) {
-      if (this.length === 0) return Buffer.alloc(0);
-      var ret = Buffer.allocUnsafe(n >>> 0);
-      var p = this.head;
-      var i = 0;
-
-      while (p) {
-        copyBuffer(p.data, ret, i);
-        i += p.data.length;
-        p = p.next;
-      }
-
-      return ret;
-    } // Consumes a specified amount of bytes or characters from the buffered data.
-
-  }, {
-    key: "consume",
-    value: function consume(n, hasStrings) {
-      var ret;
-
-      if (n < this.head.data.length) {
-        // `slice` is the same for buffers and strings.
-        ret = this.head.data.slice(0, n);
-        this.head.data = this.head.data.slice(n);
-      } else if (n === this.head.data.length) {
-        // First chunk is a perfect match.
-        ret = this.shift();
-      } else {
-        // Result spans more than one buffer.
-        ret = hasStrings ? this._getString(n) : this._getBuffer(n);
-      }
-
-      return ret;
-    }
-  }, {
-    key: "first",
-    value: function first() {
-      return this.head.data;
-    } // Consumes a specified amount of characters from the buffered data.
-
-  }, {
-    key: "_getString",
-    value: function _getString(n) {
-      var p = this.head;
-      var c = 1;
-      var ret = p.data;
-      n -= ret.length;
-
-      while (p = p.next) {
-        var str = p.data;
-        var nb = n > str.length ? str.length : n;
-        if (nb === str.length) ret += str;else ret += str.slice(0, n);
-        n -= nb;
-
-        if (n === 0) {
-          if (nb === str.length) {
-            ++c;
-            if (p.next) this.head = p.next;else this.head = this.tail = null;
-          } else {
-            this.head = p;
-            p.data = str.slice(nb);
-          }
-
-          break;
+  // Consumes a specified amount of characters from the buffered data.
+  _getString(n) {
+    var p = this.head;
+    var c = 1;
+    var ret = p.data;
+    n -= ret.length;
+    while (p = p.next) {
+      const str = p.data;
+      const nb = n > str.length ? str.length : n;
+      if (nb === str.length) ret += str;else ret += str.slice(0, n);
+      n -= nb;
+      if (n === 0) {
+        if (nb === str.length) {
+          ++c;
+          if (p.next) this.head = p.next;else this.head = this.tail = null;
+        } else {
+          this.head = p;
+          p.data = str.slice(nb);
         }
-
-        ++c;
+        break;
       }
-
-      this.length -= c;
-      return ret;
-    } // Consumes a specified amount of bytes from the buffered data.
-
-  }, {
-    key: "_getBuffer",
-    value: function _getBuffer(n) {
-      var ret = Buffer.allocUnsafe(n);
-      var p = this.head;
-      var c = 1;
-      p.data.copy(ret);
-      n -= p.data.length;
-
-      while (p = p.next) {
-        var buf = p.data;
-        var nb = n > buf.length ? buf.length : n;
-        buf.copy(ret, ret.length - n, 0, nb);
-        n -= nb;
-
-        if (n === 0) {
-          if (nb === buf.length) {
-            ++c;
-            if (p.next) this.head = p.next;else this.head = this.tail = null;
-          } else {
-            this.head = p;
-            p.data = buf.slice(nb);
-          }
-
-          break;
-        }
-
-        ++c;
-      }
-
-      this.length -= c;
-      return ret;
-    } // Make sure the linked list only shows the minimal necessary information.
-
-  }, {
-    key: custom,
-    value: function value(_, options) {
-      return inspect(this, _objectSpread({}, options, {
-        // Only inspect one level.
-        depth: 0,
-        // It should not recurse.
-        customInspect: false
-      }));
+      ++c;
     }
-  }]);
+    this.length -= c;
+    return ret;
+  }
 
-  return BufferList;
-}();
-},{"buffer":"buffer","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports){
+  // Consumes a specified amount of bytes from the buffered data.
+  _getBuffer(n) {
+    const ret = Buffer.allocUnsafe(n);
+    var p = this.head;
+    var c = 1;
+    p.data.copy(ret);
+    n -= p.data.length;
+    while (p = p.next) {
+      const buf = p.data;
+      const nb = n > buf.length ? buf.length : n;
+      buf.copy(ret, ret.length - n, 0, nb);
+      n -= nb;
+      if (n === 0) {
+        if (nb === buf.length) {
+          ++c;
+          if (p.next) this.head = p.next;else this.head = this.tail = null;
+        } else {
+          this.head = p;
+          p.data = buf.slice(nb);
+        }
+        break;
+      }
+      ++c;
+    }
+    this.length -= c;
+    return ret;
+  }
+
+  // Make sure the linked list only shows the minimal necessary information.
+  [custom](_, options) {
+    return inspect(this, _objectSpread(_objectSpread({}, options), {}, {
+      // Only inspect one level.
+      depth: 0,
+      // It should not recurse.
+      customInspect: false
+    }));
+  }
+};
+},{"buffer":"buffer","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports){
 (function (process){(function (){
-'use strict'; // undocumented cb() API, needed for core, not for public API
+'use strict';
 
+// undocumented cb() API, needed for core, not for public API
 function destroy(err, cb) {
-  var _this = this;
-
-  var readableDestroyed = this._readableState && this._readableState.destroyed;
-  var writableDestroyed = this._writableState && this._writableState.destroyed;
-
+  const readableDestroyed = this._readableState && this._readableState.destroyed;
+  const writableDestroyed = this._writableState && this._writableState.destroyed;
   if (readableDestroyed || writableDestroyed) {
     if (cb) {
       cb(err);
@@ -23387,53 +23128,48 @@ function destroy(err, cb) {
         process.nextTick(emitErrorNT, this, err);
       }
     }
-
     return this;
-  } // we set destroyed to true before firing error callbacks in order
-  // to make it re-entrance safe in case destroy() is called within callbacks
+  }
 
+  // we set destroyed to true before firing error callbacks in order
+  // to make it re-entrance safe in case destroy() is called within callbacks
 
   if (this._readableState) {
     this._readableState.destroyed = true;
-  } // if this is a duplex stream mark the writable part as destroyed as well
+  }
 
-
+  // if this is a duplex stream mark the writable part as destroyed as well
   if (this._writableState) {
     this._writableState.destroyed = true;
   }
-
-  this._destroy(err || null, function (err) {
+  this._destroy(err || null, err => {
     if (!cb && err) {
-      if (!_this._writableState) {
-        process.nextTick(emitErrorAndCloseNT, _this, err);
-      } else if (!_this._writableState.errorEmitted) {
-        _this._writableState.errorEmitted = true;
-        process.nextTick(emitErrorAndCloseNT, _this, err);
+      if (!this._writableState) {
+        process.nextTick(emitErrorAndCloseNT, this, err);
+      } else if (!this._writableState.errorEmitted) {
+        this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorAndCloseNT, this, err);
       } else {
-        process.nextTick(emitCloseNT, _this);
+        process.nextTick(emitCloseNT, this);
       }
     } else if (cb) {
-      process.nextTick(emitCloseNT, _this);
+      process.nextTick(emitCloseNT, this);
       cb(err);
     } else {
-      process.nextTick(emitCloseNT, _this);
+      process.nextTick(emitCloseNT, this);
     }
   });
-
   return this;
 }
-
 function emitErrorAndCloseNT(self, err) {
   emitErrorNT(self, err);
   emitCloseNT(self);
 }
-
 function emitCloseNT(self) {
   if (self._writableState && !self._writableState.emitClose) return;
   if (self._readableState && !self._readableState.emitClose) return;
   self.emit('close');
 }
-
 function undestroy() {
   if (this._readableState) {
     this._readableState.destroyed = false;
@@ -23441,7 +23177,6 @@ function undestroy() {
     this._readableState.ended = false;
     this._readableState.endEmitted = false;
   }
-
   if (this._writableState) {
     this._writableState.destroyed = false;
     this._writableState.ended = false;
@@ -23452,105 +23187,87 @@ function undestroy() {
     this._writableState.errorEmitted = false;
   }
 }
-
 function emitErrorNT(self, err) {
   self.emit('error', err);
 }
-
 function errorOrDestroy(stream, err) {
   // We have tests that rely on errors being emitted
   // in the same tick, so changing this is semver major.
   // For now when you opt-in to autoDestroy we allow
   // the error to be emitted nextTick. In a future
   // semver major update we should change the default to this.
-  var rState = stream._readableState;
-  var wState = stream._writableState;
+
+  const rState = stream._readableState;
+  const wState = stream._writableState;
   if (rState && rState.autoDestroy || wState && wState.autoDestroy) stream.destroy(err);else stream.emit('error', err);
 }
-
 module.exports = {
-  destroy: destroy,
-  undestroy: undestroy,
-  errorOrDestroy: errorOrDestroy
+  destroy,
+  undestroy,
+  errorOrDestroy
 };
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js":[function(require,module,exports){
 // Ported from https://github.com/mafintosh/end-of-stream with
 // permission from the author, Mathias Buus (@mafintosh).
+
 'use strict';
 
-var ERR_STREAM_PREMATURE_CLOSE = require('../../../errors').codes.ERR_STREAM_PREMATURE_CLOSE;
-
+const ERR_STREAM_PREMATURE_CLOSE = require('../../../errors').codes.ERR_STREAM_PREMATURE_CLOSE;
 function once(callback) {
-  var called = false;
+  let called = false;
   return function () {
     if (called) return;
     called = true;
-
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
-
     callback.apply(this, args);
   };
 }
-
 function noop() {}
-
 function isRequest(stream) {
   return stream.setHeader && typeof stream.abort === 'function';
 }
-
 function eos(stream, opts, callback) {
   if (typeof opts === 'function') return eos(stream, null, opts);
   if (!opts) opts = {};
   callback = once(callback || noop);
-  var readable = opts.readable || opts.readable !== false && stream.readable;
-  var writable = opts.writable || opts.writable !== false && stream.writable;
-
-  var onlegacyfinish = function onlegacyfinish() {
+  let readable = opts.readable || opts.readable !== false && stream.readable;
+  let writable = opts.writable || opts.writable !== false && stream.writable;
+  const onlegacyfinish = () => {
     if (!stream.writable) onfinish();
   };
-
   var writableEnded = stream._writableState && stream._writableState.finished;
-
-  var onfinish = function onfinish() {
+  const onfinish = () => {
     writable = false;
     writableEnded = true;
     if (!readable) callback.call(stream);
   };
-
   var readableEnded = stream._readableState && stream._readableState.endEmitted;
-
-  var onend = function onend() {
+  const onend = () => {
     readable = false;
     readableEnded = true;
     if (!writable) callback.call(stream);
   };
-
-  var onerror = function onerror(err) {
+  const onerror = err => {
     callback.call(stream, err);
   };
-
-  var onclose = function onclose() {
-    var err;
-
+  const onclose = () => {
+    let err;
     if (readable && !readableEnded) {
       if (!stream._readableState || !stream._readableState.ended) err = new ERR_STREAM_PREMATURE_CLOSE();
       return callback.call(stream, err);
     }
-
     if (writable && !writableEnded) {
       if (!stream._writableState || !stream._writableState.ended) err = new ERR_STREAM_PREMATURE_CLOSE();
       return callback.call(stream, err);
     }
   };
-
-  var onrequest = function onrequest() {
+  const onrequest = () => {
     stream.req.on('finish', onfinish);
   };
-
   if (isRequest(stream)) {
     stream.on('complete', onfinish);
     stream.on('abort', onclose);
@@ -23560,7 +23277,6 @@ function eos(stream, opts, callback) {
     stream.on('end', onlegacyfinish);
     stream.on('close', onlegacyfinish);
   }
-
   stream.on('end', onend);
   stream.on('finish', onfinish);
   if (opts.error !== false) stream.on('error', onerror);
@@ -23578,99 +23294,88 @@ function eos(stream, opts, callback) {
     stream.removeListener('close', onclose);
   };
 }
-
 module.exports = eos;
-},{"../../../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/from-browser.js":[function(require,module,exports){
+},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/from-browser.js":[function(require,module,exports){
 module.exports = function () {
   throw new Error('Readable.from is not available in the browser')
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/pipeline.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/pipeline.js":[function(require,module,exports){
 // Ported from https://github.com/mafintosh/pump with
 // permission from the author, Mathias Buus (@mafintosh).
+
 'use strict';
 
-var eos;
-
+let eos;
 function once(callback) {
-  var called = false;
+  let called = false;
   return function () {
     if (called) return;
     called = true;
-    callback.apply(void 0, arguments);
+    callback(...arguments);
   };
 }
-
-var _require$codes = require('../../../errors').codes,
-    ERR_MISSING_ARGS = _require$codes.ERR_MISSING_ARGS,
-    ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED;
-
+const _require$codes = require('../../../errors').codes,
+  ERR_MISSING_ARGS = _require$codes.ERR_MISSING_ARGS,
+  ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED;
 function noop(err) {
   // Rethrow the error if it exists to avoid swallowing it
   if (err) throw err;
 }
-
 function isRequest(stream) {
   return stream.setHeader && typeof stream.abort === 'function';
 }
-
 function destroyer(stream, reading, writing, callback) {
   callback = once(callback);
-  var closed = false;
-  stream.on('close', function () {
+  let closed = false;
+  stream.on('close', () => {
     closed = true;
   });
   if (eos === undefined) eos = require('./end-of-stream');
   eos(stream, {
     readable: reading,
     writable: writing
-  }, function (err) {
+  }, err => {
     if (err) return callback(err);
     closed = true;
     callback();
   });
-  var destroyed = false;
-  return function (err) {
+  let destroyed = false;
+  return err => {
     if (closed) return;
     if (destroyed) return;
-    destroyed = true; // request.destroy just do .end - .abort is what we want
+    destroyed = true;
 
+    // request.destroy just do .end - .abort is what we want
     if (isRequest(stream)) return stream.abort();
     if (typeof stream.destroy === 'function') return stream.destroy();
     callback(err || new ERR_STREAM_DESTROYED('pipe'));
   };
 }
-
 function call(fn) {
   fn();
 }
-
 function pipe(from, to) {
   return from.pipe(to);
 }
-
 function popCallback(streams) {
   if (!streams.length) return noop;
   if (typeof streams[streams.length - 1] !== 'function') return noop;
   return streams.pop();
 }
-
 function pipeline() {
   for (var _len = arguments.length, streams = new Array(_len), _key = 0; _key < _len; _key++) {
     streams[_key] = arguments[_key];
   }
-
-  var callback = popCallback(streams);
+  const callback = popCallback(streams);
   if (Array.isArray(streams[0])) streams = streams[0];
-
   if (streams.length < 2) {
     throw new ERR_MISSING_ARGS('streams');
   }
-
-  var error;
-  var destroys = streams.map(function (stream, i) {
-    var reading = i < streams.length - 1;
-    var writing = i > 0;
+  let error;
+  const destroys = streams.map(function (stream, i) {
+    const reading = i < streams.length - 1;
+    const writing = i > 0;
     return destroyer(stream, reading, writing, function (err) {
       if (!error) error = err;
       if (err) destroys.forEach(call);
@@ -23681,40 +23386,34 @@ function pipeline() {
   });
   return streams.reduce(pipe);
 }
-
 module.exports = pipeline;
-},{"../../../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js","./end-of-stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/state.js":[function(require,module,exports){
+},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js","./end-of-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/state.js":[function(require,module,exports){
 'use strict';
 
-var ERR_INVALID_OPT_VALUE = require('../../../errors').codes.ERR_INVALID_OPT_VALUE;
-
+const ERR_INVALID_OPT_VALUE = require('../../../errors').codes.ERR_INVALID_OPT_VALUE;
 function highWaterMarkFrom(options, isDuplex, duplexKey) {
   return options.highWaterMark != null ? options.highWaterMark : isDuplex ? options[duplexKey] : null;
 }
-
 function getHighWaterMark(state, options, duplexKey, isDuplex) {
-  var hwm = highWaterMarkFrom(options, isDuplex, duplexKey);
-
+  const hwm = highWaterMarkFrom(options, isDuplex, duplexKey);
   if (hwm != null) {
     if (!(isFinite(hwm) && Math.floor(hwm) === hwm) || hwm < 0) {
-      var name = isDuplex ? duplexKey : 'highWaterMark';
+      const name = isDuplex ? duplexKey : 'highWaterMark';
       throw new ERR_INVALID_OPT_VALUE(name, hwm);
     }
-
     return Math.floor(hwm);
-  } // Default value
+  }
 
-
+  // Default value
   return state.objectMode ? 16 : 16 * 1024;
 }
-
 module.exports = {
-  getHighWaterMark: getHighWaterMark
+  getHighWaterMark
 };
-},{"../../../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports){
+},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/events/events.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/readable-browser.js":[function(require,module,exports){
+},{"events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/readable-browser.js":[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -23725,9 +23424,9 @@ exports.PassThrough = require('./lib/_stream_passthrough.js');
 exports.finished = require('./lib/internal/streams/end-of-stream.js');
 exports.pipeline = require('./lib/internal/streams/pipeline.js');
 
-},{"./lib/_stream_duplex.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js","./lib/internal/streams/end-of-stream.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","./lib/internal/streams/pipeline.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/pipeline.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify/lib/_empty.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browser-resolve/empty.js"][0].apply(exports,arguments)
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/buffer-xor/index.js":[function(require,module,exports){
+},{"./lib/_stream_duplex.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js","./lib/internal/streams/end-of-stream.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","./lib/internal/streams/pipeline.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/pipeline.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browser-resolve/empty.js"][0].apply(exports,arguments)
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer-xor/index.js":[function(require,module,exports){
 (function (Buffer){(function (){
 module.exports = function xor (a, b) {
   var length = Math.min(a.length, b.length)
@@ -23742,7 +23441,7 @@ module.exports = function xor (a, b) {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/cipher-base/index.js":[function(require,module,exports){
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 var Transform = require('stream').Transform
 var StringDecoder = require('string_decoder').StringDecoder
@@ -23843,7 +23542,7 @@ CipherBase.prototype._toString = function (value, enc, fin) {
 
 module.exports = CipherBase
 
-},{"inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js","stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/stream-browserify/index.js","string_decoder":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/core-util-is/lib/util.js":[function(require,module,exports){
+},{"inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js","stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js","string_decoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23952,7 +23651,7 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-ecdh/browser.js":[function(require,module,exports){
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-ecdh/browser.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var elliptic = require('elliptic')
 var BN = require('bn.js')
@@ -24081,9 +23780,9 @@ function formatReturnValue (bn, enc, len) {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-ecdh/node_modules/bn.js/lib/bn.js","buffer":"buffer","elliptic":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-ecdh/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"][0].apply(exports,arguments)
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hash/browser.js":[function(require,module,exports){
+},{"bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-ecdh/node_modules/bn.js/lib/bn.js","buffer":"buffer","elliptic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-ecdh/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"][0].apply(exports,arguments)
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/browser.js":[function(require,module,exports){
 'use strict'
 var inherits = require('inherits')
 var MD5 = require('md5.js')
@@ -24115,14 +23814,14 @@ module.exports = function createHash (alg) {
   return new Hash(sha(alg))
 }
 
-},{"cipher-base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/cipher-base/index.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","md5.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/md5.js/index.js","ripemd160":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/ripemd160/index.js","sha.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hash/md5.js":[function(require,module,exports){
+},{"cipher-base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","md5.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/md5.js/index.js","ripemd160":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ripemd160/index.js","sha.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/md5.js":[function(require,module,exports){
 var MD5 = require('md5.js')
 
 module.exports = function (buffer) {
   return new MD5().update(buffer).digest()
 }
 
-},{"md5.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/md5.js/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hmac/browser.js":[function(require,module,exports){
+},{"md5.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/md5.js/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hmac/browser.js":[function(require,module,exports){
 'use strict'
 var inherits = require('inherits')
 var Legacy = require('./legacy')
@@ -24186,7 +23885,7 @@ module.exports = function createHmac (alg, key) {
   return new Hmac(alg, key)
 }
 
-},{"./legacy":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hmac/legacy.js","cipher-base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/cipher-base/index.js","create-hash/md5":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hash/md5.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","ripemd160":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/ripemd160/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js","sha.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hmac/legacy.js":[function(require,module,exports){
+},{"./legacy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hmac/legacy.js","cipher-base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js","create-hash/md5":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/md5.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","ripemd160":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ripemd160/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js","sha.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hmac/legacy.js":[function(require,module,exports){
 'use strict'
 var inherits = require('inherits')
 var Buffer = require('safe-buffer').Buffer
@@ -24234,7 +23933,7 @@ Hmac.prototype._final = function () {
 }
 module.exports = Hmac
 
-},{"cipher-base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/cipher-base/index.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des.js":[function(require,module,exports){
+},{"cipher-base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des.js":[function(require,module,exports){
 'use strict';
 
 exports.utils = require('./des/utils');
@@ -24243,7 +23942,7 @@ exports.DES = require('./des/des');
 exports.CBC = require('./des/cbc');
 exports.EDE = require('./des/ede');
 
-},{"./des/cbc":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/cbc.js","./des/cipher":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/cipher.js","./des/des":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/des.js","./des/ede":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/ede.js","./des/utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/utils.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/cbc.js":[function(require,module,exports){
+},{"./des/cbc":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/cbc.js","./des/cipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/cipher.js","./des/des":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/des.js","./des/ede":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/ede.js","./des/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/cbc.js":[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -24310,7 +24009,7 @@ proto._update = function _update(inp, inOff, out, outOff) {
   }
 };
 
-},{"inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/cipher.js":[function(require,module,exports){
+},{"inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/cipher.js":[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -24453,7 +24152,7 @@ Cipher.prototype._finalDecrypt = function _finalDecrypt() {
   return this._unpad(out);
 };
 
-},{"minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/des.js":[function(require,module,exports){
+},{"minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/des.js":[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -24597,7 +24296,7 @@ DES.prototype._decrypt = function _decrypt(state, lStart, rStart, out, off) {
   utils.rip(l, r, out, off);
 };
 
-},{"./cipher":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/cipher.js","./utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/utils.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/ede.js":[function(require,module,exports){
+},{"./cipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/cipher.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/utils.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/ede.js":[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -24653,7 +24352,7 @@ EDE.prototype._update = function _update(inp, inOff, out, outOff) {
 EDE.prototype._pad = DES.prototype._pad;
 EDE.prototype._unpad = DES.prototype._unpad;
 
-},{"./cipher":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/cipher.js","./des":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/des.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/des.js/lib/des/utils.js":[function(require,module,exports){
+},{"./cipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/cipher.js","./des":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/des.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des/utils.js":[function(require,module,exports){
 'use strict';
 
 exports.readUInt32BE = function readUInt32BE(bytes, off) {
@@ -24911,7 +24610,7 @@ exports.padSplit = function padSplit(num, size, group) {
   return out.join(' ');
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/browser.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/browser.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var generatePrime = require('./lib/generatePrime')
 var primes = require('./lib/primes.json')
@@ -24958,7 +24657,7 @@ exports.createDiffieHellman = exports.DiffieHellman = createDiffieHellman
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"./lib/dh":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/lib/dh.js","./lib/generatePrime":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/lib/generatePrime.js","./lib/primes.json":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/lib/primes.json","buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/lib/dh.js":[function(require,module,exports){
+},{"./lib/dh":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/lib/dh.js","./lib/generatePrime":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/lib/generatePrime.js","./lib/primes.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/lib/primes.json","buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/lib/dh.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var BN = require('bn.js');
 var MillerRabin = require('miller-rabin');
@@ -25127,7 +24826,7 @@ function formatReturnValue(bn, enc) {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"./generatePrime":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/lib/generatePrime.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/node_modules/bn.js/lib/bn.js","buffer":"buffer","miller-rabin":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/miller-rabin/lib/mr.js","randombytes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/randombytes/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/lib/generatePrime.js":[function(require,module,exports){
+},{"./generatePrime":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/lib/generatePrime.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/node_modules/bn.js/lib/bn.js","buffer":"buffer","miller-rabin":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/miller-rabin/lib/mr.js","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/lib/generatePrime.js":[function(require,module,exports){
 var randomBytes = require('randombytes');
 module.exports = findPrime;
 findPrime.simpleSieve = simpleSieve;
@@ -25234,7 +24933,7 @@ function findPrime(bits, gen) {
 
 }
 
-},{"bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/node_modules/bn.js/lib/bn.js","miller-rabin":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/miller-rabin/lib/mr.js","randombytes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/randombytes/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/lib/primes.json":[function(require,module,exports){
+},{"bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/node_modules/bn.js/lib/bn.js","miller-rabin":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/miller-rabin/lib/mr.js","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/lib/primes.json":[function(require,module,exports){
 module.exports={
     "modp1": {
         "gen": "02",
@@ -25269,9 +24968,9 @@ module.exports={
         "prime": "ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca18217c32905e462e36ce3be39e772c180e86039b2783a2ec07a28fb5c55df06f4c52c9de2bcbf6955817183995497cea956ae515d2261898fa051015728e5a8aaac42dad33170d04507a33a85521abdf1cba64ecfb850458dbef0a8aea71575d060c7db3970f85a6e1e4c7abf5ae8cdb0933d71e8c94e04a25619dcee3d2261ad2ee6bf12ffa06d98a0864d87602733ec86a64521f2b18177b200cbbe117577a615d6c770988c0bad946e208e24fa074e5ab3143db5bfce0fd108e4b82d120a92108011a723c12a787e6d788719a10bdba5b2699c327186af4e23c1a946834b6150bda2583e9ca2ad44ce8dbbbc2db04de8ef92e8efc141fbecaa6287c59474e6bc05d99b2964fa090c3a2233ba186515be7ed1f612970cee2d7afb81bdd762170481cd0069127d5b05aa993b4ea988d8fddc186ffb7dc90a6c08f4df435c93402849236c3fab4d27c7026c1d4dcb2602646dec9751e763dba37bdf8ff9406ad9e530ee5db382f413001aeb06a53ed9027d831179727b0865a8918da3edbebcf9b14ed44ce6cbaced4bb1bdb7f1447e6cc254b332051512bd7af426fb8f401378cd2bf5983ca01c64b92ecf032ea15d1721d03f482d7ce6e74fef6d55e702f46980c82b5a84031900b1c9e59e7c97fbec7e8f323a97a7e36cc88be0f1d45b7ff585ac54bd407b22b4154aacc8f6d7ebf48e1d814cc5ed20f8037e0a79715eef29be32806a1d58bb7c5da76f550aa3d8a1fbff0eb19ccb1a313d55cda56c9ec2ef29632387fe8d76e3c0468043e8f663f4860ee12bf2d5b0b7474d6e694f91e6dbe115974a3926f12fee5e438777cb6a932df8cd8bec4d073b931ba3bc832b68d9dd300741fa7bf8afc47ed2576f6936ba424663aab639c5ae4f5683423b4742bf1c978238f16cbe39d652de3fdb8befc848ad922222e04a4037c0713eb57a81a23f0c73473fc646cea306b4bcbc8862f8385ddfa9d4b7fa2c087e879683303ed5bdd3a062b3cf5b3a278a66d2a13f83f44f82ddf310ee074ab6a364597e899a0255dc164f31cc50846851df9ab48195ded7ea1b1d510bd7ee74d73faf36bc31ecfa268359046f4eb879f924009438b481c6cd7889a002ed5ee382bc9190da6fc026e479558e4475677e9aa9e3050e2765694dfc81f56e880b96e7160c980dd98edd3dfffffffffffffffff"
     }
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"][0].apply(exports,arguments)
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"][0].apply(exports,arguments)
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic.js":[function(require,module,exports){
 'use strict';
 
 var elliptic = exports;
@@ -25286,7 +24985,7 @@ elliptic.curves = require('./elliptic/curves');
 elliptic.ec = require('./elliptic/ec');
 elliptic.eddsa = require('./elliptic/eddsa');
 
-},{"../package.json":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/package.json","./elliptic/curve":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/index.js","./elliptic/curves":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curves.js","./elliptic/ec":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/index.js","./elliptic/eddsa":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/index.js","./elliptic/utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","brorand":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/brorand/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/base.js":[function(require,module,exports){
+},{"../package.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/package.json","./elliptic/curve":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/index.js","./elliptic/curves":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curves.js","./elliptic/ec":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/index.js","./elliptic/eddsa":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/index.js","./elliptic/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","brorand":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/brorand/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/base.js":[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -25669,7 +25368,7 @@ BasePoint.prototype.dblp = function dblp(k) {
   return r;
 };
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/edwards.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/edwards.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -26106,7 +25805,7 @@ Point.prototype.eqXToP = function eqXToP(x) {
 Point.prototype.toP = Point.prototype.normalize;
 Point.prototype.mixedAdd = Point.prototype.add;
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","./base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/base.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/index.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","./base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/base.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/index.js":[function(require,module,exports){
 'use strict';
 
 var curve = exports;
@@ -26116,7 +25815,7 @@ curve.short = require('./short');
 curve.mont = require('./mont');
 curve.edwards = require('./edwards');
 
-},{"./base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/base.js","./edwards":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/edwards.js","./mont":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/mont.js","./short":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/short.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/mont.js":[function(require,module,exports){
+},{"./base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/base.js","./edwards":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/edwards.js","./mont":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/mont.js","./short":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/short.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/mont.js":[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -26296,7 +25995,7 @@ Point.prototype.getX = function getX() {
   return this.x.fromRed();
 };
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","./base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/base.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/short.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","./base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/base.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/short.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -27236,7 +26935,7 @@ JPoint.prototype.isInfinity = function isInfinity() {
   return this.z.cmpn(0) === 0;
 };
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","./base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/base.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curves.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","./base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/base.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curves.js":[function(require,module,exports){
 'use strict';
 
 var curves = exports;
@@ -27444,7 +27143,7 @@ defineCurve('secp256k1', {
   ],
 });
 
-},{"./curve":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/index.js","./precomputed/secp256k1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/precomputed/secp256k1.js","./utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","hash.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/index.js":[function(require,module,exports){
+},{"./curve":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curve/index.js","./precomputed/secp256k1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/precomputed/secp256k1.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","hash.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/index.js":[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -27689,7 +27388,7 @@ EC.prototype.getKeyRecoveryParam = function(e, signature, Q, enc) {
   throw new Error('Unable to find valid recovery factor');
 };
 
-},{"../curves":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curves.js","../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","./key":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/key.js","./signature":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/signature.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js","brorand":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/brorand/index.js","hmac-drbg":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hmac-drbg/lib/hmac-drbg.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/key.js":[function(require,module,exports){
+},{"../curves":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curves.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","./key":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/key.js","./signature":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/signature.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js","brorand":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/brorand/index.js","hmac-drbg":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hmac-drbg/lib/hmac-drbg.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/key.js":[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -27812,7 +27511,7 @@ KeyPair.prototype.inspect = function inspect() {
          ' pub: ' + (this.pub && this.pub.inspect()) + ' >';
 };
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/signature.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/ec/signature.js":[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -27980,7 +27679,7 @@ Signature.prototype.toDER = function toDER(enc) {
   return utils.encode(res, enc);
 };
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/index.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/index.js":[function(require,module,exports){
 'use strict';
 
 var hash = require('hash.js');
@@ -28100,7 +27799,7 @@ EDDSA.prototype.isPoint = function isPoint(val) {
   return val instanceof this.pointClass;
 };
 
-},{"../curves":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/curves.js","../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","./key":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/key.js","./signature":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/signature.js","hash.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/key.js":[function(require,module,exports){
+},{"../curves":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/curves.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","./key":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/key.js","./signature":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/signature.js","hash.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/key.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -28197,7 +27896,7 @@ KeyPair.prototype.getPublic = function getPublic(enc) {
 
 module.exports = KeyPair;
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/signature.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/eddsa/signature.js":[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -28264,7 +27963,7 @@ Signature.prototype.toHex = function toHex() {
 
 module.exports = Signature;
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/precomputed/secp256k1.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/precomputed/secp256k1.js":[function(require,module,exports){
 module.exports = {
   doubles: {
     step: 4,
@@ -29046,7 +28745,7 @@ module.exports = {
   },
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic/utils.js":[function(require,module,exports){
 'use strict';
 
 var utils = exports;
@@ -29167,9 +28866,9 @@ function intFromLE(bytes) {
 utils.intFromLE = intFromLE;
 
 
-},{"bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js","minimalistic-crypto-utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-crypto-utils/lib/utils.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"][0].apply(exports,arguments)
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/elliptic/package.json":[function(require,module,exports){
+},{"bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js","minimalistic-crypto-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-crypto-utils/lib/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"][0].apply(exports,arguments)
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/package.json":[function(require,module,exports){
 module.exports={
   "name": "elliptic",
   "version": "6.5.4",
@@ -29227,7 +28926,7 @@ module.exports={
   }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/events/events.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -29752,7 +29451,7 @@ function functionBindPolyfill(context) {
   };
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/evp_bytestokey/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/evp_bytestokey/index.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 var MD5 = require('md5.js')
 
@@ -29799,7 +29498,7 @@ function EVP_BytesToKey (password, salt, keyBits, ivLen) {
 
 module.exports = EVP_BytesToKey
 
-},{"md5.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/md5.js/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/index.js":[function(require,module,exports){
+},{"md5.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/md5.js/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/index.js":[function(require,module,exports){
 'use strict'
 var Buffer = require('safe-buffer').Buffer
 var Transform = require('readable-stream').Transform
@@ -29896,9 +29595,9 @@ HashBase.prototype._digest = function () {
 
 module.exports = HashBase
 
-},{"inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/readable-browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js"][0].apply(exports,arguments)
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
+},{"inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/readable-browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js"][0].apply(exports,arguments)
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
 (function (process){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -29920,66 +29619,54 @@ arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_mod
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
 // Writable.
-'use strict';
-/*<replacement>*/
 
+'use strict';
+
+/*<replacement>*/
 var objectKeys = Object.keys || function (obj) {
   var keys = [];
-
-  for (var key in obj) {
-    keys.push(key);
-  }
-
+  for (var key in obj) keys.push(key);
   return keys;
 };
 /*</replacement>*/
 
-
 module.exports = Duplex;
-
-var Readable = require('./_stream_readable');
-
-var Writable = require('./_stream_writable');
-
+const Readable = require('./_stream_readable');
+const Writable = require('./_stream_writable');
 require('inherits')(Duplex, Readable);
-
 {
   // Allow the keys array to be GC'ed.
-  var keys = objectKeys(Writable.prototype);
-
+  const keys = objectKeys(Writable.prototype);
   for (var v = 0; v < keys.length; v++) {
-    var method = keys[v];
+    const method = keys[v];
     if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
   }
 }
-
 function Duplex(options) {
   if (!(this instanceof Duplex)) return new Duplex(options);
   Readable.call(this, options);
   Writable.call(this, options);
   this.allowHalfOpen = true;
-
   if (options) {
     if (options.readable === false) this.readable = false;
     if (options.writable === false) this.writable = false;
-
     if (options.allowHalfOpen === false) {
       this.allowHalfOpen = false;
       this.once('end', onend);
     }
   }
 }
-
 Object.defineProperty(Duplex.prototype, 'writableHighWaterMark', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     return this._writableState.highWaterMark;
   }
 });
@@ -29997,53 +29684,52 @@ Object.defineProperty(Duplex.prototype, 'writableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     return this._writableState.length;
   }
-}); // the no-half-open enforcer
+});
 
+// the no-half-open enforcer
 function onend() {
   // If the writable side ended, then we're ok.
-  if (this._writableState.ended) return; // no more data can be written.
-  // But allow more writes to happen in this tick.
+  if (this._writableState.ended) return;
 
+  // no more data can be written.
+  // But allow more writes to happen in this tick.
   process.nextTick(onEndNT, this);
 }
-
 function onEndNT(self) {
   self.end();
 }
-
 Object.defineProperty(Duplex.prototype, 'destroyed', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     if (this._readableState === undefined || this._writableState === undefined) {
       return false;
     }
-
     return this._readableState.destroyed && this._writableState.destroyed;
   },
-  set: function set(value) {
+  set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (this._readableState === undefined || this._writableState === undefined) {
       return;
-    } // backward compatibility, the user is explicitly
+    }
+
+    // backward compatibility, the user is explicitly
     // managing destroyed
-
-
     this._readableState.destroyed = value;
     this._writableState.destroyed = value;
   }
 });
 }).call(this)}).call(this,require('_process'))
 
-},{"./_stream_readable":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_writable.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_passthrough.js"][0].apply(exports,arguments)
-},{"./_stream_transform":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_transform.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
+},{"./_stream_readable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_writable.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_passthrough.js"][0].apply(exports,arguments)
+},{"./_stream_transform":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_transform.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -30065,49 +29751,40 @@ arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_mod
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 'use strict';
 
 module.exports = Readable;
-/*<replacement>*/
 
+/*<replacement>*/
 var Duplex;
 /*</replacement>*/
 
 Readable.ReadableState = ReadableState;
+
 /*<replacement>*/
-
-var EE = require('events').EventEmitter;
-
+const EE = require('events').EventEmitter;
 var EElistenerCount = function EElistenerCount(emitter, type) {
   return emitter.listeners(type).length;
 };
 /*</replacement>*/
 
 /*<replacement>*/
-
-
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-
-var Buffer = require('buffer').Buffer;
-
-var OurUint8Array = global.Uint8Array || function () {};
-
+const Buffer = require('buffer').Buffer;
+const OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
-
 function _isUint8Array(obj) {
   return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
 }
+
 /*<replacement>*/
-
-
-var debugUtil = require('util');
-
-var debug;
-
+const debugUtil = require('util');
+let debug;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
 } else {
@@ -30115,60 +29792,57 @@ if (debugUtil && debugUtil.debuglog) {
 }
 /*</replacement>*/
 
+const BufferList = require('./internal/streams/buffer_list');
+const destroyImpl = require('./internal/streams/destroy');
+const _require = require('./internal/streams/state'),
+  getHighWaterMark = _require.getHighWaterMark;
+const _require$codes = require('../errors').codes,
+  ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
+  ERR_STREAM_PUSH_AFTER_EOF = _require$codes.ERR_STREAM_PUSH_AFTER_EOF,
+  ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+  ERR_STREAM_UNSHIFT_AFTER_END_EVENT = _require$codes.ERR_STREAM_UNSHIFT_AFTER_END_EVENT;
 
-var BufferList = require('./internal/streams/buffer_list');
-
-var destroyImpl = require('./internal/streams/destroy');
-
-var _require = require('./internal/streams/state'),
-    getHighWaterMark = _require.getHighWaterMark;
-
-var _require$codes = require('../errors').codes,
-    ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
-    ERR_STREAM_PUSH_AFTER_EOF = _require$codes.ERR_STREAM_PUSH_AFTER_EOF,
-    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
-    ERR_STREAM_UNSHIFT_AFTER_END_EVENT = _require$codes.ERR_STREAM_UNSHIFT_AFTER_END_EVENT; // Lazy loaded to improve the startup performance.
-
-
-var StringDecoder;
-var createReadableStreamAsyncIterator;
-var from;
-
+// Lazy loaded to improve the startup performance.
+let StringDecoder;
+let createReadableStreamAsyncIterator;
+let from;
 require('inherits')(Readable, Stream);
-
-var errorOrDestroy = destroyImpl.errorOrDestroy;
-var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
-
+const errorOrDestroy = destroyImpl.errorOrDestroy;
+const kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
 function prependListener(emitter, event, fn) {
   // Sadly this is not cacheable as some libraries bundle their own
   // event emitter implementation with them.
-  if (typeof emitter.prependListener === 'function') return emitter.prependListener(event, fn); // This is a hack to make sure that our error handler is attached before any
+  if (typeof emitter.prependListener === 'function') return emitter.prependListener(event, fn);
+
+  // This is a hack to make sure that our error handler is attached before any
   // userland ones.  NEVER DO THIS. This is here only because this code needs
   // to continue to work with older versions of Node.js that do not include
   // the prependListener() method. The goal is to eventually remove this hack.
-
   if (!emitter._events || !emitter._events[event]) emitter.on(event, fn);else if (Array.isArray(emitter._events[event])) emitter._events[event].unshift(fn);else emitter._events[event] = [fn, emitter._events[event]];
 }
-
 function ReadableState(options, stream, isDuplex) {
   Duplex = Duplex || require('./_stream_duplex');
-  options = options || {}; // Duplex streams are both readable and writable, but share
+  options = options || {};
+
+  // Duplex streams are both readable and writable, but share
   // the same options object.
   // However, some cases require setting options to different
   // values for the readable and the writable sides of the duplex stream.
   // These options can be provided separately as readableXXX and writableXXX.
+  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex;
 
-  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex; // object stream flag. Used to make read(n) ignore n and to
+  // object stream flag. Used to make read(n) ignore n and to
   // make all the buffer merging and length checks go away
-
   this.objectMode = !!options.objectMode;
-  if (isDuplex) this.objectMode = this.objectMode || !!options.readableObjectMode; // the point at which it stops calling _read() to fill the buffer
-  // Note: 0 is a valid value, means "don't call _read preemptively ever"
+  if (isDuplex) this.objectMode = this.objectMode || !!options.readableObjectMode;
 
-  this.highWaterMark = getHighWaterMark(this, options, 'readableHighWaterMark', isDuplex); // A linked list is used to store data chunks instead of an array because the
+  // the point at which it stops calling _read() to fill the buffer
+  // Note: 0 is a valid value, means "don't call _read preemptively ever"
+  this.highWaterMark = getHighWaterMark(this, options, 'readableHighWaterMark', isDuplex);
+
+  // A linked list is used to store data chunks instead of an array because the
   // linked list can remove elements from the beginning faster than
   // array.shift()
-
   this.buffer = new BufferList();
   this.length = 0;
   this.pipes = null;
@@ -30176,141 +29850,136 @@ function ReadableState(options, stream, isDuplex) {
   this.flowing = null;
   this.ended = false;
   this.endEmitted = false;
-  this.reading = false; // a flag to be able to tell if the event 'readable'/'data' is emitted
+  this.reading = false;
+
+  // a flag to be able to tell if the event 'readable'/'data' is emitted
   // immediately, or on a later tick.  We set this to true at first, because
   // any actions that shouldn't happen until "later" should generally also
   // not happen before the first read call.
+  this.sync = true;
 
-  this.sync = true; // whenever we return null, then we set a flag to say
+  // whenever we return null, then we set a flag to say
   // that we're awaiting a 'readable' event emission.
-
   this.needReadable = false;
   this.emittedReadable = false;
   this.readableListening = false;
   this.resumeScheduled = false;
-  this.paused = true; // Should close be emitted on destroy. Defaults to true.
+  this.paused = true;
 
-  this.emitClose = options.emitClose !== false; // Should .destroy() be called after 'end' (and potentially 'finish')
+  // Should close be emitted on destroy. Defaults to true.
+  this.emitClose = options.emitClose !== false;
 
-  this.autoDestroy = !!options.autoDestroy; // has it been destroyed
+  // Should .destroy() be called after 'end' (and potentially 'finish')
+  this.autoDestroy = !!options.autoDestroy;
 
-  this.destroyed = false; // Crypto is kind of old and crusty.  Historically, its default string
+  // has it been destroyed
+  this.destroyed = false;
+
+  // Crypto is kind of old and crusty.  Historically, its default string
   // encoding is 'binary' so we have to make this configurable.
   // Everything else in the universe uses 'utf8', though.
+  this.defaultEncoding = options.defaultEncoding || 'utf8';
 
-  this.defaultEncoding = options.defaultEncoding || 'utf8'; // the number of writers that are awaiting a drain event in .pipe()s
+  // the number of writers that are awaiting a drain event in .pipe()s
+  this.awaitDrain = 0;
 
-  this.awaitDrain = 0; // if true, a maybeReadMore has been scheduled
-
+  // if true, a maybeReadMore has been scheduled
   this.readingMore = false;
   this.decoder = null;
   this.encoding = null;
-
   if (options.encoding) {
     if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
     this.decoder = new StringDecoder(options.encoding);
     this.encoding = options.encoding;
   }
 }
-
 function Readable(options) {
   Duplex = Duplex || require('./_stream_duplex');
-  if (!(this instanceof Readable)) return new Readable(options); // Checking for a Stream.Duplex instance is faster here instead of inside
+  if (!(this instanceof Readable)) return new Readable(options);
+
+  // Checking for a Stream.Duplex instance is faster here instead of inside
   // the ReadableState constructor, at least with V8 6.5
+  const isDuplex = this instanceof Duplex;
+  this._readableState = new ReadableState(options, this, isDuplex);
 
-  var isDuplex = this instanceof Duplex;
-  this._readableState = new ReadableState(options, this, isDuplex); // legacy
-
+  // legacy
   this.readable = true;
-
   if (options) {
     if (typeof options.read === 'function') this._read = options.read;
     if (typeof options.destroy === 'function') this._destroy = options.destroy;
   }
-
   Stream.call(this);
 }
-
 Object.defineProperty(Readable.prototype, 'destroyed', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     if (this._readableState === undefined) {
       return false;
     }
-
     return this._readableState.destroyed;
   },
-  set: function set(value) {
+  set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (!this._readableState) {
       return;
-    } // backward compatibility, the user is explicitly
+    }
+
+    // backward compatibility, the user is explicitly
     // managing destroyed
-
-
     this._readableState.destroyed = value;
   }
 });
 Readable.prototype.destroy = destroyImpl.destroy;
 Readable.prototype._undestroy = destroyImpl.undestroy;
-
 Readable.prototype._destroy = function (err, cb) {
   cb(err);
-}; // Manually shove something into the read() buffer.
+};
+
+// Manually shove something into the read() buffer.
 // This returns true if the highWaterMark has not been hit yet,
 // similar to how Writable.write() returns true if you should
 // write() some more.
-
-
 Readable.prototype.push = function (chunk, encoding) {
   var state = this._readableState;
   var skipChunkCheck;
-
   if (!state.objectMode) {
     if (typeof chunk === 'string') {
       encoding = encoding || state.defaultEncoding;
-
       if (encoding !== state.encoding) {
         chunk = Buffer.from(chunk, encoding);
         encoding = '';
       }
-
       skipChunkCheck = true;
     }
   } else {
     skipChunkCheck = true;
   }
-
   return readableAddChunk(this, chunk, encoding, false, skipChunkCheck);
-}; // Unshift should *always* be something directly out of read()
+};
 
-
+// Unshift should *always* be something directly out of read()
 Readable.prototype.unshift = function (chunk) {
   return readableAddChunk(this, chunk, null, true, false);
 };
-
 function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
   debug('readableAddChunk', chunk);
   var state = stream._readableState;
-
   if (chunk === null) {
     state.reading = false;
     onEofChunk(stream, state);
   } else {
     var er;
     if (!skipChunkCheck) er = chunkInvalid(state, chunk);
-
     if (er) {
       errorOrDestroy(stream, er);
     } else if (state.objectMode || chunk && chunk.length > 0) {
       if (typeof chunk !== 'string' && !state.objectMode && Object.getPrototypeOf(chunk) !== Buffer.prototype) {
         chunk = _uint8ArrayToBuffer(chunk);
       }
-
       if (addToFront) {
         if (state.endEmitted) errorOrDestroy(stream, new ERR_STREAM_UNSHIFT_AFTER_END_EVENT());else addChunk(stream, state, chunk, true);
       } else if (state.ended) {
@@ -30319,7 +29988,6 @@ function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
         return false;
       } else {
         state.reading = false;
-
         if (state.decoder && !encoding) {
           chunk = state.decoder.write(chunk);
           if (state.objectMode || chunk.length !== 0) addChunk(stream, state, chunk, false);else maybeReadMore(stream, state);
@@ -30331,14 +29999,13 @@ function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
       state.reading = false;
       maybeReadMore(stream, state);
     }
-  } // We can push more data if we are below the highWaterMark.
+  }
+
+  // We can push more data if we are below the highWaterMark.
   // Also, if we have no data yet, we can stand some more bytes.
   // This is to work around cases where hwm=0, such as the repl.
-
-
   return !state.ended && (state.length < state.highWaterMark || state.length === 0);
 }
-
 function addChunk(stream, state, chunk, addToFront) {
   if (state.flowing && state.length === 0 && !state.sync) {
     state.awaitDrain = 0;
@@ -30349,50 +30016,42 @@ function addChunk(stream, state, chunk, addToFront) {
     if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
     if (state.needReadable) emitReadable(stream);
   }
-
   maybeReadMore(stream, state);
 }
-
 function chunkInvalid(state, chunk) {
   var er;
-
   if (!_isUint8Array(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
     er = new ERR_INVALID_ARG_TYPE('chunk', ['string', 'Buffer', 'Uint8Array'], chunk);
   }
-
   return er;
 }
-
 Readable.prototype.isPaused = function () {
   return this._readableState.flowing === false;
-}; // backwards compatibility.
+};
 
-
+// backwards compatibility.
 Readable.prototype.setEncoding = function (enc) {
   if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
-  var decoder = new StringDecoder(enc);
-  this._readableState.decoder = decoder; // If setEncoding(null), decoder.encoding equals utf8
+  const decoder = new StringDecoder(enc);
+  this._readableState.decoder = decoder;
+  // If setEncoding(null), decoder.encoding equals utf8
+  this._readableState.encoding = this._readableState.decoder.encoding;
 
-  this._readableState.encoding = this._readableState.decoder.encoding; // Iterate over current buffer to convert already stored Buffers:
-
-  var p = this._readableState.buffer.head;
-  var content = '';
-
+  // Iterate over current buffer to convert already stored Buffers:
+  let p = this._readableState.buffer.head;
+  let content = '';
   while (p !== null) {
     content += decoder.write(p.data);
     p = p.next;
   }
-
   this._readableState.buffer.clear();
-
   if (content !== '') this._readableState.buffer.push(content);
   this._readableState.length = content.length;
   return this;
-}; // Don't raise the hwm > 1GB
+};
 
-
-var MAX_HWM = 0x40000000;
-
+// Don't raise the hwm > 1GB
+const MAX_HWM = 0x40000000;
 function computeNewHighWaterMark(n) {
   if (n >= MAX_HWM) {
     // TODO(ronag): Throw ERR_VALUE_OUT_OF_RANGE.
@@ -30408,55 +30067,54 @@ function computeNewHighWaterMark(n) {
     n |= n >>> 16;
     n++;
   }
-
   return n;
-} // This function is designed to be inlinable, so please take care when making
+}
+
+// This function is designed to be inlinable, so please take care when making
 // changes to the function body.
-
-
 function howMuchToRead(n, state) {
   if (n <= 0 || state.length === 0 && state.ended) return 0;
   if (state.objectMode) return 1;
-
   if (n !== n) {
     // Only flow one buffer at a time
     if (state.flowing && state.length) return state.buffer.head.data.length;else return state.length;
-  } // If we're asking for more than the current hwm, then raise the hwm.
-
-
+  }
+  // If we're asking for more than the current hwm, then raise the hwm.
   if (n > state.highWaterMark) state.highWaterMark = computeNewHighWaterMark(n);
-  if (n <= state.length) return n; // Don't have enough
-
+  if (n <= state.length) return n;
+  // Don't have enough
   if (!state.ended) {
     state.needReadable = true;
     return 0;
   }
-
   return state.length;
-} // you can override either this method, or the async _read(n) below.
+}
 
-
+// you can override either this method, or the async _read(n) below.
 Readable.prototype.read = function (n) {
   debug('read', n);
   n = parseInt(n, 10);
   var state = this._readableState;
   var nOrig = n;
-  if (n !== 0) state.emittedReadable = false; // if we're doing read(0) to trigger a readable event, but we
+  if (n !== 0) state.emittedReadable = false;
+
+  // if we're doing read(0) to trigger a readable event, but we
   // already have a bunch of data in the buffer, then just trigger
   // the 'readable' event and move on.
-
   if (n === 0 && state.needReadable && ((state.highWaterMark !== 0 ? state.length >= state.highWaterMark : state.length > 0) || state.ended)) {
     debug('read: emitReadable', state.length, state.ended);
     if (state.length === 0 && state.ended) endReadable(this);else emitReadable(this);
     return null;
   }
+  n = howMuchToRead(n, state);
 
-  n = howMuchToRead(n, state); // if we've ended, and we're now clear, then finish it up.
-
+  // if we've ended, and we're now clear, then finish it up.
   if (n === 0 && state.ended) {
     if (state.length === 0) endReadable(this);
     return null;
-  } // All the actual chunk generation logic needs to be
+  }
+
+  // All the actual chunk generation logic needs to be
   // *below* the call to _read.  The reason is that in certain
   // synthetic stream cases, such as passthrough streams, _read
   // may be a completely synchronous operation which may change
@@ -30477,40 +30135,37 @@ Readable.prototype.read = function (n) {
   // 'readable' etc.
   //
   // 3. Actually pull the requested chunks out of the buffer and return.
+
   // if we need a readable event, then we need to do some reading.
-
-
   var doRead = state.needReadable;
-  debug('need readable', doRead); // if we currently have less than the highWaterMark, then also read some
+  debug('need readable', doRead);
 
+  // if we currently have less than the highWaterMark, then also read some
   if (state.length === 0 || state.length - n < state.highWaterMark) {
     doRead = true;
     debug('length less than watermark', doRead);
-  } // however, if we've ended, then there's no point, and if we're already
+  }
+
+  // however, if we've ended, then there's no point, and if we're already
   // reading, then it's unnecessary.
-
-
   if (state.ended || state.reading) {
     doRead = false;
     debug('reading or ended', doRead);
   } else if (doRead) {
     debug('do read');
     state.reading = true;
-    state.sync = true; // if the length is currently zero, then we *need* a readable event.
-
-    if (state.length === 0) state.needReadable = true; // call internal read method
-
+    state.sync = true;
+    // if the length is currently zero, then we *need* a readable event.
+    if (state.length === 0) state.needReadable = true;
+    // call internal read method
     this._read(state.highWaterMark);
-
-    state.sync = false; // If _read pushed data synchronously, then `reading` will be false,
+    state.sync = false;
+    // If _read pushed data synchronously, then `reading` will be false,
     // and we need to re-evaluate how much data we can return to the user.
-
     if (!state.reading) n = howMuchToRead(nOrig, state);
   }
-
   var ret;
   if (n > 0) ret = fromList(n, state);else ret = null;
-
   if (ret === null) {
     state.needReadable = state.length <= state.highWaterMark;
     n = 0;
@@ -30518,34 +30173,28 @@ Readable.prototype.read = function (n) {
     state.length -= n;
     state.awaitDrain = 0;
   }
-
   if (state.length === 0) {
     // If we have nothing in the buffer, then we want to know
     // as soon as we *do* get something into the buffer.
-    if (!state.ended) state.needReadable = true; // If we tried to read() past the EOF, then emit end on the next tick.
+    if (!state.ended) state.needReadable = true;
 
+    // If we tried to read() past the EOF, then emit end on the next tick.
     if (nOrig !== n && state.ended) endReadable(this);
   }
-
   if (ret !== null) this.emit('data', ret);
   return ret;
 };
-
 function onEofChunk(stream, state) {
   debug('onEofChunk');
   if (state.ended) return;
-
   if (state.decoder) {
     var chunk = state.decoder.end();
-
     if (chunk && chunk.length) {
       state.buffer.push(chunk);
       state.length += state.objectMode ? 1 : chunk.length;
     }
   }
-
   state.ended = true;
-
   if (state.sync) {
     // if we are sync, wait until next tick to emit the data.
     // Otherwise we risk emitting data in the flow()
@@ -30554,61 +30203,56 @@ function onEofChunk(stream, state) {
   } else {
     // emit 'readable' now to make sure it gets picked up.
     state.needReadable = false;
-
     if (!state.emittedReadable) {
       state.emittedReadable = true;
       emitReadable_(stream);
     }
   }
-} // Don't emit readable right away in sync mode, because this can trigger
+}
+
+// Don't emit readable right away in sync mode, because this can trigger
 // another read() call => stack overflow.  This way, it might trigger
 // a nextTick recursion warning, but that's not so bad.
-
-
 function emitReadable(stream) {
   var state = stream._readableState;
   debug('emitReadable', state.needReadable, state.emittedReadable);
   state.needReadable = false;
-
   if (!state.emittedReadable) {
     debug('emitReadable', state.flowing);
     state.emittedReadable = true;
     process.nextTick(emitReadable_, stream);
   }
 }
-
 function emitReadable_(stream) {
   var state = stream._readableState;
   debug('emitReadable_', state.destroyed, state.length, state.ended);
-
   if (!state.destroyed && (state.length || state.ended)) {
     stream.emit('readable');
     state.emittedReadable = false;
-  } // The stream needs another readable event if
+  }
+
+  // The stream needs another readable event if
   // 1. It is not flowing, as the flow mechanism will take
   //    care of it.
   // 2. It is not ended.
   // 3. It is below the highWaterMark, so we can schedule
   //    another readable later.
-
-
   state.needReadable = !state.flowing && !state.ended && state.length <= state.highWaterMark;
   flow(stream);
-} // at this point, the user has presumably seen the 'readable' event,
+}
+
+// at this point, the user has presumably seen the 'readable' event,
 // and called read() to consume some data.  that may have triggered
 // in turn another _read(n) call, in which case reading = true if
 // it's in progress.
 // However, if we're not ended, or reading, and the length < hwm,
 // then go ahead and try to read some more preemptively.
-
-
 function maybeReadMore(stream, state) {
   if (!state.readingMore) {
     state.readingMore = true;
     process.nextTick(maybeReadMore_, stream, state);
   }
 }
-
 function maybeReadMore_(stream, state) {
   // Attempt to read more data if we should.
   //
@@ -30634,52 +30278,45 @@ function maybeReadMore_(stream, state) {
   //   read()s. The execution ends in this method again after the _read() ends
   //   up calling push() with more data.
   while (!state.reading && !state.ended && (state.length < state.highWaterMark || state.flowing && state.length === 0)) {
-    var len = state.length;
+    const len = state.length;
     debug('maybeReadMore read 0');
     stream.read(0);
-    if (len === state.length) // didn't get any data, stop spinning.
+    if (len === state.length)
+      // didn't get any data, stop spinning.
       break;
   }
-
   state.readingMore = false;
-} // abstract method.  to be overridden in specific implementation classes.
+}
+
+// abstract method.  to be overridden in specific implementation classes.
 // call cb(er, data) where data is <= n in length.
 // for virtual (non-string, non-buffer) streams, "length" is somewhat
 // arbitrary, and perhaps not very meaningful.
-
-
 Readable.prototype._read = function (n) {
   errorOrDestroy(this, new ERR_METHOD_NOT_IMPLEMENTED('_read()'));
 };
-
 Readable.prototype.pipe = function (dest, pipeOpts) {
   var src = this;
   var state = this._readableState;
-
   switch (state.pipesCount) {
     case 0:
       state.pipes = dest;
       break;
-
     case 1:
       state.pipes = [state.pipes, dest];
       break;
-
     default:
       state.pipes.push(dest);
       break;
   }
-
   state.pipesCount += 1;
   debug('pipe count=%d opts=%j', state.pipesCount, pipeOpts);
   var doEnd = (!pipeOpts || pipeOpts.end !== false) && dest !== process.stdout && dest !== process.stderr;
   var endFn = doEnd ? onend : unpipe;
   if (state.endEmitted) process.nextTick(endFn);else src.once('end', endFn);
   dest.on('unpipe', onunpipe);
-
   function onunpipe(readable, unpipeInfo) {
     debug('onunpipe');
-
     if (readable === src) {
       if (unpipeInfo && unpipeInfo.hasUnpiped === false) {
         unpipeInfo.hasUnpiped = true;
@@ -30687,23 +30324,21 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
       }
     }
   }
-
   function onend() {
     debug('onend');
     dest.end();
-  } // when the dest drains, it reduces the awaitDrain counter
+  }
+
+  // when the dest drains, it reduces the awaitDrain counter
   // on the source.  This would be more elegant with a .once()
   // handler in flow(), but adding and removing repeatedly is
   // too slow.
-
-
   var ondrain = pipeOnDrain(src);
   dest.on('drain', ondrain);
   var cleanedUp = false;
-
   function cleanup() {
-    debug('cleanup'); // cleanup event handlers once the pipe is broken
-
+    debug('cleanup');
+    // cleanup event handlers once the pipe is broken
     dest.removeListener('close', onclose);
     dest.removeListener('finish', onfinish);
     dest.removeListener('drain', ondrain);
@@ -30712,22 +30347,20 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
     src.removeListener('end', onend);
     src.removeListener('end', unpipe);
     src.removeListener('data', ondata);
-    cleanedUp = true; // if the reader is waiting for a drain event from this
+    cleanedUp = true;
+
+    // if the reader is waiting for a drain event from this
     // specific writer, then it would cause it to never start
     // flowing again.
     // So, if this is awaiting a drain, then we just call it now.
     // If we don't know, then assume that we are waiting for one.
-
     if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain)) ondrain();
   }
-
   src.on('data', ondata);
-
   function ondata(chunk) {
     debug('ondata');
     var ret = dest.write(chunk);
     debug('dest.write', ret);
-
     if (ret === false) {
       // If the user unpiped during `dest.write()`, it is possible
       // to get stuck in a permanently paused state if that write
@@ -30737,87 +30370,84 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
         debug('false write response, pause', state.awaitDrain);
         state.awaitDrain++;
       }
-
       src.pause();
     }
-  } // if the dest has an error, then stop piping into it.
+  }
+
+  // if the dest has an error, then stop piping into it.
   // however, don't suppress the throwing behavior for this.
-
-
   function onerror(er) {
     debug('onerror', er);
     unpipe();
     dest.removeListener('error', onerror);
     if (EElistenerCount(dest, 'error') === 0) errorOrDestroy(dest, er);
-  } // Make sure our error handler is attached before userland ones.
+  }
 
+  // Make sure our error handler is attached before userland ones.
+  prependListener(dest, 'error', onerror);
 
-  prependListener(dest, 'error', onerror); // Both close and finish should trigger unpipe, but only once.
-
+  // Both close and finish should trigger unpipe, but only once.
   function onclose() {
     dest.removeListener('finish', onfinish);
     unpipe();
   }
-
   dest.once('close', onclose);
-
   function onfinish() {
     debug('onfinish');
     dest.removeListener('close', onclose);
     unpipe();
   }
-
   dest.once('finish', onfinish);
-
   function unpipe() {
     debug('unpipe');
     src.unpipe(dest);
-  } // tell the dest that it's being piped to
+  }
 
+  // tell the dest that it's being piped to
+  dest.emit('pipe', src);
 
-  dest.emit('pipe', src); // start the flow if it hasn't been started already.
-
+  // start the flow if it hasn't been started already.
   if (!state.flowing) {
     debug('pipe resume');
     src.resume();
   }
-
   return dest;
 };
-
 function pipeOnDrain(src) {
   return function pipeOnDrainFunctionResult() {
     var state = src._readableState;
     debug('pipeOnDrain', state.awaitDrain);
     if (state.awaitDrain) state.awaitDrain--;
-
     if (state.awaitDrain === 0 && EElistenerCount(src, 'data')) {
       state.flowing = true;
       flow(src);
     }
   };
 }
-
 Readable.prototype.unpipe = function (dest) {
   var state = this._readableState;
   var unpipeInfo = {
     hasUnpiped: false
-  }; // if we're not piping anywhere, then do nothing.
+  };
 
-  if (state.pipesCount === 0) return this; // just one destination.  most common case.
+  // if we're not piping anywhere, then do nothing.
+  if (state.pipesCount === 0) return this;
 
+  // just one destination.  most common case.
   if (state.pipesCount === 1) {
     // passed in one, but it's not the right one.
     if (dest && dest !== state.pipes) return this;
-    if (!dest) dest = state.pipes; // got a match.
+    if (!dest) dest = state.pipes;
 
+    // got a match.
     state.pipes = null;
     state.pipesCount = 0;
     state.flowing = false;
     if (dest) dest.emit('unpipe', this, unpipeInfo);
     return this;
-  } // slow case. multiple pipe destinations.
+  }
 
+  // slow case. multiple pipe destinations.
 
   if (!dest) {
     // remove all.
@@ -30826,17 +30456,13 @@ Readable.prototype.unpipe = function (dest) {
     state.pipes = null;
     state.pipesCount = 0;
     state.flowing = false;
-
-    for (var i = 0; i < len; i++) {
-      dests[i].emit('unpipe', this, {
-        hasUnpiped: false
-      });
-    }
-
+    for (var i = 0; i < len; i++) dests[i].emit('unpipe', this, {
+      hasUnpiped: false
+    });
     return this;
-  } // try to find the right one.
+  }
 
-
+  // try to find the right one.
   var index = indexOf(state.pipes, dest);
   if (index === -1) return this;
   state.pipes.splice(index, 1);
@@ -30844,19 +30470,19 @@ Readable.prototype.unpipe = function (dest) {
   if (state.pipesCount === 1) state.pipes = state.pipes[0];
   dest.emit('unpipe', this, unpipeInfo);
   return this;
-}; // set up data events if they are asked for
+};
+
+// set up data events if they are asked for
 // Ensure readable listeners eventually get something
-
-
 Readable.prototype.on = function (ev, fn) {
-  var res = Stream.prototype.on.call(this, ev, fn);
-  var state = this._readableState;
-
+  const res = Stream.prototype.on.call(this, ev, fn);
+  const state = this._readableState;
   if (ev === 'data') {
     // update readableListening so that resume() may be a no-op
     // a few lines down. This is needed to support once('readable').
-    state.readableListening = this.listenerCount('readable') > 0; // Try start flowing on next tick if stream isn't explicitly paused
+    state.readableListening = this.listenerCount('readable') > 0;
 
+    // Try start flowing on next tick if stream isn't explicitly paused
     if (state.flowing !== false) this.resume();
   } else if (ev === 'readable') {
     if (!state.endEmitted && !state.readableListening) {
@@ -30864,7 +30490,6 @@ Readable.prototype.on = function (ev, fn) {
       state.flowing = false;
       state.emittedReadable = false;
       debug('on readable', state.length, state.reading);
-
       if (state.length) {
         emitReadable(this);
       } else if (!state.reading) {
@@ -30872,15 +30497,11 @@ Readable.prototype.on = function (ev, fn) {
       }
     }
   }
-
   return res;
 };
-
 Readable.prototype.addListener = Readable.prototype.on;
-
 Readable.prototype.removeListener = function (ev, fn) {
-  var res = Stream.prototype.removeListener.call(this, ev, fn);
-
+  const res = Stream.prototype.removeListener.call(this, ev, fn);
   if (ev === 'readable') {
     // We need to check if there is someone still listening to
     // readable and reset the state. However this needs to happen
@@ -30890,13 +30511,10 @@ Readable.prototype.removeListener = function (ev, fn) {
     // effect.
     process.nextTick(updateReadableListening, this);
   }
-
   return res;
 };
-
 Readable.prototype.removeAllListeners = function (ev) {
-  var res = Stream.prototype.removeAllListeners.apply(this, arguments);
-
+  const res = Stream.prototype.removeAllListeners.apply(this, arguments);
   if (ev === 'readable' || ev === undefined) {
     // We need to check if there is someone still listening to
     // readable and reset the state. However this needs to happen
@@ -30906,121 +30524,102 @@ Readable.prototype.removeAllListeners = function (ev) {
     // effect.
     process.nextTick(updateReadableListening, this);
   }
-
   return res;
 };
-
 function updateReadableListening(self) {
-  var state = self._readableState;
+  const state = self._readableState;
   state.readableListening = self.listenerCount('readable') > 0;
-
   if (state.resumeScheduled && !state.paused) {
     // flowing needs to be set to true now, otherwise
     // the upcoming resume will not flow.
-    state.flowing = true; // crude way to check if we should resume
+    state.flowing = true;
+
+    // crude way to check if we should resume
   } else if (self.listenerCount('data') > 0) {
     self.resume();
   }
 }
-
 function nReadingNextTick(self) {
   debug('readable nexttick read 0');
   self.read(0);
-} // pause() and resume() are remnants of the legacy readable stream API
+}
+
+// pause() and resume() are remnants of the legacy readable stream API
 // If the user uses them, then switch into old mode.
-
-
 Readable.prototype.resume = function () {
   var state = this._readableState;
-
   if (!state.flowing) {
-    debug('resume'); // we flow only if there is no one listening
+    debug('resume');
+    // we flow only if there is no one listening
     // for readable, but we still have to call
     // resume()
-
     state.flowing = !state.readableListening;
     resume(this, state);
   }
-
   state.paused = false;
   return this;
 };
-
 function resume(stream, state) {
   if (!state.resumeScheduled) {
     state.resumeScheduled = true;
     process.nextTick(resume_, stream, state);
   }
 }
-
 function resume_(stream, state) {
   debug('resume', state.reading);
-
   if (!state.reading) {
     stream.read(0);
   }
-
   state.resumeScheduled = false;
   stream.emit('resume');
   flow(stream);
   if (state.flowing && !state.reading) stream.read(0);
 }
-
 Readable.prototype.pause = function () {
   debug('call pause flowing=%j', this._readableState.flowing);
-
   if (this._readableState.flowing !== false) {
     debug('pause');
     this._readableState.flowing = false;
     this.emit('pause');
   }
-
   this._readableState.paused = true;
   return this;
 };
-
 function flow(stream) {
-  var state = stream._readableState;
+  const state = stream._readableState;
   debug('flow', state.flowing);
+  while (state.flowing && stream.read() !== null);
+}
 
-  while (state.flowing && stream.read() !== null) {
-    ;
-  }
-} // wrap an old-style stream as the async data source.
+// wrap an old-style stream as the async data source.
 // This is *not* part of the readable stream interface.
 // It is an ugly unfortunate mess of history.
-
-
 Readable.prototype.wrap = function (stream) {
-  var _this = this;
-
   var state = this._readableState;
   var paused = false;
-  stream.on('end', function () {
+  stream.on('end', () => {
     debug('wrapped end');
-
     if (state.decoder && !state.ended) {
       var chunk = state.decoder.end();
-      if (chunk && chunk.length) _this.push(chunk);
+      if (chunk && chunk.length) this.push(chunk);
     }
-
-    _this.push(null);
+    this.push(null);
   });
-  stream.on('data', function (chunk) {
+  stream.on('data', chunk => {
     debug('wrapped data');
-    if (state.decoder) chunk = state.decoder.write(chunk); // don't skip over falsy values in objectMode
+    if (state.decoder) chunk = state.decoder.write(chunk);
 
+    // don't skip over falsy values in objectMode
     if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
-
-    var ret = _this.push(chunk);
-
+    var ret = this.push(chunk);
     if (!ret) {
       paused = true;
       stream.pause();
     }
-  }); // proxy all the other methods.
-  // important when wrapping filters and duplexes.
+  });
 
+  // proxy all the other methods.
+  // important when wrapping filters and duplexes.
   for (var i in stream) {
     if (this[i] === undefined && typeof stream[i] === 'function') {
       this[i] = function methodWrap(method) {
@@ -31029,37 +30628,32 @@ Readable.prototype.wrap = function (stream) {
         };
       }(i);
     }
-  } // proxy certain important events.
+  }
 
-
+  // proxy certain important events.
   for (var n = 0; n < kProxyEvents.length; n++) {
     stream.on(kProxyEvents[n], this.emit.bind(this, kProxyEvents[n]));
-  } // when we try to consume some more bytes, simply unpause the
+  }
+
+  // when we try to consume some more bytes, simply unpause the
   // underlying stream.
-
-
-  this._read = function (n) {
+  this._read = n => {
     debug('wrapped _read', n);
-
     if (paused) {
       paused = false;
       stream.resume();
     }
   };
-
   return this;
 };
-
 if (typeof Symbol === 'function') {
   Readable.prototype[Symbol.asyncIterator] = function () {
     if (createReadableStreamAsyncIterator === undefined) {
       createReadableStreamAsyncIterator = require('./internal/streams/async_iterator');
     }
-
     return createReadableStreamAsyncIterator(this);
   };
 }
-
 Object.defineProperty(Readable.prototype, 'readableHighWaterMark', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
@@ -31091,22 +30685,24 @@ Object.defineProperty(Readable.prototype, 'readableFlowing', {
       this._readableState.flowing = state;
     }
   }
-}); // exposed for testing purposes only.
+});
 
+// exposed for testing purposes only.
 Readable._fromList = fromList;
 Object.defineProperty(Readable.prototype, 'readableLength', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     return this._readableState.length;
   }
-}); // Pluck off n bytes from an array of buffers.
+});
+
+// Pluck off n bytes from an array of buffers.
 // Length is the combined lengths of all the buffers in the list.
 // This function is designed to be inlinable, so please take care when making
 // changes to the function body.
-
 function fromList(n, state) {
   // nothing buffered
   if (state.length === 0) return null;
@@ -31121,59 +30717,51 @@ function fromList(n, state) {
   }
   return ret;
 }
-
 function endReadable(stream) {
   var state = stream._readableState;
   debug('endReadable', state.endEmitted);
-
   if (!state.endEmitted) {
     state.ended = true;
     process.nextTick(endReadableNT, state, stream);
   }
 }
-
 function endReadableNT(state, stream) {
-  debug('endReadableNT', state.endEmitted, state.length); // Check that we didn't get one last unshift.
+  debug('endReadableNT', state.endEmitted, state.length);
 
+  // Check that we didn't get one last unshift.
   if (!state.endEmitted && state.length === 0) {
     state.endEmitted = true;
     stream.readable = false;
     stream.emit('end');
-
     if (state.autoDestroy) {
       // In case of duplex streams we need a way to detect
       // if the writable side is ready for autoDestroy as well
-      var wState = stream._writableState;
-
+      const wState = stream._writableState;
       if (!wState || wState.autoDestroy && wState.finished) {
         stream.destroy();
       }
     }
   }
 }
-
 if (typeof Symbol === 'function') {
   Readable.from = function (iterable, opts) {
     if (from === undefined) {
       from = require('./internal/streams/from');
     }
-
     return from(Readable, iterable, opts);
   };
 }
-
 function indexOf(xs, x) {
   for (var i = 0, l = xs.length; i < l; i++) {
     if (xs[i] === x) return i;
   }
-
   return -1;
 }
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/async_iterator":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/async_iterator.js","./internal/streams/buffer_list":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/buffer_list.js","./internal/streams/destroy":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/from":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/from-browser.js","./internal/streams/state":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer","events":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/events/events.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","string_decoder/":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js"][0].apply(exports,arguments)
-},{"../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
+},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/async_iterator":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/async_iterator.js","./internal/streams/buffer_list":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/buffer_list.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/from":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/from-browser.js","./internal/streams/state":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer","events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","string_decoder/":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js"][0].apply(exports,arguments)
+},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -31195,185 +30783,188 @@ arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_mod
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
 // the drain event emission and buffering.
+
 'use strict';
 
 module.exports = Writable;
-/* <replacement> */
 
+/* <replacement> */
 function WriteReq(chunk, encoding, cb) {
   this.chunk = chunk;
   this.encoding = encoding;
   this.callback = cb;
   this.next = null;
-} // It seems a linked list but it is not
+}
+
+// It seems a linked list but it is not
 // there will be only 2 of these for each stream
-
-
 function CorkedRequest(state) {
-  var _this = this;
-
   this.next = null;
   this.entry = null;
-
-  this.finish = function () {
-    onCorkedFinish(_this, state);
+  this.finish = () => {
+    onCorkedFinish(this, state);
   };
 }
 /* </replacement> */
 
 /*<replacement>*/
-
-
 var Duplex;
 /*</replacement>*/
 
 Writable.WritableState = WritableState;
-/*<replacement>*/
 
-var internalUtil = {
+/*<replacement>*/
+const internalUtil = {
   deprecate: require('util-deprecate')
 };
 /*</replacement>*/
 
 /*<replacement>*/
-
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-
-var Buffer = require('buffer').Buffer;
-
-var OurUint8Array = global.Uint8Array || function () {};
-
+const Buffer = require('buffer').Buffer;
+const OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
-
 function _isUint8Array(obj) {
   return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
 }
-
-var destroyImpl = require('./internal/streams/destroy');
-
-var _require = require('./internal/streams/state'),
-    getHighWaterMark = _require.getHighWaterMark;
-
-var _require$codes = require('../errors').codes,
-    ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
-    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
-    ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
-    ERR_STREAM_CANNOT_PIPE = _require$codes.ERR_STREAM_CANNOT_PIPE,
-    ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED,
-    ERR_STREAM_NULL_VALUES = _require$codes.ERR_STREAM_NULL_VALUES,
-    ERR_STREAM_WRITE_AFTER_END = _require$codes.ERR_STREAM_WRITE_AFTER_END,
-    ERR_UNKNOWN_ENCODING = _require$codes.ERR_UNKNOWN_ENCODING;
-
-var errorOrDestroy = destroyImpl.errorOrDestroy;
-
+const destroyImpl = require('./internal/streams/destroy');
+const _require = require('./internal/streams/state'),
+  getHighWaterMark = _require.getHighWaterMark;
+const _require$codes = require('../errors').codes,
+  ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
+  ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+  ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
+  ERR_STREAM_CANNOT_PIPE = _require$codes.ERR_STREAM_CANNOT_PIPE,
+  ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED,
+  ERR_STREAM_NULL_VALUES = _require$codes.ERR_STREAM_NULL_VALUES,
+  ERR_STREAM_WRITE_AFTER_END = _require$codes.ERR_STREAM_WRITE_AFTER_END,
+  ERR_UNKNOWN_ENCODING = _require$codes.ERR_UNKNOWN_ENCODING;
+const errorOrDestroy = destroyImpl.errorOrDestroy;
 require('inherits')(Writable, Stream);
-
 function nop() {}
-
 function WritableState(options, stream, isDuplex) {
   Duplex = Duplex || require('./_stream_duplex');
-  options = options || {}; // Duplex streams are both readable and writable, but share
+  options = options || {};
+
+  // Duplex streams are both readable and writable, but share
   // the same options object.
   // However, some cases require setting options to different
   // values for the readable and the writable sides of the duplex stream,
   // e.g. options.readableObjectMode vs. options.writableObjectMode, etc.
+  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex;
 
-  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex; // object stream flag to indicate whether or not this stream
+  // object stream flag to indicate whether or not this stream
   // contains buffers or objects.
-
   this.objectMode = !!options.objectMode;
-  if (isDuplex) this.objectMode = this.objectMode || !!options.writableObjectMode; // the point at which write() starts returning false
+  if (isDuplex) this.objectMode = this.objectMode || !!options.writableObjectMode;
+
+  // the point at which write() starts returning false
   // Note: 0 is a valid value, means that we always return false if
   // the entire buffer is not flushed immediately on write()
+  this.highWaterMark = getHighWaterMark(this, options, 'writableHighWaterMark', isDuplex);
 
-  this.highWaterMark = getHighWaterMark(this, options, 'writableHighWaterMark', isDuplex); // if _final has been called
+  // if _final has been called
+  this.finalCalled = false;
 
-  this.finalCalled = false; // drain event flag.
+  // drain event flag.
+  this.needDrain = false;
+  // at the start of calling end()
+  this.ending = false;
+  // when end() has been called, and returned
+  this.ended = false;
+  // when 'finish' is emitted
+  this.finished = false;
 
-  this.needDrain = false; // at the start of calling end()
+  // has it been destroyed
+  this.destroyed = false;
 
-  this.ending = false; // when end() has been called, and returned
-
-  this.ended = false; // when 'finish' is emitted
-
-  this.finished = false; // has it been destroyed
-
-  this.destroyed = false; // should we decode strings into buffers before passing to _write?
+  // should we decode strings into buffers before passing to _write?
   // this is here so that some node-core streams can optimize string
   // handling at a lower level.
-
   var noDecode = options.decodeStrings === false;
-  this.decodeStrings = !noDecode; // Crypto is kind of old and crusty.  Historically, its default string
+  this.decodeStrings = !noDecode;
+
+  // Crypto is kind of old and crusty.  Historically, its default string
   // encoding is 'binary' so we have to make this configurable.
   // Everything else in the universe uses 'utf8', though.
+  this.defaultEncoding = options.defaultEncoding || 'utf8';
 
-  this.defaultEncoding = options.defaultEncoding || 'utf8'; // not an actual buffer we keep track of, but a measurement
+  // not an actual buffer we keep track of, but a measurement
   // of how much we're waiting to get pushed to some underlying
   // socket or file.
+  this.length = 0;
 
-  this.length = 0; // a flag to see when we're in the middle of a write.
+  // a flag to see when we're in the middle of a write.
+  this.writing = false;
 
-  this.writing = false; // when true all writes will be buffered until .uncork() call
+  // when true all writes will be buffered until .uncork() call
+  this.corked = 0;
 
-  this.corked = 0; // a flag to be able to tell if the onwrite cb is called immediately,
+  // a flag to be able to tell if the onwrite cb is called immediately,
   // or on a later tick.  We set this to true at first, because any
   // actions that shouldn't happen until "later" should generally also
   // not happen before the first write call.
+  this.sync = true;
 
-  this.sync = true; // a flag to know if we're processing previously buffered items, which
+  // a flag to know if we're processing previously buffered items, which
   // may call the _write() callback in the same tick, so that we don't
   // end up in an overlapped onwrite situation.
+  this.bufferProcessing = false;
 
-  this.bufferProcessing = false; // the callback that's passed to _write(chunk,cb)
-
+  // the callback that's passed to _write(chunk,cb)
   this.onwrite = function (er) {
     onwrite(stream, er);
-  }; // the callback that the user supplies to write(chunk,encoding,cb)
+  };
 
+  // the callback that the user supplies to write(chunk,encoding,cb)
+  this.writecb = null;
 
-  this.writecb = null; // the amount that is being written when _write is called.
-
+  // the amount that is being written when _write is called.
   this.writelen = 0;
   this.bufferedRequest = null;
-  this.lastBufferedRequest = null; // number of pending user-supplied write callbacks
+  this.lastBufferedRequest = null;
+
+  // number of pending user-supplied write callbacks
   // this must be 0 before 'finish' can be emitted
+  this.pendingcb = 0;
 
-  this.pendingcb = 0; // emit prefinish if the only thing we're waiting for is _write cbs
+  // emit prefinish if the only thing we're waiting for is _write cbs
   // This is relevant for synchronous Transform streams
+  this.prefinished = false;
 
-  this.prefinished = false; // True if the error was already emitted and should not be thrown again
+  // True if the error was already emitted and should not be thrown again
+  this.errorEmitted = false;
 
-  this.errorEmitted = false; // Should close be emitted on destroy. Defaults to true.
+  // Should close be emitted on destroy. Defaults to true.
+  this.emitClose = options.emitClose !== false;
 
-  this.emitClose = options.emitClose !== false; // Should .destroy() be called after 'finish' (and potentially 'end')
+  // Should .destroy() be called after 'finish' (and potentially 'end')
+  this.autoDestroy = !!options.autoDestroy;
 
-  this.autoDestroy = !!options.autoDestroy; // count buffered requests
+  // count buffered requests
+  this.bufferedRequestCount = 0;
 
-  this.bufferedRequestCount = 0; // allocate the first CorkedRequest, there is always
+  // allocate the first CorkedRequest, there is always
   // one allocated and free to use, and we maintain at most two
-
   this.corkedRequestsFree = new CorkedRequest(this);
 }
-
 WritableState.prototype.getBuffer = function getBuffer() {
   var current = this.bufferedRequest;
   var out = [];
-
   while (current) {
     out.push(current);
     current = current.next;
   }
-
   return out;
 };
-
 (function () {
   try {
     Object.defineProperty(WritableState.prototype, 'buffer', {
@@ -31382,12 +30973,11 @@ WritableState.prototype.getBuffer = function getBuffer() {
       }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.', 'DEP0003')
     });
   } catch (_) {}
-})(); // Test _writableState for inheritance to account for Duplex streams,
+})();
+
+// Test _writableState for inheritance to account for Duplex streams,
 // whose prototype chain only points to Readable.
-
-
 var realHasInstance;
-
 if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.prototype[Symbol.hasInstance] === 'function') {
   realHasInstance = Function.prototype[Symbol.hasInstance];
   Object.defineProperty(Writable, Symbol.hasInstance, {
@@ -31402,81 +30992,73 @@ if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.protot
     return object instanceof this;
   };
 }
-
 function Writable(options) {
-  Duplex = Duplex || require('./_stream_duplex'); // Writable ctor is applied to Duplexes, too.
+  Duplex = Duplex || require('./_stream_duplex');
+
+  // Writable ctor is applied to Duplexes, too.
   // `realHasInstance` is necessary because using plain `instanceof`
   // would return false, as no `_writableState` property is attached.
+
   // Trying to use the custom `instanceof` for Writable here will also break the
   // Node.js LazyTransform implementation, which has a non-trivial getter for
   // `_writableState` that would lead to infinite recursion.
+
   // Checking for a Stream.Duplex instance is faster here instead of inside
   // the WritableState constructor, at least with V8 6.5
-
-  var isDuplex = this instanceof Duplex;
+  const isDuplex = this instanceof Duplex;
   if (!isDuplex && !realHasInstance.call(Writable, this)) return new Writable(options);
-  this._writableState = new WritableState(options, this, isDuplex); // legacy.
+  this._writableState = new WritableState(options, this, isDuplex);
 
+  // legacy.
   this.writable = true;
-
   if (options) {
     if (typeof options.write === 'function') this._write = options.write;
     if (typeof options.writev === 'function') this._writev = options.writev;
     if (typeof options.destroy === 'function') this._destroy = options.destroy;
     if (typeof options.final === 'function') this._final = options.final;
   }
-
   Stream.call(this);
-} // Otherwise people can pipe Writable streams, which is just wrong.
+}
 
-
+// Otherwise people can pipe Writable streams, which is just wrong.
 Writable.prototype.pipe = function () {
   errorOrDestroy(this, new ERR_STREAM_CANNOT_PIPE());
 };
-
 function writeAfterEnd(stream, cb) {
-  var er = new ERR_STREAM_WRITE_AFTER_END(); // TODO: defer error events consistently everywhere, not just the cb
-
+  var er = new ERR_STREAM_WRITE_AFTER_END();
+  // TODO: defer error events consistently everywhere, not just the cb
   errorOrDestroy(stream, er);
   process.nextTick(cb, er);
-} // Checks that a user-supplied chunk is valid, especially for the particular
+}
+
+// Checks that a user-supplied chunk is valid, especially for the particular
 // mode the stream is in. Currently this means that `null` is never accepted
 // and undefined/non-string values are only allowed in object mode.
-
-
 function validChunk(stream, state, chunk, cb) {
   var er;
-
   if (chunk === null) {
     er = new ERR_STREAM_NULL_VALUES();
   } else if (typeof chunk !== 'string' && !state.objectMode) {
     er = new ERR_INVALID_ARG_TYPE('chunk', ['string', 'Buffer'], chunk);
   }
-
   if (er) {
     errorOrDestroy(stream, er);
     process.nextTick(cb, er);
     return false;
   }
-
   return true;
 }
-
 Writable.prototype.write = function (chunk, encoding, cb) {
   var state = this._writableState;
   var ret = false;
-
   var isBuf = !state.objectMode && _isUint8Array(chunk);
-
   if (isBuf && !Buffer.isBuffer(chunk)) {
     chunk = _uint8ArrayToBuffer(chunk);
   }
-
   if (typeof encoding === 'function') {
     cb = encoding;
     encoding = null;
   }
-
   if (isBuf) encoding = 'buffer';else if (!encoding) encoding = state.defaultEncoding;
   if (typeof cb !== 'function') cb = nop;
   if (state.ending) writeAfterEnd(this, cb);else if (isBuf || validChunk(this, state, chunk, cb)) {
@@ -31485,20 +31067,16 @@ Writable.prototype.write = function (chunk, encoding, cb) {
   }
   return ret;
 };
-
 Writable.prototype.cork = function () {
   this._writableState.corked++;
 };
-
 Writable.prototype.uncork = function () {
   var state = this._writableState;
-
   if (state.corked) {
     state.corked--;
     if (!state.writing && !state.corked && !state.bufferProcessing && state.bufferedRequest) clearBuffer(this, state);
   }
 };
-
 Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
   // node::ParseEncoding() requires lower case.
   if (typeof encoding === 'string') encoding = encoding.toLowerCase();
@@ -31506,7 +31084,6 @@ Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
   this._writableState.defaultEncoding = encoding;
   return this;
 };
-
 Object.defineProperty(Writable.prototype, 'writableBuffer', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
@@ -31516,15 +31093,12 @@ Object.defineProperty(Writable.prototype, 'writableBuffer', {
     return this._writableState && this._writableState.getBuffer();
   }
 });
-
 function decodeChunk(state, chunk, encoding) {
   if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
     chunk = Buffer.from(chunk, encoding);
   }
-
   return chunk;
 }
-
 Object.defineProperty(Writable.prototype, 'writableHighWaterMark', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
@@ -31533,51 +31107,45 @@ Object.defineProperty(Writable.prototype, 'writableHighWaterMark', {
   get: function get() {
     return this._writableState.highWaterMark;
   }
-}); // if we're already writing something, then just put this
+});
+
+// if we're already writing something, then just put this
 // in the queue, and wait our turn.  Otherwise, call _write
 // If we return false, then we need a drain event, so set that flag.
-
 function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
   if (!isBuf) {
     var newChunk = decodeChunk(state, chunk, encoding);
-
     if (chunk !== newChunk) {
       isBuf = true;
       encoding = 'buffer';
       chunk = newChunk;
     }
   }
-
   var len = state.objectMode ? 1 : chunk.length;
   state.length += len;
-  var ret = state.length < state.highWaterMark; // we must ensure that previous needDrain will not be reset to false.
-
+  var ret = state.length < state.highWaterMark;
+  // we must ensure that previous needDrain will not be reset to false.
   if (!ret) state.needDrain = true;
-
   if (state.writing || state.corked) {
     var last = state.lastBufferedRequest;
     state.lastBufferedRequest = {
-      chunk: chunk,
-      encoding: encoding,
-      isBuf: isBuf,
+      chunk,
+      encoding,
+      isBuf,
       callback: cb,
       next: null
     };
-
     if (last) {
       last.next = state.lastBufferedRequest;
     } else {
       state.bufferedRequest = state.lastBufferedRequest;
     }
-
     state.bufferedRequestCount += 1;
   } else {
     doWrite(stream, state, false, len, chunk, encoding, cb);
   }
-
   return ret;
 }
-
 function doWrite(stream, state, writev, len, chunk, encoding, cb) {
   state.writelen = len;
   state.writecb = cb;
@@ -31586,16 +31154,14 @@ function doWrite(stream, state, writev, len, chunk, encoding, cb) {
   if (state.destroyed) state.onwrite(new ERR_STREAM_DESTROYED('write'));else if (writev) stream._writev(chunk, state.onwrite);else stream._write(chunk, encoding, state.onwrite);
   state.sync = false;
 }
-
 function onwriteError(stream, state, sync, er, cb) {
   --state.pendingcb;
-
   if (sync) {
     // defer the callback if we are being called synchronously
     // to avoid piling up things on the stack
-    process.nextTick(cb, er); // this can emit finish, and it will always happen
+    process.nextTick(cb, er);
+    // this can emit finish, and it will always happen
     // after error
-
     process.nextTick(finishMaybe, stream, state);
     stream._writableState.errorEmitted = true;
     errorOrDestroy(stream, er);
@@ -31604,20 +31170,18 @@ function onwriteError(stream, state, sync, er, cb) {
     // it is async
     cb(er);
     stream._writableState.errorEmitted = true;
-    errorOrDestroy(stream, er); // this can emit finish, but finish must
+    errorOrDestroy(stream, er);
+    // this can emit finish, but finish must
     // always follow error
-
     finishMaybe(stream, state);
   }
 }
-
 function onwriteStateUpdate(state) {
   state.writing = false;
   state.writecb = null;
   state.length -= state.writelen;
   state.writelen = 0;
 }
-
 function onwrite(stream, er) {
   var state = stream._writableState;
   var sync = state.sync;
@@ -31627,11 +31191,9 @@ function onwrite(stream, er) {
   if (er) onwriteError(stream, state, sync, er, cb);else {
     // Check if we're actually ready to finish, but don't emit yet
     var finished = needFinish(state) || stream.destroyed;
-
     if (!finished && !state.corked && !state.bufferProcessing && state.bufferedRequest) {
       clearBuffer(stream, state);
     }
-
     if (sync) {
       process.nextTick(afterWrite, stream, state, finished, cb);
     } else {
@@ -31639,29 +31201,27 @@ function onwrite(stream, er) {
     }
   }
 }
-
 function afterWrite(stream, state, finished, cb) {
   if (!finished) onwriteDrain(stream, state);
   state.pendingcb--;
   cb();
   finishMaybe(stream, state);
-} // Must force callback to be called on nextTick, so that we don't
+}
+
+// Must force callback to be called on nextTick, so that we don't
 // emit 'drain' before the write() consumer gets the 'false' return
 // value, and has a chance to attach a 'drain' listener.
-
-
 function onwriteDrain(stream, state) {
   if (state.length === 0 && state.needDrain) {
     state.needDrain = false;
     stream.emit('drain');
   }
-} // if there's something in the buffer waiting, then process it
+}
 
-
+// if there's something in the buffer waiting, then process it
 function clearBuffer(stream, state) {
   state.bufferProcessing = true;
   var entry = state.bufferedRequest;
-
   if (stream._writev && entry && entry.next) {
     // Fast case, write everything using _writev()
     var l = state.bufferedRequestCount;
@@ -31670,28 +31230,25 @@ function clearBuffer(stream, state) {
     holder.entry = entry;
     var count = 0;
     var allBuffers = true;
-
     while (entry) {
       buffer[count] = entry;
       if (!entry.isBuf) allBuffers = false;
       entry = entry.next;
       count += 1;
     }
-
     buffer.allBuffers = allBuffers;
-    doWrite(stream, state, true, state.length, buffer, '', holder.finish); // doWrite is almost always async, defer these to save a bit of time
-    // as the hot path ends with doWrite
+    doWrite(stream, state, true, state.length, buffer, '', holder.finish);
 
+    // doWrite is almost always async, defer these to save a bit of time
+    // as the hot path ends with doWrite
     state.pendingcb++;
     state.lastBufferedRequest = null;
-
     if (holder.next) {
       state.corkedRequestsFree = holder.next;
       holder.next = null;
     } else {
       state.corkedRequestsFree = new CorkedRequest(state);
     }
-
     state.bufferedRequestCount = 0;
   } else {
     // Slow case, write chunks one-by-one
@@ -31702,32 +31259,26 @@ function clearBuffer(stream, state) {
       var len = state.objectMode ? 1 : chunk.length;
       doWrite(stream, state, false, len, chunk, encoding, cb);
       entry = entry.next;
-      state.bufferedRequestCount--; // if we didn't call the onwrite immediately, then
+      state.bufferedRequestCount--;
+      // if we didn't call the onwrite immediately, then
       // it means that we need to wait until it does.
       // also, that means that the chunk and cb are currently
       // being processed, so move the buffer counter past them.
-
       if (state.writing) {
         break;
       }
     }
-
     if (entry === null) state.lastBufferedRequest = null;
   }
-
   state.bufferedRequest = entry;
   state.bufferProcessing = false;
 }
-
 Writable.prototype._write = function (chunk, encoding, cb) {
   cb(new ERR_METHOD_NOT_IMPLEMENTED('_write()'));
 };
-
 Writable.prototype._writev = null;
-
 Writable.prototype.end = function (chunk, encoding, cb) {
   var state = this._writableState;
-
   if (typeof chunk === 'function') {
     cb = chunk;
     chunk = null;
@@ -31736,47 +31287,41 @@ Writable.prototype.end = function (chunk, encoding, cb) {
     cb = encoding;
     encoding = null;
   }
+  if (chunk !== null && chunk !== undefined) this.write(chunk, encoding);
 
-  if (chunk !== null && chunk !== undefined) this.write(chunk, encoding); // .end() fully uncorks
-
+  // .end() fully uncorks
   if (state.corked) {
     state.corked = 1;
     this.uncork();
-  } // ignore unnecessary end() calls.
+  }
 
-
+  // ignore unnecessary end() calls.
   if (!state.ending) endWritable(this, state, cb);
   return this;
 };
-
 Object.defineProperty(Writable.prototype, 'writableLength', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     return this._writableState.length;
   }
 });
-
 function needFinish(state) {
   return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
 }
-
 function callFinal(stream, state) {
-  stream._final(function (err) {
+  stream._final(err => {
     state.pendingcb--;
-
     if (err) {
       errorOrDestroy(stream, err);
     }
-
     state.prefinished = true;
     stream.emit('prefinish');
     finishMaybe(stream, state);
   });
 }
-
 function prefinish(stream, state) {
   if (!state.prefinished && !state.finalCalled) {
     if (typeof stream._final === 'function' && !state.destroyed) {
@@ -31789,124 +31334,102 @@ function prefinish(stream, state) {
     }
   }
 }
-
 function finishMaybe(stream, state) {
   var need = needFinish(state);
-
   if (need) {
     prefinish(stream, state);
-
     if (state.pendingcb === 0) {
       state.finished = true;
       stream.emit('finish');
-
       if (state.autoDestroy) {
         // In case of duplex streams we need a way to detect
         // if the readable side is ready for autoDestroy as well
-        var rState = stream._readableState;
-
+        const rState = stream._readableState;
         if (!rState || rState.autoDestroy && rState.endEmitted) {
           stream.destroy();
         }
       }
     }
   }
-
   return need;
 }
-
 function endWritable(stream, state, cb) {
   state.ending = true;
   finishMaybe(stream, state);
-
   if (cb) {
     if (state.finished) process.nextTick(cb);else stream.once('finish', cb);
   }
-
   state.ended = true;
   stream.writable = false;
 }
-
 function onCorkedFinish(corkReq, state, err) {
   var entry = corkReq.entry;
   corkReq.entry = null;
-
   while (entry) {
     var cb = entry.callback;
     state.pendingcb--;
     cb(err);
     entry = entry.next;
-  } // reuse the free corkReq.
+  }
 
-
+  // reuse the free corkReq.
   state.corkedRequestsFree.next = corkReq;
 }
-
 Object.defineProperty(Writable.prototype, 'destroyed', {
   // making it explicit this property is not enumerable
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get: function get() {
+  get() {
     if (this._writableState === undefined) {
       return false;
     }
-
     return this._writableState.destroyed;
   },
-  set: function set(value) {
+  set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (!this._writableState) {
       return;
-    } // backward compatibility, the user is explicitly
+    }
+
+    // backward compatibility, the user is explicitly
     // managing destroyed
-
-
     this._writableState.destroyed = value;
   }
 });
 Writable.prototype.destroy = destroyImpl.destroy;
 Writable.prototype._undestroy = destroyImpl.undestroy;
-
 Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/destroy":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/state":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","util-deprecate":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/util-deprecate/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/async_iterator.js":[function(require,module,exports){
+},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/state":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","util-deprecate":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util-deprecate/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/async_iterator.js":[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
-var _Object$setPrototypeO;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var finished = require('./end-of-stream');
-
-var kLastResolve = Symbol('lastResolve');
-var kLastReject = Symbol('lastReject');
-var kError = Symbol('error');
-var kEnded = Symbol('ended');
-var kLastPromise = Symbol('lastPromise');
-var kHandlePromise = Symbol('handlePromise');
-var kStream = Symbol('stream');
-
+const finished = require('./end-of-stream');
+const kLastResolve = Symbol('lastResolve');
+const kLastReject = Symbol('lastReject');
+const kError = Symbol('error');
+const kEnded = Symbol('ended');
+const kLastPromise = Symbol('lastPromise');
+const kHandlePromise = Symbol('handlePromise');
+const kStream = Symbol('stream');
 function createIterResult(value, done) {
   return {
-    value: value,
-    done: done
+    value,
+    done
   };
 }
-
 function readAndResolve(iter) {
-  var resolve = iter[kLastResolve];
-
+  const resolve = iter[kLastResolve];
   if (resolve !== null) {
-    var data = iter[kStream].read(); // we defer if data is null
+    const data = iter[kStream].read();
+    // we defer if data is null
     // we can be expecting either 'end' or
     // 'error'
-
     if (data !== null) {
       iter[kLastPromise] = null;
       iter[kLastResolve] = null;
@@ -31915,188 +31438,172 @@ function readAndResolve(iter) {
     }
   }
 }
-
 function onReadable(iter) {
   // we wait for the next tick, because it might
   // emit an error with process.nextTick
   process.nextTick(readAndResolve, iter);
 }
-
 function wrapForNext(lastPromise, iter) {
-  return function (resolve, reject) {
-    lastPromise.then(function () {
+  return (resolve, reject) => {
+    lastPromise.then(() => {
       if (iter[kEnded]) {
         resolve(createIterResult(undefined, true));
         return;
       }
-
       iter[kHandlePromise](resolve, reject);
     }, reject);
   };
 }
-
-var AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
-var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPrototypeO = {
+const AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
+const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
   get stream() {
     return this[kStream];
   },
-
-  next: function next() {
-    var _this = this;
-
+  next() {
     // if we have detected an error in the meanwhile
     // reject straight away
-    var error = this[kError];
-
+    const error = this[kError];
     if (error !== null) {
       return Promise.reject(error);
     }
-
     if (this[kEnded]) {
       return Promise.resolve(createIterResult(undefined, true));
     }
-
     if (this[kStream].destroyed) {
       // We need to defer via nextTick because if .destroy(err) is
       // called, the error will be emitted via nextTick, and
       // we cannot guarantee that there is no error lingering around
       // waiting to be emitted.
-      return new Promise(function (resolve, reject) {
-        process.nextTick(function () {
-          if (_this[kError]) {
-            reject(_this[kError]);
+      return new Promise((resolve, reject) => {
+        process.nextTick(() => {
+          if (this[kError]) {
+            reject(this[kError]);
           } else {
             resolve(createIterResult(undefined, true));
           }
         });
       });
-    } // if we have multiple next() calls
+    }
+
+    // if we have multiple next() calls
     // we will wait for the previous Promise to finish
     // this logic is optimized to support for await loops,
     // where next() is only called once at a time
-
-
-    var lastPromise = this[kLastPromise];
-    var promise;
-
+    const lastPromise = this[kLastPromise];
+    let promise;
     if (lastPromise) {
       promise = new Promise(wrapForNext(lastPromise, this));
     } else {
       // fast path needed to support multiple this.push()
       // without triggering the next() queue
-      var data = this[kStream].read();
-
+      const data = this[kStream].read();
       if (data !== null) {
         return Promise.resolve(createIterResult(data, false));
       }
-
       promise = new Promise(this[kHandlePromise]);
     }
-
     this[kLastPromise] = promise;
     return promise;
-  }
-}, _defineProperty(_Object$setPrototypeO, Symbol.asyncIterator, function () {
-  return this;
-}), _defineProperty(_Object$setPrototypeO, "return", function _return() {
-  var _this2 = this;
-
-  // destroy(err, cb) is a private API
-  // we can guarantee we have that here, because we control the
-  // Readable class this is attached to
-  return new Promise(function (resolve, reject) {
-    _this2[kStream].destroy(null, function (err) {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      resolve(createIterResult(undefined, true));
+  },
+  [Symbol.asyncIterator]() {
+    return this;
+  },
+  return() {
+    // destroy(err, cb) is a private API
+    // we can guarantee we have that here, because we control the
+    // Readable class this is attached to
+    return new Promise((resolve, reject) => {
+      this[kStream].destroy(null, err => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(createIterResult(undefined, true));
+      });
     });
-  });
-}), _Object$setPrototypeO), AsyncIteratorPrototype);
-
-var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterator(stream) {
-  var _Object$create;
-
-  var iterator = Object.create(ReadableStreamAsyncIteratorPrototype, (_Object$create = {}, _defineProperty(_Object$create, kStream, {
-    value: stream,
-    writable: true
-  }), _defineProperty(_Object$create, kLastResolve, {
-    value: null,
-    writable: true
-  }), _defineProperty(_Object$create, kLastReject, {
-    value: null,
-    writable: true
-  }), _defineProperty(_Object$create, kError, {
-    value: null,
-    writable: true
-  }), _defineProperty(_Object$create, kEnded, {
-    value: stream._readableState.endEmitted,
-    writable: true
-  }), _defineProperty(_Object$create, kHandlePromise, {
-    value: function value(resolve, reject) {
-      var data = iterator[kStream].read();
-
-      if (data) {
-        iterator[kLastPromise] = null;
-        iterator[kLastResolve] = null;
-        iterator[kLastReject] = null;
-        resolve(createIterResult(data, false));
-      } else {
-        iterator[kLastResolve] = resolve;
-        iterator[kLastReject] = reject;
-      }
+  }
+}, AsyncIteratorPrototype);
+const createReadableStreamAsyncIterator = stream => {
+  const iterator = Object.create(ReadableStreamAsyncIteratorPrototype, {
+    [kStream]: {
+      value: stream,
+      writable: true
     },
-    writable: true
-  }), _Object$create));
+    [kLastResolve]: {
+      value: null,
+      writable: true
+    },
+    [kLastReject]: {
+      value: null,
+      writable: true
+    },
+    [kError]: {
+      value: null,
+      writable: true
+    },
+    [kEnded]: {
+      value: stream._readableState.endEmitted,
+      writable: true
+    },
+    // the function passed to new Promise
+    // is cached so we avoid allocating a new
+    // closure at every run
+    [kHandlePromise]: {
+      value: (resolve, reject) => {
+        const data = iterator[kStream].read();
+        if (data) {
+          iterator[kLastPromise] = null;
+          iterator[kLastResolve] = null;
+          iterator[kLastReject] = null;
+          resolve(createIterResult(data, false));
+        } else {
+          iterator[kLastResolve] = resolve;
+          iterator[kLastReject] = reject;
+        }
+      },
+      writable: true
+    }
+  });
   iterator[kLastPromise] = null;
-  finished(stream, function (err) {
+  finished(stream, err => {
     if (err && err.code !== 'ERR_STREAM_PREMATURE_CLOSE') {
-      var reject = iterator[kLastReject]; // reject if we are waiting for data in the Promise
+      const reject = iterator[kLastReject];
+      // reject if we are waiting for data in the Promise
       // returned by next() and store the error
-
       if (reject !== null) {
         iterator[kLastPromise] = null;
         iterator[kLastResolve] = null;
         iterator[kLastReject] = null;
         reject(err);
       }
-
       iterator[kError] = err;
       return;
     }
-
-    var resolve = iterator[kLastResolve];
-
+    const resolve = iterator[kLastResolve];
     if (resolve !== null) {
       iterator[kLastPromise] = null;
       iterator[kLastResolve] = null;
       iterator[kLastReject] = null;
       resolve(createIterResult(undefined, true));
     }
-
     iterator[kEnded] = true;
   });
   stream.on('readable', onReadable.bind(null, iterator));
   return iterator;
 };
-
 module.exports = createReadableStreamAsyncIterator;
 }).call(this)}).call(this,require('_process'))
 
-},{"./end-of-stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/buffer_list.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/buffer_list.js"][0].apply(exports,arguments)
-},{"buffer":"buffer","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports){
+},{"./end-of-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/buffer_list.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/buffer_list.js"][0].apply(exports,arguments)
+},{"buffer":"buffer","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports){
 (function (process){(function (){
-'use strict'; // undocumented cb() API, needed for core, not for public API
+'use strict';
 
+// undocumented cb() API, needed for core, not for public API
 function destroy(err, cb) {
-  var _this = this;
-
-  var readableDestroyed = this._readableState && this._readableState.destroyed;
-  var writableDestroyed = this._writableState && this._writableState.destroyed;
-
+  const readableDestroyed = this._readableState && this._readableState.destroyed;
+  const writableDestroyed = this._writableState && this._writableState.destroyed;
   if (readableDestroyed || writableDestroyed) {
     if (cb) {
       cb(err);
@@ -32108,53 +31615,48 @@ function destroy(err, cb) {
         process.nextTick(emitErrorNT, this, err);
       }
     }
-
     return this;
-  } // we set destroyed to true before firing error callbacks in order
-  // to make it re-entrance safe in case destroy() is called within callbacks
+  }
 
+  // we set destroyed to true before firing error callbacks in order
+  // to make it re-entrance safe in case destroy() is called within callbacks
 
   if (this._readableState) {
     this._readableState.destroyed = true;
-  } // if this is a duplex stream mark the writable part as destroyed as well
+  }
 
-
+  // if this is a duplex stream mark the writable part as destroyed as well
   if (this._writableState) {
     this._writableState.destroyed = true;
   }
-
-  this._destroy(err || null, function (err) {
+  this._destroy(err || null, err => {
     if (!cb && err) {
-      if (!_this._writableState) {
-        process.nextTick(emitErrorAndCloseNT, _this, err);
-      } else if (!_this._writableState.errorEmitted) {
-        _this._writableState.errorEmitted = true;
-        process.nextTick(emitErrorAndCloseNT, _this, err);
+      if (!this._writableState) {
+        process.nextTick(emitErrorAndCloseNT, this, err);
+      } else if (!this._writableState.errorEmitted) {
+        this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorAndCloseNT, this, err);
       } else {
-        process.nextTick(emitCloseNT, _this);
+        process.nextTick(emitCloseNT, this);
       }
     } else if (cb) {
-      process.nextTick(emitCloseNT, _this);
+      process.nextTick(emitCloseNT, this);
       cb(err);
     } else {
-      process.nextTick(emitCloseNT, _this);
+      process.nextTick(emitCloseNT, this);
     }
   });
-
   return this;
 }
-
 function emitErrorAndCloseNT(self, err) {
   emitErrorNT(self, err);
   emitCloseNT(self);
 }
-
 function emitCloseNT(self) {
   if (self._writableState && !self._writableState.emitClose) return;
   if (self._readableState && !self._readableState.emitClose) return;
   self.emit('close');
 }
-
 function undestroy() {
   if (this._readableState) {
     this._readableState.destroyed = false;
@@ -32162,7 +31664,6 @@ function undestroy() {
     this._readableState.ended = false;
     this._readableState.endEmitted = false;
   }
-
   if (this._writableState) {
     this._writableState.destroyed = false;
     this._writableState.ended = false;
@@ -32173,42 +31674,40 @@ function undestroy() {
     this._writableState.errorEmitted = false;
   }
 }
-
 function emitErrorNT(self, err) {
   self.emit('error', err);
 }
-
 function errorOrDestroy(stream, err) {
   // We have tests that rely on errors being emitted
   // in the same tick, so changing this is semver major.
   // For now when you opt-in to autoDestroy we allow
   // the error to be emitted nextTick. In a future
   // semver major update we should change the default to this.
-  var rState = stream._readableState;
-  var wState = stream._writableState;
+
+  const rState = stream._readableState;
+  const wState = stream._writableState;
   if (rState && rState.autoDestroy || wState && wState.autoDestroy) stream.destroy(err);else stream.emit('error', err);
 }
-
 module.exports = {
-  destroy: destroy,
-  undestroy: undestroy,
-  errorOrDestroy: errorOrDestroy
+  destroy,
+  undestroy,
+  errorOrDestroy
 };
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/end-of-stream.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"][0].apply(exports,arguments)
-},{"../../../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/from-browser.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/from-browser.js"][0].apply(exports,arguments)
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/pipeline.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/pipeline.js"][0].apply(exports,arguments)
-},{"../../../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js","./end-of-stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/state.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/state.js"][0].apply(exports,arguments)
-},{"../../../errors":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js"][0].apply(exports,arguments)
-},{"events":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/events/events.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/readable-browser.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/readable-browser.js"][0].apply(exports,arguments)
-},{"./lib/_stream_duplex.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_writable.js","./lib/internal/streams/end-of-stream.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","./lib/internal/streams/pipeline.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/pipeline.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/end-of-stream.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"][0].apply(exports,arguments)
+},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/from-browser.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/from-browser.js"][0].apply(exports,arguments)
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/pipeline.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/pipeline.js"][0].apply(exports,arguments)
+},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js","./end-of-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/state.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/state.js"][0].apply(exports,arguments)
+},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/errors-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js"][0].apply(exports,arguments)
+},{"events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/readable-browser.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/readable-browser.js"][0].apply(exports,arguments)
+},{"./lib/_stream_duplex.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/_stream_writable.js","./lib/internal/streams/end-of-stream.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","./lib/internal/streams/pipeline.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/pipeline.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash.js":[function(require,module,exports){
 var hash = exports;
 
 hash.utils = require('./hash/utils');
@@ -32225,7 +31724,7 @@ hash.sha384 = hash.sha.sha384;
 hash.sha512 = hash.sha.sha512;
 hash.ripemd160 = hash.ripemd.ripemd160;
 
-},{"./hash/common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/common.js","./hash/hmac":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/hmac.js","./hash/ripemd":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/ripemd.js","./hash/sha":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha.js","./hash/utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/common.js":[function(require,module,exports){
+},{"./hash/common":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/common.js","./hash/hmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/hmac.js","./hash/ripemd":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/ripemd.js","./hash/sha":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha.js","./hash/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/common.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -32319,7 +31818,7 @@ BlockHash.prototype._pad = function pad() {
   return res;
 };
 
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/hmac.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/hmac.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -32368,7 +31867,7 @@ Hmac.prototype.digest = function digest(enc) {
   return this.outer.digest(enc);
 };
 
-},{"./utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/ripemd.js":[function(require,module,exports){
+},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/ripemd.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -32516,7 +32015,7 @@ var sh = [
   8, 5, 12, 9, 12, 5, 14, 6, 8, 13, 6, 5, 15, 13, 11, 11
 ];
 
-},{"./common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/common.js","./utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha.js":[function(require,module,exports){
+},{"./common":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/common.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha.js":[function(require,module,exports){
 'use strict';
 
 exports.sha1 = require('./sha/1');
@@ -32525,7 +32024,7 @@ exports.sha256 = require('./sha/256');
 exports.sha384 = require('./sha/384');
 exports.sha512 = require('./sha/512');
 
-},{"./sha/1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/1.js","./sha/224":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/224.js","./sha/256":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/256.js","./sha/384":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/384.js","./sha/512":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/512.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/1.js":[function(require,module,exports){
+},{"./sha/1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/1.js","./sha/224":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/224.js","./sha/256":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/256.js","./sha/384":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/384.js","./sha/512":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/512.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/1.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -32601,7 +32100,7 @@ SHA1.prototype._digest = function digest(enc) {
     return utils.split32(this.h, 'big');
 };
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/common.js","../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","./common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/common.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/224.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/common.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","./common":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/common.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/224.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -32633,7 +32132,7 @@ SHA224.prototype._digest = function digest(enc) {
 };
 
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","./256":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/256.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/256.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","./256":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/256.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/256.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -32740,7 +32239,7 @@ SHA256.prototype._digest = function digest(enc) {
     return utils.split32(this.h, 'big');
 };
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/common.js","../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","./common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/common.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/384.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/common.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","./common":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/common.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/384.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -32777,7 +32276,7 @@ SHA384.prototype._digest = function digest(enc) {
     return utils.split32(this.h.slice(0, 12), 'big');
 };
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","./512":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/512.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/512.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","./512":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/512.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/512.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -33109,7 +32608,7 @@ function g1_512_lo(xh, xl) {
   return r;
 }
 
-},{"../common":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/common.js","../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/sha/common.js":[function(require,module,exports){
+},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/common.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/sha/common.js":[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -33160,7 +32659,7 @@ function g1_256(x) {
 }
 exports.g1_256 = g1_256;
 
-},{"../utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash/utils.js":[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -33440,7 +32939,7 @@ function shr64_lo(ah, al, num) {
 }
 exports.shr64_lo = shr64_lo;
 
-},{"inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hmac-drbg/lib/hmac-drbg.js":[function(require,module,exports){
+},{"inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hmac-drbg/lib/hmac-drbg.js":[function(require,module,exports){
 'use strict';
 
 var hash = require('hash.js');
@@ -33555,7 +33054,7 @@ HmacDRBG.prototype.generate = function generate(len, enc, add, addEnc) {
   return utils.encode(res, enc);
 };
 
-},{"hash.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash.js/lib/hash.js","minimalistic-assert":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js","minimalistic-crypto-utils":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-crypto-utils/lib/utils.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/ieee754/index.js":[function(require,module,exports){
+},{"hash.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js","minimalistic-crypto-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-crypto-utils/lib/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ieee754/index.js":[function(require,module,exports){
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
@@ -33642,7 +33141,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -33671,7 +33170,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/is-buffer/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js":[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -33694,14 +33193,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/isarray/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/isarray/index.js":[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/md5.js/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/md5.js/index.js":[function(require,module,exports){
 'use strict'
 var inherits = require('inherits')
 var HashBase = require('hash-base')
@@ -33849,7 +33348,7 @@ function fnI (a, b, c, d, m, k, s) {
 
 module.exports = MD5
 
-},{"hash-base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/index.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/miller-rabin/lib/mr.js":[function(require,module,exports){
+},{"hash-base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/miller-rabin/lib/mr.js":[function(require,module,exports){
 var bn = require('bn.js');
 var brorand = require('brorand');
 
@@ -33966,9 +33465,9 @@ MillerRabin.prototype.getDivisor = function getDivisor(n, k) {
   return false;
 };
 
-},{"bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/miller-rabin/node_modules/bn.js/lib/bn.js","brorand":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/brorand/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/miller-rabin/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"][0].apply(exports,arguments)
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-assert/index.js":[function(require,module,exports){
+},{"bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/miller-rabin/node_modules/bn.js/lib/bn.js","brorand":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/brorand/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/miller-rabin/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"][0].apply(exports,arguments)
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js":[function(require,module,exports){
 module.exports = assert;
 
 function assert(val, msg) {
@@ -33981,7 +33480,7 @@ assert.equal = function assertEqual(l, r, msg) {
     throw new Error(msg || ('Assertion failed: ' + l + ' != ' + r));
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/minimalistic-crypto-utils/lib/utils.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-crypto-utils/lib/utils.js":[function(require,module,exports){
 'use strict';
 
 var utils = exports;
@@ -34041,7 +33540,7 @@ utils.encode = function encode(arr, enc) {
     return arr;
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/os-browserify/browser.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/os-browserify/browser.js":[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -34092,7 +33591,7 @@ exports.homedir = function () {
 	return '/'
 };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/aesid.json":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/aesid.json":[function(require,module,exports){
 module.exports={"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
 "2.16.840.1.101.3.4.1.2": "aes-128-cbc",
 "2.16.840.1.101.3.4.1.3": "aes-128-ofb",
@@ -34106,7 +33605,7 @@ module.exports={"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
 "2.16.840.1.101.3.4.1.43": "aes-256-ofb",
 "2.16.840.1.101.3.4.1.44": "aes-256-cfb"
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/asn1.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/asn1.js":[function(require,module,exports){
 // from https://github.com/indutny/self-signed/blob/gh-pages/lib/asn1.js
 // Fedor, you are amazing.
 'use strict'
@@ -34230,7 +33729,7 @@ exports.signature = asn1.define('signature', function () {
   )
 })
 
-},{"./certificate":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/certificate.js","asn1.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/certificate.js":[function(require,module,exports){
+},{"./certificate":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/certificate.js","asn1.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/certificate.js":[function(require,module,exports){
 // from https://github.com/Rantanen/node-dtls/blob/25a7dc861bda38cfeac93a723500eea4f0ac2e86/Certificate.js
 // thanks to @Rantanen
 
@@ -34321,7 +33820,7 @@ var X509Certificate = asn.define('X509Certificate', function () {
 
 module.exports = X509Certificate
 
-},{"asn1.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/lib/asn1.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/fixProc.js":[function(require,module,exports){
+},{"asn1.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/lib/asn1.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/fixProc.js":[function(require,module,exports){
 // adapted from https://github.com/apatil/pemstrip
 var findProc = /Proc-Type: 4,ENCRYPTED[\n\r]+DEK-Info: AES-((?:128)|(?:192)|(?:256))-CBC,([0-9A-H]+)[\n\r]+([0-9A-z\n\r+/=]+)[\n\r]+/m
 var startRegex = /^-----BEGIN ((?:.*? KEY)|CERTIFICATE)-----/m
@@ -34354,7 +33853,7 @@ module.exports = function (okey, password) {
   }
 }
 
-},{"browserify-aes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/browser.js","evp_bytestokey":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/evp_bytestokey/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/index.js":[function(require,module,exports){
+},{"browserify-aes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/browser.js","evp_bytestokey":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/evp_bytestokey/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/index.js":[function(require,module,exports){
 var asn1 = require('./asn1')
 var aesid = require('./aesid.json')
 var fixProc = require('./fixProc')
@@ -34463,7 +33962,7 @@ function decrypt (data, password) {
   return Buffer.concat(out)
 }
 
-},{"./aesid.json":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/aesid.json","./asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/asn1.js","./fixProc":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/fixProc.js","browserify-aes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-aes/browser.js","pbkdf2":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/path-browserify/index.js":[function(require,module,exports){
+},{"./aesid.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/aesid.json","./asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/asn1.js","./fixProc":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/fixProc.js","browserify-aes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/browser.js","pbkdf2":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js":[function(require,module,exports){
 (function (process){(function (){
 // .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
 // backported and transplited with Babel, with backwards-compat fixes
@@ -34770,11 +34269,11 @@ var substr = 'ab'.substr(-1) === 'b'
 
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/browser.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/browser.js":[function(require,module,exports){
 exports.pbkdf2 = require('./lib/async')
 exports.pbkdf2Sync = require('./lib/sync')
 
-},{"./lib/async":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/async.js","./lib/sync":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/sync-browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/async.js":[function(require,module,exports){
+},{"./lib/async":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/async.js","./lib/sync":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/sync-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/async.js":[function(require,module,exports){
 (function (global){(function (){
 var Buffer = require('safe-buffer').Buffer
 
@@ -34897,7 +34396,7 @@ module.exports = function (password, salt, iterations, keylen, digest, callback)
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./default-encoding":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/default-encoding.js","./precondition":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/precondition.js","./sync":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/sync-browser.js","./to-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/to-buffer.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/default-encoding.js":[function(require,module,exports){
+},{"./default-encoding":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/default-encoding.js","./precondition":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/precondition.js","./sync":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/sync-browser.js","./to-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/to-buffer.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/default-encoding.js":[function(require,module,exports){
 (function (process,global){(function (){
 var defaultEncoding
 /* istanbul ignore next */
@@ -34914,7 +34413,7 @@ module.exports = defaultEncoding
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/precondition.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/precondition.js":[function(require,module,exports){
 var MAX_ALLOC = Math.pow(2, 30) - 1 // default in iojs
 
 module.exports = function (iterations, keylen) {
@@ -34935,7 +34434,7 @@ module.exports = function (iterations, keylen) {
   }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/sync-browser.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/sync-browser.js":[function(require,module,exports){
 var md5 = require('create-hash/md5')
 var RIPEMD160 = require('ripemd160')
 var sha = require('sha.js')
@@ -35042,7 +34541,7 @@ function pbkdf2 (password, salt, iterations, keylen, digest) {
 
 module.exports = pbkdf2
 
-},{"./default-encoding":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/default-encoding.js","./precondition":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/precondition.js","./to-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/to-buffer.js","create-hash/md5":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hash/md5.js","ripemd160":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/ripemd160/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js","sha.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/lib/to-buffer.js":[function(require,module,exports){
+},{"./default-encoding":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/default-encoding.js","./precondition":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/precondition.js","./to-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/to-buffer.js","create-hash/md5":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/md5.js","ripemd160":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ripemd160/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js","sha.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/lib/to-buffer.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 
 module.exports = function (thing, encoding, name) {
@@ -35057,7 +34556,7 @@ module.exports = function (thing, encoding, name) {
   }
 }
 
-},{"safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process-nextick-args/index.js":[function(require,module,exports){
+},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process-nextick-args/index.js":[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -35107,7 +34606,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -35293,7 +34792,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/browser.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/browser.js":[function(require,module,exports){
 exports.publicEncrypt = require('./publicEncrypt')
 exports.privateDecrypt = require('./privateDecrypt')
 
@@ -35305,7 +34804,7 @@ exports.publicDecrypt = function publicDecrypt (key, buf) {
   return exports.privateDecrypt(key, buf, true)
 }
 
-},{"./privateDecrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/privateDecrypt.js","./publicEncrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/publicEncrypt.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/mgf.js":[function(require,module,exports){
+},{"./privateDecrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/privateDecrypt.js","./publicEncrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/publicEncrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/mgf.js":[function(require,module,exports){
 var createHash = require('create-hash')
 var Buffer = require('safe-buffer').Buffer
 
@@ -35326,9 +34825,9 @@ function i2ops (c) {
   return out
 }
 
-},{"create-hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hash/browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"][0].apply(exports,arguments)
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/privateDecrypt.js":[function(require,module,exports){
+},{"create-hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/node_modules/bn.js/lib/bn.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/asn1.js/node_modules/bn.js/lib/bn.js"][0].apply(exports,arguments)
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/privateDecrypt.js":[function(require,module,exports){
 var parseKeys = require('parse-asn1')
 var mgf = require('./mgf')
 var xor = require('./xor')
@@ -35435,7 +34934,7 @@ function compare (a, b) {
   return dif
 }
 
-},{"./mgf":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/mgf.js","./withPublic":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/withPublic.js","./xor":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/xor.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/node_modules/bn.js/lib/bn.js","browserify-rsa":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-rsa/index.js","create-hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hash/browser.js","parse-asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/publicEncrypt.js":[function(require,module,exports){
+},{"./mgf":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/mgf.js","./withPublic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/withPublic.js","./xor":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/xor.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/node_modules/bn.js/lib/bn.js","browserify-rsa":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-rsa/index.js","create-hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/browser.js","parse-asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/publicEncrypt.js":[function(require,module,exports){
 var parseKeys = require('parse-asn1')
 var randomBytes = require('randombytes')
 var createHash = require('create-hash')
@@ -35525,7 +35024,7 @@ function nonZero (len) {
   return out
 }
 
-},{"./mgf":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/mgf.js","./withPublic":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/withPublic.js","./xor":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/xor.js","bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/node_modules/bn.js/lib/bn.js","browserify-rsa":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-rsa/index.js","create-hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hash/browser.js","parse-asn1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/parse-asn1/index.js","randombytes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/randombytes/browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/withPublic.js":[function(require,module,exports){
+},{"./mgf":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/mgf.js","./withPublic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/withPublic.js","./xor":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/xor.js","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/node_modules/bn.js/lib/bn.js","browserify-rsa":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-rsa/index.js","create-hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/browser.js","parse-asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/index.js","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/withPublic.js":[function(require,module,exports){
 var BN = require('bn.js')
 var Buffer = require('safe-buffer').Buffer
 
@@ -35539,7 +35038,7 @@ function withPublic (paddedMsg, key) {
 
 module.exports = withPublic
 
-},{"bn.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/node_modules/bn.js/lib/bn.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/xor.js":[function(require,module,exports){
+},{"bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/node_modules/bn.js/lib/bn.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/xor.js":[function(require,module,exports){
 module.exports = function xor (a, b) {
   var len = a.length
   var i = -1
@@ -35549,7 +35048,7 @@ module.exports = function xor (a, b) {
   return a
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/randombytes/browser.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js":[function(require,module,exports){
 (function (process,global){(function (){
 'use strict'
 
@@ -35604,7 +35103,7 @@ function randomBytes (size, cb) {
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/randomfill/browser.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randomfill/browser.js":[function(require,module,exports){
 (function (process,global){(function (){
 'use strict'
 
@@ -35717,10 +35216,10 @@ function randomFillSync (buf, offset, size) {
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","randombytes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/randombytes/browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/duplex-browser.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/duplex-browser.js":[function(require,module,exports){
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
+},{"./lib/_stream_duplex.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -35852,7 +35351,7 @@ Duplex.prototype._destroy = function (err, cb) {
 
   pna.nextTick(cb, err);
 };
-},{"./_stream_readable":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js","core-util-is":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","process-nextick-args":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process-nextick-args/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
+},{"./_stream_readable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js","core-util-is":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","process-nextick-args":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process-nextick-args/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -35900,7 +35399,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_transform.js","core-util-is":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
+},{"./_stream_transform":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_transform.js","core-util-is":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -35957,7 +35456,7 @@ var Stream = require('./internal/streams/stream');
 /*<replacement>*/
 
 var Buffer = require('safe-buffer').Buffer;
-var OurUint8Array = global.Uint8Array || function () {};
+var OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
@@ -36527,8 +36026,8 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
       // also returned false.
       // => Check whether `dest` is still a piping destination.
       if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf(state.pipes, dest) !== -1) && !cleanedUp) {
-        debug('false write response, pause', src._readableState.awaitDrain);
-        src._readableState.awaitDrain++;
+        debug('false write response, pause', state.awaitDrain);
+        state.awaitDrain++;
         increasedAwaitDrain = true;
       }
       src.pause();
@@ -36622,7 +36121,7 @@ Readable.prototype.unpipe = function (dest) {
     state.flowing = false;
 
     for (var i = 0; i < len; i++) {
-      dests[i].emit('unpipe', this, unpipeInfo);
+      dests[i].emit('unpipe', this, { hasUnpiped: false });
     }return this;
   }
 
@@ -36923,7 +36422,7 @@ function indexOf(xs, x) {
 }
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./_stream_duplex":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/BufferList":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/BufferList.js","./internal/streams/destroy":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","core-util-is":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/core-util-is/lib/util.js","events":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/events/events.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","isarray":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/isarray/index.js","process-nextick-args":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process-nextick-args/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js","string_decoder/":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
+},{"./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/BufferList":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/BufferList.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","core-util-is":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js","events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","isarray":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/isarray/index.js","process-nextick-args":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process-nextick-args/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js","string_decoder/":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -37138,7 +36637,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","core-util-is":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
+},{"./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","core-util-is":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
 (function (process,global,setImmediate){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -37223,7 +36722,7 @@ var Stream = require('./internal/streams/stream');
 /*<replacement>*/
 
 var Buffer = require('safe-buffer').Buffer;
-var OurUint8Array = global.Uint8Array || function () {};
+var OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
@@ -37491,7 +36990,7 @@ Writable.prototype.uncork = function () {
   if (state.corked) {
     state.corked--;
 
-    if (!state.writing && !state.corked && !state.finished && !state.bufferProcessing && state.bufferedRequest) clearBuffer(this, state);
+    if (!state.writing && !state.corked && !state.bufferProcessing && state.bufferedRequest) clearBuffer(this, state);
   }
 };
 
@@ -37733,7 +37232,7 @@ Writable.prototype.end = function (chunk, encoding, cb) {
   }
 
   // ignore unnecessary end() calls.
-  if (!state.ending && !state.finished) endWritable(this, state, cb);
+  if (!state.ending) endWritable(this, state, cb);
 };
 
 function needFinish(state) {
@@ -37794,11 +37293,9 @@ function onCorkedFinish(corkReq, state, err) {
     cb(err);
     entry = entry.next;
   }
-  if (state.corkedRequestsFree) {
-    state.corkedRequestsFree.next = corkReq;
-  } else {
-    state.corkedRequestsFree = corkReq;
-  }
+
+  // reuse the free corkReq.
+  state.corkedRequestsFree.next = corkReq;
 }
 
 Object.defineProperty(Writable.prototype, 'destroyed', {
@@ -37829,7 +37326,7 @@ Writable.prototype._destroy = function (err, cb) {
 };
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
 
-},{"./_stream_duplex":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/destroy":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/stream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","core-util-is":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","process-nextick-args":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process-nextick-args/index.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js","timers":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/timers-browserify/main.js","util-deprecate":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/util-deprecate/browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/BufferList.js":[function(require,module,exports){
+},{"./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","core-util-is":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","process-nextick-args":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process-nextick-args/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js","timers":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/timers-browserify/main.js","util-deprecate":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util-deprecate/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/BufferList.js":[function(require,module,exports){
 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -37888,7 +37385,6 @@ module.exports = function () {
 
   BufferList.prototype.concat = function concat(n) {
     if (this.length === 0) return Buffer.alloc(0);
-    if (this.length === 1) return this.head.data;
     var ret = Buffer.allocUnsafe(n >>> 0);
     var p = this.head;
     var i = 0;
@@ -37909,7 +37405,7 @@ if (util && util.inspect && util.inspect.custom) {
     return this.constructor.name + ' ' + obj;
   };
 }
-},{"safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js","util":"util"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports){
+},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js","util":"util"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -37927,9 +37423,15 @@ function destroy(err, cb) {
   if (readableDestroyed || writableDestroyed) {
     if (cb) {
       cb(err);
-    } else if (err && (!this._writableState || !this._writableState.errorEmitted)) {
-      pna.nextTick(emitErrorNT, this, err);
+    } else if (err) {
+      if (!this._writableState) {
+        pna.nextTick(emitErrorNT, this, err);
+      } else if (!this._writableState.errorEmitted) {
+        this._writableState.errorEmitted = true;
+        pna.nextTick(emitErrorNT, this, err);
+      }
     }
+
     return this;
   }
 
@@ -37947,9 +37449,11 @@ function destroy(err, cb) {
 
   this._destroy(err || null, function (err) {
     if (!cb && err) {
-      pna.nextTick(emitErrorNT, _this, err);
-      if (_this._writableState) {
+      if (!_this._writableState) {
+        pna.nextTick(emitErrorNT, _this, err);
+      } else if (!_this._writableState.errorEmitted) {
         _this._writableState.errorEmitted = true;
+        pna.nextTick(emitErrorNT, _this, err);
       }
     } else if (cb) {
       cb(err);
@@ -37971,6 +37475,8 @@ function undestroy() {
     this._writableState.destroyed = false;
     this._writableState.ended = false;
     this._writableState.ending = false;
+    this._writableState.finalCalled = false;
+    this._writableState.prefinished = false;
     this._writableState.finished = false;
     this._writableState.errorEmitted = false;
   }
@@ -37984,9 +37490,9 @@ module.exports = {
   destroy: destroy,
   undestroy: undestroy
 };
-},{"process-nextick-args":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process-nextick-args/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js"][0].apply(exports,arguments)
-},{"events":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/events/events.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js":[function(require,module,exports){
+},{"process-nextick-args":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process-nextick-args/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js"][0].apply(exports,arguments)
+},{"events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js":[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -38050,7 +37556,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js":[function(require,module,exports){
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -38347,10 +37853,10 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/passthrough.js":[function(require,module,exports){
+},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/passthrough.js":[function(require,module,exports){
 module.exports = require('./readable').PassThrough
 
-},{"./readable":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/readable-browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/readable-browser.js":[function(require,module,exports){
+},{"./readable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/readable-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/readable-browser.js":[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -38359,13 +37865,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/transform.js":[function(require,module,exports){
+},{"./lib/_stream_duplex.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/transform.js":[function(require,module,exports){
 module.exports = require('./readable').Transform
 
-},{"./readable":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/readable-browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/writable-browser.js":[function(require,module,exports){
+},{"./readable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/readable-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/writable-browser.js":[function(require,module,exports){
 module.exports = require('./lib/_stream_writable.js');
 
-},{"./lib/_stream_writable.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/ripemd160/index.js":[function(require,module,exports){
+},{"./lib/_stream_writable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ripemd160/index.js":[function(require,module,exports){
 'use strict'
 var Buffer = require('buffer').Buffer
 var inherits = require('inherits')
@@ -38530,7 +38036,7 @@ function fn5 (a, b, c, d, e, m, k, s) {
 
 module.exports = RIPEMD160
 
-},{"buffer":"buffer","hash-base":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/hash-base/index.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js":[function(require,module,exports){
+},{"buffer":"buffer","hash-base":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js":[function(require,module,exports){
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
@@ -38597,7 +38103,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safer-buffer/safer.js":[function(require,module,exports){
+},{"buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safer-buffer/safer.js":[function(require,module,exports){
 (function (process){(function (){
 /* eslint-disable node/no-deprecated-api */
 
@@ -38679,7 +38185,7 @@ module.exports = safer
 
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/hash.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"buffer"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 
 // prototype class for hash functions
@@ -38762,7 +38268,7 @@ Hash.prototype._update = function () {
 
 module.exports = Hash
 
-},{"safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/index.js":[function(require,module,exports){
+},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/index.js":[function(require,module,exports){
 var exports = module.exports = function SHA (algorithm) {
   algorithm = algorithm.toLowerCase()
 
@@ -38779,7 +38285,7 @@ exports.sha256 = require('./sha256')
 exports.sha384 = require('./sha384')
 exports.sha512 = require('./sha512')
 
-},{"./sha":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha.js","./sha1":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha1.js","./sha224":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha224.js","./sha256":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha256.js","./sha384":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha384.js","./sha512":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha512.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha.js":[function(require,module,exports){
+},{"./sha":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha.js","./sha1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha1.js","./sha224":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha224.js","./sha256":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha256.js","./sha384":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha384.js","./sha512":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha512.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha.js":[function(require,module,exports){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-0, as defined
  * in FIPS PUB 180-1
@@ -38875,7 +38381,7 @@ Sha.prototype._hash = function () {
 
 module.exports = Sha
 
-},{"./hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/hash.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha1.js":[function(require,module,exports){
+},{"./hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha1.js":[function(require,module,exports){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
  * in FIPS PUB 180-1
@@ -38976,7 +38482,7 @@ Sha1.prototype._hash = function () {
 
 module.exports = Sha1
 
-},{"./hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/hash.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha224.js":[function(require,module,exports){
+},{"./hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha224.js":[function(require,module,exports){
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
  * in FIPS 180-2
@@ -39031,7 +38537,7 @@ Sha224.prototype._hash = function () {
 
 module.exports = Sha224
 
-},{"./hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/hash.js","./sha256":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha256.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha256.js":[function(require,module,exports){
+},{"./hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js","./sha256":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha256.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha256.js":[function(require,module,exports){
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
  * in FIPS 180-2
@@ -39168,7 +38674,7 @@ Sha256.prototype._hash = function () {
 
 module.exports = Sha256
 
-},{"./hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/hash.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha384.js":[function(require,module,exports){
+},{"./hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha384.js":[function(require,module,exports){
 var inherits = require('inherits')
 var SHA512 = require('./sha512')
 var Hash = require('./hash')
@@ -39227,7 +38733,7 @@ Sha384.prototype._hash = function () {
 
 module.exports = Sha384
 
-},{"./hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/hash.js","./sha512":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha512.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/sha512.js":[function(require,module,exports){
+},{"./hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js","./sha512":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha512.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/sha512.js":[function(require,module,exports){
 var inherits = require('inherits')
 var Hash = require('./hash')
 var Buffer = require('safe-buffer').Buffer
@@ -39489,7 +38995,7 @@ Sha512.prototype._hash = function () {
 
 module.exports = Sha512
 
-},{"./hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/sha.js/hash.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/stream-browserify/index.js":[function(require,module,exports){
+},{"./hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -39618,9 +39124,9 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/events/events.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream/duplex.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/duplex-browser.js","readable-stream/passthrough.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/passthrough.js","readable-stream/readable.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/readable-browser.js","readable-stream/transform.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/transform.js","readable-stream/writable.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/writable-browser.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js":[function(require,module,exports){
-arguments[4]["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js"][0].apply(exports,arguments)
-},{"safe-buffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/timers-browserify/main.js":[function(require,module,exports){
+},{"events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream/duplex.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/duplex-browser.js","readable-stream/passthrough.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/passthrough.js","readable-stream/readable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/readable-browser.js","readable-stream/transform.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/transform.js","readable-stream/writable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/writable-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js"][0].apply(exports,arguments)
+},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/timers-browserify/main.js":[function(require,module,exports){
 (function (setImmediate,clearImmediate){(function (){
 var nextTick = require('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -39700,7 +39206,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 };
 }).call(this)}).call(this,require("timers").setImmediate,require("timers").clearImmediate)
 
-},{"process/browser.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","timers":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/timers-browserify/main.js"}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/util-deprecate/browser.js":[function(require,module,exports){
+},{"process/browser.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","timers":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/timers-browserify/main.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util-deprecate/browser.js":[function(require,module,exports){
 (function (global){(function (){
 
 /**
@@ -39772,7 +39278,7 @@ function config (name) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/util/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -39797,14 +39303,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/util/support/isBufferBrowser.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/support/isBufferBrowser.js":[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/vm-browserify/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/vm-browserify/index.js":[function(require,module,exports){
 var indexOf = function (xs, item) {
     if (xs.indexOf) return xs.indexOf(item);
     else for (var i = 0; i < xs.length; i++) {
@@ -41737,7 +41243,7 @@ function numberIsNaN (obj) {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"base64-js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/base64-js/index.js","buffer":"buffer","ieee754":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/ieee754/index.js"}],"crypto":[function(require,module,exports){
+},{"base64-js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/base64-js/index.js","buffer":"buffer","ieee754":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ieee754/index.js"}],"crypto":[function(require,module,exports){
 'use strict'
 
 exports.randomBytes = exports.rng = exports.pseudoRandomBytes = exports.prng = require('randombytes')
@@ -41836,7 +41342,7 @@ exports.constants = {
   'POINT_CONVERSION_HYBRID': 6
 }
 
-},{"browserify-cipher":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-cipher/browser.js","browserify-sign":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/browser/index.js","browserify-sign/algos":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/browserify-sign/algos.js","create-ecdh":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-ecdh/browser.js","create-hash":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hash/browser.js","create-hmac":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/create-hmac/browser.js","diffie-hellman":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/diffie-hellman/browser.js","pbkdf2":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/pbkdf2/browser.js","public-encrypt":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/public-encrypt/browser.js","randombytes":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/randombytes/browser.js","randomfill":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/randomfill/browser.js"}],"overwrite-require":[function(require,module,exports){
+},{"browserify-cipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-cipher/browser.js","browserify-sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/index.js","browserify-sign/algos":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/algos.js","create-ecdh":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-ecdh/browser.js","create-hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/browser.js","create-hmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hmac/browser.js","diffie-hellman":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/browser.js","pbkdf2":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/browser.js","public-encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/browser.js","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js","randomfill":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randomfill/browser.js"}],"overwrite-require":[function(require,module,exports){
 (function (process,global){(function (){
 /*
  require and $$.require are overwriting the node.js defaults in loading modules for increasing security, speed and making it work to the privatesky runtime build with browserify.
@@ -42172,7 +41678,7 @@ function enableForEnvironment(envType){
                 let possibleRedirects = [301, 302];
                 $$.httpUnknownResponseGlobalHandler = function(res){
                     console.log("Global handler for unknown http errors was called", res.status, res);
-                    if(possibleRedirects.indexOf(res.status)!==-1){
+                    if(res.status && possibleRedirects.indexOf(res.status)!==-1){
                         window.location = "/";
                         return;
                     }
@@ -42254,7 +41760,7 @@ module.exports = {
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./Logger":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js"}],"pskcrypto":[function(require,module,exports){
+},{"./Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"pskcrypto":[function(require,module,exports){
 const PskCrypto = require("./lib/PskCrypto");
 const ssutil = require("./signsensusDS/ssutil");
 
@@ -42265,7 +41771,7 @@ module.exports.hashValues = ssutil.hashValues;
 module.exports.DuplexStream = require("./lib/utils/DuplexStream");
 
 module.exports.isStream = require("./lib/utils/isStream");
-},{"./lib/PskCrypto":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","./lib/utils/DuplexStream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js","./lib/utils/isStream":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js","./signsensusDS/ssutil":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js"}],"util":[function(require,module,exports){
+},{"./lib/PskCrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","./lib/utils/DuplexStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js","./lib/utils/isStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js","./signsensusDS/ssutil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js"}],"util":[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -42856,8 +42362,8 @@ function hasOwnProperty(obj, prop) {
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./support/isBuffer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/util/support/isBufferBrowser.js","_process":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/node_modules/util/node_modules/inherits/inherits_browser.js"}]},{},["/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/builds/tmp/webshims.js"])
+},{"./support/isBuffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/support/isBufferBrowser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/node_modules/inherits/inherits_browser.js"}]},{},["/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/webshims.js"])
                     ;(function(global) {
-                        global.bundlePaths = {"webshims":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/webshims.js","pskruntime":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/pskruntime.js","pskWebServer":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/pskWebServer.js","consoleTools":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/consoleTools.js","blockchain":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/blockchain.js","openDSU":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/openDSU.js","nodeBoot":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/nodeBoot.js","testsRuntime":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/testsRuntime.js","bindableModel":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/bindableModel.js","loaderBoot":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/loaderBoot.js","swBoot":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/swBoot.js","iframeBoot":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/iframeBoot.js","launcherBoot":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/launcherBoot.js","testRunnerBoot":"/home/skutner/WebstormProjects/work/epi-21-02/opendsu-sdk/psknode/bundles/testRunnerBoot.js"};
+                        global.bundlePaths = {"webshims":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/webshims.js","pskruntime":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/pskruntime.js","pskWebServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/pskWebServer.js","consoleTools":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/consoleTools.js","blockchain":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/blockchain.js","openDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/openDSU.js","nodeBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/nodeBoot.js","testsRuntime":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/testsRuntime.js","bindableModel":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/bindableModel.js","loaderBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/loaderBoot.js","swBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/swBoot.js","iframeBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/iframeBoot.js","launcherBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/launcherBoot.js","testRunnerBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/testRunnerBoot.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
                 
