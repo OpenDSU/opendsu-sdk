@@ -4643,9 +4643,8 @@ function secrets(server) {
     }
 
     const deleteSSOSecret = (request, response) => {
-        let did = request.params.did;
         let appName = request.params.appName;
-        let userId = getUserIdFromDID(did, appName);
+        let userId = request.headers["user-id"];
 
         secretsService.deleteSecret(appName, userId, err => {
             if (err) {
@@ -4684,7 +4683,7 @@ function secrets(server) {
     server.get("/getSSOSecret/:appName", getSSOSecret);
     server.put('/putSSOSecret/:appName', putSSOSecret);
     server.delete("/deactivateSSOSecret/:appName/:did", deleteSSOSecret);
-    server.delete("/removeSSOSecret/:appName/:did", deleteSSOSecret);
+    server.delete("/removeSSOSecret/:appName", deleteSSOSecret);
 }
 
 module.exports = secrets;
@@ -12274,7 +12273,7 @@ function Archive(archiveConfigurator) {
 
             this.getArchiveForPath(path, (err, res) => {
                 if (err) {
-                    callback(undefined, {type: undefined})
+                    return callback(undefined, {type: undefined});
                 }
 
                 if (res.archive === this) {
@@ -12282,7 +12281,7 @@ function Archive(archiveConfigurator) {
                     try {
                         stats = brickMapController.stat(path);
                     } catch (e) {
-                        return callback(undefined, {type: undefined})
+                        return callback(undefined, {type: undefined});
                     }
 
                     callback(undefined, stats);
@@ -40166,13 +40165,7 @@ function RemotePersistence() {
                             message: err.statusCode === 428 ? 'Unable to add alias: versions out of sync' : err.message || 'Error'
                         });
                     }
-
-                    resolver.invalidateDSUCache(anchorId, err => {
-                        if (err) {
-                            return reject(err);
-                        }
-                        resolve(data);
-                    });
+                    resolve(data);
                 });
                 if (putResult) {
                     putResult.then(resolve).catch(reject);
@@ -40273,6 +40266,7 @@ function RemotePersistence() {
 }
 
 module.exports = RemotePersistence;
+
 },{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","./../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
@@ -45199,7 +45193,7 @@ function BasicDB(storageStrategy, conflictSolvingStrategy, options) {
             if (newRecord.__version == 0) {
                 storageStrategy.insertRecord(tableName, key, newRecord, callback);
             } else {
-                storageStrategy.updateRecord(tableName, key, newRecord, currentRecord, callback);
+                storageStrategy.updateRecord(tableName, key, currentRecord, newRecord, callback);
             }
         }
 
@@ -45254,16 +45248,16 @@ function BasicDB(storageStrategy, conflictSolvingStrategy, options) {
       Delete a record
      */
     this.deleteRecord = function (tableName, key, callback) {
-        self.getRecord(tableName, key, function (err, record) {
+        self.getRecord(tableName, key, function (err, oldRecord) {
             if (err) {
                 return callback(createOpenDSUErrorWrapper(`Could not retrieve record with key ${key} does not exist ${tableName} `, err));
             }
 
-            const currentRecord = JSON.parse(JSON.stringify(record));
-            record.__version++;
-            record.__timestamp = Date.now();
-            record.__deleted = true;
-            storageStrategy.updateRecord(tableName, key, record, currentRecord, (err) => {
+            const newRecord = JSON.parse(JSON.stringify(oldRecord));
+            newRecord.__version++;
+            newRecord.__timestamp = Date.now();
+            newRecord.__deleted = true;
+            storageStrategy.updateRecord(tableName, key, oldRecord, newRecord, (err) => {
                 if (err) {
                     return callback(createOpenDSUErrorWrapper(`Failed to update with key ${key} in table ${tableName} `, err));
                 }
@@ -45716,7 +45710,7 @@ function MemoryStorageStrategy() {
     /*
         Update a record, return error if does not exists
      */
-    this.updateRecord = function (tableName, key, record, currentRecord, callback) {
+    this.updateRecord = function (tableName, key, oldRecord, newRecord, callback) {
         function _updateRecord(record, previousRecord, callback) {
             if (!previousRecord) {
                 return callback(new Error("Can't update a record for key " + key))
@@ -45726,17 +45720,10 @@ function MemoryStorageStrategy() {
             self.insertRecord(tableName, key, record, callback, true);
         }
 
-        if (typeof currentRecord === 'function') {
-            callback = currentRecord
-
-            this.getRecord(tableName, key, (err, previousRecord) => {
-                if (err) {
-                    return callback(err)
-                }
-                _updateRecord(record, previousRecord, callback)
-            })
+        if (typeof callback !== 'function') {
+            throw Error(`Incorrect function call. Callback must be provided!`)
         } else {
-            _updateRecord(record, currentRecord, callback)
+            _updateRecord(newRecord, oldRecord, callback)
         }
     };
 
@@ -46286,23 +46273,34 @@ function SingleDSUStorageStrategy() {
         });
     }
 
-    function createIndexEntry(tableName, fieldName, pk, value, callback) {
-        storageDSU.writeFile(getIndexPath(tableName, fieldName, value, pk), (err) => {
-            let retErr = undefined;
+    function createIndexForValue(tableName, fieldName, pk, value, callback) {
+        const indexValuePath = getIndexPath(tableName, fieldName, value, pk);
+        storageDSU.stat(indexValuePath, (err, stats) => {
             if (err) {
-                retErr = createOpenDSUErrorWrapper(`Failed to create file ${getIndexPath(tableName, fieldName, value, pk)}`, err);
+                return callback(err);
             }
 
-            callback(retErr)
+            if (typeof stats.type === "undefined") {
+                return storageDSU.writeFile(indexValuePath, (err) => {
+                    let retErr = undefined;
+                    if (err) {
+                        retErr = createOpenDSUErrorWrapper(`Failed to create file ${indexValuePath}`, err);
+                    }
+
+                    callback(retErr)
+                });
+            }
+
+            callback();
         });
     }
 
-    function updateIndexesForRecord(tableName, pk, record, callback) {
-        if (record.__deleted) {
+    function updateIndexesForRecord(tableName, pk, newRecord, callback) {
+        if (newRecord.__deleted) {
             //deleted records don't need to be into indexes
             return callback();
         }
-        const fields = Object.keys(record);
+        const fields = Object.keys(newRecord);
         getIndexedFieldsList(tableName, (err, indexedFields) => {
             if (err) {
                 return callback(createOpenDSUErrorWrapper(`Failed to get indexed fields list for table ${tableName}`, err));
@@ -46320,7 +46318,7 @@ function SingleDSUStorageStrategy() {
             taskCounter.increment(fields.length);
             fields.forEach(field => {
                 if (indexedFields.findIndex(indexedField => indexedField === field) !== -1) {
-                    createIndexEntry(tableName, field, pk, record[field], (err) => {
+                    createIndexForValue(tableName, field, pk, newRecord[field], (err) => {
                         if (err) {
                             return callback(createOpenDSUErrorWrapper(`Failed to update index for field ${field} in table ${tableName}`, err));
                         }
@@ -46351,16 +46349,14 @@ function SingleDSUStorageStrategy() {
         return `/${dbName}/${tableName}/records/${pk}`;
     }
 
-    function deleteIndex(tableName, fieldName, pk, value, callback) {
-        storageDSU.delete(getIndexPath(tableName, fieldName, value, pk), () => {
-            //TODO handle error type
-            //ignoring error on purpose
-            callback(undefined);
-        });
+    function deleteValueForIndex(tableName, fieldName, pk, oldValue, newValue, callback) {
+        if (oldValue === newValue) {
+            return callback();
+        }
+        storageDSU.delete(getIndexPath(tableName, fieldName, oldValue, pk), callback);
     }
-
-    function deleteIndexesForRecord(tableName, pk, record, callback) {
-        const fields = Object.keys(record);
+    function deleteIndexesForRecord(tableName, pk, oldRecord, newRecord, callback) {
+        const fields = Object.keys(oldRecord);
         getIndexedFieldsList(tableName, (err, indexedFields) => {
             if (err) {
                 return callback(createOpenDSUErrorWrapper(`Failed to get indexed fields list for table ${tableName}`, err));
@@ -46378,7 +46374,7 @@ function SingleDSUStorageStrategy() {
             taskCounter.increment(fields.length);
             fields.forEach(field => {
                 if (indexedFields.findIndex(indexedField => indexedField === field) !== -1) {
-                    deleteIndex(tableName, field, pk, record[field], (err) => {
+                    deleteValueForIndex(tableName, field, pk, oldRecord[field], newRecord[field],  (err) => {
                         if (err) {
                             return callback(createOpenDSUErrorWrapper(`Failed to delete index for field ${field} in table ${tableName}`, err));
                         }
@@ -46389,26 +46385,9 @@ function SingleDSUStorageStrategy() {
                     taskCounter.decrement();
                 }
             })
-
-            function deleteIndexesRecursively(index) {
-                const field = fields[index];
-                if (typeof field === "undefined") {
-                    return callback();
-                }
-                if (indexedFields.findIndex(indexedField => indexedField === field) !== -1) {
-                    deleteIndex(tableName, field, pk, record[field], (err) => {
-                        if (err) {
-                            return callback(createOpenDSUErrorWrapper(`Failed to delete index for field ${field} in table ${tableName}`, err));
-                        }
-
-                        deleteIndexesRecursively(index + 1);
-                    });
-                } else {
-                    deleteIndexesRecursively(index + 1);
-                }
-            }
         });
     }
+
 
     function getIndexedFieldsList(tableName, callback) {
         const indexesFilePath = `/${dbName}/${tableName}/indexes`;
@@ -46425,7 +46404,7 @@ function SingleDSUStorageStrategy() {
       Insert a record
     */
     this.insertRecord = function (tableName, key, record, callback) {
-        this.updateRecord(tableName, key, record, undefined, callback);
+        this.updateRecord(tableName, key, undefined, record,  callback);
     };
 
     function getPrimaryKeys(tableName, callback) {
@@ -46446,17 +46425,16 @@ function SingleDSUStorageStrategy() {
     /*
         Update a record
      */
-    this.updateRecord = function (tableName, key, record, currentRecord, callback) {
-        if (typeof record !== "object") {
+    this.updateRecord = function (tableName, key, oldRecord, newRecord, callback) {
+        if (typeof newRecord !== "object") {
             return callback(Error(`Invalid record type. Expected "object"`))
         }
 
-        if (Buffer.isBuffer(record)) {
+        if (Buffer.isBuffer(newRecord)) {
             return callback(Error(`"Buffer" is not a valid record type. Expected "object".`))
         }
 
-        if (Array.isArray(record)) {
-            this.writeKey(key, value, callback);
+        if (Array.isArray(newRecord)) {
             return callback(Error(`"Array" is not a valid record type. Expected "object".`))
         }
 
@@ -46467,39 +46445,39 @@ function SingleDSUStorageStrategy() {
         } else {
             storageDSU.beginBatch();
         }
-        storageDSU.writeFile(recordPath, JSON.stringify(record), function (err, res) {
+        storageDSU.writeFile(recordPath, JSON.stringify(newRecord), function (err, res) {
             if (err) {
                 return callback(createOpenDSUErrorWrapper(`Failed to update record in ${recordPath}`, err));
             }
 
-            if (typeof currentRecord !== "undefined") {
-                return deleteIndexesForRecord(tableName, key, currentRecord, (err) => {
+            if (typeof oldRecord !== "undefined") {
+                return deleteIndexesForRecord(tableName, key,  oldRecord, newRecord, (err) => {
                     if (err) {
-                        return callback(createOpenDSUErrorWrapper(`Failed to delete index files for record ${JSON.stringify(currentRecord)}`, err));
+                        return callback(createOpenDSUErrorWrapper(`Failed to delete index files for record ${JSON.stringify(newRecord)}`, err));
                     }
 
-                    return updateIndexesForRecord(tableName, key, record, (err) => {
+                    return updateIndexesForRecord(tableName, key, newRecord, (err) => {
                         if (err) {
-                            return callback(createOpenDSUErrorWrapper(`Failed to update indexes for record ${record}`, err));
+                            return callback(createOpenDSUErrorWrapper(`Failed to update indexes for record ${newRecord}`, err));
                         }
 
                         if (batchInProgress) {
-                            return callback(undefined, record);
+                            return callback(undefined, newRecord);
                         }
-                        storageDSU.commitBatch(err => callback(err, record));
+                        storageDSU.commitBatch(err => callback(err, newRecord));
                     });
                 });
             }
 
-            updateIndexesForRecord(tableName, key, record, (err) => {
+            updateIndexesForRecord(tableName, key, newRecord, (err) => {
                 if (err) {
-                    return callback(createOpenDSUErrorWrapper(`Failed to update indexes for record ${record}`, err));
+                    return callback(createOpenDSUErrorWrapper(`Failed to update indexes for record ${newRecord}`, err));
                 }
 
                 if (batchInProgress) {
-                    return callback(undefined, record);
+                    return callback(undefined, newRecord);
                 }
-                storageDSU.commitBatch(err => callback(err, record));
+                storageDSU.commitBatch(err => callback(err, newRecord));
             });
         });
     };
@@ -49515,6 +49493,7 @@ function Enclave_Mixin(target, did, keySSI) {
     }
 
     target.refresh = (forDID, callback) => {
+        console.debug("Refresh was called");
         if (typeof forDID === "function") {
             callback = forDID;
             forDID = undefined;
@@ -50116,6 +50095,7 @@ function Enclave_Mixin(target, did, keySSI) {
 }
 
 module.exports = Enclave_Mixin;
+
 },{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createCommandObject} = require("./lib/createCommandObject");
