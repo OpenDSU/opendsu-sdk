@@ -11068,7 +11068,62 @@ function OwnershipDSUFactory(options) {
 
 module.exports = OwnershipDSUFactory;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/VersionlessDSUFactory.js":[function(require,module,exports){
+function VersionlessDSUFactory() {
+    const VersionlessDSU = require("../dsu/VersionlessDSU");
+
+    /**
+     * @param {object} options
+     * @param {string} options.addLog boolean, specify if log create entry should be added
+     * @param {callback} callback
+     */
+    this.create = (keySSI, options, callback) => {
+        if (typeof options === "function") {
+            callback = options;
+            options = undefined;
+        }
+
+        if (typeof options === "undefined") {
+            options = {};
+        }
+
+        const versionlessDSU = new VersionlessDSU({ keySSI });
+
+        const initCallback = (error, result) => {
+            if (error) {
+                return callback(error);
+            }
+
+            if (options.addLog) {
+                versionlessDSU.dsuLog(`DSU created on ${Date.now()}`, (err) => {
+                    callback(err, result);
+                });
+            }
+            callback(undefined, result);
+        };
+
+        versionlessDSU.init(initCallback);
+    };
+
+    /**
+     * @param {string} keySSI
+     * @param {object} options
+     * @param {callback} callback
+     */
+    this.load = (keySSI, options, callback) => {
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        const versionlessDSU = new VersionlessDSU({ keySSI });
+        versionlessDSU.load(callback);
+    };
+}
+
+module.exports = VersionlessDSUFactory;
+
+},{"../dsu/VersionlessDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSU.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -11292,6 +11347,10 @@ function Registry(options) {
         const ConsensusDSUFactory = require("./ConsensusDSUFactory");
         const consensusDSUFactory = new ConsensusDSUFactory({barFactory});
         this.registerDSUType(SSITypes.CONSENSUS_SSI, consensusDSUFactory);
+
+        const VersionlessDSUFactory = require("./VersionlessDSUFactory");
+        const versionlessDSUFactory = new VersionlessDSUFactory();
+        this.registerDSUType(SSITypes.VERSIONLESS_SSI, versionlessDSUFactory);
     }
 
     ////////////////////////////////////////////////////////////
@@ -11330,7 +11389,7 @@ function Registry(options) {
         let type = keySSI.getTypeName();
         if (keySSI.options && keySSI.options.dsuFactoryType) {
             type = keySSI.options.dsuFactoryType;
-        }
+        }        
         const factory = factories[type];
         factory.create(keySSI, dsuConfiguration, callback);
     }
@@ -11377,7 +11436,7 @@ Registry.prototype.getDSUFactory = (dsuType) => {
 
 module.exports = Registry;
 
-},{"../KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConsensusDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js","./ConstDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js","./DSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js","./OwnershipDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js","./WalletFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js":[function(require,module,exports){
+},{"../KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConsensusDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js","./ConstDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js","./DSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js","./OwnershipDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js","./VersionlessDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/VersionlessDSUFactory.js","./WalletFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js":[function(require,module,exports){
 module.exports = function(archive){
 	archive.call = (functionName, ...args) => {
 		if(args.length === 0){
@@ -12065,6 +12124,8 @@ const createEmbedSSI = require("./OtherKeySSIs/EmbedSSI").createEmbedSSI;
 
 const createSizeSSI = require("./OtherKeySSIs/SizeSSI").createSizeSSI;
 
+const createVersionlessSSI = require("./OtherKeySSIs/VersionlessSSI").createVersionlessSSI;
+
 const SSITypes = require("./SSITypes");
 
 const registry = {};
@@ -12258,9 +12319,11 @@ KeySSIFactory.prototype.registerFactory(SSITypes.EMBED_SSI, 'v0', undefined, cre
 
 KeySSIFactory.prototype.registerFactory(SSITypes.SIZE_SSI, 'v0', undefined, createSizeSSI);
 
+KeySSIFactory.prototype.registerFactory(SSITypes.VERSIONLESS_SSI, 'v0', undefined, createVersionlessSSI);
+
 module.exports = new KeySSIFactory();
 
-},{"./ConstSSIs/ArraySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js","./ConstSSIs/CZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js","./ConstSSIs/ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js","./ConstSSIs/PasswordSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js","./ContractSSIs/ConsensusSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js","./HashLinkSSIs/HashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/HashLinkSSI.js","./HashLinkSSIs/SignedHashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js","./KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./OtherKeySSIs/AliasSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js","./OtherKeySSIs/EmbedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js","./OtherKeySSIs/PublicKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js","./OtherKeySSIs/SizeSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js","./OtherKeySSIs/SymmetricalEncryptionSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js","./OtherKeySSIs/WalletSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js","./OwnershipSSIs/OReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js","./OwnershipSSIs/OwnershipSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js","./OwnershipSSIs/ZATSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js","./SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SecretSSIs/AnchorSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js","./SecretSSIs/PublicSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js","./SecretSSIs/ReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js","./SecretSSIs/SecretSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js","./SecretSSIs/ZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js","./SeedSSIs/PathKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js","./SeedSSIs/SReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js","./SeedSSIs/SZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js","./SeedSSIs/SeedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","./TokenSSIs/TokenSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js","./TransferSSIs/TransferSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js":[function(require,module,exports){
+},{"./ConstSSIs/ArraySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js","./ConstSSIs/CZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js","./ConstSSIs/ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js","./ConstSSIs/PasswordSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js","./ContractSSIs/ConsensusSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js","./HashLinkSSIs/HashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/HashLinkSSI.js","./HashLinkSSIs/SignedHashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js","./KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./OtherKeySSIs/AliasSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js","./OtherKeySSIs/EmbedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js","./OtherKeySSIs/PublicKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js","./OtherKeySSIs/SizeSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js","./OtherKeySSIs/SymmetricalEncryptionSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js","./OtherKeySSIs/VersionlessSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/VersionlessSSI.js","./OtherKeySSIs/WalletSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js","./OwnershipSSIs/OReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js","./OwnershipSSIs/OwnershipSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js","./OwnershipSSIs/ZATSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js","./SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SecretSSIs/AnchorSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js","./SecretSSIs/PublicSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js","./SecretSSIs/ReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js","./SecretSSIs/SecretSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js","./SecretSSIs/ZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js","./SeedSSIs/PathKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js","./SeedSSIs/SReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js","./SeedSSIs/SZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js","./SeedSSIs/SeedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","./TokenSSIs/TokenSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js","./TransferSSIs/TransferSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js":[function(require,module,exports){
 (function (process){(function (){
 const cryptoRegistry = require("../CryptoAlgorithms/CryptoAlgorithmsRegistry");
 const pskCrypto = require("pskcrypto");
@@ -12903,7 +12966,105 @@ module.exports = {
     createSymmetricalEncryptionSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/VersionlessSSI.js":[function(require,module,exports){
+const KeySSIMixin = require("../KeySSIMixin");
+const SSITypes = require("../SSITypes");
+
+function VersionlessSSI(enclave, identifier) {
+    if (typeof enclave === "string") {
+        identifier = enclave;
+        enclave = undefined;
+    }
+    KeySSIMixin(this, enclave);
+    const self = this;
+
+    if (typeof identifier !== "undefined") {
+        self.autoLoad(identifier);
+    }
+
+    const crypto = require("opendsu").loadApi("crypto");
+    const pskcrypto = require("pskcrypto");
+
+    self.getTypeName = function () {
+        return SSITypes.VERSIONLESS_SSI;
+    };
+
+    self.initialize = (dlDomain, filePath, encryptionKey, vn, hint) => {
+        if (!encryptionKey) {
+            encryptionKey = "";
+        }
+        self.load(SSITypes.VERSIONLESS_SSI, dlDomain, filePath, encryptionKey, vn, hint);
+    };
+
+    // required to overwrite in order to cache the DSU instance
+    self.getAnchorId = function (plain, callback) {
+        if (typeof plain === "function") {
+            callback = plain;
+        }
+        // use hash in order to limit anchorId length
+        const anchorId = crypto.sha256(self.getFilePath());
+
+        if (!callback) {
+            return anchorId;
+        }
+        callback(undefined, anchorId);
+    };
+
+    // required for opendsu resolver loader
+    self.getHash = () => {
+        return self.getAnchorId();
+    };
+
+    self.getFilePath = () => {
+        return self.getSpecificString();
+    };
+
+    self.getEncryptionKey = () => {
+        return self.getControlString();
+    };
+
+    self.isEncrypted = () => {
+        return !!self.getEncryptionKey();
+    };
+
+    self.encrypt = (data, callback) => {
+        if (!self.isEncrypted()) {
+            return callback(undefined, data);
+        }
+
+        try {
+            const encryptionKey = self.getEncryptionKey();
+            const result = crypto.encrypt(data, encryptionKey);
+            callback(undefined, result);
+        } catch (error) {
+            callback(error);
+        }
+    };
+
+    self.decrypt = (data, callback) => {
+        if (!self.isEncrypted()) {
+            return callback(undefined, data);
+        }
+
+        try {
+            const encryptionKey = self.getEncryptionKey();
+            const result = crypto.decrypt(data, encryptionKey);
+            callback(undefined, result);
+        } catch (error) {
+            callback(error);
+        }
+    };
+}
+
+function createVersionlessSSI(enclave, identifier) {
+    return new VersionlessSSI(enclave, identifier);
+}
+
+module.exports = {
+    createVersionlessSSI,
+};
+
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu","pskcrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js":[function(require,module,exports){
 const ArraySSI = require("./../ConstSSIs/ArraySSI");
 const SSITypes = require("../SSITypes");
 
@@ -13240,7 +13401,8 @@ module.exports = {
     PUBLIC_KEY_SSI: "pk",
     ALIAS_SSI: "alias",
     SIZE_SSI: "size",
-    EMBED_SSI: "embed"
+    EMBED_SSI: "embed",
+    VERSIONLESS_SSI: "vs"
 };
 
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js":[function(require,module,exports){
@@ -13952,7 +14114,2038 @@ module.exports = {
     DSU_VERSION_KEY: "dsuVersion",
     EMBEDDED_DATA_KEY: "embedded"
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSU.js":[function(require,module,exports){
+const VersionlessDSUController = require("./VersionlessDSUController");
+const DSU_ENTRY_TYPES = {
+    FILE: "FILE",
+    FOLDER: "FOLDER",
+};
+
+function VersionlessDSU(config) {
+    const { keySSI } = config;
+
+    let keySSIString;
+    let keySSIObject;
+    if (typeof keySSI === "string") {
+        keySSIString = keySSI;
+        keySSIObject = keySSISpace.parse(ssi);
+    } else {
+        keySSIString = keySSI.getIdentifier();
+        keySSIObject = keySSI;
+    }
+
+    let refreshInProgress = false;
+    let refreshPromise = Promise.resolve();
+    let isBatchCurrentlyInProgress = false;
+
+    const controllerConfig = {
+        keySSIString,
+        keySSIObject,
+    };
+    const versionlessDSUController = new VersionlessDSUController(this, controllerConfig);
+
+    const pskPath = require("swarmutils").path;
+
+    const processPath = (path) => {
+        path = pskPath.normalize(path);
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        return path;
+    };
+
+    /**
+     * This function waits for an existing "refresh" operation to finish
+     * before executing the `callback`.
+     * If no refresh operation is in progress, the `callback` is executed
+     * immediately.
+     * This function is called by the public methods in order to prevent
+     * calling methods on possible outdated content (content before reload)
+     *
+     * @param {function} callback
+     */
+    const waitIfDSUIsRefreshing = (callback) => {
+        if (refreshInProgress === false) {
+            return callback();
+        }
+
+        refreshPromise.then(() => {
+            callback();
+        });
+    };
+
+    const executeMountAwareOperation = ({ path, options, onIgnoreMounts, checkReadonly, onMountCallback }) => {
+        if (!options) {
+            options = { ignoreMounts: false };
+        }
+        if (checkReadonly !== false) {
+            checkReadonly = true;
+        }
+
+        waitIfDSUIsRefreshing(() => {
+            if (options.ignoreMounts) {
+                onIgnoreMounts();
+            } else {
+                this.getArchiveForPath(path, (err, archiveContext) => {
+                    if (err) {
+                        return OpenDSUSafeCallback(onMountCallback)(
+                            createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${path}`, err)
+                        );
+                    }
+
+                    if (checkReadonly && archiveContext.readonly === true) {
+                        return onMountCallback(Error("Tried to write in a readonly mounted RawDossier"));
+                    }
+
+                    let onMountCallbackOptions = {
+                        options: { ...options, ignoreMounts: true },
+                        archive: archiveContext.archive,
+                        relativePath: archiveContext.relativePath,
+                        prefixPath: archiveContext.prefixPath,
+                    };
+                    onMountCallback(undefined, onMountCallbackOptions);
+                });
+            }
+        });
+    };
+
+    const getSaneCallbackFunction = (...args) => {
+        for (let i = args.length - 1; i >= 0; i--) {
+            if (typeof args[i] === "function") {
+                return $$.makeSaneCallback(args[i]);
+            }
+        }
+        throw new Error("No callback argument found!");
+    };
+
+    this.init = (callback) => {
+        callback = $$.makeSaneCallback(callback);
+        const controllerCallback = (error, result) => {
+            if (error) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to create versionless DSU`, error));
+            }
+
+            // return VersionlessDSU instance
+            callback(null, this);
+        };
+        versionlessDSUController.createDSU(controllerCallback);
+    };
+
+    this.load = (callback) => {
+        callback = $$.makeSaneCallback(callback);
+        const controllerCallback = (error, result) => {
+            if (error) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to get versionless DSU`, error));
+            }
+
+            // return VersionlessDSU instance
+            callback(null, this);
+        };
+
+        versionlessDSUController.loadDSU(controllerCallback);
+    };
+
+    this.loadVersion = (versionHash, callback) => {
+        callback("NotApplicableForVersionlessDSU");
+    };
+    this.getBrickMapController = () => {
+        throw new Error("NotApplicableForVersionlessDSU");
+    };
+
+    this.refresh = (callback) => {
+        callback = $$.makeSaneCallback(callback);
+        waitIfDSUIsRefreshing(() => {
+            refreshInProgress = true;
+            refreshPromise = refreshPromise.then(() => {
+                return new Promise((resolve) => {
+                    this.load((err) => {
+                        if (err) {
+                            refreshInProgress = false;
+                            return resolve(OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to load DSU", err)));
+                        }
+
+                        resolve(callback());
+                    });
+                }).catch((e) => {
+                    console.trace("This shouldn't happen. Refresh errors should have been already caught");
+                });
+            });
+        });
+    };
+
+    this.getLastHashLinkSSI = (callback) => {
+        console.log("This method is obsolete. Please use `dsu.getLatestAnchoredHashLink()` instead.");
+        return this.getLatestAnchoredHashLink(callback);
+    };
+
+    this.getLatestAnchoredHashLink = (callback) => {
+        // required for opendsu resolver loader
+        return this.getKeySSIAsObject(callback);
+    };
+
+    this.getCurrentAnchoredHashLink = (callback) => {
+        // required for opendsu resolver loader
+        return this.getKeySSIAsObject(callback);
+    };
+
+    this.getKeySSI = (keySSIType, callback) => {
+        console.trace("Obsolete function: use getKeySSIAsString or getKeySSIAsObject Instead");
+        this.getKeySSIAsObject(keySSIType, callback);
+    };
+
+    this.getKeySSIAsObject = (keySSIType, callback) => {
+        if (typeof keySSIType === "function") {
+            callback = keySSIType;
+        }
+        callback = $$.makeSaneCallback(callback);
+        callback(undefined, keySSIObject);
+    };
+
+    this.getKeySSIAsString = (keySSIType, callback) => {
+        if (typeof keySSIType === "function") {
+            callback = keySSIType;
+        }
+        callback = $$.makeSaneCallback(callback);
+        callback(undefined, keySSIString);
+    };
+
+    this.getCreationSSI = (plain) => {
+        return keySSIObject.getIdentifier(plain);
+    };
+
+    /**
+     * @param {string} path
+     * @param {string|$$.Buffer|stream.ReadableStream} data
+     * @param {callback} callback
+     */
+    this.appendToFile = (path, data, options, callback) => {
+        const defaultOpts = { encrypt: true, ignoreMounts: false };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        executeMountAwareOperation({
+            path,
+            options,
+            onIgnoreMounts: () => {
+                versionlessDSUController.appendToFile(path, data, options, callback);
+            },
+            onMountCallback: (error, { options, archive, relativePath }) => {
+                if (error) {
+                    return callback(error);
+                }
+                archive.appendToFile(relativePath, data, options, callback);
+            },
+        });
+    };
+
+    this.dsuLog = (message, callback) => {
+        this.appendToFile("/dsu-metadata-log", message + "\n", { ignoreMissing: true }, callback);
+    };
+
+    /**
+     * @param {object} rules
+     * @param {object} rules.preWrite
+     * @param {object} rules.afterLoad
+     */
+    this.setValidationRules = (rules) => {
+        callback("NotApplicableForVersionlessDSU");
+    };
+
+    this.setAnchoringEventListener = (listener) => {
+        throw new Error("NotApplicableForVersionlessDSU");
+    };
+
+    this.setDecisionCallback = (callback) => {
+        callback("NotApplicableForVersionlessDSU");
+    };
+
+    this.getAnchoringStrategy = () => {
+        throw new Error("NotApplicableForVersionlessDSU");
+    };
+
+    this.doAnchoring = (callback) => {
+        callback("NotApplicableForVersionlessDSU");
+    };
+
+    this.getSSIForMount = (mountPoint, callback) => {
+        callback = $$.makeSaneCallback(callback);
+        waitIfDSUIsRefreshing(() => {
+            versionlessDSUController.getSSIForMount(mountPoint, callback);
+        });
+    };
+
+    this.addFolder = (folderPath, basePath, options, callback) => {
+        const defaultOpts = {
+            encrypt: true,
+            ignoreMounts: false,
+            embedded: false,
+        };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        executeMountAwareOperation({
+            path: basePath,
+            options,
+            onIgnoreMounts: () => {
+                versionlessDSUController.addFolder(folderPath, basePath, options, callback);
+            },
+            onMountCallback: (error, { options, archive, relativePath }) => {
+                if (error) {
+                    return callback(error);
+                }
+                archive.addFolder(folderPath, relativePath, options, callback);
+            },
+        });
+    };
+
+    this.addFile = (filePath, destinationFilePath, options, callback) => {
+        const defaultOpts = {
+            encrypt: true,
+            ignoreMounts: false,
+            embedded: false,
+        };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        executeMountAwareOperation({
+            path: destinationFilePath,
+            options,
+            onIgnoreMounts: () => {
+                versionlessDSUController.addFile(filePath, destinationFilePath, options, callback);
+            },
+            onMountCallback: (error, { options, archive, relativePath }) => {
+                if (error) {
+                    return callback(error);
+                }
+                archive.addFile(filePath, relativePath, options, callback);
+            },
+        });
+    };
+
+    this.addFiles = (filePaths, basePath, options, callback) => {
+        const defaultOpts = {
+            encrypt: true,
+            ignoreMounts: false,
+            embedded: false,
+        };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        executeMountAwareOperation({
+            path: basePath,
+            options,
+            onIgnoreMounts: () => {
+                versionlessDSUController.addFiles(filePaths, basePath, options, callback);
+            },
+            onMountCallback: (error, { options, archive, relativePath }) => {
+                if (error) {
+                    return callback(error);
+                }
+                archive.addFiles(filePaths, relativePath, options, callback);
+            },
+        });
+    };
+
+    this.readFile = (filePath, options, callback) => {
+        const defaultOpts = { ignoreMounts: false };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        executeMountAwareOperation({
+            path: filePath,
+            options,
+            onIgnoreMounts: () => {
+                versionlessDSUController.readFile(filePath, callback);
+            },
+            checkReadonly: false,
+            onMountCallback: (error, { options, archive, relativePath }) => {
+                if (error) {
+                    return callback(error);
+                }
+                archive.readFile(relativePath, options, callback);
+            },
+        });
+    };
+
+    this.createReadStream = (fileBarPath, options, callback) => {
+        callback = getSaneCallbackFunction(fileBarPath, options, callback);
+        callback("NotApplicableForVersionlessDSU");
+    };
+
+    this.createBigFileReadStreamWithRange = (fileBarPath, range, options, callback) => {
+        callback = getSaneCallbackFunction(fileBarPath, range, options, callback);
+        callback("NotApplicableForVersionlessDSU");
+    };
+
+    this.extractFolder = (fsFolderPath, barPath, options, callback) => {
+        callback = getSaneCallbackFunction(fsFolderPath, barPath, options, callback);
+        callback("NotImplemented");
+    };
+
+    this.extractFile = (fsDestinationFilePath, sourceFilePath, options, callback) => {
+        waitIfDSUIsRefreshing(() => {
+            const defaultOpts = { ignoreMounts: false };
+            if (typeof options === "function") {
+                callback = options;
+                options = {};
+            }
+
+            callback = $$.makeSaneCallback(callback);
+            options = Object.assign(defaultOpts, options);
+
+            if (options.ignoreMounts === true) {
+                versionlessDSUController.extractFile(fsDestinationFilePath, sourceFilePath, callback);
+            } else {
+                this.getArchiveForPath(sourceFilePath, (err, archiveContext) => {
+                    if (err) {
+                        return OpenDSUSafeCallback(callback)(
+                            createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${sourceFilePath}`, err)
+                        );
+                    }
+
+                    options.ignoreMounts = true;
+                    archiveContext.archive.extractFile(fsDestinationFilePath, archiveContext.relativePath, options, callback);
+                });
+            }
+        });
+    };
+
+    this.extractFolder = (fsDestinationFolderPath, sourceFolderPath, options, callback) => {
+        waitIfDSUIsRefreshing(() => {
+            const defaultOpts = { ignoreMounts: false };
+            if (typeof options === "function") {
+                callback = options;
+                options = {};
+            }
+
+            callback = $$.makeSaneCallback(callback);
+            options = Object.assign(defaultOpts, options);
+
+            if (options.ignoreMounts === true) {
+                versionlessDSUController.extractFolder(fsDestinationFolderPath, sourceFolderPath, callback);
+            } else {
+                this.getArchiveForPath(sourceFolderPath, (err, archiveContext) => {
+                    if (err) {
+                        return OpenDSUSafeCallback(callback)(
+                            createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${sourceFolderPath}`, err)
+                        );
+                    }
+
+                    options.ignoreMounts = true;
+                    archiveContext.archive.extractFolder(fsDestinationFolderPath, archiveContext.relativePath, options, callback);
+                });
+            }
+        });
+    };
+
+    this.writeFile = (path, data, options, callback) => {
+        const defaultOpts = { encrypt: true, ignoreMounts: false, embed: false };
+        if (typeof data === "function") {
+            callback = data;
+            data = undefined;
+            options = undefined;
+        }
+        if (typeof options === "function") {
+            callback = options;
+            options = defaultOpts;
+        }
+        if (typeof options === "undefined") {
+            options = defaultOpts;
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        if (options.embed) {
+            options.encrypt = false;
+        }
+
+        executeMountAwareOperation({
+            path,
+            options,
+            onIgnoreMounts: () => {
+                versionlessDSUController.writeFile(path, data, options, callback);
+            },
+            onMountCallback: (error, { options, archive, relativePath }) => {
+                if (error) {
+                    return callback(error);
+                }
+                archive.writeFile(relativePath, data, options, callback);
+            },
+        });
+    };
+
+    this.embedFile = (path, data, options, callback) => {
+        this.writeFile(path, data, options, callback);
+    };
+
+    this.writeFileFromBricks = (path, bricks, options, callback) => {
+        callback = getSaneCallbackFunction(path, bricks, options, callback);
+        callback("NotApplicableForVersionlessDSU");
+    };
+
+    this.appendBigFileBrick = (path, newSizeSSI, brick, options, callback) => {
+        callback = getSaneCallbackFunction(path, newSizeSSI, brick, options, callback);
+        callback("NotApplicableForVersionlessDSU");
+    };
+
+    this.getBigFileBricksMeta = (path, options, callback) => {
+        callback = getSaneCallbackFunction(path, options, callback);
+        callback("NotApplicableForVersionlessDSU");
+    };
+
+    this.delete = (path, options, callback) => {
+        const defaultOpts = { ignoreMounts: false, ignoreError: false };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        executeMountAwareOperation({
+            path,
+            options,
+            onIgnoreMounts: () => {
+                versionlessDSUController.delete(path, (err) => {
+                    if (!err || (err && options.ignoreError)) {
+                        return callback();
+                    }
+
+                    callback(err);
+                });
+            },
+            onMountCallback: (error, { options, archive, relativePath }) => {
+                if (error) {
+                    return callback(error);
+                }
+                archive.delete(relativePath, options, callback);
+            },
+        });
+    };
+
+    this.rename = (srcPath, dstPath, options, callback) => {
+        const defaultOpts = { ignoreMounts: false };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        executeMountAwareOperation({
+            path: srcPath,
+            options,
+            onIgnoreMounts: () => {
+                versionlessDSUController.rename(srcPath, dstPath, callback);
+            },
+            onMountCallback: (error, { options, archive, relativePath, prefixPath }) => {
+                if (error) {
+                    return callback(error);
+                }
+                this.getArchiveForPath(dstPath, (err, destinationArchiveContext) => {
+                    if (err) {
+                        return OpenDSUSafeCallback(callback)(
+                            createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${dstPath}`, err)
+                        );
+                    }
+
+                    if (destinationArchiveContext.prefixPath !== prefixPath) {
+                        return callback(Error("Destination is invalid. Renaming must be done in the scope of the same dossier"));
+                    }
+
+                    archive.rename(relativePath, destinationArchiveContext.relativePath, options, callback);
+                });
+            },
+        });
+    };
+
+    const listMountedEntries = async (dsuEntryType, mountPoints, callback) => {
+        const results = [];
+        const listEntriesAsync =
+            dsuEntryType === DSU_ENTRY_TYPES.FOLDER
+                ? $$.promisify(this.listFolders.bind(this))
+                : $$.promisify(this.listFiles.bind(this));
+
+        for (const mountPoint of mountPoints) {
+            const mountPath = processPath(mountPoint.path);
+
+            try {
+                const mountPointEntries = await listEntriesAsync(mountPath, {
+                    recursive: true,
+                    ignoreMounts: false,
+                });
+                const mountPointEntryPaths = mountPointEntries.map((file) => {
+                    let prefix = mountPath;
+                    if (prefix[0] === "/") {
+                        prefix = prefix.substring(1);
+                    }
+
+                    return processPath(`${prefix}/${file}`);
+                });
+                mountPointEntryPaths.forEach((path) => results.push(path));
+            } catch (error) {
+                const entryType = dsuEntryType === DSU_ENTRY_TYPES.FOLDER ? "folders" : "files";
+                return OpenDSUSafeCallback(callback)(
+                    createOpenDSUErrorWrapper(`Failed to list ${entryType} at path ${mountPath}`, error)
+                );
+            }
+        }
+
+        callback(undefined, results);
+    };
+
+    const listMountedFiles = (mountPoints, callback) => {
+        listMountedEntries(DSU_ENTRY_TYPES.FILE, mountPoints, callback);
+    };
+
+    const listMountedFolders = (mountPoints, callback) => {
+        listMountedEntries(DSU_ENTRY_TYPES.FOLDER, mountPoints, callback);
+    };
+
+    this.listFiles = (path, options, callback) => {
+        const defaultOpts = { ignoreMounts: false, recursive: true };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        if (options.ignoreMounts === true) {
+            if (!options.recursive) {
+                return versionlessDSUController.listFiles(path, options, callback);
+            }
+
+            return versionlessDSUController.listFiles(path, options, (error, files) => {
+                if (error) {
+                    return OpenDSUSafeCallback(callback)(
+                        createOpenDSUErrorWrapper(`Failed to list files at path ${path}`, error)
+                    );
+                }
+
+                versionlessDSUController.getMountedDSUs("/", (error, mountPoints) => {
+                    if (error) {
+                        return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to get manifest`, error));
+                    }
+
+                    if (!mountPoints.length) {
+                        return callback(undefined, files);
+                    }
+
+                    listMountedFiles(mountPoints, (error, mountedFiles) => {
+                        if (error) {
+                            return OpenDSUSafeCallback(callback)(
+                                createOpenDSUErrorWrapper(`Failed to list mounted files at mountPoints ${mountPoints}`, error)
+                            );
+                        }
+
+                        files = files.concat(...mountedFiles);
+                        return callback(undefined, files);
+                    });
+                });
+            });
+        }
+
+        this.getArchiveForPath(path, (error, archiveContext) => {
+            if (error) {
+                return OpenDSUSafeCallback(callback)(
+                    createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${path}`, error)
+                );
+            }
+
+            options.ignoreMounts = true;
+            archiveContext.archive.listFiles(archiveContext.relativePath, options, callback);
+        });
+    };
+
+    this.listFolders = (path, options, callback) => {
+        const defaultOpts = { ignoreMounts: false, recursive: false };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        if (options.ignoreMounts === true) {
+            if (!options.recursive) {
+                return versionlessDSUController.listFolders(path, options, callback);
+            }
+
+            return versionlessDSUController.listFolders(path, options, (error, folders) => {
+                if (error) {
+                    return OpenDSUSafeCallback(callback)(
+                        createOpenDSUErrorWrapper(`Failed to list folders at path ${path}`, error)
+                    );
+                }
+
+                versionlessDSUController.getMountedDSUs("/", (error, mountPoints) => {
+                    if (error) {
+                        return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to get manifest`, error));
+                    }
+
+                    if (!mountPoints.length) {
+                        return callback(undefined, folders);
+                    }
+
+                    listMountedFolders(mountPoints, (error, mountedFolders) => {
+                        if (error) {
+                            return OpenDSUSafeCallback(callback)(
+                                createOpenDSUErrorWrapper(`Failed to list mounted folders at mountPoints ${mountPoints}`, error)
+                            );
+                        }
+
+                        folders = folders.concat(...mountedFolders);
+                        return callback(undefined, folders);
+                    });
+                });
+            });
+        }
+
+        this.getArchiveForPath(path, (error, archiveContext) => {
+            if (error) {
+                return OpenDSUSafeCallback(callback)(
+                    createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${path}`, error)
+                );
+            }
+
+            options.ignoreMounts = true;
+            archiveContext.archive.listFolders(archiveContext.relativePath, options, callback);
+        });
+    };
+
+    this.createFolder = (folderPath, options, callback) => {
+        const defaultOpts = { ignoreMounts: false, encrypt: true };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        executeMountAwareOperation({
+            path: folderPath,
+            options,
+            onIgnoreMounts: () => {
+                versionlessDSUController.createFolder(folderPath, callback);
+            },
+            onMountCallback: (error, { options, archive, relativePath }) => {
+                if (error) {
+                    return callback(error);
+                }
+                archive.createFolder(relativePath, options, callback);
+            },
+        });
+    };
+
+    this.readDir = (folderPath, options, callback) => {
+        const defaultOpts = { withFileTypes: false };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        this.getArchiveForPath(folderPath, async (err, archiveContext) => {
+            if (err) {
+                return OpenDSUSafeCallback(callback)(
+                    createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${folderPath}`, err)
+                );
+            }
+
+            const { relativePath, archive } = archiveContext;
+
+            const entries = {};
+
+            try {
+                entries.files = await $$.promisify(archive.listFiles.bind(this))(relativePath, {
+                    recursive: false,
+                    ignoreMounts: true,
+                });
+            } catch (error) {
+                return OpenDSUSafeCallback(callback)(
+                    createOpenDSUErrorWrapper(`Failed to list files at path ${relativePath}`, err)
+                );
+            }
+
+            try {
+                const folders = await $$.promisify(archive.listFolders.bind(this))(relativePath, {
+                    recursive: false,
+                    ignoreMounts: true,
+                });
+
+                if (options.withFileTypes) {
+                    entries.folders = folders;
+                } else {
+                    entries.files = [...entries.files, ...folders];
+                }
+            } catch (error) {
+                return OpenDSUSafeCallback(callback)(
+                    createOpenDSUErrorWrapper(`Failed to list folders at path ${relativePath}`, err)
+                );
+            }
+
+            try {
+                const mounts = await $$.promisify(archive.listMountedDossiers)(relativePath);
+
+                let mountPaths = mounts.map((mount) => mount.path);
+                let folders = mountPaths.filter((mountPath) => mountPath.split("/").length >= 2);
+                folders = folders.map((mountPath) => mountPath.split("/").shift());
+                let mountedDossiers = mountPaths.filter((mountPath) => mountPath.split("/").length === 1);
+                mountedDossiers = mountedDossiers.map((mountPath) => mountPath.split("/").shift());
+                if (options.withFileTypes) {
+                    entries.mounts = mountedDossiers;
+                    entries.folders = Array.from(new Set([...entries.folders, ...folders]));
+                    entries.mounts = entries.mounts.filter((mount) => entries.folders.indexOf(mount) === -1);
+                    return callback(undefined, entries);
+                }
+                entries.files = Array.from(new Set([...entries.files, ...mounts, ...folders]));
+                return callback(undefined, entries.files);
+            } catch (error) {
+                return OpenDSUSafeCallback(callback)(
+                    createOpenDSUErrorWrapper(`Failed to get mounted DSUs at path ${relativePath}`, error)
+                );
+            }
+        });
+    };
+
+    this.cloneFolder = (srcPath, destPath, options, callback) => {
+        const defaultOpts = { ignoreMounts: false };
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        options = Object.assign(defaultOpts, options);
+
+        executeMountAwareOperation({
+            path: srcPath,
+            options,
+            onIgnoreMounts: () => {
+                versionlessDSUController.cloneFolder(srcPath, destPath, callback);
+            },
+            onMountCallback: (error, { options, archive, relativePath, prefixPath }) => {
+                if (error) {
+                    return callback(error);
+                }
+                this.getArchiveForPath(destPath, (err, destinationArchiveContext) => {
+                    if (err) {
+                        return OpenDSUSafeCallback(callback)(
+                            createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${dstPath}`, err)
+                        );
+                    }
+
+                    if (destinationArchiveContext.prefixPath !== prefixPath) {
+                        return callback(Error("Destination is invalid. Renaming must be done in the scope of the same dossier"));
+                    }
+
+                    archive.cloneFolder(relativePath, destinationArchiveContext.relativePath, options, callback);
+                });
+            },
+        });
+    };
+
+    this.mount = (path, identifier, options, callback) => {
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        callback = $$.makeSaneCallback(callback);
+
+        function internalMount() {
+            versionlessDSUController.listFiles(path, {}, (err, files) => {
+                if (!err && files.length > 0) {
+                    return callback(Error("Tried to mount in a non-empty folder"));
+                }
+                // archiveContext.archive.mount(archiveContext.relativePath, identifier, options, callback);
+                versionlessDSUController.mount(path, identifier, options, callback);
+            });
+        }
+
+        this.getArchiveForPath(path, (err, archiveContext) => {
+            if (err) {
+                return OpenDSUSafeCallback(callback)(
+                    createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${path}`, err)
+                );
+            }
+            if (archiveContext.relativePath === processPath(path)) {
+                internalMount();
+            } else {
+                archiveContext.archive.mount(archiveContext.relativePath, identifier, options, callback);
+            }
+        });
+    };
+
+    this.unmount = (path, callback) => {
+        callback = $$.makeSaneCallback(callback);
+        versionlessDSUController.unmount(path, callback);
+    };
+
+    this.listMountedDossiers = (path, callback) => {
+        callback = $$.makeSaneCallback(callback);
+
+        this.getArchiveForPath(path, (err, archiveContext) => {
+            if (err) {
+                return OpenDSUSafeCallback(callback)(
+                    createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${path}`, err)
+                );
+            }
+            if (archiveContext.archive === this) {
+                versionlessDSUController.getMountedDSUs(path, callback);
+            } else {
+                archiveContext.archive.listMountedDossiers(archiveContext.relativePath, callback);
+            }
+        });
+    };
+    this.listMountedDSUs = this.listMountedDossiers;
+
+    this.hasUnanchoredChanges = (callback) => {
+        callback("NotImplemented");
+    };
+
+    this.getArchiveForPath = (path, callback) => {
+        callback = $$.makeSaneCallback(callback);
+        versionlessDSUController.getArchiveContextForPath(path, callback);
+    };
+
+    /**
+     * Start a batch of operations
+     * This will force the persist changes when the
+     * batch is commited
+     */
+    this.beginBatch = () => {
+        if (this.batchInProgress()) {
+            throw new Error("Another anchoring transaction is already in progress. Cancel the previous batch and try again.");
+        }
+
+        versionlessDSUController.beginBatch();
+    };
+
+    this.batchInProgress = () => {
+        return versionlessDSUController.isBatchInProgress();
+    };
+
+    /**
+     * Persist batch of changes
+     * @param {callback} onConflict defined by StandardDSU interface
+     * @param {callback} callback
+     */
+    this.commitBatch = (onConflict, callback) => {
+        if (typeof callback === "undefined") {
+            callback = onConflict;
+            onConflict = undefined;
+        }
+
+        callback = $$.makeSaneCallback(callback);
+        if (!this.batchInProgress()) {
+            return callback(new Error("No batch operations have been scheduled"));
+        }
+
+        versionlessDSUController.commitBatch(callback);
+    };
+
+    /**
+     * Cancel the current persisting batch
+     */
+    this.cancelBatch = (callback) => {
+        callback = $$.makeSaneCallback(callback);
+        if (!this.batchInProgress()) {
+            return callback(new Error("No batch operations have been scheduled"));
+        }
+
+        versionlessDSUController.cancelBatch(callback);
+    };
+
+    /**
+     * Execute a batch of operations
+     * then anchor the changes
+     *
+     * @param {function} batch
+     * @param {callback} callback
+     */
+    this.batch = (batch, callback) => {
+        this.beginBatch();
+        batch((error) => {
+            if (error) {
+                callback = $$.makeSaneCallback(callback);
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to execute batch operations`, error));
+            }
+
+            this.commitBatch(callback);
+        });
+    };
+
+    this.setMergeConflictsHandler = (handler) => {
+        throw new Error("NotApplicableForVersionlessDSU");
+    };
+
+    this.enableAnchoringNotifications = (status, options, callback) => {
+        callback = getSaneCallbackFunction(status, options, callback);
+        callback("NotApplicableForVersionlessDSU");
+    };
+
+    this.enableAutoSync = (status, options, callback) => {
+        callback = getSaneCallbackFunction(status, options, callback);
+        callback("NotImplemented");
+    };
+
+    this.stat = (path, callback) => {
+        callback = $$.makeSaneCallback(callback);
+
+        this.getArchiveForPath(path, (error, archiveContext) => {
+            if (error) {
+                return callback(undefined, { type: undefined });
+            }
+            if (archiveContext.archive === this) {
+                versionlessDSUController.stat(path, callback);
+            } else {
+                archiveContext.archive.stat(archiveContext.relativePath, callback);
+            }
+        });
+    };
+}
+
+module.exports = VersionlessDSU;
+
+},{"./VersionlessDSUController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUController.js","swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUContentHandler.js":[function(require,module,exports){
+function VersionlessDSUContentHandler(versionlessDSU, content) {
+    const crypto = require("pskcrypto");
+    const pskPath = require("swarmutils").path;
+
+    const getCurrentTime = () => {
+        return new Date().getTime();
+    };
+
+    /**
+     * @param {string} nodePath
+     * @return {string} Returns trailing name component of a path
+     */
+    const basename = (path) => {
+        const segments = path.split("/");
+        return segments.pop();
+    };
+
+    const processPath = (path) => {
+        path = pskPath.normalize(path);
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        return path;
+    };
+
+    const joinPath = (...paths) => {
+        return pskPath.join(...paths);
+    };
+
+    const processPathForSearching = (path) => {
+        path = processPath(path);
+        if (path && !path.endsWith("/")) {
+            // ensure we are excluding the desired folder (if provided)
+            path = `${path}/`;
+        }
+        return path;
+    };
+
+    const isSubPath = (path, subPath) => {
+        if (!path.startsWith("/")) {
+            path = `/${path}`;
+        }
+        if (!subPath.startsWith("/")) {
+            subPath = `/${subPath}`;
+        }
+        // the method doesn't handle that case of relative path very well,
+        // so we force absolute paths
+        return pskPath.isSubpath(path, subPath);
+    };
+
+    const isFilePresent = (path) => {
+        return !!content.files[path];
+    };
+
+    const isFolderPresent = (path) => {
+        return !!content.folders[path];
+    };
+
+    const isEntryPresentForSearching = (entry, path, recursive) => {
+        if (!entry.startsWith(path)) {
+            return false;
+        }
+
+        if (recursive) {
+            return true;
+        }
+
+        // for non recursive, we need to ignore inner files/folders
+        const relativePathFromSearch = entry.substring(path.length);
+        return !relativePathFromSearch || relativePathFromSearch.indexOf("/") === -1;
+    };
+
+    const getParentFolderForFile = (filePath) => {
+        filePath = processPath(filePath);
+        const lastSlashIndex = filePath.lastIndexOf("/");
+        if (lastSlashIndex === -1) {
+            // parent folder is root
+            return "/";
+        }
+        const parentFolder = filePath.substring(0, lastSlashIndex);
+        return parentFolder;
+    };
+
+    const ensureFolderStructureForFilePath = (path) => {
+        path = processPath(path);
+        const segments = path.split("/");
+        segments.pop(); // remove file name
+
+        // ensure root folder exists
+        if (!isFolderPresent("/")) {
+            updateFolderWriteTime("/");
+        }
+
+        let currentPath = "";
+        segments.forEach((segment) => {
+            currentPath = joinPath(currentPath, segment);
+            if (!isFolderPresent(currentPath)) {
+                updateFolderWriteTime(currentPath);
+            }
+        });
+    };
+
+    const updateRecordWriteTime = (record) => {
+        const currentTime = getCurrentTime();
+        record.ctime = currentTime;
+        record.mtime = currentTime;
+        record.atime = currentTime;
+    };
+
+    const ensureFileEntry = (path) => {
+        if (!content.files[path]) {
+            content.files[path] = {
+                content: null,
+            };
+            updateRecordWriteTime(content.files[path]);
+        }
+        return content.files[path];
+    };
+
+    const updateFileWriteTime = (path) => {
+        const fileEntry = ensureFileEntry(path);
+        updateRecordWriteTime(fileEntry);
+    };
+
+    const updateFileAccessTime = (path) => {
+        const fileEntry = ensureFileEntry(path);
+        fileEntry.atime = getCurrentTime();
+    };
+
+    const ensureFolderEntry = (path) => {
+        if (!content.folders[path]) {
+            content.folders[path] = {};
+            updateRecordWriteTime(content.folders[path]);
+        }
+        return content.folders[path];
+    };
+
+    const updateFolderWriteTime = (path) => {
+        const folderEntry = ensureFolderEntry(path);
+        updateRecordWriteTime(folderEntry);
+    };
+
+    const updateFolderAccessTime = (path) => {
+        const folderEntry = ensureFolderEntry(path);
+        folderEntry.atime = getCurrentTime();
+    };
+
+    const addFileFromFsAsync = async (filePath, destinationFilePath) => {
+        const fsModule = "fs";
+        const fs = require(fsModule);
+
+        const content = await $$.promisify(fs.readFile.bind(fs))(filePath);
+        this.writeFile(destinationFilePath, content);
+    };
+
+    const getFilesFromFsAsync = async (folder) => {
+        const fsModule = "fs";
+        const pathModule = "path";
+        const fs = require(fsModule).promises;
+        const path = require(pathModule);
+
+        const dirents = await fs.readdir(folder, { withFileTypes: true });
+        const files = await Promise.all(
+            dirents.map((dirent) => {
+                const res = path.resolve(folder, dirent.name);
+                return dirent.isDirectory() ? getFilesFromFsAsync(res) : res;
+            })
+        );
+        return Array.prototype.concat(...files);
+    };
+
+    const getRelativeFilesFromFsAsync = async (folder) => {
+        const pathModule = "path";
+        const path = require(pathModule);
+        const fullPathFiles = await getFilesFromFsAsync(folder);
+        const relativePathFiles = fullPathFiles.map((file) => path.relative(folder, file));
+        return relativePathFiles;
+    };
+
+    const ensureFSDirectoryExistence = async (filePath) => {
+        const fsModule = "fs";
+        const pathModule = "path";
+        const fs = require(fsModule).promises;
+        const path = require(pathModule);
+        let dirname = path.dirname(filePath);
+        try {
+            await fs.stat(dirname);
+        } catch (error) {
+            await ensureFSDirectoryExistence(dirname);
+            await fs.mkdir(dirname);
+        }
+    };
+
+    const getArchive = (seed, mountOptions, callback) => {
+        if (typeof mountOptions === "function") {
+            callback = mountOptions;
+            mountOptions = {};
+        }
+
+        const resolver = require("opendsu").loadApi("resolver");
+        resolver.loadDSU(seed, (err, dsu) => {
+            if (err) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load DSU from keySSI ${seed}`, err));
+            }
+            callback(undefined, dsu);
+        });
+    };
+
+    this.createFolder = (path) => {
+        path = processPath(path);
+        ensureFolderStructureForFilePath(path);
+        updateFolderWriteTime(path);
+    };
+
+    this.delete = (path) => {
+        path = processPath(path);
+
+        if (isFilePresent(path)) {
+            delete content.files[path];
+            return;
+        }
+
+        if (isFolderPresent(path)) {
+            // remove file/folders under path
+            const files = this.getFiles(path, true);
+            files.forEach((file) => {
+                const fullFilePath = processPath(joinPath(path, file));
+                delete content.files[fullFilePath];
+            });
+
+            const folders = this.getFolders(path, true);
+            folders.forEach((folder) => {
+                const fullFolderPath = processPath(joinPath(path, folder));
+                delete content.folders[fullFolderPath];
+            });
+
+            delete content.folders[path];
+            return;
+        }
+
+        // comment out error in order to be compliant with standard DSU interface
+        // throw new Error(`No file/folder present at ${path}!`);
+    };
+
+    this.rename = (sourcePath, destinationPath) => {
+        sourcePath = processPath(sourcePath);
+        destinationPath = processPath(destinationPath);
+
+        if (isFilePresent(sourcePath)) {
+            if (isFilePresent(destinationPath)) {
+                throw new Error(`Cannot rename file ${sourcePath} to ${destinationPath} since destination already exists!`);
+            }
+
+            ensureFileEntry(destinationPath);
+            updateFileWriteTime(destinationPath);
+            content.files[destinationPath].content = content.files[sourcePath].content;
+            delete content.files[sourcePath];
+            return;
+        }
+
+        if (isFolderPresent(sourcePath)) {
+            if (isFolderPresent(destinationPath)) {
+                throw new Error(`Cannot rename folder ${sourcePath} to ${destinationPath} since destination already exists!`);
+            }
+
+            // rename file/folders under path
+            const files = this.getFiles(sourcePath, true);
+            files.forEach((file) => {
+                const initialFullFilePath = processPath(joinPath(sourcePath, file));
+                const destinationFullFilePath = processPath(joinPath(destinationPath, file));
+                updateFileWriteTime(destinationFullFilePath);
+                content.files[destinationFullFilePath].content = content.files[initialFullFilePath].content;
+                delete content.files[initialFullFilePath];
+            });
+
+            const folders = this.getFolders(sourcePath, true);
+            folders.forEach((folder) => {
+                const initialFullFolderPath = processPath(joinPath(sourcePath, folder));
+                const destinationFullFolderPath = processPath(joinPath(destinationPath, folder));
+                content.folders[destinationFullFolderPath] = content.folders[initialFullFolderPath];
+                updateFolderWriteTime(destinationFullFolderPath);
+                delete content.folders[initialFullFolderPath];
+            });
+
+            updateFolderWriteTime(destinationPath);
+            content.folders[destinationPath] = content.folders[sourcePath];
+            delete content.folders[sourcePath];
+            return;
+        }
+
+        throw new Error(`No file/folder present at ${sourcePath}!`);
+    };
+
+    this.getFolders = (path, recursive) => {
+        const currentPath = processPath(path);
+        if (isFolderPresent(currentPath)) {
+            updateFolderAccessTime(currentPath);
+        }
+
+        path = processPathForSearching(path);
+        const folders = Object.keys(content.folders)
+            .filter((folder) => folder !== "/" && isEntryPresentForSearching(folder, path, recursive))
+            .map((folder) => {
+                return folder.substring(path.length);
+            });
+        return folders;
+    };
+
+    this.getFiles = (path, recursive) => {
+        path = processPathForSearching(path);
+        const files = Object.keys(content.files)
+            .filter((file) => isEntryPresentForSearching(file, path, recursive))
+
+            .map((file) => {
+                return file.substring(path.length);
+            });
+        return files;
+    };
+
+    this.addFile = async (sourceFilePath, destinationFilePath, callback) => {
+        try {
+            await addFileFromFsAsync(sourceFilePath, destinationFilePath);
+            callback();
+        } catch (error) {
+            callback(error);
+        }
+    };
+
+    this.addFiles = async (filePaths, basePath, callback) => {
+        try {
+            for (const filePath of filePaths) {
+                const fileName = basename(processPath(filePath));
+                const destinationFilePath = joinPath(basePath, fileName);
+                await addFileFromFsAsync(filePath, destinationFilePath);
+            }
+            callback();
+        } catch (error) {
+            callback(error);
+        }
+    };
+
+    this.addFolder = async (folderPath, basePath, callback) => {
+        folderPath = processPath(folderPath);
+        try {
+            const relativeFilePaths = await getRelativeFilesFromFsAsync(folderPath);
+            for (const relativeFilePath of relativeFilePaths) {
+                const fullFilePath = joinPath(folderPath, relativeFilePath);
+                const destinationFilePath = joinPath(basePath, relativeFilePath);
+                await addFileFromFsAsync(fullFilePath, destinationFilePath);
+            }
+            callback();
+        } catch (error) {
+            callback(error);
+        }
+    };
+
+    this.extractFile = async (fsDestinationFilePath, sourceFilePath, callback) => {
+        sourceFilePath = processPath(sourceFilePath);
+        try {
+            const sourceFileContent = this.readFile(sourceFilePath);
+
+            await ensureFSDirectoryExistence(fsDestinationFilePath);
+            const fs = require("fs");
+            await $$.promisify(fs.writeFile.bind(fs))(fsDestinationFilePath, sourceFileContent);
+            callback();
+        } catch (error) {
+            callback(error);
+        }
+    };
+
+    this.extractFolder = async (fsDestinationFolderPath, sourceFolderPath, callback) => {
+        try {
+            sourceFolderPath = processPath(sourceFolderPath);
+            if (!isFolderPresent(sourceFolderPath)) {
+                throw new Error(`Source path <${sourceFolderPath}> not found.`);
+            }
+
+            const sourceFolders = this.getFolders(sourceFolderPath, true);
+            if (sourceFolders.length) {
+                for (const sourceFolder of sourceFolders) {
+                    // const sourceFolderFullPath = joinPath(sourceFolderPath, sourceFolder);
+                    const destinationFolderPath = joinPath(fsDestinationFolderPath, sourceFolder);
+                    await ensureFSDirectoryExistence(destinationFolderPath);
+                }
+            }
+
+            const sourceFiles = this.getFiles(sourceFolderPath, true);
+            if (sourceFiles.length) {
+                for (const sourceFile of sourceFiles) {
+                    const sourceFilePath = joinPath(sourceFolderPath, sourceFile);
+                    const destinationFilePath = joinPath(fsDestinationFolderPath, sourceFile);
+                    await $$.promisify(this.extractFile.bind(this))(destinationFilePath, sourceFilePath);
+                }
+            }
+            callback();
+        } catch (error) {
+            callback(error);
+        }
+    };
+
+    this.writeFile = (path, data, options) => {
+        path = processPath(path);
+
+        ensureFolderStructureForFilePath(path);
+
+        if (!isFilePresent(path)) {
+            const parentFolderPath = getParentFolderForFile(path);
+            updateFolderWriteTime(parentFolderPath);
+        }
+
+        const fileEntry = ensureFileEntry(path);
+        updateFileWriteTime(path);
+        fileEntry.content = crypto.pskBase64Encode(data);
+    };
+
+    this.readFile = (path) => {
+        path = processPath(path);
+        if (!content.files[path]) {
+            throw new Error(`No file present at ${path}!`);
+        }
+
+        updateFileAccessTime(path);
+        let fileContent = crypto.pskBase64Decode(content.files[path].content);
+        if (!$$.Buffer.isBuffer(fileContent)) {
+            fileContent = $$.Buffer.from(fileContent);
+        }
+        return fileContent;
+    };
+
+    this.appendToFile = (path, data, options) => {
+        path = processPath(path);
+        if (!$$.Buffer.isBuffer(data)) {
+            data = $$.Buffer.from(data);
+        }
+
+        const fileEntry = ensureFileEntry(path);
+        ensureFolderStructureForFilePath(path);
+
+        let fileContent = fileEntry.content;
+        if (fileContent != null) {
+            fileContent = crypto.pskBase64Decode(fileContent);
+            if (!$$.Buffer.isBuffer(fileContent)) {
+                fileContent = $$.Buffer.from(fileContent);
+            }
+
+            fileContent = $$.Buffer.concat([fileContent, data]);
+        } else {
+            fileContent = data;
+        }
+
+        updateFileWriteTime(path);
+        fileEntry.content = crypto.pskBase64Encode(fileContent);
+    };
+
+    this.validatePathToMount = (path) => {
+        path = processPath(path);
+        if (content.mounts[path]) {
+            throw new Error(`Path ${path} is already mounted!`);
+        }
+
+        const filesAtPath = this.getFiles(path);
+        if (filesAtPath.length > 0) {
+            throw new Error(`Tried to mount in a non-empty folder at ${path}`);
+        }
+    };
+
+    this.cloneFolder = (sourcePath, destinationPath) => {
+        sourcePath = processPath(sourcePath);
+        if (!isFolderPresent(sourcePath)) {
+            throw new Error(`Source path <${sourcePath}> not found.`);
+        }
+
+        destinationPath = processPath(destinationPath);
+        if (!isFolderPresent(destinationPath)) {
+            this.createFolder(destinationPath);
+        }
+
+        const sourceFiles = this.getFiles(sourcePath, true);
+        if (sourceFiles.length) {
+            sourceFiles.forEach((sourceFile) => {
+                const sourceFilePath = joinPath(sourcePath, sourceFile);
+                const destinationFilePath = joinPath(destinationPath, sourceFile);
+                updateFileWriteTime(destinationFilePath);
+                content.files[destinationFilePath].content = content.files[sourceFilePath].content;
+            });
+        }
+
+        const sourceFolders = this.getFolders(sourcePath, true);
+        if (sourceFolders.length) {
+            sourceFolders.forEach((sourceFolder) => {
+                const sourceFolderPath = joinPath(sourcePath, sourceFolder);
+                const destinationFilePath = joinPath(destinationPath, sourceFolder);
+                content.folders[destinationFilePath] = content.folders[sourceFolderPath];
+                updateFolderWriteTime(destinationFilePath);
+            });
+        }
+    };
+
+    this.stat = (path) => {
+        path = processPath(path);
+        if (!path || isFolderPresent(path)) {
+            const folderInfo = content.folders[path] || {};
+            return { type: "directory", ...folderInfo };
+        }
+
+        if (isFilePresent(path)) {
+            const { ctime, mtime, atime } = content.folders[path] || {};
+            return { type: "file", ctime, mtime, atime };
+        }
+
+        // default case in order to be compliant with standard DSU interface
+        return { type: undefined };
+    };
+
+    this.getSSIForMount = (path) => {
+        path = processPath(path);
+        const mountPoint = content.mounts[path];
+        return mountPoint ? mountPoint.identifier : null;
+    };
+
+    this.mount = (path, identifier, options) => {
+        path = processPath(path);
+        content.mounts[path] = {
+            identifier,
+        };
+        // set manifest file in order to be compliant with standard DSU interface
+        content.files["manifest"] = "";
+    };
+
+    this.unmount = (path) => {
+        path = processPath(path);
+
+        if (!content.mounts[path]) {
+            throw new Error(`No mount found at path ${path}`);
+        }
+
+        delete content.mounts[path];
+    };
+
+    this.getMountedDSUs = (path) => {
+        path = processPath(path);
+        const mountedDSUs = Object.keys(content.mounts)
+            .filter((mountPointPath) => {
+                return isSubPath(mountPointPath, path);
+            })
+            .map((mountPointPath) => {
+                const { identifier } = content.mounts[mountPointPath];
+                const result = {
+                    path: mountPointPath,
+                    identifier,
+                };
+                return result;
+            });
+
+        return mountedDSUs;
+    };
+
+    this.getArchiveContextForPath = (path, callback) => {
+        path = processPath(path);
+
+        for (let mountPath in content.mounts) {
+            const mountPoint = content.mounts[mountPath];
+            const identifier = mountPoint.identifier;
+            if (mountPath === path) {
+                return getArchive(identifier, (err, archive) => {
+                    if (err) {
+                        return OpenDSUSafeCallback(callback)(
+                            createOpenDSUErrorWrapper(`Failed to load DSU mounted at mounting point ${mountPath}`, err)
+                        );
+                    }
+
+                    return callback(undefined, {
+                        prefixPath: path,
+                        relativePath: "/",
+                        archive: archive,
+                        identifier,
+                    });
+                });
+            }
+
+            if (isSubPath(path, mountPath)) {
+                return getArchive(identifier, (err, archive) => {
+                    if (err) {
+                        return OpenDSUSafeCallback(callback)(
+                            createOpenDSUErrorWrapper(`Failed to load DSU mounted at mounting point ${mountPath}`, err)
+                        );
+                    }
+
+                    let remainingPath = path.substring(mountPath.length);
+                    remainingPath = processPath(remainingPath);
+                    return archive.getArchiveForPath(remainingPath, function (err, result) {
+                        if (err) {
+                            return OpenDSUSafeCallback(callback)(
+                                createOpenDSUErrorWrapper(`Failed to load DSU mounted at path ${remainingPath}`, err)
+                            );
+                        }
+                        result.prefixPath = pskPath.join(mountPath, result.prefixPath);
+                        callback(undefined, result);
+                    });
+                });
+            }
+        }
+
+        callback(undefined, { prefixPath: "/", relativePath: path, archive: versionlessDSU });
+    };
+}
+
+module.exports = VersionlessDSUContentHandler;
+
+},{"fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js","opendsu":"opendsu","pskcrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/index.js","swarmutils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUController.js":[function(require,module,exports){
+const VersionlessDSUContentHandler = require("./VersionlessDSUContentHandler");
+
+function VersionlessDSUController(versionlessDSU, config) {
+    this.versionlessDSU = versionlessDSU;
+    const { keySSIObject } = config;
+    let isEncrypted = keySSIObject.isEncrypted();
+
+    const openDSU = require("opendsu");
+    const { SmartUrl } = openDSU.loadAPI("utils");
+    const bdns = openDSU.loadApi("bdns");
+
+    const dlDomain = keySSIObject.getDLDomain();
+
+    let versionlessFilePath = keySSIObject.getFilePath();
+
+    let apihubBaseUrl;
+    if (!dlDomain || dlDomain.toUpperCase() === bdns.getOriginPlaceholder()) {
+        apihubBaseUrl = bdns.getOrigin();
+    } else {
+        apihubBaseUrl = dlDomain;
+    }
+
+    const encryptAsync = $$.promisify(keySSIObject.encrypt);
+    const decryptAsync = $$.promisify(keySSIObject.decrypt);
+
+    // current DSU content
+    this.dsuContent = null;
+
+    let isBatchCurrentlyInProgress = false;
+    let isPersistChangesNeeded = false;
+    let dsuContentBeforeBatchChanges = null;
+    const mountedArchivesForBatchOperations = [];
+
+    const getContentHandler = () => {
+        return new VersionlessDSUContentHandler(this.versionlessDSU, this.dsuContent);
+    };
+
+    const resetBatchCurrentlyInProgress = () => {
+        isBatchCurrentlyInProgress = false;
+        isPersistChangesNeeded = false;
+    };
+
+    const persistDSU = async () => {
+        let smartUrl = new SmartUrl(apihubBaseUrl);
+        smartUrl = smartUrl.concatWith(`/versionlessdsu/${versionlessFilePath}`);
+
+        let requestBody = JSON.stringify(this.dsuContent);
+
+        if (isEncrypted) {
+            try {
+                requestBody = await encryptAsync(requestBody);
+            } catch (error) {
+                createOpenDSUErrorWrapper(`Failed to encrypt versionless DSU content`, error);
+            }
+        }
+
+        return $$.promisify(smartUrl.doPut)(requestBody);
+    };
+
+    const persistChanges = async (callback) => {
+        if (this.isBatchInProgress()) {
+            // don't persist changes until batch is commited
+            isPersistChangesNeeded = true;
+            return callback();
+        }
+
+        try {
+            const result = await persistDSU();
+            callback(undefined, result);
+        } catch (error) {
+            OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to persist versionless DSU changes`, error));
+        }
+    };
+
+    this.createDSU = async (callback) => {
+        this.dsuContent = {
+            folders: {},
+            files: {},
+            mounts: [],
+        };
+
+        try {
+            await persistDSU();
+            // return VersionlessDSU instance
+            callback(undefined, this);
+        } catch (error) {
+            OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to create versionless DSU changes`, error));
+        }
+    };
+
+    this.loadDSU = async (callback) => {
+        const loadDSU = () => {
+            let smartUrl = new SmartUrl(apihubBaseUrl);
+            smartUrl = smartUrl.concatWith(`/versionlessdsu/${versionlessFilePath}`);
+
+            return smartUrl.fetch().then((response) => response.text());
+        };
+
+        try {
+            let result = await loadDSU();
+            if (isEncrypted) {
+                try {
+                    result = await decryptAsync(result);
+                } catch (error) {
+                    return OpenDSUSafeCallback(callback)(
+                        createOpenDSUErrorWrapper(`Failed to decrypt versionless DSU content`, error)
+                    );
+                }
+            }
+
+            if (typeof result === "string" || $$.Buffer.isBuffer(result)) {
+                result = JSON.parse(result);
+            }
+
+            this.dsuContent = result;
+            callback(undefined, this);
+        } catch (error) {
+            OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to get versionless DSU`, error));
+        }
+    };
+
+    this.appendToFile = (path, data, options, callback) => {
+        const contentHandler = getContentHandler();
+        contentHandler.appendToFile(path, data, options);
+        persistChanges(callback);
+    };
+
+    this.getSSIForMount = (mountPoint, callback) => {
+        const contentHandler = getContentHandler();
+        const ssi = contentHandler.getSSIForMount(mountPoint);
+        if (!ssi) {
+            return callback(Error(`No mount found at path ${mountPoint}`));
+        }
+        callback(undefined, ssi);
+    };
+
+    this.addFolder = (folderPath, basePath, options, callback) => {
+        const contentHandler = getContentHandler();
+        const addFolderCallback = (error) => {
+            if (error) {
+                return callback(error);
+            }
+            persistChanges(callback);
+        };
+        contentHandler.addFolder(folderPath, basePath, addFolderCallback);
+    };
+
+    this.addFile = (sourceFilePath, destinationFilePath, options, callback) => {
+        const contentHandler = getContentHandler();
+        const addFileCallback = (error) => {
+            if (error) {
+                return callback(error);
+            }
+            persistChanges(callback);
+        };
+        contentHandler.addFile(sourceFilePath, destinationFilePath, addFileCallback);
+    };
+
+    this.addFiles = (filePaths, basePath, options, callback) => {
+        const contentHandler = getContentHandler();
+        const addFilesCallback = (error) => {
+            if (error) {
+                return callback(error);
+            }
+            persistChanges(callback);
+        };
+        contentHandler.addFiles(filePaths, basePath, addFilesCallback);
+    };
+
+    this.extractFile = (fsDestinationFilePath, sourceFilePath, callback) => {
+        const contentHandler = getContentHandler();
+        contentHandler.extractFile(fsDestinationFilePath, sourceFilePath, callback);
+    };
+
+    this.extractFolder = (fsDestinationFolderPath, sourceFolderPath, callback) => {
+        const contentHandler = getContentHandler();
+        contentHandler.extractFolder(fsDestinationFolderPath, sourceFolderPath, callback);
+    };
+
+    this.readFile = (filePath, callback) => {
+        const contentHandler = getContentHandler();
+        try {
+            const buffer = contentHandler.readFile(filePath);
+            callback(undefined, buffer);
+        } catch (error) {
+            return callback(error);
+        }
+    };
+
+    this.writeFile = (path, data, options, callback) => {
+        const contentHandler = getContentHandler();
+        contentHandler.writeFile(path, data, options);
+        persistChanges(callback);
+    };
+
+    this.delete = (path, callback) => {
+        const contentHandler = getContentHandler();
+
+        try {
+            contentHandler.delete(path);
+        } catch (error) {
+            return callback(error);
+        }
+
+        persistChanges(callback);
+    };
+
+    this.rename = (sourcePath, destinationPath, callback) => {
+        const contentHandler = getContentHandler();
+
+        try {
+            contentHandler.rename(sourcePath, destinationPath);
+        } catch (error) {
+            return callback(error);
+        }
+
+        persistChanges(callback);
+    };
+
+    this.listFiles = (path, options, callback) => {
+        const contentHandler = getContentHandler();
+        const files = contentHandler.getFiles(path, options.recursive);
+        callback(null, files);
+    };
+
+    this.listFolders = (path, options, callback) => {
+        const contentHandler = getContentHandler();
+        const folders = contentHandler.getFolders(path, options.recursive);
+        callback(null, folders);
+    };
+
+    this.createFolder = (path, callback) => {
+        const contentHandler = getContentHandler();
+        contentHandler.createFolder(path);
+        persistChanges(callback);
+    };
+
+    this.cloneFolder = (sourcePath, destinationPath, callback) => {
+        const contentHandler = getContentHandler();
+
+        try {
+            contentHandler.cloneFolder(sourcePath, destinationPath);
+        } catch (error) {
+            return callback(error);
+        }
+
+        persistChanges(callback);
+    };
+
+    this.mount = (path, identifier, options, callback) => {
+        const contentHandler = getContentHandler();
+
+        try {
+            contentHandler.validatePathToMount(path);
+        } catch (error) {
+            return callback(error);
+        }
+
+        contentHandler.mount(path, identifier, options);
+        persistChanges(callback);
+    };
+    this.unmount = (path, callback) => {
+        const contentHandler = getContentHandler();
+
+        try {
+            contentHandler.unmount(path);
+        } catch (error) {
+            return callback(error);
+        }
+
+        persistChanges(callback);
+    };
+
+    this.getMountedDSUs = (path, callback) => {
+        const contentHandler = getContentHandler();
+        const mountedDSUs = contentHandler.getMountedDSUs(path);
+        callback(undefined, mountedDSUs);
+    };
+
+    this.getArchiveContextForPath = (path, callback) => {
+        const contentHandler = getContentHandler();
+
+        contentHandler.getArchiveContextForPath(path, (error, archiveContext) => {
+            if (error) {
+                return callback(error);
+            }
+
+            if (archiveContext.archive === this.versionlessDSU || !this.isBatchInProgress()) {
+                return callback(undefined, archiveContext);
+            }
+
+            archiveContext.archive.getKeySSIAsString((err, keySSI) => {
+                if (err) {
+                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to retrieve keySSI", err));
+                }
+
+                const cachedArchive = mountedArchivesForBatchOperations.find((archive) => {
+                    return archive.identifier === keySSI;
+                });
+
+                if (cachedArchive) {
+                    cachedArchive.relativePath = archiveContext.relativePath;
+                    return callback(undefined, cachedArchive);
+                }
+
+                archiveContext.identifier = keySSI;
+                archiveContext.archive.beginBatch();
+                mountedArchivesForBatchOperations.push(archiveContext);
+
+                callback(undefined, archiveContext);
+            });
+        });
+    };
+
+    this.beginBatch = () => {
+        isBatchCurrentlyInProgress = true;
+        isPersistChangesNeeded = false;
+        dsuContentBeforeBatchChanges = this.dsuContent;
+    };
+
+    this.isBatchInProgress = () => {
+        return isBatchCurrentlyInProgress;
+    };
+
+    const runBatchActionInMountedArchives = async (batchActionName, callback) => {
+        const archivesForBatch = [...mountedArchivesForBatchOperations];
+        archivesForBatch.reverse();
+
+        const results = [];
+        for (const archiveContext of archivesForBatch) {
+            try {
+                const result = await $$.promisify(archiveContext.archive[batchActionName].bind(archiveContext.archive))();
+                results.push(result);
+            } catch (error) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to commit batch", error));
+            }
+        }
+
+        callback(undefined, results);
+    };
+
+    this.commitBatch = (callback) => {
+        runBatchActionInMountedArchives("commitBatch", (error) => {
+            if (error) {
+                resetBatchCurrentlyInProgress();
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to anchor`, error));
+            }
+
+            isBatchCurrentlyInProgress = false;
+            persistChanges((error) => {
+                resetBatchCurrentlyInProgress();
+                if (error) {
+                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to anchor`, error));
+                }
+
+                callback(undefined);
+            });
+        });
+    };
+
+    this.cancelBatch = (callback) => {
+        runBatchActionInMountedArchives("cancelBatch", (error) => {
+            if (error) {
+                return OpenDSUSafeCallback(callback)(
+                    createOpenDSUErrorWrapper(`Failed to cancel batches in mounted archive`, error)
+                );
+            }
+
+            resetBatchCurrentlyInProgress();
+            if (dsuContentBeforeBatchChanges) {
+                this.dsuContent = dsuContentBeforeBatchChanges;
+                dsuContentBeforeBatchChanges = null;
+            }
+            // ensure we have the latest version by loading the DSU again
+            this.loadDSU((error) => {
+                if (error) {
+                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load current DSU`, error));
+                }
+                callback();
+            });
+        });
+    };
+
+    this.stat = (path, callback) => {
+        const contentHandler = getContentHandler();
+        const result = contentHandler.stat(path);
+        callback(undefined, result);
+    };
+}
+
+module.exports = VersionlessDSUController;
+
+},{"./VersionlessDSUContentHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUContentHandler.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js":[function(require,module,exports){
 const {SmartUrl} = require("../utils");
 
 function RemotePersistence() {
@@ -15214,7 +17407,7 @@ const getBrick = (hashLinkSSI, authToken, callback) => {
         __getBrickFromEndpoint();
     } else {
         cache.get(brickHash, (err, brick) => {
-            if (err || typeof brick === "undefined") {
+            if (err || typeof brick === "undefined" || !isValidBrickHash(hashLinkSSI, brick)) {
                 __getBrickFromEndpoint();
             } else {
                 callback(undefined, brick);
@@ -19386,12 +21579,17 @@ let getSimpleWalletDB = (dbName, options) => {
         if (err) {
             return db.dispatchEvent("error", createOpenDSUErrorWrapper("Failed to initialise WalletDB_DSU " + dbName, err));
         }
-        storageStrategy.initialise(_storageDSU, dbName);
-        console.log("Finishing initialisation");
 
         db.getShareableSSI = function () {
             return keySSI;
         };
+
+        db.getStorageDSU = function () {
+            return _storageDSU;
+        }
+
+        storageStrategy.initialise(_storageDSU, dbName);
+        console.log("Finishing initialisation");
     })
 
     return db;
@@ -19417,7 +21615,7 @@ const getMainEnclaveDB = (callback) => {
 }
 
 const getSharedEnclaveDB = (callback) => {
-     require("opendsu").loadAPI("sc").getSharedEnclave(callback);
+    require("opendsu").loadAPI("sc").getSharedEnclave(callback);
 }
 module.exports = {
     getBasicDB,
@@ -23334,14 +25532,16 @@ function Enclave_Mixin(target, did, keySSI) {
         const PathKeyMapping = require("../impl/PathKeyMapping");
 
         try {
-            target.getKeySSI((err, keySSI) => {
+            target.getDSU((err, dsuInstance) => {
                 if (err) {
                     return callback(err);
                 }
 
-                const enclaveHandler = new EnclaveHandler(keySSI);
+                const enclaveHandler = new EnclaveHandler(dsuInstance);
                 pathKeyMapping = new PathKeyMapping(enclaveHandler);
-                callback(undefined, pathKeyMapping);
+                pathKeyMapping.on("initialised", () => {
+                    callback(undefined, pathKeyMapping);
+                })
             })
         } catch (e) {
             return callback(e);
@@ -24060,6 +26260,7 @@ function PathKeyMapping(enclaveHandler) {
     const utils = require("./utils");
     const openDSU = require("opendsu");
     const utilsAPI = openDSU.loadAPI("utils");
+    utilsAPI.ObservableMixin(this);
     const keySSISpace = openDSU.loadAPI("keyssi");
     let pathKeysMapping = {};
     let initialised = false;
@@ -24068,6 +26269,7 @@ function PathKeyMapping(enclaveHandler) {
         pathKeysMapping = await $$.promisify(utils.getKeySSIsMappingFromPathKeys)(paths);
 
         this.finishInitialisation();
+        this.dispatchEvent("initialised");
     };
 
     this.isInitialised = () => {
@@ -24162,7 +26364,7 @@ function PathKeyMapping(enclaveHandler) {
         callback(undefined, pathKeysMapping);
     };
 
-    utilsAPI.bindAutoPendingFunctions(this);
+    utilsAPI.bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent"]);
     init();
 }
 
@@ -24540,6 +26742,7 @@ function WalletDBEnclave(keySSI, did) {
             if (typeof keySSI === "string") {
                 keySSI = keySSISpace.parse(keySSI);
             }
+            enclaveDSU = this.storageDB.getStorageDSU();
             let privateKey;
             try{
                 privateKey = await $$.promisify(this.storageDB.getRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0);
@@ -24561,6 +26764,14 @@ function WalletDBEnclave(keySSI, did) {
             forDID = undefined;
         }
         callback(undefined, keySSI);
+    }
+
+    this.getDSU = (forDID, callback)=>{
+        if (typeof forDID === "function") {
+            callback = forDID;
+            forDID = undefined;
+        }
+        callback(undefined, enclaveDSU);
     }
 
     this.getUniqueIdAsync = async () => {
@@ -24587,28 +26798,17 @@ module.exports = WalletDBEnclave;
 const pathModule = require("path");
 const constants = require("./constants");
 
-function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
+function WalletDBEnclaveHandler(walletDBEnclaveDSU, config) {
     const defaultConfig = {
         maxNoScatteredKeys: 5000
     }
     Object.assign(defaultConfig, config);
     config = defaultConfig;
     const openDSU = require("opendsu");
-    const resolver = openDSU.loadAPI("resolver");
     const utilsAPI = openDSU.loadAPI("utils");
     const keySSISpace = openDSU.loadAPI("keyssi");
     utilsAPI.ObservableMixin(this);
-    let enclaveDSU;
     let initialised = false;
-    const init = async ()=>{
-        try {
-            enclaveDSU = await $$.promisify(resolver.loadDSU)(walletDBEnclaveKeySSI);
-        } catch (e) {
-            throw createOpenDSUErrorWrapper(`Failed to load enclave DSU`, e);
-        }
-
-        this.finishInitialisation();
-    }
 
     this.isInitialised = () => {
         return initialised;
@@ -24624,13 +26824,13 @@ function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
         }
         const __storePathKeySSI = () => {
             const filePath = pathModule.join(constants.PATHS.SCATTERED_PATH_KEYS, pathKeySSI.getSpecificString(), pathKeySSI.getIdentifier());
-            enclaveDSU.writeFile(filePath, async err => {
+            walletDBEnclaveDSU.writeFile(filePath, async err => {
                 if (err) {
                     return callback(err);
                 }
 
                 try {
-                    const files = await $$.promisify(enclaveDSU.listFiles)(constants.PATHS.SCATTERED_PATH_KEYS);
+                    const files = await $$.promisify(walletDBEnclaveDSU.listFiles)(constants.PATHS.SCATTERED_PATH_KEYS);
                     if (files.length === config.maxNoScatteredKeys) {
                         try {
                             await compactPathKeys();
@@ -24640,7 +26840,7 @@ function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
                     }
                     callback();
                 } catch (e) {
-                    callback(e);
+                    return callback(e);
                 }
             })
         };
@@ -24651,7 +26851,7 @@ function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
     const compactPathKeys = async () => {
         let compactedContent = "";
         const crypto = require("opendsu").loadAPI("crypto");
-        const files = await $$.promisify(enclaveDSU.listFiles)(constants.PATHS.SCATTERED_PATH_KEYS);
+        const files = await $$.promisify(walletDBEnclaveDSU.listFiles)(constants.PATHS.SCATTERED_PATH_KEYS);
 
         for (let i = 0; i < files.length; i++) {
             const {key, value} = getKeyValueFromPath(files[i]);
@@ -24660,11 +26860,11 @@ function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
 
         compactedContent = compactedContent.slice(0, compactedContent.length - 1);
         const fileName = crypto.encodeBase58(crypto.generateRandom(16));
-        await $$.promisify(enclaveDSU.writeFile)(pathModule.join(constants.PATHS.COMPACTED_PATH_KEYS, fileName), compactedContent);
+        await $$.promisify(walletDBEnclaveDSU.writeFile)(pathModule.join(constants.PATHS.COMPACTED_PATH_KEYS, fileName), compactedContent);
 
         for (let i = 0; i < files.length; i++) {
             const filePath = pathModule.join(constants.PATHS.SCATTERED_PATH_KEYS, files[i]);
-            await $$.promisify(enclaveDSU.delete)(filePath);
+            await $$.promisify(walletDBEnclaveDSU.delete)(filePath);
         }
     }
 
@@ -24699,7 +26899,7 @@ function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
 
     const loadScatteredPathKeys = (callback) => {
         const pathKeyMap = {};
-        enclaveDSU.listFiles(constants.PATHS.SCATTERED_PATH_KEYS, async (err, files) => {
+        walletDBEnclaveDSU.listFiles(constants.PATHS.SCATTERED_PATH_KEYS, async (err, files) => {
             if (err) {
                 return callback(err);
             }
@@ -24716,7 +26916,7 @@ function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
     const loadCompactedPathKeys = (callback) => {
         let pathKeyMap = {};
         const compactedValuesLocation = constants.PATHS.COMPACTED_PATH_KEYS;
-        enclaveDSU.listFiles(compactedValuesLocation, async (err, files) => {
+        walletDBEnclaveDSU.listFiles(compactedValuesLocation, async (err, files) => {
             if (err) {
                 return callback(err);
             }
@@ -24724,7 +26924,7 @@ function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
             try {
                 for (let i = 0; i < files.length; i++) {
                     const filePath = pathModule.join(compactedValuesLocation, files[i]);
-                    let compactedFileContent = await $$.promisify(enclaveDSU.readFile)(filePath);
+                    let compactedFileContent = await $$.promisify(walletDBEnclaveDSU.readFile)(filePath);
                     compactedFileContent = compactedFileContent.toString();
                     const partialKeyMap = mapFileContent(compactedFileContent);
                     pathKeyMap = {...pathKeyMap, ...partialKeyMap};
@@ -24748,9 +26948,6 @@ function WalletDBEnclaveHandler(walletDBEnclaveKeySSI, config) {
 
         return pathKeyMap;
     }
-
-    utilsAPI.bindAutoPendingFunctions(this);
-    init();
 }
 
 module.exports = WalletDBEnclaveHandler;
@@ -25131,70 +27328,70 @@ function OpenDSUSafeCallback(callback) {
 let observable = require("./../utils/observable").createObservable();
 let devObservers = [];
 
-function reportUserRelevantError(message, err, showIntermediateErrors) {
-    observable.dispatchEvent("error", {message, err});
-    console.log(message);
+function reportUserRelevantError(message, err) {
+  genericDispatchEvent(constants.NOTIFICATION_TYPES.ERROR, message, err);
+}
+
+function reportUserRelevantWarning(message, err) {
+  genericDispatchEvent(constants.NOTIFICATION_TYPES.WARN, message, err);
+}
+
+
+function reportUserRelevantInfo(message, err) {
+  genericDispatchEvent(constants.NOTIFICATION_TYPES.INFO, message, err);
+}
+
+function reportDevRelevantInfo(message, err) {
+    genericDispatchEvent(constants.NOTIFICATION_TYPES.DEV, message, err);
+}
+
+function genericDispatchEvent(type, message, err) {
+    observable.dispatchEvent(type, {message, err});
+    console.log(message, err ? err : "");
     if (err && typeof err.debug_message != "undefined") {
-        printErrorWrapper(err, showIntermediateErrors);
+      printErrorWrapper(err, false);
     }
 }
 
-function reportUserRelevantWarning(message) {
-    observable.dispatchEvent("warn", message);
-    console.log(">>>", message);
-}
-
-
-function reportUserRelevantInfo(message) {
-    observable.dispatchEvent("info", message);
-    console.log(">>>", message);
-}
-
-function reportDevRelevantInfo(message) {
-    devObservers.forEach(c => {
-        c(message);
-    })
-    console.log(">>>", message);
-}
 
 function unobserveUserRelevantMessages(type, callback) {
     switch (type) {
-        case "error":
+        case constants.NOTIFICATION_TYPES.ERROR:
             observable.off(type, callback);
             break;
-        case "info":
+        case constants.NOTIFICATION_TYPES.INFO:
             observable.off(type, callback);
             break;
-        case "warn":
+        case constants.NOTIFICATION_TYPES.WARN:
+            observable.off(type, callback);
+            break;
+        case constants.NOTIFICATION_TYPES.DEV:
             observable.off(type, callback);
             break;
         default:
-            let index = devObservers.indexOf(callback);
-            if (index !== -1) {
-                devObservers.splice(index, 1);
-            }
+            observable.off(constants.NOTIFICATION_TYPES.DEV, callback);
     }
 }
 
 function observeUserRelevantMessages(type, callback) {
     switch (type) {
-        case "error":
+        case constants.NOTIFICATION_TYPES.ERROR:
             observable.on(type, callback);
             break;
-        case "info":
+        case constants.NOTIFICATION_TYPES.INFO:
             observable.on(type, callback);
             break;
-        case "warn":
+        case constants.NOTIFICATION_TYPES.WARN:
             observable.on(type, callback);
             break;
-        case "dev":
-            devObservers.push(callback);
+        case constants.NOTIFICATION_TYPES.DEV:
+            observable.on(type, callback);
             break;
         case "unhandled":
             observable.on(type, callback);
             break;
         default:
-            devObservers.push(callback);
+            observable.on(constants.NOTIFICATION_TYPES.DEV, callback);
             break;
     }
 }
@@ -27494,6 +29691,12 @@ module.exports = {
 	DOMAIN: "domain",
 	DID_DOMAIN: "didDomain",
 	MAIN_APP_DID: "mainAppDID",
+	NOTIFICATION_TYPES: {
+		ERROR: "error",
+		WARN: "warn",
+		INFO: "info",
+		DEV: "dev"
+	},
 	MAIN_ENCLAVE: {
 		TYPE: "enclaveType",
 		DID: "enclaveDID",
@@ -27651,6 +29854,7 @@ function MQHandler(didDocument, domain, pollingTimeout) {
     let token;
     let expiryTime;
     let queueName = didDocument.getHash();
+    let self = this;
 
     function getURL(queueName, action, signature, messageID, callback) {
         let url
@@ -27789,6 +29993,10 @@ function MQHandler(didDocument, domain, pollingTimeout) {
 
                         request.then(response => response.json())
                             .then((response) => {
+                                if(self.stopReceivingMessages){
+
+                                    return callback(new Error("Message rejected by client"));
+                                }
                                 //the return value of the listing callback helps to stop the polling mechanism in case that
                                 //we need to stop to listen for more messages
                                 let stop = callback(undefined, response);
@@ -27817,7 +30025,7 @@ function MQHandler(didDocument, domain, pollingTimeout) {
 
     this.waitForMessages = (callback) => {
         this.readAndWaitForMore(()=>{
-            return !!callback.on;
+            return typeof this.stopReceivingMessages === "undefined" || this.stopReceivingMessages === false;
         }, callback);
     }
 
@@ -27825,7 +30033,7 @@ function MQHandler(didDocument, domain, pollingTimeout) {
         consumeMessage("get", callback);
     };
 
-    let self = this;
+
     function getSafeMessageRead(callback){
         return function(err, message){
             if(err){
@@ -27834,11 +30042,11 @@ function MQHandler(didDocument, domain, pollingTimeout) {
             if(message){
                 callback(undefined, message, ()=>{
                     console.log("notification callback called");
-                });
-                self.deleteMessage(message.messageId, (err)=>{
-                    if(err){
-                        console.log("Unable to delete message from mq");
-                    }
+                    self.deleteMessage(message.messageId, (err)=>{
+                        if(err){
+                            console.log("Unable to delete message from mq");
+                        }
+                    });
                 });
             }
         }
@@ -27902,8 +30110,13 @@ function MQHandler(didDocument, domain, pollingTimeout) {
     };
 }
 
+let handlers = {};
 function getMQHandlerForDID(didDocument, domain, timeout) {
-    return new MQHandler(didDocument, domain, timeout);
+    let identifier = typeof didDocument === "object" ? didDocument.getIdentifier() : didDocument;
+    if(!handlers[identifier]){
+        handlers[identifier] = new MQHandler(didDocument, domain, timeout);
+    }
+    return handlers[identifier];
 }
 
 module.exports = {
@@ -29138,7 +31351,12 @@ const loadFallbackDSU = (keySSI, options, callback) => {
                     if (index < versions.length - 1) {
                         return tryToRunRecoveryContentFnc(keySSI, dsuInstance, options, versions.slice(0, index), versions[versions.length - 1], callback);
                     }
-                    callback(undefined, dsuInstance);
+                    let error;
+                    //in this case we are able to load the latest version ... basically we believe that no recovery need is it
+                    if(window && !window.confirm('It looks that we were able to load the latest version. Are you sure that recovery mechanism is necessary?')){
+                        error = new Error("User decided to abort recovery because invalid state detected.");
+                    }
+                    callback(error, dsuInstance);
                 })
             }
 
@@ -29628,12 +31846,15 @@ module.exports = {
     const setEnclaveKeySSI = (type, keySSI, config) => {
         const sc = getSecurityContext();
         const pin = sc.getPaddedPIN();
-    
+        if (typeof keySSI !== "string") {
+            keySSI = keySSI.getIdentifier();
+        }
+
         if (type != "SHARED_ENCLAVE" || pin == undefined) {
             config[openDSU.constants[type].KEY_SSI] = keySSI;
             return;
         }
-    
+
         const decodedBase58 = crypto.decodeBase58(keySSI);
         const encryptedKey = crypto.encrypt(decodedBase58, pin)
         const base58EncryptedKey = crypto.encodeBase58(encryptedKey);
@@ -30646,6 +32867,7 @@ module.exports.bindParallelAutoPendingFunctions = function(obj, exceptionList){
 };
 
 },{"./PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js":[function(require,module,exports){
+const constants = require("../moduleConstants");
 function ObservableMixin(target) {
     let observers = {};
 
@@ -30675,9 +32897,14 @@ function ObservableMixin(target) {
 
     target.dispatchEvent = function(eventType, message){
         let arr = observers[eventType];
-        if(!arr){
+        if (!arr) {
             //no handlers registered
-            reportDevRelevantInfo(`No observers found for event type ${eventType}`);
+            if (eventType !== constants.NOTIFICATION_TYPES.DEV) {
+                reportDevRelevantInfo(`No observers found for event type ${eventType}`);
+            } else {
+                console.debug(`No observers found for event type ${eventType}`);
+            }
+
             return;
         }
 
@@ -30703,7 +32930,7 @@ function ObservableMixin(target) {
 
 module.exports = ObservableMixin;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js":[function(require,module,exports){
 function PendingCallMixin(target) {
     let pendingCalls = [];
     let serialPendingCalls = [];
@@ -31518,10 +33745,20 @@ function W3CDID_Mixin(target, enclave) {
             .loadAPI("mq")
             .getMQHandlerForDID(target);
 
-        target.onCallback = (err, encryptedMessage) => {
+        target.onCallback = (err, encryptedMessage, notificationHandler) => {
+            if(target.stopReceivingMessages){
+                console.log(`Received message for unsubscribed DID`);
+                return;
+            }
+
             if (err) {
                 return callback(createOpenDSUErrorWrapper(`Failed to read message`, err));
             }
+
+            if(notificationHandler){
+                notificationHandler();
+            }
+
             let message;
             try {
                 message = JSON.parse(encryptedMessage.message);
@@ -31530,13 +33767,17 @@ function W3CDID_Mixin(target, enclave) {
             }
 
             target.decryptMessage(message, callback);
+            return target.stopWaitingForMessages;
         }
-        target.onCallback.on = true;
         mqHandler.waitForMessages(target.onCallback);
     };
 
     target.stopWaitingForMessages = function () {
-        target.onCallback.on = false;
+        const mqHandler = require("opendsu")
+            .loadAPI("mq")
+            .getMQHandlerForDID(target);
+        mqHandler.stopReceivingMessages = true;
+        target.stopReceivingMessages = true;
     }
 
     target.getEnclave = () => {
@@ -32417,6 +34658,8 @@ module.exports = {
 }
 
 },{"./GroupDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./NameDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./SReadDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js":[function(require,module,exports){
+let didDocuments = {};
+
 function CommunicationHub() {
     const pubSub = require("soundpubsub").soundPubSub;
     const didAPI = require("opendsu").loadAPI("w3cdid");
@@ -32428,22 +34671,31 @@ function CommunicationHub() {
 
     const ensureDIDDocumentIsLoadedThenExecute = (did, fnToExecute) => {
         if (typeof did === "string") {
+            if(didDocuments[did]){
+                return fnToExecute(undefined, didDocuments[did]);
+            }
             return didAPI.resolveDID(did, (err, resolvedDID) => {
                 if (err) {
-                    console.error(err);
+                    fnToExecute(err);
                     return;
                 }
 
+                didDocuments[did] = resolvedDID;
                 did = resolvedDID;
-                fnToExecute(did);
-            })
+                fnToExecute(undefined, did);
+            });
         }
-
-        fnToExecute(did);
+        let identifier = did.getIdentifier();
+        if(!didDocuments[identifier]){
+            didDocuments[identifier] = did;
+        }
+        console.log(did === didDocuments[identifier], identifier, did, didDocuments[identifier]);
+        console.log(didDocuments);
+        fnToExecute(undefined, didDocuments[identifier]);
     }
 
     this.subscribe = (did, messageType, callback) => {
-        const __subscribe = (did) => {
+        const __subscribe = (err, did) => {
             if (!connectedToMQ[did.getIdentifier()]) {
                 connectedToMQ[did.getIdentifier()] = true;
                 did.waitForMessages((err, message) => {
@@ -32475,7 +34727,7 @@ function CommunicationHub() {
     };
 
     this.unsubscribe = (did, messageType, callback) => {
-        const stopWaitingForMessages = (did) => {
+        const stopWaitingForMessages = (err, did) => {
             did.stopWaitingForMessages();
             const channel = getChannelName(did, messageType);
             delete connectedToMQ[did.getIdentifier()];
@@ -32488,7 +34740,7 @@ function CommunicationHub() {
     const subscribers = {};
     // soundpubSub keeps WeakRefs
     this.strongSubscribe = (did, messageType, callback) => {
-        const __strongSubscribe = (did) => {
+        const __strongSubscribe = (err, did) => {
             const channelName = getChannelName(did, messageType);
             if (!subscribers[channelName]) {
                 subscribers[channelName] = [];
@@ -32507,7 +34759,7 @@ function CommunicationHub() {
 
     this.strongUnsubscribe = (did, messageType, callback) => {
         const channelName = getChannelName(did, messageType);
-        const __strongUnsubscribe = (did) => {
+        const __strongUnsubscribe = (err, did) => {
             if (!subscribers[channelName]) {
                 return callback();
             }
@@ -32580,6 +34832,12 @@ function CommunicationHub() {
         }
 
         return strongPubSub;
+    }
+
+    this.stop = (did)=>{
+        ensureDIDDocumentIsLoadedThenExecute(did, (err, didDocument)=>{
+                didDocument.stopWaitingForMessages();
+        });
     }
 }
 
@@ -32670,6 +34928,10 @@ function TypicalBusinessLogicHub() {
 
     this.strongUnsubscribe = (messageType, callback) => {
         commHub.strongUnsubscribe(hubContext.appMainDID, messageType, callback);
+    }
+
+    this.stop = () => {
+        commHub.stop(hubContext.appMainDID);
     }
 
     utilsAPI.bindParallelAutoPendingFunctions(this, ["mainDIDCreated", "setMainDID", "sharedEnclaveIsSet", "setSharedEnclave"]);
@@ -59131,14 +61393,14 @@ var objectKeys = Object.keys || function (obj) {
 /*</replacement>*/
 
 module.exports = Duplex;
-const Readable = require('./_stream_readable');
-const Writable = require('./_stream_writable');
+var Readable = require('./_stream_readable');
+var Writable = require('./_stream_writable');
 require('inherits')(Duplex, Readable);
 {
   // Allow the keys array to be GC'ed.
-  const keys = objectKeys(Writable.prototype);
+  var keys = objectKeys(Writable.prototype);
   for (var v = 0; v < keys.length; v++) {
-    const method = keys[v];
+    var method = keys[v];
     if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
   }
 }
@@ -59161,7 +61423,7 @@ Object.defineProperty(Duplex.prototype, 'writableHighWaterMark', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._writableState.highWaterMark;
   }
 });
@@ -59179,7 +61441,7 @@ Object.defineProperty(Duplex.prototype, 'writableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._writableState.length;
   }
 });
@@ -59201,13 +61463,13 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     if (this._readableState === undefined || this._writableState === undefined) {
       return false;
     }
     return this._readableState.destroyed && this._writableState.destroyed;
   },
-  set(value) {
+  set: function set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (this._readableState === undefined || this._writableState === undefined) {
@@ -59251,7 +61513,7 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
 'use strict';
 
 module.exports = PassThrough;
-const Transform = require('./_stream_transform');
+var Transform = require('./_stream_transform');
 require('inherits')(PassThrough, Transform);
 function PassThrough(options) {
   if (!(this instanceof PassThrough)) return new PassThrough(options);
@@ -59294,7 +61556,7 @@ var Duplex;
 Readable.ReadableState = ReadableState;
 
 /*<replacement>*/
-const EE = require('events').EventEmitter;
+var EE = require('events').EventEmitter;
 var EElistenerCount = function EElistenerCount(emitter, type) {
   return emitter.listeners(type).length;
 };
@@ -59304,8 +61566,8 @@ var EElistenerCount = function EElistenerCount(emitter, type) {
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-const Buffer = require('buffer').Buffer;
-const OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
+var Buffer = require('buffer').Buffer;
+var OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
@@ -59314,8 +61576,8 @@ function _isUint8Array(obj) {
 }
 
 /*<replacement>*/
-const debugUtil = require('util');
-let debug;
+var debugUtil = require('util');
+var debug;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
 } else {
@@ -59323,23 +61585,23 @@ if (debugUtil && debugUtil.debuglog) {
 }
 /*</replacement>*/
 
-const BufferList = require('./internal/streams/buffer_list');
-const destroyImpl = require('./internal/streams/destroy');
-const _require = require('./internal/streams/state'),
+var BufferList = require('./internal/streams/buffer_list');
+var destroyImpl = require('./internal/streams/destroy');
+var _require = require('./internal/streams/state'),
   getHighWaterMark = _require.getHighWaterMark;
-const _require$codes = require('../errors').codes,
+var _require$codes = require('../errors').codes,
   ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
   ERR_STREAM_PUSH_AFTER_EOF = _require$codes.ERR_STREAM_PUSH_AFTER_EOF,
   ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
   ERR_STREAM_UNSHIFT_AFTER_END_EVENT = _require$codes.ERR_STREAM_UNSHIFT_AFTER_END_EVENT;
 
 // Lazy loaded to improve the startup performance.
-let StringDecoder;
-let createReadableStreamAsyncIterator;
-let from;
+var StringDecoder;
+var createReadableStreamAsyncIterator;
+var from;
 require('inherits')(Readable, Stream);
-const errorOrDestroy = destroyImpl.errorOrDestroy;
-const kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
+var errorOrDestroy = destroyImpl.errorOrDestroy;
+var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
 function prependListener(emitter, event, fn) {
   // Sadly this is not cacheable as some libraries bundle their own
   // event emitter implementation with them.
@@ -59430,7 +61692,7 @@ function Readable(options) {
 
   // Checking for a Stream.Duplex instance is faster here instead of inside
   // the ReadableState constructor, at least with V8 6.5
-  const isDuplex = this instanceof Duplex;
+  var isDuplex = this instanceof Duplex;
   this._readableState = new ReadableState(options, this, isDuplex);
 
   // legacy
@@ -59446,13 +61708,13 @@ Object.defineProperty(Readable.prototype, 'destroyed', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     if (this._readableState === undefined) {
       return false;
     }
     return this._readableState.destroyed;
   },
-  set(value) {
+  set: function set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (!this._readableState) {
@@ -59563,14 +61825,14 @@ Readable.prototype.isPaused = function () {
 // backwards compatibility.
 Readable.prototype.setEncoding = function (enc) {
   if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
-  const decoder = new StringDecoder(enc);
+  var decoder = new StringDecoder(enc);
   this._readableState.decoder = decoder;
   // If setEncoding(null), decoder.encoding equals utf8
   this._readableState.encoding = this._readableState.decoder.encoding;
 
   // Iterate over current buffer to convert already stored Buffers:
-  let p = this._readableState.buffer.head;
-  let content = '';
+  var p = this._readableState.buffer.head;
+  var content = '';
   while (p !== null) {
     content += decoder.write(p.data);
     p = p.next;
@@ -59582,7 +61844,7 @@ Readable.prototype.setEncoding = function (enc) {
 };
 
 // Don't raise the hwm > 1GB
-const MAX_HWM = 0x40000000;
+var MAX_HWM = 0x40000000;
 function computeNewHighWaterMark(n) {
   if (n >= MAX_HWM) {
     // TODO(ronag): Throw ERR_VALUE_OUT_OF_RANGE.
@@ -59809,7 +62071,7 @@ function maybeReadMore_(stream, state) {
   //   read()s. The execution ends in this method again after the _read() ends
   //   up calling push() with more data.
   while (!state.reading && !state.ended && (state.length < state.highWaterMark || state.flowing && state.length === 0)) {
-    const len = state.length;
+    var len = state.length;
     debug('maybeReadMore read 0');
     stream.read(0);
     if (len === state.length)
@@ -60006,8 +62268,8 @@ Readable.prototype.unpipe = function (dest) {
 // set up data events if they are asked for
 // Ensure readable listeners eventually get something
 Readable.prototype.on = function (ev, fn) {
-  const res = Stream.prototype.on.call(this, ev, fn);
-  const state = this._readableState;
+  var res = Stream.prototype.on.call(this, ev, fn);
+  var state = this._readableState;
   if (ev === 'data') {
     // update readableListening so that resume() may be a no-op
     // a few lines down. This is needed to support once('readable').
@@ -60032,7 +62294,7 @@ Readable.prototype.on = function (ev, fn) {
 };
 Readable.prototype.addListener = Readable.prototype.on;
 Readable.prototype.removeListener = function (ev, fn) {
-  const res = Stream.prototype.removeListener.call(this, ev, fn);
+  var res = Stream.prototype.removeListener.call(this, ev, fn);
   if (ev === 'readable') {
     // We need to check if there is someone still listening to
     // readable and reset the state. However this needs to happen
@@ -60045,7 +62307,7 @@ Readable.prototype.removeListener = function (ev, fn) {
   return res;
 };
 Readable.prototype.removeAllListeners = function (ev) {
-  const res = Stream.prototype.removeAllListeners.apply(this, arguments);
+  var res = Stream.prototype.removeAllListeners.apply(this, arguments);
   if (ev === 'readable' || ev === undefined) {
     // We need to check if there is someone still listening to
     // readable and reset the state. However this needs to happen
@@ -60058,7 +62320,7 @@ Readable.prototype.removeAllListeners = function (ev) {
   return res;
 };
 function updateReadableListening(self) {
-  const state = self._readableState;
+  var state = self._readableState;
   state.readableListening = self.listenerCount('readable') > 0;
   if (state.resumeScheduled && !state.paused) {
     // flowing needs to be set to true now, otherwise
@@ -60117,7 +62379,7 @@ Readable.prototype.pause = function () {
   return this;
 };
 function flow(stream) {
-  const state = stream._readableState;
+  var state = stream._readableState;
   debug('flow', state.flowing);
   while (state.flowing && stream.read() !== null);
 }
@@ -60126,23 +62388,24 @@ function flow(stream) {
 // This is *not* part of the readable stream interface.
 // It is an ugly unfortunate mess of history.
 Readable.prototype.wrap = function (stream) {
+  var _this = this;
   var state = this._readableState;
   var paused = false;
-  stream.on('end', () => {
+  stream.on('end', function () {
     debug('wrapped end');
     if (state.decoder && !state.ended) {
       var chunk = state.decoder.end();
-      if (chunk && chunk.length) this.push(chunk);
+      if (chunk && chunk.length) _this.push(chunk);
     }
-    this.push(null);
+    _this.push(null);
   });
-  stream.on('data', chunk => {
+  stream.on('data', function (chunk) {
     debug('wrapped data');
     if (state.decoder) chunk = state.decoder.write(chunk);
 
     // don't skip over falsy values in objectMode
     if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
-    var ret = this.push(chunk);
+    var ret = _this.push(chunk);
     if (!ret) {
       paused = true;
       stream.pause();
@@ -60168,7 +62431,7 @@ Readable.prototype.wrap = function (stream) {
 
   // when we try to consume some more bytes, simply unpause the
   // underlying stream.
-  this._read = n => {
+  this._read = function (n) {
     debug('wrapped _read', n);
     if (paused) {
       paused = false;
@@ -60225,7 +62488,7 @@ Object.defineProperty(Readable.prototype, 'readableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._readableState.length;
   }
 });
@@ -60267,7 +62530,7 @@ function endReadableNT(state, stream) {
     if (state.autoDestroy) {
       // In case of duplex streams we need a way to detect
       // if the writable side is ready for autoDestroy as well
-      const wState = stream._writableState;
+      var wState = stream._writableState;
       if (!wState || wState.autoDestroy && wState.finished) {
         stream.destroy();
       }
@@ -60357,12 +62620,12 @@ function indexOf(xs, x) {
 'use strict';
 
 module.exports = Transform;
-const _require$codes = require('../errors').codes,
+var _require$codes = require('../errors').codes,
   ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
   ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
   ERR_TRANSFORM_ALREADY_TRANSFORMING = _require$codes.ERR_TRANSFORM_ALREADY_TRANSFORMING,
   ERR_TRANSFORM_WITH_LENGTH_0 = _require$codes.ERR_TRANSFORM_WITH_LENGTH_0;
-const Duplex = require('./_stream_duplex');
+var Duplex = require('./_stream_duplex');
 require('inherits')(Transform, Duplex);
 function afterTransform(er, data) {
   var ts = this._transformState;
@@ -60411,9 +62674,10 @@ function Transform(options) {
   this.on('prefinish', prefinish);
 }
 function prefinish() {
+  var _this = this;
   if (typeof this._flush === 'function' && !this._readableState.destroyed) {
-    this._flush((er, data) => {
-      done(this, er, data);
+    this._flush(function (er, data) {
+      done(_this, er, data);
     });
   } else {
     done(this, null, null);
@@ -60463,7 +62727,7 @@ Transform.prototype._read = function (n) {
   }
 };
 Transform.prototype._destroy = function (err, cb) {
-  Duplex.prototype._destroy.call(this, err, err2 => {
+  Duplex.prototype._destroy.call(this, err, function (err2) {
     cb(err2);
   });
 };
@@ -60522,10 +62786,11 @@ function WriteReq(chunk, encoding, cb) {
 // It seems a linked list but it is not
 // there will be only 2 of these for each stream
 function CorkedRequest(state) {
+  var _this = this;
   this.next = null;
   this.entry = null;
-  this.finish = () => {
-    onCorkedFinish(this, state);
+  this.finish = function () {
+    onCorkedFinish(_this, state);
   };
 }
 /* </replacement> */
@@ -60537,7 +62802,7 @@ var Duplex;
 Writable.WritableState = WritableState;
 
 /*<replacement>*/
-const internalUtil = {
+var internalUtil = {
   deprecate: require('util-deprecate')
 };
 /*</replacement>*/
@@ -60546,18 +62811,18 @@ const internalUtil = {
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-const Buffer = require('buffer').Buffer;
-const OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
+var Buffer = require('buffer').Buffer;
+var OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
 function _isUint8Array(obj) {
   return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
 }
-const destroyImpl = require('./internal/streams/destroy');
-const _require = require('./internal/streams/state'),
+var destroyImpl = require('./internal/streams/destroy');
+var _require = require('./internal/streams/state'),
   getHighWaterMark = _require.getHighWaterMark;
-const _require$codes = require('../errors').codes,
+var _require$codes = require('../errors').codes,
   ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
   ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
   ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
@@ -60566,7 +62831,7 @@ const _require$codes = require('../errors').codes,
   ERR_STREAM_NULL_VALUES = _require$codes.ERR_STREAM_NULL_VALUES,
   ERR_STREAM_WRITE_AFTER_END = _require$codes.ERR_STREAM_WRITE_AFTER_END,
   ERR_UNKNOWN_ENCODING = _require$codes.ERR_UNKNOWN_ENCODING;
-const errorOrDestroy = destroyImpl.errorOrDestroy;
+var errorOrDestroy = destroyImpl.errorOrDestroy;
 require('inherits')(Writable, Stream);
 function nop() {}
 function WritableState(options, stream, isDuplex) {
@@ -60724,7 +62989,7 @@ function Writable(options) {
 
   // Checking for a Stream.Duplex instance is faster here instead of inside
   // the WritableState constructor, at least with V8 6.5
-  const isDuplex = this instanceof Duplex;
+  var isDuplex = this instanceof Duplex;
   if (!isDuplex && !realHasInstance.call(Writable, this)) return new Writable(options);
   this._writableState = new WritableState(options, this, isDuplex);
 
@@ -60848,9 +63113,9 @@ function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
   if (state.writing || state.corked) {
     var last = state.lastBufferedRequest;
     state.lastBufferedRequest = {
-      chunk,
-      encoding,
-      isBuf,
+      chunk: chunk,
+      encoding: encoding,
+      isBuf: isBuf,
       callback: cb,
       next: null
     };
@@ -61023,7 +63288,7 @@ Object.defineProperty(Writable.prototype, 'writableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._writableState.length;
   }
 });
@@ -61031,7 +63296,7 @@ function needFinish(state) {
   return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
 }
 function callFinal(stream, state) {
-  stream._final(err => {
+  stream._final(function (err) {
     state.pendingcb--;
     if (err) {
       errorOrDestroy(stream, err);
@@ -61063,7 +63328,7 @@ function finishMaybe(stream, state) {
       if (state.autoDestroy) {
         // In case of duplex streams we need a way to detect
         // if the readable side is ready for autoDestroy as well
-        const rState = stream._readableState;
+        var rState = stream._readableState;
         if (!rState || rState.autoDestroy && rState.endEmitted) {
           stream.destroy();
         }
@@ -61099,13 +63364,13 @@ Object.defineProperty(Writable.prototype, 'destroyed', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     if (this._writableState === undefined) {
       return false;
     }
     return this._writableState.destroyed;
   },
-  set(value) {
+  set: function set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (!this._writableState) {
@@ -61128,24 +63393,28 @@ Writable.prototype._destroy = function (err, cb) {
 (function (process){(function (){
 'use strict';
 
-const finished = require('./end-of-stream');
-const kLastResolve = Symbol('lastResolve');
-const kLastReject = Symbol('lastReject');
-const kError = Symbol('error');
-const kEnded = Symbol('ended');
-const kLastPromise = Symbol('lastPromise');
-const kHandlePromise = Symbol('handlePromise');
-const kStream = Symbol('stream');
+var _Object$setPrototypeO;
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+var finished = require('./end-of-stream');
+var kLastResolve = Symbol('lastResolve');
+var kLastReject = Symbol('lastReject');
+var kError = Symbol('error');
+var kEnded = Symbol('ended');
+var kLastPromise = Symbol('lastPromise');
+var kHandlePromise = Symbol('handlePromise');
+var kStream = Symbol('stream');
 function createIterResult(value, done) {
   return {
-    value,
-    done
+    value: value,
+    done: done
   };
 }
 function readAndResolve(iter) {
-  const resolve = iter[kLastResolve];
+  var resolve = iter[kLastResolve];
   if (resolve !== null) {
-    const data = iter[kStream].read();
+    var data = iter[kStream].read();
     // we defer if data is null
     // we can be expecting either 'end' or
     // 'error'
@@ -61163,8 +63432,8 @@ function onReadable(iter) {
   process.nextTick(readAndResolve, iter);
 }
 function wrapForNext(lastPromise, iter) {
-  return (resolve, reject) => {
-    lastPromise.then(() => {
+  return function (resolve, reject) {
+    lastPromise.then(function () {
       if (iter[kEnded]) {
         resolve(createIterResult(undefined, true));
         return;
@@ -61173,15 +63442,16 @@ function wrapForNext(lastPromise, iter) {
     }, reject);
   };
 }
-const AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
-const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
+var AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
+var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPrototypeO = {
   get stream() {
     return this[kStream];
   },
-  next() {
+  next: function next() {
+    var _this = this;
     // if we have detected an error in the meanwhile
     // reject straight away
-    const error = this[kError];
+    var error = this[kError];
     if (error !== null) {
       return Promise.reject(error);
     }
@@ -61193,10 +63463,10 @@ const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
       // called, the error will be emitted via nextTick, and
       // we cannot guarantee that there is no error lingering around
       // waiting to be emitted.
-      return new Promise((resolve, reject) => {
-        process.nextTick(() => {
-          if (this[kError]) {
-            reject(this[kError]);
+      return new Promise(function (resolve, reject) {
+        process.nextTick(function () {
+          if (_this[kError]) {
+            reject(_this[kError]);
           } else {
             resolve(createIterResult(undefined, true));
           }
@@ -61208,14 +63478,14 @@ const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
     // we will wait for the previous Promise to finish
     // this logic is optimized to support for await loops,
     // where next() is only called once at a time
-    const lastPromise = this[kLastPromise];
-    let promise;
+    var lastPromise = this[kLastPromise];
+    var promise;
     if (lastPromise) {
       promise = new Promise(wrapForNext(lastPromise, this));
     } else {
       // fast path needed to support multiple this.push()
       // without triggering the next() queue
-      const data = this[kStream].read();
+      var data = this[kStream].read();
       if (data !== null) {
         return Promise.resolve(createIterResult(data, false));
       }
@@ -61223,70 +63493,60 @@ const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
     }
     this[kLastPromise] = promise;
     return promise;
-  },
-  [Symbol.asyncIterator]() {
-    return this;
-  },
-  return() {
-    // destroy(err, cb) is a private API
-    // we can guarantee we have that here, because we control the
-    // Readable class this is attached to
-    return new Promise((resolve, reject) => {
-      this[kStream].destroy(null, err => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(createIterResult(undefined, true));
-      });
-    });
   }
-}, AsyncIteratorPrototype);
-const createReadableStreamAsyncIterator = stream => {
-  const iterator = Object.create(ReadableStreamAsyncIteratorPrototype, {
-    [kStream]: {
-      value: stream,
-      writable: true
-    },
-    [kLastResolve]: {
-      value: null,
-      writable: true
-    },
-    [kLastReject]: {
-      value: null,
-      writable: true
-    },
-    [kError]: {
-      value: null,
-      writable: true
-    },
-    [kEnded]: {
-      value: stream._readableState.endEmitted,
-      writable: true
-    },
-    // the function passed to new Promise
-    // is cached so we avoid allocating a new
-    // closure at every run
-    [kHandlePromise]: {
-      value: (resolve, reject) => {
-        const data = iterator[kStream].read();
-        if (data) {
-          iterator[kLastPromise] = null;
-          iterator[kLastResolve] = null;
-          iterator[kLastReject] = null;
-          resolve(createIterResult(data, false));
-        } else {
-          iterator[kLastResolve] = resolve;
-          iterator[kLastReject] = reject;
-        }
-      },
-      writable: true
-    }
+}, _defineProperty(_Object$setPrototypeO, Symbol.asyncIterator, function () {
+  return this;
+}), _defineProperty(_Object$setPrototypeO, "return", function _return() {
+  var _this2 = this;
+  // destroy(err, cb) is a private API
+  // we can guarantee we have that here, because we control the
+  // Readable class this is attached to
+  return new Promise(function (resolve, reject) {
+    _this2[kStream].destroy(null, function (err) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(createIterResult(undefined, true));
+    });
   });
+}), _Object$setPrototypeO), AsyncIteratorPrototype);
+var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterator(stream) {
+  var _Object$create;
+  var iterator = Object.create(ReadableStreamAsyncIteratorPrototype, (_Object$create = {}, _defineProperty(_Object$create, kStream, {
+    value: stream,
+    writable: true
+  }), _defineProperty(_Object$create, kLastResolve, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kLastReject, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kError, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kEnded, {
+    value: stream._readableState.endEmitted,
+    writable: true
+  }), _defineProperty(_Object$create, kHandlePromise, {
+    value: function value(resolve, reject) {
+      var data = iterator[kStream].read();
+      if (data) {
+        iterator[kLastPromise] = null;
+        iterator[kLastResolve] = null;
+        iterator[kLastReject] = null;
+        resolve(createIterResult(data, false));
+      } else {
+        iterator[kLastResolve] = resolve;
+        iterator[kLastReject] = reject;
+      }
+    },
+    writable: true
+  }), _Object$create));
   iterator[kLastPromise] = null;
-  finished(stream, err => {
+  finished(stream, function (err) {
     if (err && err.code !== 'ERR_STREAM_PREMATURE_CLOSE') {
-      const reject = iterator[kLastReject];
+      var reject = iterator[kLastReject];
       // reject if we are waiting for data in the Promise
       // returned by next() and store the error
       if (reject !== null) {
@@ -61298,7 +63558,7 @@ const createReadableStreamAsyncIterator = stream => {
       iterator[kError] = err;
       return;
     }
-    const resolve = iterator[kLastResolve];
+    var resolve = iterator[kLastResolve];
     if (resolve !== null) {
       iterator[kLastPromise] = null;
       iterator[kLastResolve] = null;
@@ -61319,164 +63579,193 @@ module.exports = createReadableStreamAsyncIterator;
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-const _require = require('buffer'),
+var _require = require('buffer'),
   Buffer = _require.Buffer;
-const _require2 = require('util'),
+var _require2 = require('util'),
   inspect = _require2.inspect;
-const custom = inspect && inspect.custom || 'inspect';
+var custom = inspect && inspect.custom || 'inspect';
 function copyBuffer(src, target, offset) {
   Buffer.prototype.copy.call(src, target, offset);
 }
-module.exports = class BufferList {
-  constructor() {
+module.exports = /*#__PURE__*/function () {
+  function BufferList() {
+    _classCallCheck(this, BufferList);
     this.head = null;
     this.tail = null;
     this.length = 0;
   }
-  push(v) {
-    const entry = {
-      data: v,
-      next: null
-    };
-    if (this.length > 0) this.tail.next = entry;else this.head = entry;
-    this.tail = entry;
-    ++this.length;
-  }
-  unshift(v) {
-    const entry = {
-      data: v,
-      next: this.head
-    };
-    if (this.length === 0) this.tail = entry;
-    this.head = entry;
-    ++this.length;
-  }
-  shift() {
-    if (this.length === 0) return;
-    const ret = this.head.data;
-    if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
-    --this.length;
-    return ret;
-  }
-  clear() {
-    this.head = this.tail = null;
-    this.length = 0;
-  }
-  join(s) {
-    if (this.length === 0) return '';
-    var p = this.head;
-    var ret = '' + p.data;
-    while (p = p.next) ret += s + p.data;
-    return ret;
-  }
-  concat(n) {
-    if (this.length === 0) return Buffer.alloc(0);
-    const ret = Buffer.allocUnsafe(n >>> 0);
-    var p = this.head;
-    var i = 0;
-    while (p) {
-      copyBuffer(p.data, ret, i);
-      i += p.data.length;
-      p = p.next;
+  _createClass(BufferList, [{
+    key: "push",
+    value: function push(v) {
+      var entry = {
+        data: v,
+        next: null
+      };
+      if (this.length > 0) this.tail.next = entry;else this.head = entry;
+      this.tail = entry;
+      ++this.length;
     }
-    return ret;
-  }
-
-  // Consumes a specified amount of bytes or characters from the buffered data.
-  consume(n, hasStrings) {
-    var ret;
-    if (n < this.head.data.length) {
-      // `slice` is the same for buffers and strings.
-      ret = this.head.data.slice(0, n);
-      this.head.data = this.head.data.slice(n);
-    } else if (n === this.head.data.length) {
-      // First chunk is a perfect match.
-      ret = this.shift();
-    } else {
-      // Result spans more than one buffer.
-      ret = hasStrings ? this._getString(n) : this._getBuffer(n);
+  }, {
+    key: "unshift",
+    value: function unshift(v) {
+      var entry = {
+        data: v,
+        next: this.head
+      };
+      if (this.length === 0) this.tail = entry;
+      this.head = entry;
+      ++this.length;
     }
-    return ret;
-  }
-  first() {
-    return this.head.data;
-  }
-
-  // Consumes a specified amount of characters from the buffered data.
-  _getString(n) {
-    var p = this.head;
-    var c = 1;
-    var ret = p.data;
-    n -= ret.length;
-    while (p = p.next) {
-      const str = p.data;
-      const nb = n > str.length ? str.length : n;
-      if (nb === str.length) ret += str;else ret += str.slice(0, n);
-      n -= nb;
-      if (n === 0) {
-        if (nb === str.length) {
-          ++c;
-          if (p.next) this.head = p.next;else this.head = this.tail = null;
-        } else {
-          this.head = p;
-          p.data = str.slice(nb);
-        }
-        break;
+  }, {
+    key: "shift",
+    value: function shift() {
+      if (this.length === 0) return;
+      var ret = this.head.data;
+      if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
+      --this.length;
+      return ret;
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.head = this.tail = null;
+      this.length = 0;
+    }
+  }, {
+    key: "join",
+    value: function join(s) {
+      if (this.length === 0) return '';
+      var p = this.head;
+      var ret = '' + p.data;
+      while (p = p.next) ret += s + p.data;
+      return ret;
+    }
+  }, {
+    key: "concat",
+    value: function concat(n) {
+      if (this.length === 0) return Buffer.alloc(0);
+      var ret = Buffer.allocUnsafe(n >>> 0);
+      var p = this.head;
+      var i = 0;
+      while (p) {
+        copyBuffer(p.data, ret, i);
+        i += p.data.length;
+        p = p.next;
       }
-      ++c;
+      return ret;
     }
-    this.length -= c;
-    return ret;
-  }
 
-  // Consumes a specified amount of bytes from the buffered data.
-  _getBuffer(n) {
-    const ret = Buffer.allocUnsafe(n);
-    var p = this.head;
-    var c = 1;
-    p.data.copy(ret);
-    n -= p.data.length;
-    while (p = p.next) {
-      const buf = p.data;
-      const nb = n > buf.length ? buf.length : n;
-      buf.copy(ret, ret.length - n, 0, nb);
-      n -= nb;
-      if (n === 0) {
-        if (nb === buf.length) {
-          ++c;
-          if (p.next) this.head = p.next;else this.head = this.tail = null;
-        } else {
-          this.head = p;
-          p.data = buf.slice(nb);
-        }
-        break;
+    // Consumes a specified amount of bytes or characters from the buffered data.
+  }, {
+    key: "consume",
+    value: function consume(n, hasStrings) {
+      var ret;
+      if (n < this.head.data.length) {
+        // `slice` is the same for buffers and strings.
+        ret = this.head.data.slice(0, n);
+        this.head.data = this.head.data.slice(n);
+      } else if (n === this.head.data.length) {
+        // First chunk is a perfect match.
+        ret = this.shift();
+      } else {
+        // Result spans more than one buffer.
+        ret = hasStrings ? this._getString(n) : this._getBuffer(n);
       }
-      ++c;
+      return ret;
     }
-    this.length -= c;
-    return ret;
-  }
+  }, {
+    key: "first",
+    value: function first() {
+      return this.head.data;
+    }
 
-  // Make sure the linked list only shows the minimal necessary information.
-  [custom](_, options) {
-    return inspect(this, _objectSpread(_objectSpread({}, options), {}, {
-      // Only inspect one level.
-      depth: 0,
-      // It should not recurse.
-      customInspect: false
-    }));
-  }
-};
+    // Consumes a specified amount of characters from the buffered data.
+  }, {
+    key: "_getString",
+    value: function _getString(n) {
+      var p = this.head;
+      var c = 1;
+      var ret = p.data;
+      n -= ret.length;
+      while (p = p.next) {
+        var str = p.data;
+        var nb = n > str.length ? str.length : n;
+        if (nb === str.length) ret += str;else ret += str.slice(0, n);
+        n -= nb;
+        if (n === 0) {
+          if (nb === str.length) {
+            ++c;
+            if (p.next) this.head = p.next;else this.head = this.tail = null;
+          } else {
+            this.head = p;
+            p.data = str.slice(nb);
+          }
+          break;
+        }
+        ++c;
+      }
+      this.length -= c;
+      return ret;
+    }
+
+    // Consumes a specified amount of bytes from the buffered data.
+  }, {
+    key: "_getBuffer",
+    value: function _getBuffer(n) {
+      var ret = Buffer.allocUnsafe(n);
+      var p = this.head;
+      var c = 1;
+      p.data.copy(ret);
+      n -= p.data.length;
+      while (p = p.next) {
+        var buf = p.data;
+        var nb = n > buf.length ? buf.length : n;
+        buf.copy(ret, ret.length - n, 0, nb);
+        n -= nb;
+        if (n === 0) {
+          if (nb === buf.length) {
+            ++c;
+            if (p.next) this.head = p.next;else this.head = this.tail = null;
+          } else {
+            this.head = p;
+            p.data = buf.slice(nb);
+          }
+          break;
+        }
+        ++c;
+      }
+      this.length -= c;
+      return ret;
+    }
+
+    // Make sure the linked list only shows the minimal necessary information.
+  }, {
+    key: custom,
+    value: function value(_, options) {
+      return inspect(this, _objectSpread(_objectSpread({}, options), {}, {
+        // Only inspect one level.
+        depth: 0,
+        // It should not recurse.
+        customInspect: false
+      }));
+    }
+  }]);
+  return BufferList;
+}();
 },{"buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","util":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browser-resolve/empty.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
 // undocumented cb() API, needed for core, not for public API
 function destroy(err, cb) {
-  const readableDestroyed = this._readableState && this._readableState.destroyed;
-  const writableDestroyed = this._writableState && this._writableState.destroyed;
+  var _this = this;
+  var readableDestroyed = this._readableState && this._readableState.destroyed;
+  var writableDestroyed = this._writableState && this._writableState.destroyed;
   if (readableDestroyed || writableDestroyed) {
     if (cb) {
       cb(err);
@@ -61502,21 +63791,21 @@ function destroy(err, cb) {
   if (this._writableState) {
     this._writableState.destroyed = true;
   }
-  this._destroy(err || null, err => {
+  this._destroy(err || null, function (err) {
     if (!cb && err) {
-      if (!this._writableState) {
-        process.nextTick(emitErrorAndCloseNT, this, err);
-      } else if (!this._writableState.errorEmitted) {
-        this._writableState.errorEmitted = true;
-        process.nextTick(emitErrorAndCloseNT, this, err);
+      if (!_this._writableState) {
+        process.nextTick(emitErrorAndCloseNT, _this, err);
+      } else if (!_this._writableState.errorEmitted) {
+        _this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorAndCloseNT, _this, err);
       } else {
-        process.nextTick(emitCloseNT, this);
+        process.nextTick(emitCloseNT, _this);
       }
     } else if (cb) {
-      process.nextTick(emitCloseNT, this);
+      process.nextTick(emitCloseNT, _this);
       cb(err);
     } else {
-      process.nextTick(emitCloseNT, this);
+      process.nextTick(emitCloseNT, _this);
     }
   });
   return this;
@@ -61557,14 +63846,14 @@ function errorOrDestroy(stream, err) {
   // the error to be emitted nextTick. In a future
   // semver major update we should change the default to this.
 
-  const rState = stream._readableState;
-  const wState = stream._writableState;
+  var rState = stream._readableState;
+  var wState = stream._writableState;
   if (rState && rState.autoDestroy || wState && wState.autoDestroy) stream.destroy(err);else stream.emit('error', err);
 }
 module.exports = {
-  destroy,
-  undestroy,
-  errorOrDestroy
+  destroy: destroy,
+  undestroy: undestroy,
+  errorOrDestroy: errorOrDestroy
 };
 }).call(this)}).call(this,require('_process'))
 
@@ -61574,9 +63863,9 @@ module.exports = {
 
 'use strict';
 
-const ERR_STREAM_PREMATURE_CLOSE = require('../../../errors').codes.ERR_STREAM_PREMATURE_CLOSE;
+var ERR_STREAM_PREMATURE_CLOSE = require('../../../errors').codes.ERR_STREAM_PREMATURE_CLOSE;
 function once(callback) {
-  let called = false;
+  var called = false;
   return function () {
     if (called) return;
     called = true;
@@ -61594,28 +63883,28 @@ function eos(stream, opts, callback) {
   if (typeof opts === 'function') return eos(stream, null, opts);
   if (!opts) opts = {};
   callback = once(callback || noop);
-  let readable = opts.readable || opts.readable !== false && stream.readable;
-  let writable = opts.writable || opts.writable !== false && stream.writable;
-  const onlegacyfinish = () => {
+  var readable = opts.readable || opts.readable !== false && stream.readable;
+  var writable = opts.writable || opts.writable !== false && stream.writable;
+  var onlegacyfinish = function onlegacyfinish() {
     if (!stream.writable) onfinish();
   };
   var writableEnded = stream._writableState && stream._writableState.finished;
-  const onfinish = () => {
+  var onfinish = function onfinish() {
     writable = false;
     writableEnded = true;
     if (!readable) callback.call(stream);
   };
   var readableEnded = stream._readableState && stream._readableState.endEmitted;
-  const onend = () => {
+  var onend = function onend() {
     readable = false;
     readableEnded = true;
     if (!writable) callback.call(stream);
   };
-  const onerror = err => {
+  var onerror = function onerror(err) {
     callback.call(stream, err);
   };
-  const onclose = () => {
-    let err;
+  var onclose = function onclose() {
+    var err;
     if (readable && !readableEnded) {
       if (!stream._readableState || !stream._readableState.ended) err = new ERR_STREAM_PREMATURE_CLOSE();
       return callback.call(stream, err);
@@ -61625,7 +63914,7 @@ function eos(stream, opts, callback) {
       return callback.call(stream, err);
     }
   };
-  const onrequest = () => {
+  var onrequest = function onrequest() {
     stream.req.on('finish', onfinish);
   };
   if (isRequest(stream)) {
@@ -61666,16 +63955,16 @@ module.exports = function () {
 
 'use strict';
 
-let eos;
+var eos;
 function once(callback) {
-  let called = false;
+  var called = false;
   return function () {
     if (called) return;
     called = true;
-    callback(...arguments);
+    callback.apply(void 0, arguments);
   };
 }
-const _require$codes = require('../../../errors').codes,
+var _require$codes = require('../../../errors').codes,
   ERR_MISSING_ARGS = _require$codes.ERR_MISSING_ARGS,
   ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED;
 function noop(err) {
@@ -61687,21 +63976,21 @@ function isRequest(stream) {
 }
 function destroyer(stream, reading, writing, callback) {
   callback = once(callback);
-  let closed = false;
-  stream.on('close', () => {
+  var closed = false;
+  stream.on('close', function () {
     closed = true;
   });
   if (eos === undefined) eos = require('./end-of-stream');
   eos(stream, {
     readable: reading,
     writable: writing
-  }, err => {
+  }, function (err) {
     if (err) return callback(err);
     closed = true;
     callback();
   });
-  let destroyed = false;
-  return err => {
+  var destroyed = false;
+  return function (err) {
     if (closed) return;
     if (destroyed) return;
     destroyed = true;
@@ -61727,15 +64016,15 @@ function pipeline() {
   for (var _len = arguments.length, streams = new Array(_len), _key = 0; _key < _len; _key++) {
     streams[_key] = arguments[_key];
   }
-  const callback = popCallback(streams);
+  var callback = popCallback(streams);
   if (Array.isArray(streams[0])) streams = streams[0];
   if (streams.length < 2) {
     throw new ERR_MISSING_ARGS('streams');
   }
-  let error;
-  const destroys = streams.map(function (stream, i) {
-    const reading = i < streams.length - 1;
-    const writing = i > 0;
+  var error;
+  var destroys = streams.map(function (stream, i) {
+    var reading = i < streams.length - 1;
+    var writing = i > 0;
     return destroyer(stream, reading, writing, function (err) {
       if (!error) error = err;
       if (err) destroys.forEach(call);
@@ -61750,15 +64039,15 @@ module.exports = pipeline;
 },{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js","./end-of-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/state.js":[function(require,module,exports){
 'use strict';
 
-const ERR_INVALID_OPT_VALUE = require('../../../errors').codes.ERR_INVALID_OPT_VALUE;
+var ERR_INVALID_OPT_VALUE = require('../../../errors').codes.ERR_INVALID_OPT_VALUE;
 function highWaterMarkFrom(options, isDuplex, duplexKey) {
   return options.highWaterMark != null ? options.highWaterMark : isDuplex ? options[duplexKey] : null;
 }
 function getHighWaterMark(state, options, duplexKey, isDuplex) {
-  const hwm = highWaterMarkFrom(options, isDuplex, duplexKey);
+  var hwm = highWaterMarkFrom(options, isDuplex, duplexKey);
   if (hwm != null) {
     if (!(isFinite(hwm) && Math.floor(hwm) === hwm) || hwm < 0) {
-      const name = isDuplex ? duplexKey : 'highWaterMark';
+      var name = isDuplex ? duplexKey : 'highWaterMark';
       throw new ERR_INVALID_OPT_VALUE(name, hwm);
     }
     return Math.floor(hwm);
@@ -61768,7 +64057,7 @@ function getHighWaterMark(state, options, duplexKey, isDuplex) {
   return state.objectMode ? 16 : 16 * 1024;
 }
 module.exports = {
-  getHighWaterMark
+  getHighWaterMark: getHighWaterMark
 };
 },{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports){
 module.exports = require('events').EventEmitter;
@@ -70969,14 +73258,14 @@ var objectKeys = Object.keys || function (obj) {
 /*</replacement>*/
 
 module.exports = Duplex;
-const Readable = require('./_stream_readable');
-const Writable = require('./_stream_writable');
+var Readable = require('./_stream_readable');
+var Writable = require('./_stream_writable');
 require('inherits')(Duplex, Readable);
 {
   // Allow the keys array to be GC'ed.
-  const keys = objectKeys(Writable.prototype);
+  var keys = objectKeys(Writable.prototype);
   for (var v = 0; v < keys.length; v++) {
-    const method = keys[v];
+    var method = keys[v];
     if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
   }
 }
@@ -70999,7 +73288,7 @@ Object.defineProperty(Duplex.prototype, 'writableHighWaterMark', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._writableState.highWaterMark;
   }
 });
@@ -71017,7 +73306,7 @@ Object.defineProperty(Duplex.prototype, 'writableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._writableState.length;
   }
 });
@@ -71039,13 +73328,13 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     if (this._readableState === undefined || this._writableState === undefined) {
       return false;
     }
     return this._readableState.destroyed && this._writableState.destroyed;
   },
-  set(value) {
+  set: function set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (this._readableState === undefined || this._writableState === undefined) {
@@ -71096,7 +73385,7 @@ var Duplex;
 Readable.ReadableState = ReadableState;
 
 /*<replacement>*/
-const EE = require('events').EventEmitter;
+var EE = require('events').EventEmitter;
 var EElistenerCount = function EElistenerCount(emitter, type) {
   return emitter.listeners(type).length;
 };
@@ -71106,8 +73395,8 @@ var EElistenerCount = function EElistenerCount(emitter, type) {
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-const Buffer = require('buffer').Buffer;
-const OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
+var Buffer = require('buffer').Buffer;
+var OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
@@ -71116,8 +73405,8 @@ function _isUint8Array(obj) {
 }
 
 /*<replacement>*/
-const debugUtil = require('util');
-let debug;
+var debugUtil = require('util');
+var debug;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
 } else {
@@ -71125,23 +73414,23 @@ if (debugUtil && debugUtil.debuglog) {
 }
 /*</replacement>*/
 
-const BufferList = require('./internal/streams/buffer_list');
-const destroyImpl = require('./internal/streams/destroy');
-const _require = require('./internal/streams/state'),
+var BufferList = require('./internal/streams/buffer_list');
+var destroyImpl = require('./internal/streams/destroy');
+var _require = require('./internal/streams/state'),
   getHighWaterMark = _require.getHighWaterMark;
-const _require$codes = require('../errors').codes,
+var _require$codes = require('../errors').codes,
   ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
   ERR_STREAM_PUSH_AFTER_EOF = _require$codes.ERR_STREAM_PUSH_AFTER_EOF,
   ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
   ERR_STREAM_UNSHIFT_AFTER_END_EVENT = _require$codes.ERR_STREAM_UNSHIFT_AFTER_END_EVENT;
 
 // Lazy loaded to improve the startup performance.
-let StringDecoder;
-let createReadableStreamAsyncIterator;
-let from;
+var StringDecoder;
+var createReadableStreamAsyncIterator;
+var from;
 require('inherits')(Readable, Stream);
-const errorOrDestroy = destroyImpl.errorOrDestroy;
-const kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
+var errorOrDestroy = destroyImpl.errorOrDestroy;
+var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
 function prependListener(emitter, event, fn) {
   // Sadly this is not cacheable as some libraries bundle their own
   // event emitter implementation with them.
@@ -71232,7 +73521,7 @@ function Readable(options) {
 
   // Checking for a Stream.Duplex instance is faster here instead of inside
   // the ReadableState constructor, at least with V8 6.5
-  const isDuplex = this instanceof Duplex;
+  var isDuplex = this instanceof Duplex;
   this._readableState = new ReadableState(options, this, isDuplex);
 
   // legacy
@@ -71248,13 +73537,13 @@ Object.defineProperty(Readable.prototype, 'destroyed', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     if (this._readableState === undefined) {
       return false;
     }
     return this._readableState.destroyed;
   },
-  set(value) {
+  set: function set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (!this._readableState) {
@@ -71365,14 +73654,14 @@ Readable.prototype.isPaused = function () {
 // backwards compatibility.
 Readable.prototype.setEncoding = function (enc) {
   if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
-  const decoder = new StringDecoder(enc);
+  var decoder = new StringDecoder(enc);
   this._readableState.decoder = decoder;
   // If setEncoding(null), decoder.encoding equals utf8
   this._readableState.encoding = this._readableState.decoder.encoding;
 
   // Iterate over current buffer to convert already stored Buffers:
-  let p = this._readableState.buffer.head;
-  let content = '';
+  var p = this._readableState.buffer.head;
+  var content = '';
   while (p !== null) {
     content += decoder.write(p.data);
     p = p.next;
@@ -71384,7 +73673,7 @@ Readable.prototype.setEncoding = function (enc) {
 };
 
 // Don't raise the hwm > 1GB
-const MAX_HWM = 0x40000000;
+var MAX_HWM = 0x40000000;
 function computeNewHighWaterMark(n) {
   if (n >= MAX_HWM) {
     // TODO(ronag): Throw ERR_VALUE_OUT_OF_RANGE.
@@ -71611,7 +73900,7 @@ function maybeReadMore_(stream, state) {
   //   read()s. The execution ends in this method again after the _read() ends
   //   up calling push() with more data.
   while (!state.reading && !state.ended && (state.length < state.highWaterMark || state.flowing && state.length === 0)) {
-    const len = state.length;
+    var len = state.length;
     debug('maybeReadMore read 0');
     stream.read(0);
     if (len === state.length)
@@ -71808,8 +74097,8 @@ Readable.prototype.unpipe = function (dest) {
 // set up data events if they are asked for
 // Ensure readable listeners eventually get something
 Readable.prototype.on = function (ev, fn) {
-  const res = Stream.prototype.on.call(this, ev, fn);
-  const state = this._readableState;
+  var res = Stream.prototype.on.call(this, ev, fn);
+  var state = this._readableState;
   if (ev === 'data') {
     // update readableListening so that resume() may be a no-op
     // a few lines down. This is needed to support once('readable').
@@ -71834,7 +74123,7 @@ Readable.prototype.on = function (ev, fn) {
 };
 Readable.prototype.addListener = Readable.prototype.on;
 Readable.prototype.removeListener = function (ev, fn) {
-  const res = Stream.prototype.removeListener.call(this, ev, fn);
+  var res = Stream.prototype.removeListener.call(this, ev, fn);
   if (ev === 'readable') {
     // We need to check if there is someone still listening to
     // readable and reset the state. However this needs to happen
@@ -71847,7 +74136,7 @@ Readable.prototype.removeListener = function (ev, fn) {
   return res;
 };
 Readable.prototype.removeAllListeners = function (ev) {
-  const res = Stream.prototype.removeAllListeners.apply(this, arguments);
+  var res = Stream.prototype.removeAllListeners.apply(this, arguments);
   if (ev === 'readable' || ev === undefined) {
     // We need to check if there is someone still listening to
     // readable and reset the state. However this needs to happen
@@ -71860,7 +74149,7 @@ Readable.prototype.removeAllListeners = function (ev) {
   return res;
 };
 function updateReadableListening(self) {
-  const state = self._readableState;
+  var state = self._readableState;
   state.readableListening = self.listenerCount('readable') > 0;
   if (state.resumeScheduled && !state.paused) {
     // flowing needs to be set to true now, otherwise
@@ -71919,7 +74208,7 @@ Readable.prototype.pause = function () {
   return this;
 };
 function flow(stream) {
-  const state = stream._readableState;
+  var state = stream._readableState;
   debug('flow', state.flowing);
   while (state.flowing && stream.read() !== null);
 }
@@ -71928,23 +74217,24 @@ function flow(stream) {
 // This is *not* part of the readable stream interface.
 // It is an ugly unfortunate mess of history.
 Readable.prototype.wrap = function (stream) {
+  var _this = this;
   var state = this._readableState;
   var paused = false;
-  stream.on('end', () => {
+  stream.on('end', function () {
     debug('wrapped end');
     if (state.decoder && !state.ended) {
       var chunk = state.decoder.end();
-      if (chunk && chunk.length) this.push(chunk);
+      if (chunk && chunk.length) _this.push(chunk);
     }
-    this.push(null);
+    _this.push(null);
   });
-  stream.on('data', chunk => {
+  stream.on('data', function (chunk) {
     debug('wrapped data');
     if (state.decoder) chunk = state.decoder.write(chunk);
 
     // don't skip over falsy values in objectMode
     if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
-    var ret = this.push(chunk);
+    var ret = _this.push(chunk);
     if (!ret) {
       paused = true;
       stream.pause();
@@ -71970,7 +74260,7 @@ Readable.prototype.wrap = function (stream) {
 
   // when we try to consume some more bytes, simply unpause the
   // underlying stream.
-  this._read = n => {
+  this._read = function (n) {
     debug('wrapped _read', n);
     if (paused) {
       paused = false;
@@ -72027,7 +74317,7 @@ Object.defineProperty(Readable.prototype, 'readableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._readableState.length;
   }
 });
@@ -72069,7 +74359,7 @@ function endReadableNT(state, stream) {
     if (state.autoDestroy) {
       // In case of duplex streams we need a way to detect
       // if the writable side is ready for autoDestroy as well
-      const wState = stream._writableState;
+      var wState = stream._writableState;
       if (!wState || wState.autoDestroy && wState.finished) {
         stream.destroy();
       }
@@ -72136,10 +74426,11 @@ function WriteReq(chunk, encoding, cb) {
 // It seems a linked list but it is not
 // there will be only 2 of these for each stream
 function CorkedRequest(state) {
+  var _this = this;
   this.next = null;
   this.entry = null;
-  this.finish = () => {
-    onCorkedFinish(this, state);
+  this.finish = function () {
+    onCorkedFinish(_this, state);
   };
 }
 /* </replacement> */
@@ -72151,7 +74442,7 @@ var Duplex;
 Writable.WritableState = WritableState;
 
 /*<replacement>*/
-const internalUtil = {
+var internalUtil = {
   deprecate: require('util-deprecate')
 };
 /*</replacement>*/
@@ -72160,18 +74451,18 @@ const internalUtil = {
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-const Buffer = require('buffer').Buffer;
-const OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
+var Buffer = require('buffer').Buffer;
+var OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
 function _isUint8Array(obj) {
   return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
 }
-const destroyImpl = require('./internal/streams/destroy');
-const _require = require('./internal/streams/state'),
+var destroyImpl = require('./internal/streams/destroy');
+var _require = require('./internal/streams/state'),
   getHighWaterMark = _require.getHighWaterMark;
-const _require$codes = require('../errors').codes,
+var _require$codes = require('../errors').codes,
   ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
   ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
   ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
@@ -72180,7 +74471,7 @@ const _require$codes = require('../errors').codes,
   ERR_STREAM_NULL_VALUES = _require$codes.ERR_STREAM_NULL_VALUES,
   ERR_STREAM_WRITE_AFTER_END = _require$codes.ERR_STREAM_WRITE_AFTER_END,
   ERR_UNKNOWN_ENCODING = _require$codes.ERR_UNKNOWN_ENCODING;
-const errorOrDestroy = destroyImpl.errorOrDestroy;
+var errorOrDestroy = destroyImpl.errorOrDestroy;
 require('inherits')(Writable, Stream);
 function nop() {}
 function WritableState(options, stream, isDuplex) {
@@ -72338,7 +74629,7 @@ function Writable(options) {
 
   // Checking for a Stream.Duplex instance is faster here instead of inside
   // the WritableState constructor, at least with V8 6.5
-  const isDuplex = this instanceof Duplex;
+  var isDuplex = this instanceof Duplex;
   if (!isDuplex && !realHasInstance.call(Writable, this)) return new Writable(options);
   this._writableState = new WritableState(options, this, isDuplex);
 
@@ -72462,9 +74753,9 @@ function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
   if (state.writing || state.corked) {
     var last = state.lastBufferedRequest;
     state.lastBufferedRequest = {
-      chunk,
-      encoding,
-      isBuf,
+      chunk: chunk,
+      encoding: encoding,
+      isBuf: isBuf,
       callback: cb,
       next: null
     };
@@ -72637,7 +74928,7 @@ Object.defineProperty(Writable.prototype, 'writableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._writableState.length;
   }
 });
@@ -72645,7 +74936,7 @@ function needFinish(state) {
   return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
 }
 function callFinal(stream, state) {
-  stream._final(err => {
+  stream._final(function (err) {
     state.pendingcb--;
     if (err) {
       errorOrDestroy(stream, err);
@@ -72677,7 +74968,7 @@ function finishMaybe(stream, state) {
       if (state.autoDestroy) {
         // In case of duplex streams we need a way to detect
         // if the readable side is ready for autoDestroy as well
-        const rState = stream._readableState;
+        var rState = stream._readableState;
         if (!rState || rState.autoDestroy && rState.endEmitted) {
           stream.destroy();
         }
@@ -72713,13 +75004,13 @@ Object.defineProperty(Writable.prototype, 'destroyed', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     if (this._writableState === undefined) {
       return false;
     }
     return this._writableState.destroyed;
   },
-  set(value) {
+  set: function set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (!this._writableState) {
@@ -72742,24 +75033,28 @@ Writable.prototype._destroy = function (err, cb) {
 (function (process){(function (){
 'use strict';
 
-const finished = require('./end-of-stream');
-const kLastResolve = Symbol('lastResolve');
-const kLastReject = Symbol('lastReject');
-const kError = Symbol('error');
-const kEnded = Symbol('ended');
-const kLastPromise = Symbol('lastPromise');
-const kHandlePromise = Symbol('handlePromise');
-const kStream = Symbol('stream');
+var _Object$setPrototypeO;
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+var finished = require('./end-of-stream');
+var kLastResolve = Symbol('lastResolve');
+var kLastReject = Symbol('lastReject');
+var kError = Symbol('error');
+var kEnded = Symbol('ended');
+var kLastPromise = Symbol('lastPromise');
+var kHandlePromise = Symbol('handlePromise');
+var kStream = Symbol('stream');
 function createIterResult(value, done) {
   return {
-    value,
-    done
+    value: value,
+    done: done
   };
 }
 function readAndResolve(iter) {
-  const resolve = iter[kLastResolve];
+  var resolve = iter[kLastResolve];
   if (resolve !== null) {
-    const data = iter[kStream].read();
+    var data = iter[kStream].read();
     // we defer if data is null
     // we can be expecting either 'end' or
     // 'error'
@@ -72777,8 +75072,8 @@ function onReadable(iter) {
   process.nextTick(readAndResolve, iter);
 }
 function wrapForNext(lastPromise, iter) {
-  return (resolve, reject) => {
-    lastPromise.then(() => {
+  return function (resolve, reject) {
+    lastPromise.then(function () {
       if (iter[kEnded]) {
         resolve(createIterResult(undefined, true));
         return;
@@ -72787,15 +75082,16 @@ function wrapForNext(lastPromise, iter) {
     }, reject);
   };
 }
-const AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
-const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
+var AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
+var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPrototypeO = {
   get stream() {
     return this[kStream];
   },
-  next() {
+  next: function next() {
+    var _this = this;
     // if we have detected an error in the meanwhile
     // reject straight away
-    const error = this[kError];
+    var error = this[kError];
     if (error !== null) {
       return Promise.reject(error);
     }
@@ -72807,10 +75103,10 @@ const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
       // called, the error will be emitted via nextTick, and
       // we cannot guarantee that there is no error lingering around
       // waiting to be emitted.
-      return new Promise((resolve, reject) => {
-        process.nextTick(() => {
-          if (this[kError]) {
-            reject(this[kError]);
+      return new Promise(function (resolve, reject) {
+        process.nextTick(function () {
+          if (_this[kError]) {
+            reject(_this[kError]);
           } else {
             resolve(createIterResult(undefined, true));
           }
@@ -72822,14 +75118,14 @@ const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
     // we will wait for the previous Promise to finish
     // this logic is optimized to support for await loops,
     // where next() is only called once at a time
-    const lastPromise = this[kLastPromise];
-    let promise;
+    var lastPromise = this[kLastPromise];
+    var promise;
     if (lastPromise) {
       promise = new Promise(wrapForNext(lastPromise, this));
     } else {
       // fast path needed to support multiple this.push()
       // without triggering the next() queue
-      const data = this[kStream].read();
+      var data = this[kStream].read();
       if (data !== null) {
         return Promise.resolve(createIterResult(data, false));
       }
@@ -72837,70 +75133,60 @@ const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
     }
     this[kLastPromise] = promise;
     return promise;
-  },
-  [Symbol.asyncIterator]() {
-    return this;
-  },
-  return() {
-    // destroy(err, cb) is a private API
-    // we can guarantee we have that here, because we control the
-    // Readable class this is attached to
-    return new Promise((resolve, reject) => {
-      this[kStream].destroy(null, err => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(createIterResult(undefined, true));
-      });
-    });
   }
-}, AsyncIteratorPrototype);
-const createReadableStreamAsyncIterator = stream => {
-  const iterator = Object.create(ReadableStreamAsyncIteratorPrototype, {
-    [kStream]: {
-      value: stream,
-      writable: true
-    },
-    [kLastResolve]: {
-      value: null,
-      writable: true
-    },
-    [kLastReject]: {
-      value: null,
-      writable: true
-    },
-    [kError]: {
-      value: null,
-      writable: true
-    },
-    [kEnded]: {
-      value: stream._readableState.endEmitted,
-      writable: true
-    },
-    // the function passed to new Promise
-    // is cached so we avoid allocating a new
-    // closure at every run
-    [kHandlePromise]: {
-      value: (resolve, reject) => {
-        const data = iterator[kStream].read();
-        if (data) {
-          iterator[kLastPromise] = null;
-          iterator[kLastResolve] = null;
-          iterator[kLastReject] = null;
-          resolve(createIterResult(data, false));
-        } else {
-          iterator[kLastResolve] = resolve;
-          iterator[kLastReject] = reject;
-        }
-      },
-      writable: true
-    }
+}, _defineProperty(_Object$setPrototypeO, Symbol.asyncIterator, function () {
+  return this;
+}), _defineProperty(_Object$setPrototypeO, "return", function _return() {
+  var _this2 = this;
+  // destroy(err, cb) is a private API
+  // we can guarantee we have that here, because we control the
+  // Readable class this is attached to
+  return new Promise(function (resolve, reject) {
+    _this2[kStream].destroy(null, function (err) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(createIterResult(undefined, true));
+    });
   });
+}), _Object$setPrototypeO), AsyncIteratorPrototype);
+var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterator(stream) {
+  var _Object$create;
+  var iterator = Object.create(ReadableStreamAsyncIteratorPrototype, (_Object$create = {}, _defineProperty(_Object$create, kStream, {
+    value: stream,
+    writable: true
+  }), _defineProperty(_Object$create, kLastResolve, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kLastReject, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kError, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kEnded, {
+    value: stream._readableState.endEmitted,
+    writable: true
+  }), _defineProperty(_Object$create, kHandlePromise, {
+    value: function value(resolve, reject) {
+      var data = iterator[kStream].read();
+      if (data) {
+        iterator[kLastPromise] = null;
+        iterator[kLastResolve] = null;
+        iterator[kLastReject] = null;
+        resolve(createIterResult(data, false));
+      } else {
+        iterator[kLastResolve] = resolve;
+        iterator[kLastReject] = reject;
+      }
+    },
+    writable: true
+  }), _Object$create));
   iterator[kLastPromise] = null;
-  finished(stream, err => {
+  finished(stream, function (err) {
     if (err && err.code !== 'ERR_STREAM_PREMATURE_CLOSE') {
-      const reject = iterator[kLastReject];
+      var reject = iterator[kLastReject];
       // reject if we are waiting for data in the Promise
       // returned by next() and store the error
       if (reject !== null) {
@@ -72912,7 +75198,7 @@ const createReadableStreamAsyncIterator = stream => {
       iterator[kError] = err;
       return;
     }
-    const resolve = iterator[kLastResolve];
+    var resolve = iterator[kLastResolve];
     if (resolve !== null) {
       iterator[kLastPromise] = null;
       iterator[kLastResolve] = null;
@@ -72935,8 +75221,9 @@ arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-
 
 // undocumented cb() API, needed for core, not for public API
 function destroy(err, cb) {
-  const readableDestroyed = this._readableState && this._readableState.destroyed;
-  const writableDestroyed = this._writableState && this._writableState.destroyed;
+  var _this = this;
+  var readableDestroyed = this._readableState && this._readableState.destroyed;
+  var writableDestroyed = this._writableState && this._writableState.destroyed;
   if (readableDestroyed || writableDestroyed) {
     if (cb) {
       cb(err);
@@ -72962,21 +75249,21 @@ function destroy(err, cb) {
   if (this._writableState) {
     this._writableState.destroyed = true;
   }
-  this._destroy(err || null, err => {
+  this._destroy(err || null, function (err) {
     if (!cb && err) {
-      if (!this._writableState) {
-        process.nextTick(emitErrorAndCloseNT, this, err);
-      } else if (!this._writableState.errorEmitted) {
-        this._writableState.errorEmitted = true;
-        process.nextTick(emitErrorAndCloseNT, this, err);
+      if (!_this._writableState) {
+        process.nextTick(emitErrorAndCloseNT, _this, err);
+      } else if (!_this._writableState.errorEmitted) {
+        _this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorAndCloseNT, _this, err);
       } else {
-        process.nextTick(emitCloseNT, this);
+        process.nextTick(emitCloseNT, _this);
       }
     } else if (cb) {
-      process.nextTick(emitCloseNT, this);
+      process.nextTick(emitCloseNT, _this);
       cb(err);
     } else {
-      process.nextTick(emitCloseNT, this);
+      process.nextTick(emitCloseNT, _this);
     }
   });
   return this;
@@ -73017,14 +75304,14 @@ function errorOrDestroy(stream, err) {
   // the error to be emitted nextTick. In a future
   // semver major update we should change the default to this.
 
-  const rState = stream._readableState;
-  const wState = stream._writableState;
+  var rState = stream._readableState;
+  var wState = stream._writableState;
   if (rState && rState.autoDestroy || wState && wState.autoDestroy) stream.destroy(err);else stream.emit('error', err);
 }
 module.exports = {
-  destroy,
-  undestroy,
-  errorOrDestroy
+  destroy: destroy,
+  undestroy: undestroy,
+  errorOrDestroy: errorOrDestroy
 };
 }).call(this)}).call(this,require('_process'))
 
@@ -87790,14 +90077,14 @@ var objectKeys = Object.keys || function (obj) {
 /*</replacement>*/
 
 module.exports = Duplex;
-const Readable = require('./_stream_readable');
-const Writable = require('./_stream_writable');
+var Readable = require('./_stream_readable');
+var Writable = require('./_stream_writable');
 require('inherits')(Duplex, Readable);
 {
   // Allow the keys array to be GC'ed.
-  const keys = objectKeys(Writable.prototype);
+  var keys = objectKeys(Writable.prototype);
   for (var v = 0; v < keys.length; v++) {
-    const method = keys[v];
+    var method = keys[v];
     if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
   }
 }
@@ -87820,7 +90107,7 @@ Object.defineProperty(Duplex.prototype, 'writableHighWaterMark', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._writableState.highWaterMark;
   }
 });
@@ -87838,7 +90125,7 @@ Object.defineProperty(Duplex.prototype, 'writableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._writableState.length;
   }
 });
@@ -87860,13 +90147,13 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     if (this._readableState === undefined || this._writableState === undefined) {
       return false;
     }
     return this._readableState.destroyed && this._writableState.destroyed;
   },
-  set(value) {
+  set: function set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (this._readableState === undefined || this._writableState === undefined) {
@@ -87917,7 +90204,7 @@ var Duplex;
 Readable.ReadableState = ReadableState;
 
 /*<replacement>*/
-const EE = require('events').EventEmitter;
+var EE = require('events').EventEmitter;
 var EElistenerCount = function EElistenerCount(emitter, type) {
   return emitter.listeners(type).length;
 };
@@ -87927,8 +90214,8 @@ var EElistenerCount = function EElistenerCount(emitter, type) {
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-const Buffer = require('buffer').Buffer;
-const OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
+var Buffer = require('buffer').Buffer;
+var OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
@@ -87937,8 +90224,8 @@ function _isUint8Array(obj) {
 }
 
 /*<replacement>*/
-const debugUtil = require('util');
-let debug;
+var debugUtil = require('util');
+var debug;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
 } else {
@@ -87946,23 +90233,23 @@ if (debugUtil && debugUtil.debuglog) {
 }
 /*</replacement>*/
 
-const BufferList = require('./internal/streams/buffer_list');
-const destroyImpl = require('./internal/streams/destroy');
-const _require = require('./internal/streams/state'),
+var BufferList = require('./internal/streams/buffer_list');
+var destroyImpl = require('./internal/streams/destroy');
+var _require = require('./internal/streams/state'),
   getHighWaterMark = _require.getHighWaterMark;
-const _require$codes = require('../errors').codes,
+var _require$codes = require('../errors').codes,
   ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
   ERR_STREAM_PUSH_AFTER_EOF = _require$codes.ERR_STREAM_PUSH_AFTER_EOF,
   ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
   ERR_STREAM_UNSHIFT_AFTER_END_EVENT = _require$codes.ERR_STREAM_UNSHIFT_AFTER_END_EVENT;
 
 // Lazy loaded to improve the startup performance.
-let StringDecoder;
-let createReadableStreamAsyncIterator;
-let from;
+var StringDecoder;
+var createReadableStreamAsyncIterator;
+var from;
 require('inherits')(Readable, Stream);
-const errorOrDestroy = destroyImpl.errorOrDestroy;
-const kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
+var errorOrDestroy = destroyImpl.errorOrDestroy;
+var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
 function prependListener(emitter, event, fn) {
   // Sadly this is not cacheable as some libraries bundle their own
   // event emitter implementation with them.
@@ -88053,7 +90340,7 @@ function Readable(options) {
 
   // Checking for a Stream.Duplex instance is faster here instead of inside
   // the ReadableState constructor, at least with V8 6.5
-  const isDuplex = this instanceof Duplex;
+  var isDuplex = this instanceof Duplex;
   this._readableState = new ReadableState(options, this, isDuplex);
 
   // legacy
@@ -88069,13 +90356,13 @@ Object.defineProperty(Readable.prototype, 'destroyed', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     if (this._readableState === undefined) {
       return false;
     }
     return this._readableState.destroyed;
   },
-  set(value) {
+  set: function set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (!this._readableState) {
@@ -88186,14 +90473,14 @@ Readable.prototype.isPaused = function () {
 // backwards compatibility.
 Readable.prototype.setEncoding = function (enc) {
   if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
-  const decoder = new StringDecoder(enc);
+  var decoder = new StringDecoder(enc);
   this._readableState.decoder = decoder;
   // If setEncoding(null), decoder.encoding equals utf8
   this._readableState.encoding = this._readableState.decoder.encoding;
 
   // Iterate over current buffer to convert already stored Buffers:
-  let p = this._readableState.buffer.head;
-  let content = '';
+  var p = this._readableState.buffer.head;
+  var content = '';
   while (p !== null) {
     content += decoder.write(p.data);
     p = p.next;
@@ -88205,7 +90492,7 @@ Readable.prototype.setEncoding = function (enc) {
 };
 
 // Don't raise the hwm > 1GB
-const MAX_HWM = 0x40000000;
+var MAX_HWM = 0x40000000;
 function computeNewHighWaterMark(n) {
   if (n >= MAX_HWM) {
     // TODO(ronag): Throw ERR_VALUE_OUT_OF_RANGE.
@@ -88432,7 +90719,7 @@ function maybeReadMore_(stream, state) {
   //   read()s. The execution ends in this method again after the _read() ends
   //   up calling push() with more data.
   while (!state.reading && !state.ended && (state.length < state.highWaterMark || state.flowing && state.length === 0)) {
-    const len = state.length;
+    var len = state.length;
     debug('maybeReadMore read 0');
     stream.read(0);
     if (len === state.length)
@@ -88629,8 +90916,8 @@ Readable.prototype.unpipe = function (dest) {
 // set up data events if they are asked for
 // Ensure readable listeners eventually get something
 Readable.prototype.on = function (ev, fn) {
-  const res = Stream.prototype.on.call(this, ev, fn);
-  const state = this._readableState;
+  var res = Stream.prototype.on.call(this, ev, fn);
+  var state = this._readableState;
   if (ev === 'data') {
     // update readableListening so that resume() may be a no-op
     // a few lines down. This is needed to support once('readable').
@@ -88655,7 +90942,7 @@ Readable.prototype.on = function (ev, fn) {
 };
 Readable.prototype.addListener = Readable.prototype.on;
 Readable.prototype.removeListener = function (ev, fn) {
-  const res = Stream.prototype.removeListener.call(this, ev, fn);
+  var res = Stream.prototype.removeListener.call(this, ev, fn);
   if (ev === 'readable') {
     // We need to check if there is someone still listening to
     // readable and reset the state. However this needs to happen
@@ -88668,7 +90955,7 @@ Readable.prototype.removeListener = function (ev, fn) {
   return res;
 };
 Readable.prototype.removeAllListeners = function (ev) {
-  const res = Stream.prototype.removeAllListeners.apply(this, arguments);
+  var res = Stream.prototype.removeAllListeners.apply(this, arguments);
   if (ev === 'readable' || ev === undefined) {
     // We need to check if there is someone still listening to
     // readable and reset the state. However this needs to happen
@@ -88681,7 +90968,7 @@ Readable.prototype.removeAllListeners = function (ev) {
   return res;
 };
 function updateReadableListening(self) {
-  const state = self._readableState;
+  var state = self._readableState;
   state.readableListening = self.listenerCount('readable') > 0;
   if (state.resumeScheduled && !state.paused) {
     // flowing needs to be set to true now, otherwise
@@ -88740,7 +91027,7 @@ Readable.prototype.pause = function () {
   return this;
 };
 function flow(stream) {
-  const state = stream._readableState;
+  var state = stream._readableState;
   debug('flow', state.flowing);
   while (state.flowing && stream.read() !== null);
 }
@@ -88749,23 +91036,24 @@ function flow(stream) {
 // This is *not* part of the readable stream interface.
 // It is an ugly unfortunate mess of history.
 Readable.prototype.wrap = function (stream) {
+  var _this = this;
   var state = this._readableState;
   var paused = false;
-  stream.on('end', () => {
+  stream.on('end', function () {
     debug('wrapped end');
     if (state.decoder && !state.ended) {
       var chunk = state.decoder.end();
-      if (chunk && chunk.length) this.push(chunk);
+      if (chunk && chunk.length) _this.push(chunk);
     }
-    this.push(null);
+    _this.push(null);
   });
-  stream.on('data', chunk => {
+  stream.on('data', function (chunk) {
     debug('wrapped data');
     if (state.decoder) chunk = state.decoder.write(chunk);
 
     // don't skip over falsy values in objectMode
     if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
-    var ret = this.push(chunk);
+    var ret = _this.push(chunk);
     if (!ret) {
       paused = true;
       stream.pause();
@@ -88791,7 +91079,7 @@ Readable.prototype.wrap = function (stream) {
 
   // when we try to consume some more bytes, simply unpause the
   // underlying stream.
-  this._read = n => {
+  this._read = function (n) {
     debug('wrapped _read', n);
     if (paused) {
       paused = false;
@@ -88848,7 +91136,7 @@ Object.defineProperty(Readable.prototype, 'readableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._readableState.length;
   }
 });
@@ -88890,7 +91178,7 @@ function endReadableNT(state, stream) {
     if (state.autoDestroy) {
       // In case of duplex streams we need a way to detect
       // if the writable side is ready for autoDestroy as well
-      const wState = stream._writableState;
+      var wState = stream._writableState;
       if (!wState || wState.autoDestroy && wState.finished) {
         stream.destroy();
       }
@@ -88957,10 +91245,11 @@ function WriteReq(chunk, encoding, cb) {
 // It seems a linked list but it is not
 // there will be only 2 of these for each stream
 function CorkedRequest(state) {
+  var _this = this;
   this.next = null;
   this.entry = null;
-  this.finish = () => {
-    onCorkedFinish(this, state);
+  this.finish = function () {
+    onCorkedFinish(_this, state);
   };
 }
 /* </replacement> */
@@ -88972,7 +91261,7 @@ var Duplex;
 Writable.WritableState = WritableState;
 
 /*<replacement>*/
-const internalUtil = {
+var internalUtil = {
   deprecate: require('util-deprecate')
 };
 /*</replacement>*/
@@ -88981,18 +91270,18 @@ const internalUtil = {
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-const Buffer = require('buffer').Buffer;
-const OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
+var Buffer = require('buffer').Buffer;
+var OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 function _uint8ArrayToBuffer(chunk) {
   return Buffer.from(chunk);
 }
 function _isUint8Array(obj) {
   return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
 }
-const destroyImpl = require('./internal/streams/destroy');
-const _require = require('./internal/streams/state'),
+var destroyImpl = require('./internal/streams/destroy');
+var _require = require('./internal/streams/state'),
   getHighWaterMark = _require.getHighWaterMark;
-const _require$codes = require('../errors').codes,
+var _require$codes = require('../errors').codes,
   ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
   ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
   ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
@@ -89001,7 +91290,7 @@ const _require$codes = require('../errors').codes,
   ERR_STREAM_NULL_VALUES = _require$codes.ERR_STREAM_NULL_VALUES,
   ERR_STREAM_WRITE_AFTER_END = _require$codes.ERR_STREAM_WRITE_AFTER_END,
   ERR_UNKNOWN_ENCODING = _require$codes.ERR_UNKNOWN_ENCODING;
-const errorOrDestroy = destroyImpl.errorOrDestroy;
+var errorOrDestroy = destroyImpl.errorOrDestroy;
 require('inherits')(Writable, Stream);
 function nop() {}
 function WritableState(options, stream, isDuplex) {
@@ -89159,7 +91448,7 @@ function Writable(options) {
 
   // Checking for a Stream.Duplex instance is faster here instead of inside
   // the WritableState constructor, at least with V8 6.5
-  const isDuplex = this instanceof Duplex;
+  var isDuplex = this instanceof Duplex;
   if (!isDuplex && !realHasInstance.call(Writable, this)) return new Writable(options);
   this._writableState = new WritableState(options, this, isDuplex);
 
@@ -89283,9 +91572,9 @@ function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
   if (state.writing || state.corked) {
     var last = state.lastBufferedRequest;
     state.lastBufferedRequest = {
-      chunk,
-      encoding,
-      isBuf,
+      chunk: chunk,
+      encoding: encoding,
+      isBuf: isBuf,
       callback: cb,
       next: null
     };
@@ -89458,7 +91747,7 @@ Object.defineProperty(Writable.prototype, 'writableLength', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     return this._writableState.length;
   }
 });
@@ -89466,7 +91755,7 @@ function needFinish(state) {
   return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
 }
 function callFinal(stream, state) {
-  stream._final(err => {
+  stream._final(function (err) {
     state.pendingcb--;
     if (err) {
       errorOrDestroy(stream, err);
@@ -89498,7 +91787,7 @@ function finishMaybe(stream, state) {
       if (state.autoDestroy) {
         // In case of duplex streams we need a way to detect
         // if the readable side is ready for autoDestroy as well
-        const rState = stream._readableState;
+        var rState = stream._readableState;
         if (!rState || rState.autoDestroy && rState.endEmitted) {
           stream.destroy();
         }
@@ -89534,13 +91823,13 @@ Object.defineProperty(Writable.prototype, 'destroyed', {
   // because otherwise some prototype manipulation in
   // userland will fail
   enumerable: false,
-  get() {
+  get: function get() {
     if (this._writableState === undefined) {
       return false;
     }
     return this._writableState.destroyed;
   },
-  set(value) {
+  set: function set(value) {
     // we ignore the value if the stream
     // has not been initialized yet
     if (!this._writableState) {
@@ -89563,24 +91852,28 @@ Writable.prototype._destroy = function (err, cb) {
 (function (process){(function (){
 'use strict';
 
-const finished = require('./end-of-stream');
-const kLastResolve = Symbol('lastResolve');
-const kLastReject = Symbol('lastReject');
-const kError = Symbol('error');
-const kEnded = Symbol('ended');
-const kLastPromise = Symbol('lastPromise');
-const kHandlePromise = Symbol('handlePromise');
-const kStream = Symbol('stream');
+var _Object$setPrototypeO;
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+var finished = require('./end-of-stream');
+var kLastResolve = Symbol('lastResolve');
+var kLastReject = Symbol('lastReject');
+var kError = Symbol('error');
+var kEnded = Symbol('ended');
+var kLastPromise = Symbol('lastPromise');
+var kHandlePromise = Symbol('handlePromise');
+var kStream = Symbol('stream');
 function createIterResult(value, done) {
   return {
-    value,
-    done
+    value: value,
+    done: done
   };
 }
 function readAndResolve(iter) {
-  const resolve = iter[kLastResolve];
+  var resolve = iter[kLastResolve];
   if (resolve !== null) {
-    const data = iter[kStream].read();
+    var data = iter[kStream].read();
     // we defer if data is null
     // we can be expecting either 'end' or
     // 'error'
@@ -89598,8 +91891,8 @@ function onReadable(iter) {
   process.nextTick(readAndResolve, iter);
 }
 function wrapForNext(lastPromise, iter) {
-  return (resolve, reject) => {
-    lastPromise.then(() => {
+  return function (resolve, reject) {
+    lastPromise.then(function () {
       if (iter[kEnded]) {
         resolve(createIterResult(undefined, true));
         return;
@@ -89608,15 +91901,16 @@ function wrapForNext(lastPromise, iter) {
     }, reject);
   };
 }
-const AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
-const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
+var AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
+var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPrototypeO = {
   get stream() {
     return this[kStream];
   },
-  next() {
+  next: function next() {
+    var _this = this;
     // if we have detected an error in the meanwhile
     // reject straight away
-    const error = this[kError];
+    var error = this[kError];
     if (error !== null) {
       return Promise.reject(error);
     }
@@ -89628,10 +91922,10 @@ const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
       // called, the error will be emitted via nextTick, and
       // we cannot guarantee that there is no error lingering around
       // waiting to be emitted.
-      return new Promise((resolve, reject) => {
-        process.nextTick(() => {
-          if (this[kError]) {
-            reject(this[kError]);
+      return new Promise(function (resolve, reject) {
+        process.nextTick(function () {
+          if (_this[kError]) {
+            reject(_this[kError]);
           } else {
             resolve(createIterResult(undefined, true));
           }
@@ -89643,14 +91937,14 @@ const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
     // we will wait for the previous Promise to finish
     // this logic is optimized to support for await loops,
     // where next() is only called once at a time
-    const lastPromise = this[kLastPromise];
-    let promise;
+    var lastPromise = this[kLastPromise];
+    var promise;
     if (lastPromise) {
       promise = new Promise(wrapForNext(lastPromise, this));
     } else {
       // fast path needed to support multiple this.push()
       // without triggering the next() queue
-      const data = this[kStream].read();
+      var data = this[kStream].read();
       if (data !== null) {
         return Promise.resolve(createIterResult(data, false));
       }
@@ -89658,70 +91952,60 @@ const ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf({
     }
     this[kLastPromise] = promise;
     return promise;
-  },
-  [Symbol.asyncIterator]() {
-    return this;
-  },
-  return() {
-    // destroy(err, cb) is a private API
-    // we can guarantee we have that here, because we control the
-    // Readable class this is attached to
-    return new Promise((resolve, reject) => {
-      this[kStream].destroy(null, err => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(createIterResult(undefined, true));
-      });
-    });
   }
-}, AsyncIteratorPrototype);
-const createReadableStreamAsyncIterator = stream => {
-  const iterator = Object.create(ReadableStreamAsyncIteratorPrototype, {
-    [kStream]: {
-      value: stream,
-      writable: true
-    },
-    [kLastResolve]: {
-      value: null,
-      writable: true
-    },
-    [kLastReject]: {
-      value: null,
-      writable: true
-    },
-    [kError]: {
-      value: null,
-      writable: true
-    },
-    [kEnded]: {
-      value: stream._readableState.endEmitted,
-      writable: true
-    },
-    // the function passed to new Promise
-    // is cached so we avoid allocating a new
-    // closure at every run
-    [kHandlePromise]: {
-      value: (resolve, reject) => {
-        const data = iterator[kStream].read();
-        if (data) {
-          iterator[kLastPromise] = null;
-          iterator[kLastResolve] = null;
-          iterator[kLastReject] = null;
-          resolve(createIterResult(data, false));
-        } else {
-          iterator[kLastResolve] = resolve;
-          iterator[kLastReject] = reject;
-        }
-      },
-      writable: true
-    }
+}, _defineProperty(_Object$setPrototypeO, Symbol.asyncIterator, function () {
+  return this;
+}), _defineProperty(_Object$setPrototypeO, "return", function _return() {
+  var _this2 = this;
+  // destroy(err, cb) is a private API
+  // we can guarantee we have that here, because we control the
+  // Readable class this is attached to
+  return new Promise(function (resolve, reject) {
+    _this2[kStream].destroy(null, function (err) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(createIterResult(undefined, true));
+    });
   });
+}), _Object$setPrototypeO), AsyncIteratorPrototype);
+var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterator(stream) {
+  var _Object$create;
+  var iterator = Object.create(ReadableStreamAsyncIteratorPrototype, (_Object$create = {}, _defineProperty(_Object$create, kStream, {
+    value: stream,
+    writable: true
+  }), _defineProperty(_Object$create, kLastResolve, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kLastReject, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kError, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kEnded, {
+    value: stream._readableState.endEmitted,
+    writable: true
+  }), _defineProperty(_Object$create, kHandlePromise, {
+    value: function value(resolve, reject) {
+      var data = iterator[kStream].read();
+      if (data) {
+        iterator[kLastPromise] = null;
+        iterator[kLastResolve] = null;
+        iterator[kLastReject] = null;
+        resolve(createIterResult(data, false));
+      } else {
+        iterator[kLastResolve] = resolve;
+        iterator[kLastReject] = reject;
+      }
+    },
+    writable: true
+  }), _Object$create));
   iterator[kLastPromise] = null;
-  finished(stream, err => {
+  finished(stream, function (err) {
     if (err && err.code !== 'ERR_STREAM_PREMATURE_CLOSE') {
-      const reject = iterator[kLastReject];
+      var reject = iterator[kLastReject];
       // reject if we are waiting for data in the Promise
       // returned by next() and store the error
       if (reject !== null) {
@@ -89733,7 +92017,7 @@ const createReadableStreamAsyncIterator = stream => {
       iterator[kError] = err;
       return;
     }
-    const resolve = iterator[kLastResolve];
+    var resolve = iterator[kLastResolve];
     if (resolve !== null) {
       iterator[kLastPromise] = null;
       iterator[kLastResolve] = null;
@@ -89756,8 +92040,9 @@ arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-
 
 // undocumented cb() API, needed for core, not for public API
 function destroy(err, cb) {
-  const readableDestroyed = this._readableState && this._readableState.destroyed;
-  const writableDestroyed = this._writableState && this._writableState.destroyed;
+  var _this = this;
+  var readableDestroyed = this._readableState && this._readableState.destroyed;
+  var writableDestroyed = this._writableState && this._writableState.destroyed;
   if (readableDestroyed || writableDestroyed) {
     if (cb) {
       cb(err);
@@ -89783,21 +92068,21 @@ function destroy(err, cb) {
   if (this._writableState) {
     this._writableState.destroyed = true;
   }
-  this._destroy(err || null, err => {
+  this._destroy(err || null, function (err) {
     if (!cb && err) {
-      if (!this._writableState) {
-        process.nextTick(emitErrorAndCloseNT, this, err);
-      } else if (!this._writableState.errorEmitted) {
-        this._writableState.errorEmitted = true;
-        process.nextTick(emitErrorAndCloseNT, this, err);
+      if (!_this._writableState) {
+        process.nextTick(emitErrorAndCloseNT, _this, err);
+      } else if (!_this._writableState.errorEmitted) {
+        _this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorAndCloseNT, _this, err);
       } else {
-        process.nextTick(emitCloseNT, this);
+        process.nextTick(emitCloseNT, _this);
       }
     } else if (cb) {
-      process.nextTick(emitCloseNT, this);
+      process.nextTick(emitCloseNT, _this);
       cb(err);
     } else {
-      process.nextTick(emitCloseNT, this);
+      process.nextTick(emitCloseNT, _this);
     }
   });
   return this;
@@ -89838,14 +92123,14 @@ function errorOrDestroy(stream, err) {
   // the error to be emitted nextTick. In a future
   // semver major update we should change the default to this.
 
-  const rState = stream._readableState;
-  const wState = stream._writableState;
+  var rState = stream._readableState;
+  var wState = stream._writableState;
   if (rState && rState.autoDestroy || wState && wState.autoDestroy) stream.destroy(err);else stream.emit('error', err);
 }
 module.exports = {
-  destroy,
-  undestroy,
-  errorOrDestroy
+  destroy: destroy,
+  undestroy: undestroy,
+  errorOrDestroy: errorOrDestroy
 };
 }).call(this)}).call(this,require('_process'))
 
