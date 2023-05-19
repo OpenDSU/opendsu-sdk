@@ -34,6 +34,14 @@
             "src": "https://github.com/opendsu/opendsu-core.git"
         },
         {
+            "name": "remote-enclave",
+            "src": "https://github.com/opendsu/remoteEnclaveServer.git"
+        },
+        {
+            "name": "acl-magic",
+            "src": "https://github.com/opendsu/acl-magic.git"
+        },
+        {
             "name": "overwrite-require",
             "src": "https://github.com/opendsu/overwrite-require.git"
         },

@@ -9,7 +9,7 @@
     "autoLoad": true,
     "bundleExternal": false
   },
-  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, bar, bar-fs-adapter, dossier, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, psk-http-client, swarmutils, callflow, queue, soundpubsub, psk-security-context, dsu-wizard, bricksledger, loki-enclave-facade",
+  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, acl-magic, remote-enclave, bar, bar-fs-adapter, dossier, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, psk-http-client, swarmutils, callflow, queue, soundpubsub, psk-security-context, dsu-wizard, bricksledger, loki-enclave-facade",
   "consoleTools":"",
   "blockchain": "",
   "openDSU": {"deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, bar, bar-fs-adapter, psk-cache, callflow, blockchain, syndicate",
