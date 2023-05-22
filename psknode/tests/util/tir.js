@@ -15,6 +15,7 @@ const removeDirSync = require("swarmutils").removeDirSync;
 
 const {createKey, buildConstitution, getRandomAvailablePortAsync} = require("./tir-utils");
 const ApiHubTestNodeLauncher = require("./ApiHubTestNodeLauncher");
+const RemoteEnclaveTestNodeLauncher = require("./RemoteEnclaveTestNodeLauncher");
 
 const Tir = function () {
     const domainConfigs = {};
@@ -143,6 +144,21 @@ const Tir = function () {
         virtualMQNode = node;
         return rest;
     };
+
+    this.launchRemoteEnclaveAsync = async (rootFolder) => {
+        return await this.launchConfigurableRemoteEnclaveTestNodeAsync({rootFolder});
+    }
+
+    this.launchConfigurableRemoteEnclaveTestNodeAsync = async (config) => {
+        if (config && typeof config !== "object") {
+            throw new Error("Invalid config specified");
+        }
+        config = config || {};
+
+        const remoteEnclaveTestNodeLauncher = new RemoteEnclaveTestNodeLauncher(config);
+        const did = await remoteEnclaveTestNodeLauncher.launchAsync();
+        return did;
+    }
 
     this.getRandomAvailablePortAsync = getRandomAvailablePortAsync;
 
