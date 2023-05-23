@@ -2,10 +2,11 @@ const {Worker} = require("worker_threads");
 const path = require("path");
 const Logger = require("../Logger");
 const logger = new Logger("[RemoteEnclaveTestNodeLauncherWorkerBoot]");
-async function createRemoteEnclaveInstanceAsync(...args) {
+
+async function createRemoteEnclaveInstanceAsync(options) {
     const remoteEnclave = require("remote-enclave");
-    logger.info("Starting Remote Enclave instance...", args);
-    const remoteEnclaveInstance = remoteEnclave.createInstance(...args);
+    logger.info("Starting Remote Enclave instance...", options);
+    const remoteEnclaveInstance = remoteEnclave.createInstance(options);
     remoteEnclaveInstance.start();
     return new Promise((resolve, reject) => {
         remoteEnclaveInstance.on("initialised", (result) => {
@@ -44,8 +45,20 @@ function RemoteEnclaveTestNodeLauncher(options) {
     };
 
     this.launchAsync = async () => {
-        const {useWorker} = options;
+        const {useWorker, apihubPort, domain} = options;
+        const bdnsAPI = require("opendsu").loadApi("bdns");
+        const defaultBdns = {}
+        const apihubURL = `http://localhost:${apihubPort}`;
+        defaultBdns[domain] = {};
+        defaultBdns[domain].anchoringServices = [apihubURL];
+        defaultBdns[domain].brickStorages = [apihubURL];
+        if (options.bdns) {
+            bdnsAPI.setBDNSHosts(options.bdns);
+        } else {
+            bdnsAPI.setBDNSHosts(defaultBdns);
+        }
 
+        process.env.REMOTE_ENCLAVE_DOMAIN = domain;
         const remoteEnclaveNodeDID = useWorker
             ? await createRemoteEnclaveInstanceWorkerAsync(options)
             : await createRemoteEnclaveInstanceAsync(options);
