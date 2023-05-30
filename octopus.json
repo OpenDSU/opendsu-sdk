@@ -14,10 +14,6 @@
             "src": "https://github.com/opendsu/buffer-crc32.git"
         },
         {
-            "name": "dsu-wizard",
-            "src": "https://github.com/opendsu/dsu-wizard.git"
-        },
-        {
             "name": "double-check",
             "src": "https://github.com/opendsu/double-check.git"
         },
@@ -56,11 +52,7 @@
         {
             "name": "pskcrypto",
             "src": "https://github.com/opendsu/pskcrypto.git"
-        },
-        {
-            "name": "pskdb",
-            "src": "https://github.com/opendsu/pskdb.git"
-        },
+        },     
         {
             "name": "psklogger",
             "src": "https://github.com/opendsu/psklogger.git"
@@ -98,21 +90,9 @@
             "src": "https://github.com/privatesky/queue.git"
         },
         {
-            "name": "swarm-engine",
-            "src": "https://github.com/opendsu/swarm-engine.git"
-        },
-        {
-            "name": "callflow",
-            "src": "https://github.com/privatesky/callflow.git"
-        },
-        {
             "name": "psk-http-client",
             "src": "https://github.com/privatesky/psk-http-client.git"
-        },
-        {
-            "name": "blockchain",
-            "src": "https://github.com/privatesky/blockchain.git"
-        },
+        },    
         {
             "name": "dossier",
             "src": "https://github.com/privatesky/dossier.git"
@@ -120,11 +100,7 @@
         {
             "name": "loki-enclave-facade",
             "src": "https://github.com/OpenDSU/LokiEnclaveFacade.git"
-        },
-        {
-            "name": "bricksledger",
-            "src": "https://github.com/privatesky/bricksledger.git"
-        },
+        },       
         {
             "name": "ssapp-middleware",
             "src": "https://github.com/opendsu/ssapp-middleware.git"
