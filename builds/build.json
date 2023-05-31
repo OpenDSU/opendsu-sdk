@@ -9,10 +9,8 @@
     "autoLoad": true,
     "bundleExternal": false
   },
-  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, acl-magic, remote-enclave, bar, bar-fs-adapter, dossier, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, psk-http-client, swarmutils, callflow, queue, soundpubsub, psk-security-context, dsu-wizard, bricksledger, loki-enclave-facade",
-  "consoleTools":"",
-  "blockchain": "",
-  "openDSU": {"deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, bar, bar-fs-adapter, psk-cache, callflow, blockchain, syndicate",
+  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, acl-magic, remote-enclave, bar, bar-fs-adapter, dossier, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, psk-http-client, swarmutils, callflow, queue, soundpubsub, psk-security-context, loki-enclave-facade",
+  "openDSU": {"deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, bar, bar-fs-adapter, psk-cache, callflow, syndicate",
     "bundleExternal":false,
     "sourceMap": false
   },
@@ -21,10 +19,10 @@
     "bundleExternal": false,
     "exclude": "psklogger",
     "bare": true},
-  "testsRuntime": "overwrite-require, opendsu,  acl-magic, remote-enclave, pskcrypto, psk-cache, double-check, blockchain, swarmutils, queue, soundpubsub, dossier, swarm-engine, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, callflow, blockchain, syndicate, apihub, bricksledger, dsu-wizard, loki-enclave-facade",
+  "testsRuntime": "overwrite-require, opendsu,  acl-magic, remote-enclave, pskcrypto, psk-cache, double-check,  swarmutils, queue, soundpubsub, dossier, swarm-engine, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, callflow, syndicate, apihub, loki-enclave-facade",
   "bindableModel": {"deps": "overwrite-require, queue, soundpubsub, psk-bindable-model","exportedEsModule": "psk-bindable-model" },
   "loaderBoot": {"deps": "overwrite-require, opendsu", "bare": false, "autoLoad": true, "bundleExternal":true},
-  "swBoot": {"deps":"swarm-engine/bootScripts/browser/sw:sw, opendsu","autoLoad": true, "bundleExternal":true, "exclude": "psklogger"},
+
   "iframeBoot": {"deps": "swarm-engine/bootScripts/browser/host:boot-host, opendsu, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
   "launcherBoot": {"deps": "overwrite-require, psk-security-context, bar, psk-http-client, psk-cache, opendsu, dossier, bar-fs-adapter, key-ssi-resolver, pskcrypto, swarmutils, syndicate, swarm-engine/bootScripts/launcherBootScript:boot-script",
     "autoLoad": true,

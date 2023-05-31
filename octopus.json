@@ -2,6 +2,14 @@
     "workDir": ".",
     "dependencies": [
         {
+            "name": "swarm-engine",
+            "src": "https://github.com/opendsu/swarm-engine.git"
+        },
+        {
+            "name": "callflow",
+            "src": "https://github.com/privatesky/callflow.git"
+        },
+        {
             "name": "bar",
             "src": "https://github.com/opendsu/bar.git"
         },
