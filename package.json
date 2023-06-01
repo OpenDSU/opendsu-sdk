@@ -6,7 +6,7 @@
         "dev-install": "node ./bin/scripts/mkDevEnv.js && npm install",
         "postinstall": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run\"",
         "update": "git pull && npm install",
-        "build": "node ./bin/scripts/pskbuild.js --projectMap=./builds/build.json",
+        "build": "node ./bin/scripts/pskbuild.js --projectMap=./builds/build.json --output=./builds/output/ && node ./node_modules/octopus/scripts/run postBuild devmode",
         "start": "node ./psknode/bin/scripts/apiHubLauncher.js",
         "remote-enclave": "node ./psknode/bin/scripts/enclaveLauncher.js",
         "tests": "npm run smoke-tests",

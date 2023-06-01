@@ -54,6 +54,7 @@ jobs:
           git config user.name "Build Tracker"
           git switch master
           git pull --all
+          git add -f builds/output
           git add -f psknode/bundles
           npm version ${{ github.event.inputs.version }} -no-git-tag-version --force
           git add package.json
