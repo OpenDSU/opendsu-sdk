@@ -24,6 +24,7 @@
   "loaderBoot": {"deps": "overwrite-require, opendsu", "bare": false, "autoLoad": true, "bundleExternal":true},
 
   "iframeBoot": {"deps": "swarm-engine/bootScripts/browser/host:boot-host, opendsu, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
+  "versionLessBoot": {"deps": "swarm-engine/bootScripts/browser/versionless:boot-host, opendsu, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
   "launcherBoot": {"deps": "overwrite-require, psk-security-context, bar, psk-http-client, psk-cache, opendsu, dossier, bar-fs-adapter, key-ssi-resolver, pskcrypto, swarmutils, syndicate, swarm-engine/bootScripts/launcherBootScript:boot-script",
     "autoLoad": true,
     "bundleExternal": false
