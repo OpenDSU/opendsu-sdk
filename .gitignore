@@ -6,3 +6,4 @@ node_modules
 .idea
 builds/tmp/*_intermediar.js
 psknode/bundles
+builds/output

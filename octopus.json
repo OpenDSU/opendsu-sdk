@@ -60,7 +60,7 @@
         {
             "name": "pskcrypto",
             "src": "https://github.com/opendsu/pskcrypto.git"
-        },     
+        },
         {
             "name": "psklogger",
             "src": "https://github.com/opendsu/psklogger.git"
@@ -100,7 +100,7 @@
         {
             "name": "psk-http-client",
             "src": "https://github.com/privatesky/psk-http-client.git"
-        },    
+        },
         {
             "name": "dossier",
             "src": "https://github.com/privatesky/dossier.git"
@@ -108,7 +108,7 @@
         {
             "name": "loki-enclave-facade",
             "src": "https://github.com/OpenDSU/LokiEnclaveFacade.git"
-        },       
+        },
         {
             "name": "ssapp-middleware",
             "src": "https://github.com/opendsu/ssapp-middleware.git"
@@ -132,6 +132,26 @@
                 {
                     "type": "execute",
                     "cmd": "npm run build"
+                }
+            ]
+        }
+    ],
+    "postBuild": [
+        {
+            "name": "backwards compatibility for old bundles location",
+            "actions": [
+                {
+                    "type": "remove",
+                    "target": "psknode/bundles"
+                },
+                {
+                    "type": "copy",
+                    "src": "builds/output/",
+                    "target": "psknode/bundles/"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "node -e 'console.log(\"\\n\\n### Warning: the OpenDSU bundles from now on will be available at a new path <opendsu-sdk/builds/output> instead of <opendsu-sdk/psknode/bundles>!\\n\\n\")'"
                 }
             ]
         }
