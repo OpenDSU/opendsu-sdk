@@ -1,14 +1,11 @@
 require("../../../../psknode/bundles/testsRuntime");
 
-const {workerData, parentPort} = require("worker_threads");
 const Logger = require("../Logger");
 
 const logger = new Logger("[RemoteEnclaveNodeLauncherWorkerBoot]");
 async function boot() {
-    const { parentPort } = require("worker_threads");
 
     try {
-        const { rootFolder} = workerData;
         const remoteEnclave = require("remote-enclave");
 
         let remoteEnclaveInstance;
@@ -16,14 +13,14 @@ async function boot() {
             const callback = (result) => {
                 resolve(result);
             };
-            remoteEnclaveInstance = remoteEnclave.createInstance({rootFolder});
+            remoteEnclaveInstance = remoteEnclave.createInstance(JSON.parse(process.env.REMOTE_ENCLAVE_CONFIG));
             remoteEnclaveInstance.start();
             remoteEnclaveInstance.on("initialised", callback);
         });
 
         const remoteEnclaveDID = await remoteEnclaveInitialised;
 
-        parentPort.postMessage(remoteEnclaveDID);
+        process.stdout.write("DID:" + remoteEnclaveDID);
     } catch (error) {
         logger.error("Boot error", error);
     }
