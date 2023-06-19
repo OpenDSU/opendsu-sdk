@@ -46,6 +46,10 @@
             "src": "https://github.com/opendsu/acl-magic.git"
         },
         {
+            "name": "fast-svd",
+            "src": "https://github.com/OpenDSU/FastSVD.git"
+        },
+        {
             "name": "overwrite-require",
             "src": "https://github.com/opendsu/overwrite-require.git"
         },
