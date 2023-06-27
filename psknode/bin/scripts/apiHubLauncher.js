@@ -34,13 +34,33 @@ function startServer() {
     const listeningPort = Number.parseInt(config.port);
     const rootFolder = path.resolve(config.storage);
 
-    API_HUB.createInstance(listeningPort, rootFolder, sslConfig, (err) => {
-        if (err) {
-            console.error(err);
-            process.exit(err.errno || 1);
+    const cluster  = require("cluster");
+    const { availableParallelism } = require("os");
+    const process = require("process");
+
+    const numCPUs = 1 || availableParallelism();
+
+    if (cluster.isPrimary) {
+        console.log(`Primary ${process.pid} is running`);
+
+        // Fork workers.
+        for (let i = 0; i < numCPUs; i++) {
+            console.log("Worker started");
+            cluster.fork();
         }
-        console.log(`\n[${TAG}] listening on port :${listeningPort} and ready to receive requests.\n`);
-    });
+
+        cluster.on('exit', (worker, code, signal) => {
+            console.log(`worker ${worker.process.pid} died`);
+        });
+    }else{
+        API_HUB.createInstance(listeningPort, rootFolder, sslConfig, (err) => {
+            if (err) {
+                console.error(err);
+                process.exit(err.errno || 1);
+            }
+            console.log(`\n[${TAG}] listening on port :${listeningPort} and ready to receive requests.\n`);
+        });
+    }
 }
 
 startServer();
