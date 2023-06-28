@@ -38,7 +38,7 @@ function startServer() {
     const { availableParallelism } = require("os");
     const process = require("process");
 
-    const numCPUs = 8 || availableParallelism();
+    const numCPUs = 1 || availableParallelism();
 
     if (cluster.isPrimary) {
         console.log(`Primary ${process.pid} is running`);
