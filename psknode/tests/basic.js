@@ -1,6 +1,5 @@
 const path = require('path');
 require("../bundles/testsRuntime");
-require("../bundles/pskruntime");
 require("../bundles/pskWebServer");
 
 const tir = require(path.resolve(path.join(__dirname, "util/tir.js")));

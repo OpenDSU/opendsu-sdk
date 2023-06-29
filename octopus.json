@@ -2,10 +2,6 @@
     "workDir": ".",
     "dependencies": [
         {
-            "name": "swarm-engine",
-            "src": "https://github.com/opendsu/swarm-engine.git"
-        },
-        {
             "name": "callflow",
             "src": "https://github.com/privatesky/callflow.git"
         },
@@ -72,10 +68,6 @@
         {
             "name": "psk-cache",
             "src": "https://github.com/opendsu/psk-cache.git"
-        },
-        {
-            "name": "psk-security-context",
-            "src": "https://github.com/opendsu/psk-security-context.git"
         },
         {
             "name": "soundpubsub",
