@@ -2,10 +2,6 @@
     "workDir": ".",
     "dependencies": [
         {
-            "name": "callflow",
-            "src": "https://github.com/privatesky/callflow.git"
-        },
-        {
             "name": "bar",
             "src": "https://github.com/opendsu/bar.git"
         },
@@ -96,10 +92,6 @@
         {
             "name": "psk-http-client",
             "src": "https://github.com/privatesky/psk-http-client.git"
-        },
-        {
-            "name": "dossier",
-            "src": "https://github.com/privatesky/dossier.git"
         },
         {
             "name": "loki-enclave-facade",
