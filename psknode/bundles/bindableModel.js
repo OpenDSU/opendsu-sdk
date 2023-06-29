@@ -1,4 +1,4 @@
-bindableModelRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel.js":[function(require,module,exports){
+bindableModelRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/cosmin/work/epi29Jun2/opendsu-sdk/builds/tmp/bindableModel.js":[function(require,module,exports){
 (function (global){(function (){
 if (typeof window !== "undefined" && typeof window.process === "undefined") {
 	window.process = {};
@@ -12,7 +12,7 @@ require("./bindableModel_intermediar");
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./bindableModel_intermediar":"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel_intermediar.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel_intermediar.js":[function(require,module,exports){
+},{"./bindableModel_intermediar":"/home/cosmin/work/epi29Jun2/opendsu-sdk/builds/tmp/bindableModel_intermediar.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/builds/tmp/bindableModel_intermediar.js":[function(require,module,exports){
 (function (global){(function (){
 global.bindableModelLoadModules = function(){ 
 
@@ -42,10 +42,11 @@ if (typeof $$ !== "undefined") {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"overwrite-require":"overwrite-require","psk-bindable-model":"psk-bindable-model","queue":"queue","soundpubsub":"soundpubsub"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
+},{"overwrite-require":"overwrite-require","psk-bindable-model":"psk-bindable-model","queue":"queue","soundpubsub":"soundpubsub"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
+
 if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined") {
     process.env.OPENDSU_ENABLE_DEBUG = IS_DEV_MODE.toString();
 }
@@ -100,12 +101,18 @@ function Logger(className, moduleName, logFile) {
     }
 
     const getLogMessage = (data) => {
-        let msg;
+        let msg = '';
         try {
             if (typeof data === "object") {
-                msg = JSON.stringify(data) + " ";
+                if (data instanceof Error) {
+                    msg = `${data.message}\n${data.stack}`;
+                } else if (data.debug_stack || data.debug_message) {
+                    msg = data.toString();
+                } else {
+                    msg = JSON.stringify(data) + " ";
+                }
             } else {
-                msg = data + " "
+                msg = data + " ";
             }
         } catch (e) {
             msg = e.message + " ";
@@ -257,7 +264,7 @@ module.exports = {
     getLogger
 }
 
-},{"./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
+},{"./moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
 module.exports = {
   BROWSER_ENVIRONMENT_TYPE: 'browser',
   MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
@@ -268,7 +275,7 @@ module.exports = {
   NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
 (function (global){(function (){
 let logger = console;
 
@@ -591,7 +598,7 @@ $$.registerGlobalSymbol("throttlingEvent", function (...args) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"buffer":false,"psklogger":false,"swarmutils":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js":[function(require,module,exports){
+},{"buffer":false,"psklogger":false,"swarmutils":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js":[function(require,module,exports){
 const SoundPubSub = require("soundpubsub").soundPubSub;
 const CHAIN_CHANGED = 'chainChanged';
 const WILDCARD = "*";
@@ -1078,7 +1085,7 @@ class PskBindableModel {
 
 module.exports = PskBindableModel;
 
-},{"soundpubsub":"soundpubsub"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js":[function(require,module,exports){
+},{"soundpubsub":"soundpubsub"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js":[function(require,module,exports){
 /*
 Initial License: (c) Axiologic Research & Alboaie Sînică.
 Contributors: Axiologic Research , PrivateSky project
@@ -1575,17 +1582,6 @@ function enableForEnvironment(envType){
             console.log("Called of an undefined function!!!!");
             throw new Error("Called of an undefined function");
         };
-        if (typeof(global.webshimsRequire) == "undefined") {
-            global.webshimsRequire = global.functionUndefined;
-        }
-
-        if (typeof(global.domainRequire) == "undefined") {
-            global.domainRequire = global.functionUndefined;
-        }
-
-        if (typeof(global.pskruntimeRequire) == "undefined") {
-            global.pskruntimeRequire = global.functionUndefined;
-        }
     }
 
     const pastRequests = {};
@@ -1885,6 +1881,21 @@ function enableForEnvironment(envType){
         return promisifiedFn;
     };
 
+   $$.callAsync = async function (func, ...args) {
+        let error, result;
+        try {
+            result =  await func(...args);
+        } catch(err) {
+            error = err
+        }
+        return [error, result];
+    }
+
+    $$.call = async function (func, ...args) {
+        let asyncFunc = $$.promisify(func);
+        return $$.callAsync(asyncFunc, ...args);
+    }
+ 
     $$.makeSaneCallback = function makeSaneCallback(fn) {
         let alreadyCalled = false;
         let prevErr;
@@ -1921,9 +1932,9 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js"}],"psk-bindable-model":[function(require,module,exports){
+},{"./Logger":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js"}],"psk-bindable-model":[function(require,module,exports){
 module.exports = require("./lib/PskBindableModel");
-},{"./lib/PskBindableModel":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js"}],"queue":[function(require,module,exports){
+},{"./lib/PskBindableModel":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js"}],"queue":[function(require,module,exports){
 function QueueElement(content) {
 	this.content = content;
 	this.next = null;
@@ -1996,9 +2007,9 @@ module.exports = Queue;
 module.exports = {
 					soundPubSub: require("./lib/soundPubSub").soundPubSub
 };
-},{"./lib/soundPubSub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js"}]},{},["/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel.js"])
+},{"./lib/soundPubSub":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js"}]},{},["/home/cosmin/work/epi29Jun2/opendsu-sdk/builds/tmp/bindableModel.js"])
                     ;(function(global) {
-                        global.bundlePaths = {"webshims":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/webshims.js","pskruntime":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/pskruntime.js","pskWebServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/pskWebServer.js","consoleTools":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/consoleTools.js","blockchain":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/blockchain.js","openDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/openDSU.js","nodeBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/nodeBoot.js","testsRuntime":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/testsRuntime.js","bindableModel":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/bindableModel.js","loaderBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/loaderBoot.js","swBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/swBoot.js","iframeBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/iframeBoot.js","launcherBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/launcherBoot.js","testRunnerBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/testRunnerBoot.js"};
+                        global.bundlePaths = {"pskWebServer":"builds/output/pskWebServer.js","openDSU":"builds/output/openDSU.js","nodeBoot":"builds/output/nodeBoot.js","loaderBoot":"builds/output/loaderBoot.js","testsRuntime":"builds/output/testsRuntime.js","bindableModel":"builds/output/bindableModel.js","iframeBoot":"builds/output/iframeBoot.js","versionLessBoot":"builds/output/versionLessBoot.js","testRunnerBoot":"builds/output/testRunnerBoot.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
                 
 export default bindableModelRequire('psk-bindable-model')

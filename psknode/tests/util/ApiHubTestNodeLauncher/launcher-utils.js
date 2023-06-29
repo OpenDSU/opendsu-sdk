@@ -213,7 +213,7 @@ async function storeDBNSAsync(rootFolder, content) {
 async function runOctopusScriptAsync(scriptName, args) {
     const scriptPath = path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, `./node_modules/octopus/scripts/${scriptName}.js`);
 
-    const pskBundlesPath = "./psknode/bundles";
+    const pskBundlesPath = "./builds/output";
 
     const child_process = require("child_process");
     const forkedProcess = child_process.fork(scriptPath, [`--bundles=${pskBundlesPath}`, ...args], {

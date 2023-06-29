@@ -6,7 +6,7 @@ const path = require("path");
 process.env.PSK_ROOT_INSTALATION_FOLDER = path.join(__dirname, "../../../");
 process.env.OPENDSU_ENABLE_DEBUG = true;
 process.env.DEV = true;
-require(path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "psknode/bundles/pskWebServer.js")));
+require(path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "builds/output/pskWebServer.js")));
 
 const os = require("os");
 const fs = require("fs");

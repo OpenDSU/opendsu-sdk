@@ -55,7 +55,7 @@ jobs:
           git switch master
           git pull --all
           git add -f builds/output
-          git add -f psknode/bundles
+          git add -f builds/output
           npm version ${{ github.event.inputs.version }} -no-git-tag-version --force
           git add package.json
           git commit --message "Publishing new release bundles"

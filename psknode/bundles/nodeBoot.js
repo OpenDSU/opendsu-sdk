@@ -1,13 +1,13 @@
-nodeBootRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/nodeBoot.js":[function(require,module,exports){
+nodeBootRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/cosmin/work/epi29Jun2/opendsu-sdk/builds/tmp/nodeBoot.js":[function(require,module,exports){
 const or = require('overwrite-require');
 or.enableForEnvironment(or.constants.NODEJS_ENVIRONMENT_TYPE);
 
 require("./nodeBoot_intermediar");
-},{"./nodeBoot_intermediar":"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/nodeBoot_intermediar.js","overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/nodeBoot_intermediar.js":[function(require,module,exports){
+},{"./nodeBoot_intermediar":"/home/cosmin/work/epi29Jun2/opendsu-sdk/builds/tmp/nodeBoot_intermediar.js","overwrite-require":"overwrite-require"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/builds/tmp/nodeBoot_intermediar.js":[function(require,module,exports){
 global.nodeBootLoadModules = function(){ 
 
 	if(typeof $$.__runtimeModules["NodeThreadWorkerBootScript"] === "undefined"){
-		$$.__runtimeModules["NodeThreadWorkerBootScript"] = require("swarm-engine/bootScripts/NodeThreadWorkerBootScript");
+		$$.__runtimeModules["NodeThreadWorkerBootScript"] = require("opendsu/bootScripts/NodeThreadWorkerBootScript");
 	}
 
 	if(typeof $$.__runtimeModules["opendsu"] === "undefined"){
@@ -50,7 +50,7 @@ if (typeof $$ !== "undefined") {
 	$$.requireBundle("nodeBoot");
 }
 
-},{"bar":"bar","bar-fs-adapter":"bar-fs-adapter","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache","pskcrypto":"pskcrypto","swarm-engine/bootScripts/NodeThreadWorkerBootScript":"swarm-engine/bootScripts/NodeThreadWorkerBootScript","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js":[function(require,module,exports){
+},{"bar":"bar","bar-fs-adapter":"bar-fs-adapter","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","opendsu/bootScripts/NodeThreadWorkerBootScript":"opendsu/bootScripts/NodeThreadWorkerBootScript","overwrite-require":"overwrite-require","psk-cache":"psk-cache","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js":[function(require,module,exports){
 function FsAdapter() {
     const fsModule = "fs";
     const fs = require(fsModule);
@@ -111,7 +111,7 @@ function FsAdapter() {
 }
 
 module.exports = FsAdapter;
-},{"./PathAsyncIterator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js":[function(require,module,exports){
+},{"./PathAsyncIterator":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar-fs-adapter/lib/PathAsyncIterator.js":[function(require,module,exports){
 function PathAsyncIterator(inputPath) {
     const fsModule = "fs";
     const fs = require(fsModule);
@@ -236,7 +236,7 @@ function PathAsyncIterator(inputPath) {
 }
 
 module.exports = PathAsyncIterator;
-},{"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/AnchorValidator.js":[function(require,module,exports){
+},{"swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/AnchorValidator.js":[function(require,module,exports){
 'use strict'
 
 /**
@@ -283,7 +283,7 @@ function AnchorValidator(options) {
 }
 
 module.exports = AnchorValidator;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Archive.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Archive.js":[function(require,module,exports){
 const Brick = require('./Brick');
 const stream = require('stream');
 const BrickStorageService = require('./BrickStorageService').Service;
@@ -300,7 +300,6 @@ function Archive(archiveConfigurator) {
     const openDSU = require("opendsu");
     const anchoring = openDSU.loadAPI("anchoring");
     const anchoringx = anchoring.getAnchoringX();
-    const notifications = openDSU.loadAPI("notifications");
 
     const mountedArchivesForBatchOperations = [];
 
@@ -312,13 +311,6 @@ function Archive(archiveConfigurator) {
     let refreshPromise = Promise.resolve();
     let prevAnchoringDecisionFn;
     let prevConflictResolutionFunction;
-
-    let publishAnchoringNotifications = false;
-    let publishOptions = null;
-
-    let autoSyncStatus = false;
-    let autoSyncOptions = null;
-    let dsuObsHandler = null;
 
     ////////////////////////////////////////////////////////////
     // Private methods
@@ -468,18 +460,7 @@ function Archive(archiveConfigurator) {
                 result.identifier = keySSI;
                 result.archive.beginBatch();
                 mountedArchivesForBatchOperations.push(result);
-
-                if (!publishAnchoringNotifications || publishOptions.ignoreMounts) {
-                    return callback(undefined, result);
-                }
-
-                result.archive.enableAnchoringNotifications(publishAnchoringNotifications, publishOptions, (err) => {
-                    if (err) {
-                        return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to toggle anchoring notification publishing for mount point: ${mountPoint}`, err));
-                    }
-
-                    callback(undefined, result);
-                })
+                callback(undefined, result);
             });
         });
     };
@@ -529,7 +510,7 @@ function Archive(archiveConfigurator) {
      * @param {callback} callback
      */
     this.refresh = (callback) => {
-        this.getLatestAnchoredHashLink((err, latestAnchoredHashlink)=>{
+        this.getLatestAnchoredHashLink((err, latestAnchoredHashlink) => {
             if (err || !latestAnchoredHashlink) {
                 return callback()
             }
@@ -544,20 +525,7 @@ function Archive(archiveConfigurator) {
                                 return resolve(OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to load DSU", err)));
                             }
 
-                            // Restore auto sync settings if the archive was refreshed
-                            this.enableAnchoringNotifications(publishAnchoringNotifications, publishOptions, (err) => {
-                                if (err) {
-                                    refreshInProgress = false;
-                                    return resolve(OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to toggle anchoring notification publishing for mount point: ${mountPoint}`, err)));
-                                }
-                                this.enableAutoSync(autoSyncStatus, autoSyncOptions, (err) => {
-                                    refreshInProgress = false;
-                                    if (err) {
-                                        return resolve(OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to enable auto sync for DSU", err)));
-                                    }
-                                    resolve(callback());
-                                });
-                            });
+                            resolve(callback());
                         });
                     }).catch((e) => {
                         console.trace("This shouldn't happen. Refresh errors should have been already caught");
@@ -627,7 +595,7 @@ function Archive(archiveConfigurator) {
             callback = keySSIType;
             keySSIType = undefined;
         }
-        archiveConfigurator.getKeySSI(keySSIType, ((err, keySSI) => callback(err, keySSI.getIdentifier())));
+        return archiveConfigurator.getKeySSI(keySSIType, ((err, keySSI) => callback(err, keySSI.getIdentifier())));
     }
 
     /**
@@ -641,6 +609,9 @@ function Archive(archiveConfigurator) {
         archiveConfigurator.getKeySSI(keySSIType, callback);
     }
 
+    this.getKeySSIAsObjectSync = () => {
+        return archiveConfigurator.getKeySSISync();
+    }
     /**
      * @return {string}
      */
@@ -650,6 +621,10 @@ function Archive(archiveConfigurator) {
             keySSIType = undefined;
         }
         archiveConfigurator.getKeySSI(keySSIType, ((err, keySSI) => callback(err, keySSI.getIdentifier())));
+    }
+
+    this.getKeySSIAsStringSync = () => {
+        return this.getKeySSIAsObjectSync().getIdentifier();
     }
 
     /**
@@ -662,6 +637,10 @@ function Archive(archiveConfigurator) {
     this.getUniqueIdAsync = async () => {
         let keySSI = await $$.promisify(this.getKeySSIAsObject)();
         return await keySSI.getAnchorIdAsync();
+    }
+
+    this.getAnchorIdSync = () => {
+        return this.getKeySSIAsObjectSync().getAnchorIdSync();
     }
 
     /**
@@ -1362,7 +1341,7 @@ function Archive(archiveConfigurator) {
     this.doAnchoring = (callback) => {
         const strategy = this.getAnchoringStrategy();
         let alreadyCalled = false;
-        let saneCallback = function(err, res){
+        let saneCallback = function (err, res) {
             if (alreadyCalled) {
                 throw Error("Already called");
             }
@@ -1382,10 +1361,10 @@ function Archive(archiveConfigurator) {
     }
 
     const getManifest = (callback) => {
+        let options = archiveConfigurator.getOptions();
+        const defaultOptions = {skipCache: archiveConfigurator.dsuCachingEnabled()};
+        options = Object.assign(defaultOptions, options);
         if (typeof manifestHandler === "undefined") {
-            const options = {
-                skipCache: archiveConfigurator.dsuCachingEnabled()
-            };
             Manifest.getManifest(this, options, (err, handler) => {
                 if (err) {
                     return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to get manifest handler`, err));
@@ -2278,17 +2257,11 @@ function Archive(archiveConfigurator) {
                     }
 
 
-                    if (result.archive === this || (!publishAnchoringNotifications || publishOptions.ignoreMounts)) {
+                    if (result.archive === this) {
                         return callback(undefined, result);
                     }
 
-                    result.archive.enableAnchoringNotifications(publishAnchoringNotifications, publishOptions, (err) => {
-                        if (err) {
-                            return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to toggle anchoring notification publishing for mount point: ${mountPoint}`, err));
-                        }
-
-                        callback(undefined, result);
-                    })
+                    callback(undefined, result);
                 });
             });
         })
@@ -2334,7 +2307,9 @@ function Archive(archiveConfigurator) {
             onConflict = undefined;
         }
         if (!batchOperationsInProgress) {
-            return callback(new Error("Unable to commit batch because no batch operations have been started"))
+            const err = new Error("Unable to commit batch because no batch operations have been started");
+            const constants = require("opendsu").constants;
+            return callback(createOpenDSUErrorWrapper(`Failed to commit batch`, err, constants.ERROR_ROOT_CAUSE.DSU_INVALID_OPERATION));
         }
 
         let usesOnConflictCallback = false;
@@ -2367,14 +2342,6 @@ function Archive(archiveConfigurator) {
 
                 batchOperationsInProgress = false;
                 callback(undefined, result);
-                // this.refresh((err) => {
-                //     batchOperationsInProgress = false;
-                //
-                //     if (err) {
-                //         return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to reload current DSU`, err));
-                //     }
-                //     callback(undefined, result);
-                // })
             });
         });
     };
@@ -2384,7 +2351,9 @@ function Archive(archiveConfigurator) {
      */
     this.cancelBatch = (callback) => {
         if (!batchOperationsInProgress) {
-            return callback(new Error("Unable to cancel batch because no batch operations have been started"))
+            const err = new Error("Unable to commit batch because no batch operations have been started");
+            const constants = require("opendsu").constants;
+            return callback(createOpenDSUErrorWrapper(`Failed to commit batch`, err, constants.ERROR_ROOT_CAUSE.DSU_INVALID_OPERATION));
         }
 
         cancelBatchesInMountedArchives((err) => {
@@ -2428,249 +2397,6 @@ function Archive(archiveConfigurator) {
         this.getAnchoringStrategy().setConflictResolutionFunction(handler);
     }
 
-    /**
-     * Toggle notifications publishing for new anchors
-     *
-     * @param {boolean} status When `true` the DSU will publish a notification
-     *                         after each successful anchoring
-     * @param {object} options
-     * @param {boolean} options.ignoreMounts Default `true`. If `false` enable publishing for all mount points
-     * @param {function} callback
-     */
-    this.enableAnchoringNotifications = (status, options, callback) => {
-        if (status === brickMapController.anchoringNotificationsEnabled()) {
-            return callback();
-        }
-        options = options || {};
-
-        if (typeof options === 'function') {
-            callback = options;
-            options = {};
-        }
-
-        const defaultOptions = {
-            ignoreMounts: true
-        };
-        options = {
-            ...defaultOptions,
-            ...options
-        };
-
-        const prevOptions = publishOptions;
-
-        publishAnchoringNotifications = status;
-        publishOptions = (status) ? options : null;
-
-        if (publishAnchoringNotifications && options.ignoreMounts) {
-            // No need to recurse in mount points
-            brickMapController.enableAnchoringNotifications(status);
-            return callback();
-        }
-
-        // If the notificatios were enabled with ignoring mount
-        // points there's no need to recurse in the mounted archives
-        if (!status && (!prevOptions || prevOptions.ignoreMounts)) {
-            brickMapController.enableAnchoringNotifications(status);
-            return callback();
-        }
-
-        let mountPoints = [];
-
-        // Recurse in all mount points and set the anchoring notifications settings
-        const propagateNotificationSettings = (manifest, callback) => {
-            if (!mountPoints.length) {
-                return callback();
-            }
-
-            const mountPoint = mountPoints.pop();
-
-            manifest.getArchiveForPath(mountPoint, (err, result) => {
-                if (err) {
-                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${mountPoint}`, err));
-                }
-
-                result.archive.enableAnchoringNotifications(publishAnchoringNotifications, publishOptions, (err) => {
-                    if (err) {
-                        return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to toggle anchoring notification publishing for mount point: ${mountPoint}`, err));
-                    }
-
-                    propagateNotificationSettings(manifest, callback);
-                })
-            });
-        }
-
-        getManifest((err, manifest) => {
-            if (err) {
-                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to get manifest handler`, err));
-            }
-
-            mountPoints = manifest.getMountPoints();
-
-            propagateNotificationSettings(manifest, (err) => {
-                if (err) {
-                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Unable to toggle anchoring notifications publishing for mounted DSUs", err));
-                }
-
-                brickMapController.enableAnchoringNotifications(status);
-                callback();
-            })
-        });
-    }
-
-    /**
-     * Toggle subscribing to anchor notifications
-     * and auto merging upstream changes
-     *
-     * @param {boolean} status
-     * @param {object} options
-     * @param {function} options.onError((err) => {}) Error listener
-     * @param {function} options.onSync(() => {}) Sync listener
-     * @param {boolean} options.ignoreMounts Default `true`. If `false` enable auto sync for all mount points
-     * @param {function} callback
-     */
-    this.enableAutoSync = (status, options, callback) => {
-        options = options || {};
-        if (typeof options === 'function') {
-            callback = options;
-            options = {};
-        }
-
-        if (status === autoSyncStatus && dsuObsHandler) {
-            return callback();
-        }
-
-        const defaultOptions = {
-            onError: () => {
-            },
-            onSync: () => {
-            },
-            ignoreMounts: true
-        }
-
-        options = {
-            ...defaultOptions,
-            ...options
-        };
-
-        const subscribe = (options, callback) => {
-            archiveConfigurator.getKeySSI(undefined, (err, keySSI) => {
-                if (err) {
-                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to retrieve keySSI", err));
-                }
-
-                dsuObsHandler = notifications.getObservableHandler(keySSI);
-                dsuObsHandler.on('error', (err) => {
-                    options.onError(err);
-                });
-
-                dsuObsHandler.on('message', async (message) => {
-                    if (!message.ok) {
-                        options.onError(new Error(`Unable to fetch notification. Code: ${message.statusCode}. Message: ${message.statusMessage}`));
-                        return;
-                    }
-
-                    try {
-                        message = await message.json();
-                        message = JSON.parse(message.message);
-                    } catch (e) {
-                        options.onError(e);
-                    }
-
-                    if (typeof message !== 'object' || message.event !== 'dsu:newAnchor') {
-                        // We're interested only in new anchors
-                        return;
-                    }
-
-                    brickMapController.getCurrentAnchoredHashLink().getAnchorId((err, anchorId) => {
-                        if (err) {
-                            return options.onError(err);
-                        }
-
-                        if (anchorId === message.payload) {
-                            return;
-                        }
-
-                        // Load and try to merge the latest changes
-                        brickMapController.mergeUpstreamChanges((err, result) => {
-                            if (err) {
-                                return options.onError(err);
-                            }
-                            options.onSync(result);
-                        })
-                    })
-                })
-
-                callback();
-            })
-        };
-
-        const unsubscribe = (callback) => {
-            dsuObsHandler && notifications.unsubscribe(dsuObsHandler);
-            dsuObsHandler = null;
-            callback();
-        }
-
-        const prevOptions = autoSyncOptions;
-
-        autoSyncStatus = status;
-        autoSyncOptions = (status) ? options : null;
-
-        if (options.ignoreMounts) {
-            if (autoSyncStatus) {
-                return subscribe(autoSyncOptions, callback);
-            }
-
-            // When unsubscribing make sure that the previous
-            // subscription ignored mounts as well, else continue
-            // and unsubscribe recursively
-            if (!autoSyncStatus && (!prevOptions || prevOptions.ignoreMounts)) {
-                return unsubscribe(callback)
-            }
-        }
-
-        let mountPoints = [];
-
-        // Recurse in all mount points and set the auto sync settings
-        const propagateAutoSyncSettings = (manifest, callback) => {
-            if (!mountPoints.length) {
-                return callback();
-            }
-
-            const mountPoint = mountPoints.pop();
-
-            manifest.getArchiveForPath(mountPoint, (err, result) => {
-                if (err) {
-                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${mountPoint}`, err));
-                }
-
-                result.archive.enableAutoSync(autoSyncStatus, autoSyncOptions, (err) => {
-                    if (err) {
-                        return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to toggle auto sync for mount point: ${mountPoint}`, err));
-                    }
-
-                    propagateAutoSyncSettings(manifest, callback);
-                })
-            });
-        }
-
-        getManifest((err, manifest) => {
-            if (err) {
-                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to get manifest handler`, err));
-            }
-
-            mountPoints = manifest.getMountPoints();
-
-            propagateAutoSyncSettings(manifest, (err) => {
-                if (err) {
-                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Unable to toggle auto sync for mounted DSUs", err));
-                }
-
-                autoSyncStatus ? subscribe(autoSyncOptions, callback)
-                    : unsubscribe(callback);
-            })
-        });
-    }
-
     this.stat = (path, callback) => {
         waitIfDSUIsRefreshing(() => {
             callback = $$.makeSaneCallback(callback);
@@ -2699,7 +2425,7 @@ function Archive(archiveConfigurator) {
 
 module.exports = Archive;
 
-},{"./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMapController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js","./BrickStorageService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./Manifest":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Manifest.js","opendsu":"opendsu","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js":[function(require,module,exports){
+},{"./Brick":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMapController":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapController.js","./BrickStorageService":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./Manifest":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Manifest.js","opendsu":"opendsu","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js":[function(require,module,exports){
 const storageProviders = {};
 const fsAdapters = {};
 
@@ -2725,15 +2451,20 @@ function ArchiveConfigurator(options) {
     };
 
     this.getKeySSI = (keySSIType, callback) => {
-        if (typeof keySSIType === "undefined") {
-            return callback(undefined, config.keySSI);
-        }
         if (typeof keySSIType === "function") {
             callback = keySSIType;
+            keySSIType = undefined;
+        }
+
+        if (typeof keySSIType === "undefined") {
             return callback(undefined, config.keySSI);
         }
 
         config.keySSI.getDerivedType(keySSIType, callback);
+    }
+
+    this.getKeySSISync = () => {
+        return config.keySSI;
     }
 
     this.getDLDomain = () => {
@@ -2903,7 +2634,7 @@ ArchiveConfigurator.prototype.registerFsAdapter = (fsAdapterName, factory) => {
 
 module.exports = ArchiveConfigurator;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadApi("crypto");
 const keySSISpace = openDSU.loadApi("keyssi");
@@ -3104,7 +2835,7 @@ function Brick(options) {
 
 module.exports = Brick;
 
-},{"./brick-transforms":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js":[function(require,module,exports){
+},{"./brick-transforms":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/brick-transforms/index.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMap.js":[function(require,module,exports){
 const BrickMapMixin = require('./BrickMapMixin');
 
 /**
@@ -3503,7 +3234,7 @@ function BrickMap(header, options) {
 }
 module.exports = BrickMap;
 
-},{"./BrickMapMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js":[function(require,module,exports){
+},{"./BrickMapMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapController.js":[function(require,module,exports){
 'use strict';
 
 // HTTP error code returned by the anchoring middleware
@@ -4780,7 +4511,7 @@ function BrickMapController(options) {
 
 module.exports = BrickMapController;
 
-},{"./AnchorValidator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/AnchorValidator.js","./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js":[function(require,module,exports){
+},{"./AnchorValidator":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/AnchorValidator.js","./Brick":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMap":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapDiff":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapDiff.js":[function(require,module,exports){
 'use strict';
 
 const BrickMapMixin = require('./BrickMapMixin');
@@ -4945,7 +4676,7 @@ function BrickMapDiff(header) {
 }
 module.exports = BrickMapDiff;
 
-},{"./BrickMapMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapMixin.js":[function(require,module,exports){
+},{"./BrickMapMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapMixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapMixin.js":[function(require,module,exports){
 'use strict';
 
 const Brick = require("./Brick");
@@ -5877,7 +5608,7 @@ const BrickMapMixin = {
 
 module.exports = BrickMapMixin;
 
-},{"./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js":[function(require,module,exports){
+},{"./Brick":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js":[function(require,module,exports){
 const BrickMapStrategyMixin = {
     brickMapController: null,
     brickMapState: null,
@@ -6210,7 +5941,7 @@ const BrickMapStrategyMixin = {
 
 module.exports = BrickMapStrategyMixin;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js":[function(require,module,exports){
 'use strict';
 
 const BrickMapDiff = require('../../lib/BrickMapDiff');
@@ -6525,7 +6256,7 @@ function DiffStrategy(options) {
 
 module.exports = DiffStrategy;
 
-},{"../../lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../../lib/BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js":[function(require,module,exports){
+},{"../../lib/Brick":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js","../../lib/BrickMapDiff":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","../BrickMap":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapStrategyMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js":[function(require,module,exports){
 'use strict';
 
 const BrickMapDiff = require('../BrickMapDiff');
@@ -6599,11 +6330,13 @@ function LatestVersionStrategy(options) {
     const createBrickMapsFromHistory = (hashes, callback) => {
         callback = $$.makeSaneCallback(callback);
         const cacheKey = createBricksCacheKey(hashes);
-        if (this.hasInCache(cacheKey)) {
-            const brickMaps = this.getFromCache(cacheKey);
-            return setTimeout(() => {
-                callback(undefined, brickMaps);
-            });
+        if ($$.BRICK_CACHE_ENABLED) {
+            if (this.hasInCache(cacheKey)) {
+                const brickMaps = this.getFromCache(cacheKey);
+                return setTimeout(() => {
+                    callback(undefined, brickMaps);
+                });
+            }
         }
 
         const TaskCounter = require("swarmutils").TaskCounter;
@@ -6852,7 +6585,7 @@ function LatestVersionStrategy(options) {
 
 module.exports = LatestVersionStrategy;
 
-},{"../../lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","../BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js":[function(require,module,exports){
+},{"../../lib/Brick":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMap.js","../BrickMapDiff":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategyMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js":[function(require,module,exports){
 module.exports = {
     DIFF: 'Diff',
     LATEST_VERSION: 'LatestVersion',
@@ -6860,7 +6593,7 @@ module.exports = {
     //DEFAULT_BRICK_MAP_STRATEGY: 'Diff'
 }
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js":[function(require,module,exports){
 /**
  * @param {object} options
  */
@@ -6929,7 +6662,7 @@ function BrickMapStrategyFactory(options) {
 
 module.exports = BrickMapStrategyFactory;
 
-},{"./DiffStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js","./LatestVersionStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js","./builtinBrickMapStrategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js":[function(require,module,exports){
+},{"./DiffStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js","./LatestVersionStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js","./builtinBrickMapStrategies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js":[function(require,module,exports){
 'use strict';
 
 
@@ -8048,14 +7781,14 @@ function Service(options) {
 
 module.exports = Service;
 
-},{"../../utils/isStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/isStream.js","../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","opendsu":"opendsu","overwrite-require":"overwrite-require","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js":[function(require,module,exports){
+},{"../../utils/isStream":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/utils/isStream.js","../Brick":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js","opendsu":"opendsu","overwrite-require":"overwrite-require","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js":[function(require,module,exports){
 'use strict'
 
 module.exports = {
     Service: require('./Service')
 };
 
-},{"./Service":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Manifest.js":[function(require,module,exports){
+},{"./Service":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickStorageService/Service.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Manifest.js":[function(require,module,exports){
 const MANIFEST_PATH = "/manifest";
 
 function Manifest(archive, options, callback) {
@@ -8190,15 +7923,11 @@ function Manifest(archive, options, callback) {
 
     function getArchive(seed, callback) {
         const resolver = require("opendsu").loadApi("resolver");
-        let loadOptions;
-
         if (typeof options.skipCache === 'boolean' && !options.skipCache) {
-            loadOptions = {
-                skipCache: true
-            };
+            options.skipCache = true;
         }
 
-        resolver.loadDSU(seed, loadOptions, (err, dossier) => {
+        resolver.loadDSU(seed, options, (err, dossier) => {
             if (err) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load DSU from keySSI ${seed}`, err));
             }
@@ -8234,7 +7963,7 @@ module.exports.getManifest = function getManifest(archive, options, callback) {
 };
 
 
-},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js":[function(require,module,exports){
 const zlib = require("zlib");
 
 function CompressionTransformation(config) {
@@ -8288,7 +8017,7 @@ function CompressionTransformation(config) {
 module.exports = CompressionTransformation;
 
 
-},{"zlib":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js":[function(require,module,exports){
+},{"zlib":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadApi("crypto");
 
@@ -8333,7 +8062,7 @@ function EncryptionTransformation(options) {
 }
 
 module.exports = EncryptionTransformation;
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/brick-transforms/index.js":[function(require,module,exports){
 const CompressionTransformation = require("./CompressionTransformation");
 const EncryptionTransformation = require("./EncryptionTransformation");
 
@@ -8348,7 +8077,7 @@ module.exports = {
 };
 
 
-},{"./CompressionTransformation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js","./EncryptionTransformation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/constants.js":[function(require,module,exports){
+},{"./CompressionTransformation":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js","./EncryptionTransformation":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/constants.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -8365,7 +8094,7 @@ module.exports = {
     }
 }
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js":[function(require,module,exports){
 const Brick = require("../Brick");
 const util = require("../../utils/utilities");
 const pathModule = "path";
@@ -8500,7 +8229,7 @@ function FileBrickMap(header) {
 
 module.exports = FileBrickMap;
 
-},{"../../utils/utilities":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js":[function(require,module,exports){
+},{"../../utils/utilities":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js":[function(require,module,exports){
 function FileBrickStorage(filePath) {
     const fsModuleName = "fs";
     const fs = require(fsModuleName);
@@ -8719,7 +8448,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/utilities":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./FileBrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js":[function(require,module,exports){
+},{"../../utils/utilities":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/utils/utilities.js","../Brick":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js","./FileBrickMap":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/obsolete/FileBrickMap.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js":[function(require,module,exports){
 const BrickMap = require("../BrickMap");
 const Brick = require("../Brick");
 
@@ -8819,7 +8548,7 @@ module.exports = {
     }
 };
 
-},{"../Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","fs":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/isStream.js":[function(require,module,exports){
+},{"../Brick":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMap.js","fs":false,"path":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/utils/isStream.js":[function(require,module,exports){
 function isStream(stream){
     return stream !== null && typeof stream === 'object' && typeof stream.pipe === 'function';
 }
@@ -8851,7 +8580,7 @@ module.exports = {
     isDuplex
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/utils/utilities.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/utils/utilities.js":[function(require,module,exports){
 const OFFSET_SIZE = 8;
 
 function getBrickMapOffsetSize() {
@@ -8870,7 +8599,7 @@ function ensureFileDoesNotExist(filePath, callback) {
 }
 
 module.exports = {getBrickMapOffsetSize, ensureFileDoesNotExist};
-},{"fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js":[function(require,module,exports){
+},{"fs":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js":[function(require,module,exports){
 function CryptoAlgorithmsMixin(target) {
     target = target || {};
     const crypto = require("pskcrypto");
@@ -8984,7 +8713,7 @@ function CryptoAlgorithmsMixin(target) {
 
 module.exports = CryptoAlgorithmsMixin;
 
-},{"pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js":[function(require,module,exports){
+},{"pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js":[function(require,module,exports){
 const SSITypes = require("../KeySSIs/SSITypes");
 const CryptoFunctionTypes = require("./CryptoFunctionTypes");
 const CryptoAlgorithmsMixin = require("./CryptoAlgorithmsMixin");
@@ -9105,7 +8834,7 @@ CryptoAlgorithmsRegistry.prototype.registerCryptoInterface(SSITypes.CONSENSUS_SS
 CryptoAlgorithmsRegistry.prototype.registerCryptoInterface(SSITypes.PUBLIC_KEY_SSI, 'v0', new CryptoAlgorithmsMixin());
 
 
-},{"../KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CryptoAlgorithmsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./CryptoFunctionTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./SeedSSICryptoAlgorithms":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js":[function(require,module,exports){
+},{"../KeySSIs/SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CryptoAlgorithmsMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./CryptoFunctionTypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./SeedSSICryptoAlgorithms":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js":[function(require,module,exports){
 module.exports = {
     HASH: "hash",
     ENCRYPTION: "encryption",
@@ -9131,7 +8860,7 @@ module.exports = {
     SET_IES_CONFIG: "setConfigForIES",
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/SeedSSICryptoAlgorithms.js":[function(require,module,exports){
 function SeedSSICryptoAlgorithms() {
     const crypto = require("pskcrypto");
     const CryptoAlgorithmsMixin = require("./CryptoAlgorithmsMixin");
@@ -9161,7 +8890,217 @@ function SeedSSICryptoAlgorithms() {
 
 module.exports = SeedSSICryptoAlgorithms;
 
-},{"./CryptoAlgorithmsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js":[function(require,module,exports){
+},{"./CryptoAlgorithmsMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","pskcrypto":"pskcrypto"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/BarFactory.js":[function(require,module,exports){
+/**
+ * @param {object} options
+ * @param {KeySSIFactory} options.keySSIFactory
+ * @param {BrickMapStrategyFactory} options.brickMapStrategyFactory
+ */
+const cache = require('psk-cache').getDefaultInstance();
+
+function BarFactory(factoryOptions) {
+    const barModule = require('bar');
+    const fsAdapter = require('bar-fs-adapter');
+    factoryOptions = factoryOptions || {};
+    const MAX_BRICK_SIZE = factoryOptions.maxBrickSize || 1000000;
+    this.keySSIFactory = factoryOptions.keySSIFactory;
+    this.brickMapStrategyFactory = factoryOptions.brickMapStrategyFactory || new barModule.BrickMapStrategyFactory();
+    const openDSU = require("opendsu");
+    const keySSISpace = openDSU.loadAPI("keyssi");
+    const INSTANCE_CREATION_METHODS = {
+        INIT: "init",
+        LOAD: "load",
+        LOAD_VERSION: "loadVersion"
+    }
+    function castSSI(ssi) {
+        if (typeof ssi !== "undefined") {
+            if (typeof ssi === "string") {
+                ssi = keySSISpace.parse(ssi);
+            } else {
+                if (ssi.getTypeName === undefined || ssi.getIdentifier === undefined) {
+                    throw Error("Please provide a proper SSI instance ");
+                }
+            }
+        } else {
+            throw Error("SSI should not be undefined");
+        }
+        return ssi;
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Private methods
+    ////////////////////////////////////////////////////////////
+
+    /**
+     * @param {SeedSSI} keySSI
+     * @param {object} options
+     * @return {Archive}
+     */
+    const createInstance = (keySSI, options, initializationMethod, callback) => {
+        const allowedInitMethods = Object.values(INSTANCE_CREATION_METHODS);
+        if (typeof options.useMineMergeStrategy === "undefined") {
+            options.useMineMergeStrategy = false;
+        }
+
+        if (allowedInitMethods.indexOf(initializationMethod) === -1) {
+            throw Error("Wrong usage of the createInstance method");
+        }
+
+        let bar;
+        try {
+            const ArchiveConfigurator = barModule.ArchiveConfigurator;
+            ArchiveConfigurator.prototype.registerFsAdapter("FsAdapter", fsAdapter.createFsAdapter);
+            const archiveConfigurator = new ArchiveConfigurator(options);
+            archiveConfigurator.setCache(cache);
+            const envTypes = require("overwrite-require").constants;
+            if ($$.environmentType !== envTypes.BROWSER_ENVIRONMENT_TYPE &&
+                $$.environmentType !== envTypes.SERVICE_WORKER_ENVIRONMENT_TYPE &&
+                $$.environmentType !== envTypes.WEB_WORKER_ENVIRONMENT_TYPE) {
+                archiveConfigurator.setFsAdapter("FsAdapter");
+            }
+            archiveConfigurator.setBufferSize(MAX_BRICK_SIZE);
+            archiveConfigurator.setKeySSI(keySSI);
+            let brickMapStrategyName = options.brickMapStrategy;
+            let anchoringOptions = options.anchoringOptions;
+
+            let brickMapStrategy = createBrickMapStrategy(brickMapStrategyName, anchoringOptions);
+            archiveConfigurator.setBrickMapStrategy(brickMapStrategy);
+
+            if (options.validationRules) {
+                archiveConfigurator.setValidationRules(options.validationRules);
+            }
+
+            if (options.skipCache) {
+                archiveConfigurator.disableDSUCaching()
+            }
+
+            bar = barModule.createArchive(archiveConfigurator);
+            const DSUBase = require("./mixins/DSUBase");
+            DSUBase(bar);
+        } catch (err) {
+            return callback(err);
+        }
+
+        let defaultCallback = err => {
+            callback(err, bar)
+        };
+
+        let initCallback = (err) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (typeof options === "object" && options.addLog) {
+                return bar.dsuLog("DSU created on " + Date.now(), defaultCallback);
+            }
+
+            callback(err, bar);
+        }
+
+        if (initializationMethod === INSTANCE_CREATION_METHODS.LOAD) {
+            if (options && options.versionHashlink) {
+                initializationMethod = INSTANCE_CREATION_METHODS.LOAD_VERSION;
+                return bar[initializationMethod](options.versionHashlink, defaultCallback);
+            }
+
+            initializationMethod = INSTANCE_CREATION_METHODS.LOAD;
+        }
+
+        bar[initializationMethod](initializationMethod === INSTANCE_CREATION_METHODS.INIT ? initCallback : defaultCallback);
+    }
+
+    /**
+     * @return {object}
+     */
+    const createBrickMapStrategy = (name, options) => {
+        const strategy = this.brickMapStrategyFactory.create(name, options);
+        return strategy;
+    }
+
+    /**
+     * @return {SecretDID}
+     * @param templateKeySSI
+     * @param callback
+     */
+    const initializeKeySSI = (templateKeySSI, callback) => {
+        if (typeof templateKeySSI === "function") {
+            callback = templateKeySSI;
+            templateKeySSI = undefined;
+        }
+
+        if (typeof templateKeySSI === "undefined") {
+            return callback(Error("A template keySSI should be provided when creating a new DSU."));
+        }
+
+        keySSISpace.createSeedSSI(templateKeySSI.getDLDomain(), undefined, templateKeySSI.getHint(), callback);
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Public methods
+    ////////////////////////////////////////////////////////////
+
+    /**
+     * @param {object} options
+     * @param {string} options.brickMapStrategy 'Diff', 'Versioned' or any strategy registered with the factory
+     * @param {object} options.anchoringOptions Anchoring options to pass to bar map strategy
+     * @param {callback} options.anchoringOptions.decisionFn Callback which will decide when to effectively anchor changes
+     *                                                              If empty, the changes will be anchored after each operation
+     * @param {callback} options.anchoringOptions.conflictResolutionFn Callback which will handle anchoring conflicts
+     *                                                              The default strategy is to reload the BrickMap and then apply the new changes
+     * @param {callback} options.anchoringOptions.anchoringEventListener An event listener which is called when the strategy anchors the changes
+     * @param {callback} options.anchoringOptions.signingFn  A function which will sign the new alias
+     * @param {object} options.validationRules
+     * @param {object} options.validationRules.preWrite An object capable of validating operations done in the "preWrite" stage of the BrickMap
+     * @param {callback} callback
+     */
+    this.create = (keySSI, options, callback) => {
+        keySSI = castSSI(keySSI);
+        if (typeof options === "function") {
+            callback = options;
+            options = undefined;
+        }
+        options = options || {};
+        if (options.useSSIAsIdentifier) {
+            return createInstance(keySSI, options, INSTANCE_CREATION_METHODS.INIT, callback);
+        }
+
+        initializeKeySSI(keySSI, (err, _keySSI) => {
+            if (err) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to initialize keySSI <${keySSI.getIdentifier(true)}>`, err));
+            }
+            return createInstance(_keySSI, options, INSTANCE_CREATION_METHODS.INIT, callback);
+        });
+    }
+
+    /**
+     * @param {string} keySSI
+     * @param {object} options
+     * @param {string} options.brickMapStrategy 'Diff', 'Versioned' or any strategy registered with the factory
+     * @param {object} options.anchoringOptions Anchoring options to pass to bar map strategy
+     * @param {callback} options.anchoringOptions.decisionFn Callback which will decide when to effectively anchor changes
+     *                                                              If empty, the changes will be anchored after each operation
+     * @param {callback} options.anchoringOptions.conflictResolutionFn Callback which will handle anchoring conflicts
+     *                                                              The default strategy is to reload the BrickMap and then apply the new changes
+     * @param {callback} options.anchoringOptions.anchoringEventListener An event listener which is called when the strategy anchors the changes
+     * @param {callback} options.anchoringOptions.signingFn  A function which will sign the new alias
+     * @param {object} options.validationRules
+     * @param {object} options.validationRules.preWrite An object capable of validating operations done in the "preWrite" stage of the BrickMap
+     * @param {callback} callback
+     */
+    this.load = (keySSI, options, callback) => {
+        keySSI = castSSI(keySSI);
+        if (typeof options === "function") {
+            callback = options;
+            options = undefined;
+        }
+        options = options || {};
+        createInstance(keySSI, options, INSTANCE_CREATION_METHODS.LOAD, callback);
+    }
+}
+
+module.exports = BarFactory;
+
+},{"./mixins/DSUBase":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -9231,7 +9170,7 @@ function ConsensusDSUFactory(options) {
 
 module.exports = ConsensusDSUFactory;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -9309,222 +9248,112 @@ function ConstDSUFactory(options) {
 
 module.exports = ConstDSUFactory;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js":[function(require,module,exports){
-/**
- * @param {object} options
- * @param {KeySSIFactory} options.keySSIFactory
- * @param {BrickMapStrategyFactory} options.brickMapStrategyFactory
- */
-const cache = require('psk-cache').getDefaultInstance();
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js":[function(require,module,exports){
+const dsuTypesFactoryRegistry = {}
+const DSUTypes = require("./DSUTypes");
 
-function DSUFactory(options) {
-    const barModule = require('bar');
-    const fsAdapter = require('bar-fs-adapter');
-    options = options || {};
-    const MAX_BRICK_SIZE = options.maxBrickSize || 1000000;
-    this.keySSIFactory = options.keySSIFactory;
-    this.brickMapStrategyFactory = options.brickMapStrategyFactory;
-    const openDSU = require("opendsu");
-    const keySSISpace = openDSU.loadAPI("keyssi");
-
-    function castSSI(ssi) {
-        if (typeof ssi !== "undefined") {
-            if (typeof ssi === "string") {
-                ssi = keySSISpace.parse(ssi);
-            } else {
-                if (ssi.getTypeName === undefined || ssi.getIdentifier === undefined) {
-                    throw Error("Please provide a proper SSI instance ");
-                }
-            }
-        } else {
-            throw Error("SSI should not be undefined");
-        }
-        return ssi;
+function DSUFactory(factoryOptions) {
+    const dsuFactoryInstancesRegistry = {};
+    for(let dsuType in dsuTypesFactoryRegistry){
+        dsuFactoryInstancesRegistry[dsuType] = dsuTypesFactoryRegistry[dsuType](factoryOptions);
     }
 
-    ////////////////////////////////////////////////////////////
-    // Private methods
-    ////////////////////////////////////////////////////////////
-
-    /**
-     * @param {SeedSSI} keySSI
-     * @param {object} options
-     * @return {Archive}
-     */
-    const createInstance = (keySSI, options, initializationMethod, callback) => {
-        const INIT = "init";
-        const LOAD = "load";
-        const LOAD_VERSION = "loadVersion";
-        const allowedInitMethods = [INIT, LOAD];
-        if (typeof options.useMineMergeStrategy === "undefined") {
-            options.useMineMergeStrategy = false;
-        }
-        if (allowedInitMethods.indexOf(initializationMethod) === -1) {
-            throw Error("Wrong usage of the createInstance method");
+    this.create = (keySSI, options, callback) => {
+        const defaultInstanceOptions = {dsuType: DSUTypes.LEGACY_DSU};
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
         }
 
-        let bar;
-        try {
-            let identifier = keySSI;
-
-            const ArchiveConfigurator = barModule.ArchiveConfigurator;
-            ArchiveConfigurator.prototype.registerFsAdapter("FsAdapter", fsAdapter.createFsAdapter);
-            const archiveConfigurator = new ArchiveConfigurator(options);
-            archiveConfigurator.setCache(cache);
-            const envTypes = require("overwrite-require").constants;
-            if ($$.environmentType !== envTypes.BROWSER_ENVIRONMENT_TYPE &&
-                $$.environmentType !== envTypes.SERVICE_WORKER_ENVIRONMENT_TYPE &&
-                $$.environmentType !== envTypes.WEB_WORKER_ENVIRONMENT_TYPE) {
-                archiveConfigurator.setFsAdapter("FsAdapter");
-            }
-            archiveConfigurator.setBufferSize(MAX_BRICK_SIZE);
-            archiveConfigurator.setKeySSI(keySSI);
-            let brickMapStrategyName = options.brickMapStrategy;
-            let anchoringOptions = options.anchoringOptions;
-
-            let brickMapStrategy = createBrickMapStrategy(brickMapStrategyName, anchoringOptions);
-            archiveConfigurator.setBrickMapStrategy(brickMapStrategy);
-
-            if (options.validationRules) {
-                archiveConfigurator.setValidationRules(options.validationRules);
-            }
-
-            if (options.skipCache) {
-                archiveConfigurator.disableDSUCaching()
-            }
-
-            bar = barModule.createArchive(archiveConfigurator);
-            const DSUBase = require("./mixins/DSUBase");
-            DSUBase(bar);
-
-        } catch (err) {
-            return callback(err);
+        Object.assign(defaultInstanceOptions, options);
+        options = defaultInstanceOptions;
+        if (typeof dsuTypesFactoryRegistry[options.dsuType] !== "function") {
+            return callback(Error(`No factory registered for dsu type <${options.dsuType}>`));
         }
 
-        let defaultCallback = err => {
-            callback(err, bar)
-        };
+        const factoryInstance = dsuFactoryInstancesRegistry[options.dsuType];
+        factoryInstance.create(keySSI, options, callback);
+    }
 
-        let initCallback = (err) => {
+    this.load = (keySSI, options, callback) => {
+        const defaultInstanceOptions = {dsuType: DSUTypes.LEGACY_DSU};
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+
+        Object.assign(defaultInstanceOptions, options);
+        options = defaultInstanceOptions;
+        if (typeof dsuTypesFactoryRegistry[options.dsuType] !== "function") {
+            return callback(Error(`No factory registered for dsu type <${options.dsuType}>`));
+        }
+
+        const factoryInstance = dsuFactoryInstancesRegistry[options.dsuType];
+        factoryInstance.load(keySSI, options, callback);
+    }
+}
+
+DSUFactory.prototype.registerDSUTypeFactory = (dsuType, factory) => {
+    dsuTypesFactoryRegistry[dsuType] = factory;
+}
+
+const LegacyDSUFactory = require("./LegacyDSUFactory");
+const BarFactory = require("./BarFactory");
+
+DSUFactory.prototype.registerDSUTypeFactory(DSUTypes.LEGACY_DSU, function (factoryOptions) {
+    return new LegacyDSUFactory(factoryOptions);
+});
+DSUFactory.prototype.registerDSUTypeFactory(DSUTypes.BAR, function (factoryOptions) {
+    return new BarFactory(factoryOptions);
+});
+
+module.exports = DSUFactory;
+
+},{"./BarFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/BarFactory.js","./DSUTypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUTypes.js","./LegacyDSUFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/LegacyDSUFactory.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUTypes.js":[function(require,module,exports){
+module.exports = {
+    LEGACY_DSU: "legacyDSU",
+    BAR: "bar"
+}
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/LegacyDSUFactory.js":[function(require,module,exports){
+function LegacyDSUFactory(factoryOptions) {
+    const LegacyDSU = require("../dsu/LegacyDSU");
+    const BarFactory = require("./BarFactory");
+    const barFactoryInstance = new BarFactory(factoryOptions);
+    const DSUInstancesRegistry = require("../utils/RaceConditionPreventer");
+    const dsuInstancesRegistry = new DSUInstancesRegistry();
+
+    const storeDSUInstance = (legacyDSU) => {
+        dsuInstancesRegistry.put(legacyDSU.getAnchorIdSync(), legacyDSU);
+    }
+
+    this.create = (keySSI, options, callback) => {
+        barFactoryInstance.create(keySSI, options, (err, barInstance) => {
             if (err) {
                 return callback(err);
             }
 
-            if (typeof options === "object" && options.addLog) {
-                return bar.dsuLog("DSU created on " + Date.now(), defaultCallback);
-            }
-
-            callback(err, bar);
-        }
-
-        if (initializationMethod === LOAD) {
-            if (options && options.versionHashlink) {
-                initializationMethod = LOAD_VERSION;
-                return bar[initializationMethod](options.versionHashlink, defaultCallback);
-            }
-
-            initializationMethod = LOAD;
-        }
-
-        bar[initializationMethod](initializationMethod === INIT ? initCallback : defaultCallback);
+            const legacyDSU = new LegacyDSU(barInstance, dsuInstancesRegistry);
+            storeDSUInstance(legacyDSU);
+            callback(undefined, legacyDSU);
+        })
     }
 
-    /**
-     * @return {object}
-     */
-    const createBrickMapStrategy = (name, options) => {
-        const strategy = this.brickMapStrategyFactory.create(name, options);
-        return strategy;
-    }
-
-    /**
-     * @return {SecretDID}
-     * @param templateKeySSI
-     * @param callback
-     */
-    const initializeKeySSI = (templateKeySSI, callback) => {
-        if (typeof templateKeySSI === "function") {
-            callback = templateKeySSI;
-            templateKeySSI = undefined;
-        }
-
-        if (typeof templateKeySSI === "undefined") {
-            return callback(Error("A template keySSI should be provided when creating a new DSU."));
-        }
-        const KeySSIFactory = require("../KeySSIs/KeySSIFactory");
-        const keySSI = KeySSIFactory.createType(templateKeySSI.getTypeName());
-
-        // keySSI.initialize(templateKeySSI.getDLDomain(), undefined, undefined, undefined, templateKeySSI.getHint(), callback);
-        keySSISpace.createSeedSSI(templateKeySSI.getDLDomain(), undefined, templateKeySSI.getHint(), callback);
-        // keySSI.initialize(templateKeySSI.getDLDomain(), templateKeySSI.getSpecificString(), templateKeySSI.getControlString(), templateKeySSI.getVn(), templateKeySSI.getHint(), callback);
-    }
-
-    ////////////////////////////////////////////////////////////
-    // Public methods
-    ////////////////////////////////////////////////////////////
-
-    /**
-     * @param {object} options
-     * @param {string} options.brickMapStrategy 'Diff', 'Versioned' or any strategy registered with the factory
-     * @param {object} options.anchoringOptions Anchoring options to pass to bar map strategy
-     * @param {callback} options.anchoringOptions.decisionFn Callback which will decide when to effectively anchor changes
-     *                                                              If empty, the changes will be anchored after each operation
-     * @param {callback} options.anchoringOptions.conflictResolutionFn Callback which will handle anchoring conflicts
-     *                                                              The default strategy is to reload the BrickMap and then apply the new changes
-     * @param {callback} options.anchoringOptions.anchoringEventListener An event listener which is called when the strategy anchors the changes
-     * @param {callback} options.anchoringOptions.signingFn  A function which will sign the new alias
-     * @param {object} options.validationRules
-     * @param {object} options.validationRules.preWrite An object capable of validating operations done in the "preWrite" stage of the BrickMap
-     * @param {callback} callback
-     */
-    this.create = (keySSI, options, callback) => {
-        keySSI = castSSI(keySSI);
-        if (typeof options === "function") {
-            callback = options;
-            options = undefined;
-        }
-        options = options || {};
-        if (options.useSSIAsIdentifier) {
-            return createInstance(keySSI, options, "init", callback);
-        }
-
-        initializeKeySSI(keySSI, (err, _keySSI) => {
-            if (err) {
-                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to initialize keySSI <${keySSI.getIdentifier(true)}>`, err));
-            }
-            return createInstance(_keySSI, options, "init", callback);
-        });
-    }
-
-    /**
-     * @param {string} keySSI
-     * @param {object} options
-     * @param {string} options.brickMapStrategy 'Diff', 'Versioned' or any strategy registered with the factory
-     * @param {object} options.anchoringOptions Anchoring options to pass to bar map strategy
-     * @param {callback} options.anchoringOptions.decisionFn Callback which will decide when to effectively anchor changes
-     *                                                              If empty, the changes will be anchored after each operation
-     * @param {callback} options.anchoringOptions.conflictResolutionFn Callback which will handle anchoring conflicts
-     *                                                              The default strategy is to reload the BrickMap and then apply the new changes
-     * @param {callback} options.anchoringOptions.anchoringEventListener An event listener which is called when the strategy anchors the changes
-     * @param {callback} options.anchoringOptions.signingFn  A function which will sign the new alias
-     * @param {object} options.validationRules
-     * @param {object} options.validationRules.preWrite An object capable of validating operations done in the "preWrite" stage of the BrickMap
-     * @param {callback} callback
-     */
     this.load = (keySSI, options, callback) => {
-        keySSI = castSSI(keySSI);
-        if (typeof options === "function") {
-            callback = options;
-            options = undefined;
-        }
-        options = options || {};
-        createInstance(keySSI, options, "load", callback);
+        barFactoryInstance.load(keySSI, options, (err, barInstance) => {
+            if (err) {
+                return callback(err);
+            }
+
+            const legacyDSU = new LegacyDSU(barInstance, dsuInstancesRegistry);
+            storeDSUInstance(legacyDSU);
+            callback(undefined, legacyDSU);
+        })
     }
 }
 
-module.exports = DSUFactory;
+module.exports = LegacyDSUFactory;
 
-},{"../KeySSIs/KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./mixins/DSUBase":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","psk-cache":"psk-cache"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js":[function(require,module,exports){
+},{"../dsu/LegacyDSU":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/LegacyDSU.js","../utils/RaceConditionPreventer":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/utils/RaceConditionPreventer.js","./BarFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/BarFactory.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -9594,7 +9423,7 @@ function OwnershipDSUFactory(options) {
 
 module.exports = OwnershipDSUFactory;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/VersionlessDSUFactory.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/VersionlessDSUFactory.js":[function(require,module,exports){
 function VersionlessDSUFactory() {
     const VersionlessDSU = require("../dsu/VersionlessDSU");
 
@@ -9621,7 +9450,7 @@ function VersionlessDSUFactory() {
             }
 
             if (options.addLog) {
-                versionlessDSU.dsuLog(`DSU created on ${Date.now()}`, (err) => {
+                return versionlessDSU.dsuLog(`DSU created on ${Date.now()}`, (err) => {
                     callback(err, result);
                 });
             }
@@ -9649,7 +9478,7 @@ function VersionlessDSUFactory() {
 
 module.exports = VersionlessDSUFactory;
 
-},{"../dsu/VersionlessDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSU.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js":[function(require,module,exports){
+},{"../dsu/VersionlessDSU":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSU.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js":[function(require,module,exports){
 /**
  * @param {object} options
  * @param {KeySSIFactory} options.keySSIFactory
@@ -9699,12 +9528,29 @@ function WalletFactory(options) {
         }
 
         let mountDSUType = () => {
-            writableWallet.mount("/code", options.dsuTypeSSI, (err => {
+            writableWallet.safeBeginBatch(err => {
                 if (err) {
-                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to mount constitution in writable DSU`, err));
+                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to start batch writable DSU`, err));
                 }
-                createConstDSU();
-            }));
+                writableWallet.mount("/code", options.dsuTypeSSI, async err => {
+                    if (err) {
+                        const mountError = createOpenDSUErrorWrapper(`Failed to mount DSU type <${options.dsuTypeSSI.getIdentifier(true)}>`, err);
+                        try{
+                            await writableWallet.cancelBatchAsync();
+                        }catch (e) {
+                            return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to cancel batch writable DSU`, e, mountError));
+                        }
+                        return OpenDSUSafeCallback(callback)(mountError);
+                    }
+
+                    writableWallet.commitBatch(err => {
+                        if (err) {
+                            return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to commit batch writable DSU`, err));
+                        }
+                        createConstDSU();
+                    })
+                });
+            })
         }
 
         let createConstDSU = () => {
@@ -9729,12 +9575,30 @@ function WalletFactory(options) {
                 if (err) {
                     return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to get seedSSI", err));
                 }
-                constDSUWallet.mount(WALLET_MOUNT_POINT, seedSSI, (err => {
+
+                constDSUWallet.safeBeginBatch(err => {
                     if (err) {
-                        return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to mount writable SSI in wallet", err));
+                        return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to start batch on const DSU", err));
                     }
-                    callback(undefined, constDSUWallet);
-                }));
+                    constDSUWallet.mount(WALLET_MOUNT_POINT, seedSSI, async err => {
+                        if (err) {
+                            const mountError = createOpenDSUErrorWrapper("Failed to mount writable SSI in wallet", err);
+                            try{
+                                await constDSUWallet.cancelBatchAsync();
+                            }catch (e) {
+                                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to cancel batch on const DSU", e, mountError));
+                            }
+                            return OpenDSUSafeCallback(callback)(mountError);
+                        }
+
+                        constDSUWallet.commitBatch(err => {
+                            if (err) {
+                                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to commit batch on const DSU", err));
+                            }
+                            callback(undefined, constDSUWallet);
+                        });
+                    });
+                })
             });
         }
 
@@ -9822,8 +9686,8 @@ function WalletFactory(options) {
 
 module.exports = WalletFactory;
 
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js":[function(require,module,exports){
-const BarFactory = require('./DSUFactory');
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js":[function(require,module,exports){
+const DSUFactory = require('./DSUFactory');
 const SSITypes = require("../KeySSIs/SSITypes");
 /**
  * @param {object} options
@@ -9850,28 +9714,28 @@ function Registry(options) {
      * Initialize the factory state
      */
     const initialize = () => {
-        const barFactory = new BarFactory({
+        let dsuFactory = new DSUFactory({
             keySSIFactory,
             brickMapStrategyFactory
         });
+        this.registerDSUType(SSITypes.SEED_SSI, dsuFactory);
+        this.registerDSUType(SSITypes.SREAD_SSI, dsuFactory);
 
-        this.registerDSUType(SSITypes.SEED_SSI, barFactory);
-        this.registerDSUType(SSITypes.SREAD_SSI, barFactory);
         const WalletFactory = require("./WalletFactory");
-        const walletFactory = new WalletFactory({barFactory});
+        const walletFactory = new WalletFactory({barFactory: dsuFactory});
         this.registerDSUType(SSITypes.WALLET_SSI, walletFactory);
         const ConstDSUFactory = require("./ConstDSUFactory");
-        const constDSUFactory = new ConstDSUFactory({barFactory});
+        const constDSUFactory = new ConstDSUFactory({barFactory: dsuFactory});
         this.registerDSUType(SSITypes.CONST_SSI, constDSUFactory);
         this.registerDSUType(SSITypes.ARRAY_SSI, constDSUFactory);
 
         const OwnershipDSUFactory = require("./OwnershipDSUFactory");
-        const ownershipDSUFactory = new OwnershipDSUFactory({barFactory})
+        const ownershipDSUFactory = new OwnershipDSUFactory({barFactory: dsuFactory})
         this.registerDSUType(SSITypes.OWNERSHIP_SSI, ownershipDSUFactory);
         this.registerDSUType(SSITypes.OWNERSHIP_READ_SSI, ownershipDSUFactory);
 
         const ConsensusDSUFactory = require("./ConsensusDSUFactory");
-        const consensusDSUFactory = new ConsensusDSUFactory({barFactory});
+        const consensusDSUFactory = new ConsensusDSUFactory({barFactory: dsuFactory});
         this.registerDSUType(SSITypes.CONSENSUS_SSI, consensusDSUFactory);
 
         const VersionlessDSUFactory = require("./VersionlessDSUFactory");
@@ -9888,9 +9752,9 @@ function Registry(options) {
      * @return {boolean}
      */
     this.isValidKeySSI = (keySSI) => {
-        try{
+        try {
             return typeof factories[keySSI.getTypeName()] !== 'undefined';
-        } catch(err){
+        } catch (err) {
             return false;
         }
     };
@@ -9915,7 +9779,7 @@ function Registry(options) {
         let type = keySSI.getTypeName();
         if (keySSI.options && keySSI.options.dsuFactoryType) {
             type = keySSI.options.dsuFactoryType;
-        }        
+        }
         const factory = factories[type];
         factory.create(keySSI, dsuConfiguration, callback);
     }
@@ -9962,7 +9826,7 @@ Registry.prototype.getDSUFactory = (dsuType) => {
 
 module.exports = Registry;
 
-},{"../KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConsensusDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js","./ConstDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js","./DSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js","./OwnershipDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js","./VersionlessDSUFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/VersionlessDSUFactory.js","./WalletFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js":[function(require,module,exports){
+},{"../KeySSIs/SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConsensusDSUFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConsensusDSUFactory.js","./ConstDSUFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/ConstDSUFactory.js","./DSUFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUFactory.js","./OwnershipDSUFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/OwnershipDSUFactory.js","./VersionlessDSUFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/VersionlessDSUFactory.js","./WalletFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/WalletFactory.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/mixins/DSUBase.js":[function(require,module,exports){
 module.exports = function(archive){
 	archive.call = (functionName, ...args) => {
 		if(args.length === 0){
@@ -10023,7 +9887,7 @@ module.exports = function(archive){
 	return archive;
 }
 
-},{"overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js":[function(require,module,exports){
+},{"overwrite-require":"overwrite-require"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js":[function(require,module,exports){
 /**
  * @param {BrickMapStrategyFactory} options.brickMapStrategyFactory
  * @param {DSUFactory} options.dsuFactory
@@ -10113,7 +9977,10 @@ function KeySSIResolver(options) {
 
 module.exports = KeySSIResolver;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js":[function(require,module,exports){
+const ConstSSI = require("./ConstSSI");
+const SSITypes = require("../SSITypes");
+
 function ArraySSI(enclave, identifier) {
     if (typeof enclave === "string") {
         identifier = enclave;
@@ -10143,12 +10010,25 @@ function ArraySSI(enclave, identifier) {
         self.load(SSITypes.ARRAY_SSI, dlDomain, cryptoRegistry.getBase64EncodingFunction(self)(key), "", vn, hint);
     };
 
-    self.derive = (callback) => {
+    self.deriveSync = () => {
         const ConstSSI = require("./ConstSSI");
         const constSSI = ConstSSI.createConstSSI();
         constSSI.load(SSITypes.CONST_SSI, self.getDLDomain(), self.getSpecificString(), self.getControlString(), self.getVn(), self.getHint());
-        callback(undefined, constSSI);
+        return constSSI;
+    }
+
+    self.derive = (callback) => {
+        try {
+            const constSSI = self.deriveSync();
+            callback(undefined, constSSI)
+        } catch (e) {
+            callback(e);
+        }
     };
+
+    self.getEncryptionKeySync = () => {
+        return self.deriveSync().getEncryptionKeySync();
+    }
 
     self.getEncryptionKey = (callback) => {
         self.derive((err, derivedKeySSI) => {
@@ -10192,7 +10072,7 @@ module.exports = {
     createArraySSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const SSIFamilies = require("../SSIFamilies");
@@ -10233,7 +10113,7 @@ module.exports = {
     createCZaSSI
 };
 
-},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const CZaSSI = require("./CZaSSI");
 const SSITypes = require("../SSITypes");
@@ -10260,29 +10140,35 @@ function ConstSSI(enclave, identifier) {
         self.load(SSITypes.CONST_SSI, dlDomain, cryptoRegistry.getBase64EncodingFunction(self)(key), "", vn, hint);
     };
 
+    self.getEncryptionKeySync = () => {
+        const encryptionKey = cryptoRegistry.getBase64DecodingFunction(self)(self.getSpecificString());
+        return encryptionKey;
+    }
+
     self.getEncryptionKey = (callback) => {
         try {
-            const encryptionKey = cryptoRegistry.getBase64DecodingFunction(self)(self.getSpecificString());
-            callback(undefined, encryptionKey);
+            const encryptionKey = self.getEncryptionKeySync();
+            return callback(undefined, encryptionKey);
         } catch (e) {
-            callback(e);
+            return callback(e);
         }
     };
 
-    self.derive = (callback) => {
+    self.deriveSync = () => {
         const cZaSSI = CZaSSI.createCZaSSI();
-        self.getEncryptionKey((err, encryptionKey) => {
-            if (err) {
-                return callback(err);
-            }
-            try {
-                const subtypeKey = cryptoRegistry.getHashFunction(self)(encryptionKey);
-                cZaSSI.load(SSITypes.CONSTANT_ZERO_ACCESS_SSI, self.getDLDomain(), subtypeKey, self.getControlString(), self.getVn(), self.getHint());
-                callback(undefined, cZaSSI);
-            } catch (e) {
-                callback(e);
-            }
-        });
+        const encryptionKey = self.getEncryptionKeySync();
+        const subtypeKey = cryptoRegistry.getHashFunction(self)(encryptionKey);
+        cZaSSI.load(SSITypes.CONSTANT_ZERO_ACCESS_SSI, self.getDLDomain(), subtypeKey, self.getControlString(), self.getVn(), self.getHint());
+        return cZaSSI;
+    }
+
+    self.derive = (callback) => {
+        try {
+            const cZaSSI = self.deriveSync();
+            return callback(undefined, cZaSSI);
+        } catch (e) {
+            return callback(e);
+        }
     };
 
     self.createAnchorValue = function (brickMapHash, previousAnchorValue, callback) {
@@ -10317,7 +10203,7 @@ module.exports = {
     createConstSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./CZaSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ConstSSI = require("./ConstSSI");
 const SSITypes = require("../SSITypes");
@@ -10365,7 +10251,7 @@ module.exports = {
     createPasswordSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ConstSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -10390,13 +10276,13 @@ module.exports = {
     createConsensusSSI,
 };
 
-},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js":[function(require,module,exports){
 const DSURepresentationNames = {
     "seed": "RawDossier"
 }
 
 module.exports = DSURepresentationNames;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/HashLinkSSI.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/HashLinkSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const SSIFamilies = require("../SSIFamilies");
@@ -10442,7 +10328,7 @@ module.exports = {
     createHashLinkSSI
 };
 
-},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const {createHashLinkSSI} = require("./HashLinkSSI");
 const SSITypes = require("../SSITypes");
@@ -10482,10 +10368,21 @@ function SignedHashLinkSSI(enclave, identifier) {
         return specificString;
     };
 
-    self.derive = () => {
+
+    self.deriveSync = () => {
         const hashLinkSSI = createHashLinkSSI();
         hashLinkSSI.load(SSITypes.HASH_LINK_SSI, self.getDLDomain(), self.getHash(), "", self.getVn(), self.getHint());
         return hashLinkSSI;
+    };
+
+
+    self.derive = (callback) => {
+        try {
+            const hashLinkSSI = self.deriveSync();
+            callback(undefined, hashLinkSSI);
+        }catch (e) {
+            return callback(e);
+        }
     };
 
     self.getTimestamp = function () {
@@ -10540,7 +10437,7 @@ module.exports = {
     createSignedHashLinkSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./HashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/HashLinkSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./HashLinkSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/HashLinkSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js":[function(require,module,exports){
 const constants = require("./constants");
 
 function Hint(hintSerialisation) {
@@ -10615,7 +10512,7 @@ function Hint(hintSerialisation) {
 
 module.exports = Hint;
 
-},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js":[function(require,module,exports){
+},{"./constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js":[function(require,module,exports){
 const createSecretSSI = require("./SecretSSIs/SecretSSI").createSecretSSI;
 const createAnchorSSI = require("./SecretSSIs/AnchorSSI").createAnchorSSI;
 const createReadSSI = require("./SecretSSIs/ReadSSI").createReadSSI;
@@ -10765,6 +10662,14 @@ KeySSIFactory.prototype.getAnchorType = (keySSI, callback) => {
     }
 };
 
+KeySSIFactory.prototype.getAnchorTypeSync = (keySSI) => {
+    let localKeySSI = keySSI;
+    while (typeof registry[localKeySSI.getTypeName()].derivedType !== "undefined") {
+        localKeySSI = localKeySSI.deriveSync();
+    }
+    return localKeySSI;
+};
+
 KeySSIFactory.prototype.getRootKeySSITypeName = (keySSI) => {
     if (typeof keySSI === "object") {
         return KeySSIFactory.prototype.getRootKeySSITypeName(keySSI.getTypeName())
@@ -10806,9 +10711,9 @@ const getDerivedKeySSI = (keySSI, derivedTypeName, callback) => {
         })
     }
 
-    try{
+    try {
         __getDerivedKeySSIRecursively(keySSI);
-    }catch (e) {
+    } catch (e) {
         return callback(e);
     }
 };
@@ -10849,11 +10754,12 @@ KeySSIFactory.prototype.registerFactory(SSITypes.VERSIONLESS_SSI, 'v0', undefine
 
 module.exports = new KeySSIFactory();
 
-},{"./ConstSSIs/ArraySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js","./ConstSSIs/CZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js","./ConstSSIs/ConstSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js","./ConstSSIs/PasswordSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js","./ContractSSIs/ConsensusSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js","./HashLinkSSIs/HashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/HashLinkSSI.js","./HashLinkSSIs/SignedHashLinkSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js","./KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./OtherKeySSIs/AliasSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js","./OtherKeySSIs/EmbedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js","./OtherKeySSIs/PublicKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js","./OtherKeySSIs/SizeSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js","./OtherKeySSIs/SymmetricalEncryptionSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js","./OtherKeySSIs/VersionlessSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/VersionlessSSI.js","./OtherKeySSIs/WalletSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js","./OwnershipSSIs/OReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js","./OwnershipSSIs/OwnershipSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js","./OwnershipSSIs/ZATSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js","./SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SecretSSIs/AnchorSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js","./SecretSSIs/PublicSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js","./SecretSSIs/ReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js","./SecretSSIs/SecretSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js","./SecretSSIs/ZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js","./SeedSSIs/PathKeySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js","./SeedSSIs/SReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js","./SeedSSIs/SZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js","./SeedSSIs/SeedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","./TokenSSIs/TokenSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js","./TransferSSIs/TransferSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js":[function(require,module,exports){
+},{"./ConstSSIs/ArraySSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js","./ConstSSIs/CZaSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/CZaSSI.js","./ConstSSIs/ConstSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ConstSSI.js","./ConstSSIs/PasswordSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/PasswordSSI.js","./ContractSSIs/ConsensusSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ContractSSIs/ConsensusSSI.js","./HashLinkSSIs/HashLinkSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/HashLinkSSI.js","./HashLinkSSIs/SignedHashLinkSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/HashLinkSSIs/SignedHashLinkSSI.js","./KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./OtherKeySSIs/AliasSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js","./OtherKeySSIs/EmbedSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js","./OtherKeySSIs/PublicKeySSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js","./OtherKeySSIs/SizeSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js","./OtherKeySSIs/SymmetricalEncryptionSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js","./OtherKeySSIs/VersionlessSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/VersionlessSSI.js","./OtherKeySSIs/WalletSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js","./OwnershipSSIs/OReadSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js","./OwnershipSSIs/OwnershipSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js","./OwnershipSSIs/ZATSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js","./SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SecretSSIs/AnchorSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js","./SecretSSIs/PublicSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js","./SecretSSIs/ReadSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js","./SecretSSIs/SecretSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js","./SecretSSIs/ZaSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js","./SeedSSIs/PathKeySSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js","./SeedSSIs/SReadSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js","./SeedSSIs/SZaSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js","./SeedSSIs/SeedSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","./TokenSSIs/TokenSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js","./TransferSSIs/TransferSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js":[function(require,module,exports){
 const cryptoRegistry = require("../CryptoAlgorithms/CryptoAlgorithmsRegistry");
 const pskCrypto = require("pskcrypto");
 const SSITypes = require("./SSITypes");
 const Hint = require("./Hint");
+const keySSIFactory = require("./KeySSIFactory");
 const MAX_KEYSSI_LENGTH = 2048
 
 function keySSIMixin(target, enclave) {
@@ -10952,18 +10858,23 @@ function keySSIMixin(target, enclave) {
         return KeySSIFactory.getRootKeySSITypeName(target);
     }
 
-    target.getAnchorIdAsync = function (plain){
+    target.getAnchorIdAsync = function (plain) {
         return new Promise((resolve, reject) => {
-            if(typeof plain === "undefined"){
+            if (typeof plain === "undefined") {
                 plain = false;
             }
-            target.getAnchorId(plain, (err, anchorId)=>{
-                if(err){
+            target.getAnchorId(plain, (err, anchorId) => {
+                if (err) {
                     return reject(err);
                 }
                 resolve(anchorId);
             })
         });
+    }
+
+    target.getAnchorIdSync = (plain) => {
+        const keySSIFactory = require("./KeySSIFactory");
+        return keySSIFactory.getAnchorTypeSync(target).getNoHintIdentifier(plain);
     }
 
     target.getAnchorId = function (plain, callback) {
@@ -11017,14 +10928,18 @@ function keySSIMixin(target, enclave) {
     target.getVn = function () {
         return _vn;
     }
-    
+
     target.getDSURepresentationName = function () {
         const DSURepresentationNames = require("./DSURepresentationNames");
         return DSURepresentationNames[_subtype];
     }
 
     target.getNoHintIdentifier = function (plain) {
-        let identifier = `${_prefix}:${target.getTypeName()}:${target.getDLDomain()}:${target.getSpecificString()}:${target.getControlString()}:${target.getVn()}`;
+        const dlDomain = target.getDLDomain() || '';
+        const specificString = target.getSpecificString() || '';
+        const controlString = target.getControlString() || '';
+        const vn = target.getVn() || "v0";
+        let identifier = `${_prefix}:${target.getTypeName()}:${dlDomain}:${specificString}:${controlString}:${target.getVn()}`;
         return plain ? identifier : pskCrypto.pskBase58Encode(identifier);
     }
 
@@ -11193,7 +11108,7 @@ function keySSIMixin(target, enclave) {
         })
     }
 
-    target.getFamilyName = ()=>{
+    target.getFamilyName = () => {
         return undefined
     }
 
@@ -11202,7 +11117,7 @@ function keySSIMixin(target, enclave) {
 
 module.exports = keySSIMixin;
 
-},{"../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./DSURepresentationNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js","./Hint":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js","./KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js":[function(require,module,exports){
+},{"../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./DSURepresentationNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/DSURepresentationNames.js","./Hint":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/Hint.js","./KeySSIFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu","pskcrypto":"pskcrypto"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/AliasSSI.js":[function(require,module,exports){
 const SSITypes = require("../SSITypes");
 const SSIFamilies = require("../SSIFamilies");
 
@@ -11258,8 +11173,12 @@ function AliasSSI(enclave, identifier) {
         return true;
 
     }
-    this.derive = () => {
+    this.deriveSync = () => {
         throw Error("Alias SSI cannot be derived");
+    }
+
+    this.derive = (callback) => {
+        callback(Error("Alias SSI cannot be derived"));
     }
 
     this.getSSIFamilyName = () => {
@@ -11274,7 +11193,7 @@ const createAliasSSI = (enclave, identifier) => {
 module.exports = {
     createAliasSSI
 };
-},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/EmbedSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -11324,7 +11243,7 @@ module.exports = {
     createEmbedSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/PublicKeySSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -11375,7 +11294,7 @@ module.exports = {
     createPublicKeySSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SizeSSI.js":[function(require,module,exports){
 const SSITypes = require("../SSITypes");
 const KeySSIMixin = require("../KeySSIMixin");
 
@@ -11435,7 +11354,7 @@ module.exports = {
     createSizeSSI,
 };
 
-},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/SymmetricalEncryptionSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -11486,7 +11405,7 @@ module.exports = {
     createSymmetricalEncryptionSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/VersionlessSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/VersionlessSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -11584,7 +11503,7 @@ module.exports = {
     createVersionlessSSI,
 };
 
-},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu","pskcrypto":"pskcrypto"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js":[function(require,module,exports){
 const ArraySSI = require("./../ConstSSIs/ArraySSI");
 const SSITypes = require("../SSITypes");
 
@@ -11607,7 +11526,7 @@ module.exports = {
     createWalletSSI
 }
 
-},{"../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./../ConstSSIs/ArraySSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js":[function(require,module,exports){
+},{"../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./../ConstSSIs/ArraySSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ZATSSI = require("./ZATSSI");
 const SSITypes = require("../SSITypes");
@@ -11681,7 +11600,7 @@ module.exports = {
     createOReadSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZATSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZATSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OwnershipSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const OReadSSI = require("./OReadSSI");
 const SSITypes = require("../SSITypes");
@@ -11848,7 +11767,7 @@ module.exports = {
     createOwnershipSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./OReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./OReadSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/OReadSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OwnershipSSIs/ZATSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -11879,7 +11798,7 @@ module.exports = {
     createZATSSI
 };
 
-},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js":[function(require,module,exports){
 module.exports = {
     DEFAULT_SSI_FAMILY: "defaultSSIFamily",
     SECRET_SSI_FAMILY: "secretSSIFamily",
@@ -11892,7 +11811,7 @@ module.exports = {
     EMBED_SSI_FAMILY: "embedSSIFamily"
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js":[function(require,module,exports){
 module.exports = {
     DEFAULT: "default",
     SECRET_SSI: "secret",
@@ -11925,7 +11844,7 @@ module.exports = {
     VERSIONLESS_SSI: "vs"
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ReadSSI = require("./ReadSSI");
 const SSITypes = require("../SSITypes");
@@ -11960,7 +11879,7 @@ module.exports = {
     createAnchorSSI
 }
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ReadSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const ZaSSI = require("./ZaSSI");
 const SSITypes = require("../SSITypes");
@@ -11989,7 +11908,7 @@ module.exports = {
     createPublicSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./ZaSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ReadSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const PublicSSI = require("./PublicSSI");
 const SSITypes = require("../SSITypes");
@@ -12018,7 +11937,7 @@ module.exports = {
     createReadSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./PublicSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./PublicSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/PublicSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/SecretSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const AnchorSSI = require("./AnchorSSI");
 const SSITypes = require("../SSITypes");
@@ -12046,7 +11965,7 @@ module.exports = {
     createSecretSSI
 }
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./AnchorSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./AnchorSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/AnchorSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SecretSSIs/ZaSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 function ZaSSI(identifier) {
     KeySSIMixin(this);
@@ -12067,7 +11986,7 @@ function createZaSSI(identifier) {
 module.exports = {
     createZaSSI
 };
-},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/PathKeySSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SeedSSI = require("./SeedSSI");
 const SSITypes = require("../SSITypes");
@@ -12103,6 +12022,10 @@ function PathKeySSI(enclave, identifier) {
 
             callback(undefined, sharedEnclave);
         });
+    }
+
+    self.deriveSync = () => {
+        throw Error("PathSSIs cannot be derived synchronously");
     }
 
     self.derive = function (callback) {
@@ -12206,7 +12129,7 @@ module.exports = {
     createPathKeySSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SeedSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SeedSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SZaSSI = require("./SZaSSI");
 const SSITypes = require("../SSITypes");
@@ -12233,14 +12156,20 @@ function SReadSSI(enclave, identifier) {
         self.load(SSITypes.SREAD_SSI, dlDomain, "", undefined, vn, hint);
     };
 
+    self.deriveSync = () => {
+        const sZaSSI = SZaSSI.createSZaSSI();
+        const subtypeKey = '';
+        const subtypeControl = self.getControlString();
+        sZaSSI.load(SSITypes.SZERO_ACCESS_SSI, self.getDLDomain(), subtypeKey, subtypeControl, self.getVn(), self.getHint());
+
+        return sZaSSI;
+    }
+
     self.derive = (callback) => {
-        try{
-            const sZaSSI = SZaSSI.createSZaSSI();
-            const subtypeKey = '';
-            const subtypeControl = self.getControlString();
-            sZaSSI.load(SSITypes.SZERO_ACCESS_SSI, self.getDLDomain(), subtypeKey, subtypeControl, self.getVn(), self.getHint());
-            callback(undefined, sZaSSI);
-        }catch (e) {
+        try {
+            const sZaSSI = self.deriveSync();
+            return callback(undefined, sZaSSI);
+        } catch (e) {
             return callback(e);
         }
     };
@@ -12268,7 +12197,7 @@ module.exports = {
     createSReadSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SZaSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SZaSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SZaSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -12312,7 +12241,7 @@ module.exports = {
     createSZaSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SeedSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SReadSSI = require("./SReadSSI");
 const SSITypes = require("../SSITypes");
@@ -12377,17 +12306,23 @@ function SeedSSI(enclave, identifier) {
         }
     };
 
+    self.deriveSync = () => {
+        const sReadSSI = SReadSSI.createSReadSSI();
+        const privateKey = self.getPrivateKey();
+        const sreadSpecificString = cryptoRegistry.getHashFunction(self)(privateKey);
+        const publicKey = cryptoRegistry.getDerivePublicKeyFunction(self)(privateKey, "raw");
+        const controlString = cryptoRegistry.getBase64EncodingFunction(self)(publicKey);
+        sReadSSI.load(SSITypes.SREAD_SSI, self.getDLDomain(), sreadSpecificString, controlString, self.getVn(), self.getHint());
+
+        return sReadSSI;
+    }
+
     self.derive = function (callback) {
         try {
-            const sReadSSI = SReadSSI.createSReadSSI();
-            const privateKey = self.getPrivateKey();
-            const sreadSpecificString = cryptoRegistry.getHashFunction(self)(privateKey);
-            const publicKey = cryptoRegistry.getDerivePublicKeyFunction(self)(privateKey, "raw");
-            const controlString = cryptoRegistry.getBase64EncodingFunction(self)(publicKey);
-            sReadSSI.load(SSITypes.SREAD_SSI, self.getDLDomain(), sreadSpecificString, controlString, self.getVn(), self.getHint());
+            const sReadSSI = self.deriveSync();
             callback(undefined, sReadSSI);
         } catch (e) {
-            callback(e);
+            return callback(e);
         }
     };
 
@@ -12461,7 +12396,7 @@ module.exports = {
     createSeedSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SReadSSI":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","./SReadSSI":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SeedSSIs/SReadSSI.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TokenSSIs/TokenSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 
@@ -12529,7 +12464,7 @@ module.exports = {
     createTokenSSI
 };
 
-},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/TransferSSIs/TransferSSI.js":[function(require,module,exports){
 const KeySSIMixin = require("../KeySSIMixin");
 const SSITypes = require("../SSITypes");
 const cryptoRegistry = require("../../CryptoAlgorithms/CryptoAlgorithmsRegistry");
@@ -12629,12 +12564,538 @@ module.exports = {
     createTransferSSI
 };
 
-},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js":[function(require,module,exports){
+},{"../../CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","../KeySSIFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","../KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/constants.js":[function(require,module,exports){
 module.exports = {
     DSU_VERSION_KEY: "dsuVersion",
     EMBEDDED_DATA_KEY: "embedded"
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSU.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/LegacyDSU.js":[function(require,module,exports){
+function LegacyDSU(bar, dsuInstancesRegistry) {
+    const BarFactory = require("../DSUFactoryRegistry/BarFactory");
+    const barFactoryInstance = new BarFactory();
+    const constants = require("opendsu").constants;
+    const loadNewBarInstance = (callback) => {
+        bar.getKeySSIAsObject((err, keySSI) => {
+            if (err) {
+                return callback(err);
+            }
+            barFactoryInstance.load(keySSI, (err, _barInstance) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                bar = _barInstance;
+                callback(undefined, _barInstance);
+            });
+        })
+    }
+
+    const convertUpdateFnToAsync = (updateFn, ...args) => {
+        if (!this.batchInProgress()) {
+            throw Error("No batch has been started");
+        }
+
+        return $$.promisify(updateFn)(...args);
+    }
+
+    const convertGetFunctionToAsync = (getFn, ...args) => {
+        return $$.promisify(getFn)(...args);
+    }
+
+    this.setBarInstance = (_barInstance) => {
+        bar = _barInstance;
+    }
+
+    this.getBarInstance = () => {
+        return bar;
+    }
+
+    this.init = (callback) => {
+        bar.init(callback);
+    }
+
+    this.initAsync = async () => {
+        return convertUpdateFnToAsync(this.init);
+    }
+
+    this.load = (callback) => {
+        bar.load(callback);
+    }
+
+    this.loadAsync = async () => {
+        return convertUpdateFnToAsync(this.load);
+    }
+
+    this.loadVersion = (versionHash, callback) => {
+        bar.loadVersion(versionHash, callback);
+    }
+
+    this.loadVersionAsync = async (versionHash) => {
+        return convertUpdateFnToAsync(this.loadVersion, versionHash);
+    }
+
+    this.getLastHashLinkSSI = (callback) => {
+        bar.getLastHashLinkSSI(callback);
+    }
+
+    this.getLastHashLinkSSIAsync = async () => {
+        return convertGetFunctionToAsync(this.getLastHashLinkSSI);
+    }
+
+    this.getLatestAnchoredHashLink = (callback) => {
+        bar.getLatestAnchoredHashLink(callback);
+    }
+
+    this.getLatestAnchoredHashLinkAsync = async () => {
+        return convertGetFunctionToAsync(this.getLatestAnchoredHashLink);
+    }
+
+    this.getCurrentAnchoredHashLink = (callback) => {
+        bar.getCurrentAnchoredHashLink(callback);
+    }
+
+    this.getCurrentAnchoredHashLinkAsync = async () => {
+        return convertGetFunctionToAsync(this.getCurrentAnchoredHashLink);
+    }
+
+    this.getKeySSI = (keySSIType, callback) => {
+        bar.getKeySSI(keySSIType, callback);
+    }
+
+    this.getKeySSIAsync = async (keySSIType) => {
+        return convertGetFunctionToAsync(this.getKeySSI, keySSIType);
+    }
+
+    this.getKeySSIAsObject = (keySSIType, callback) => {
+        bar.getKeySSIAsObject(keySSIType, callback);
+    }
+
+    this.getKeySSIAsObjectAsync = async (keySSIType) => {
+        return convertGetFunctionToAsync(this.getKeySSIAsObject, keySSIType);
+    }
+
+    this.getKeySSIAsString = (keySSIType, callback) => {
+        bar.getKeySSIAsString(keySSIType, callback);
+    }
+
+    this.getKeySSIAsStringAsync = async (keySSIType) => {
+        return convertGetFunctionToAsync(this.getKeySSIAsString, keySSIType);
+    }
+
+    this.getCreationSSI = (plain) => {
+        return bar.getCreationSSI(plain);
+    }
+
+    this.getUniqueIdAsync = async () => {
+        return await bar.getUniqueIdAsync();
+    }
+
+    this.getAnchorIdSync = () => {
+        return bar.getAnchorIdSync();
+    }
+
+    this.getAnchorId = (callback) => {
+        bar.getAnchorId(callback);
+    }
+
+    this.addFiles = (files, barPath, options, callback) => {
+        preventUpdateOutsideBatch(bar.addFiles, files, barPath, options, callback);
+    }
+
+    this.addFilesAsync = async (files, barPath, options) => {
+        return convertUpdateFnToAsync(this.addFiles, files, barPath, options);
+    }
+
+    this.appendToFile = (barPath, data, options, callback) => {
+        preventUpdateOutsideBatch(bar.appendToFile, barPath, data, options, callback);
+    }
+
+    this.appendToFileAsync = async (barPath, data, options) => {
+        return convertUpdateFnToAsync(this.appendToFile, barPath, data, options);
+    }
+
+    this.dsuLog = (message, callback) => {
+        bar.dsuLog(message, callback);
+        // preventUpdateOutsideBatch(bar.dsuLog, message, callback);
+    }
+
+    this.dsuLogAsync = async (message) => {
+        return convertUpdateFnToAsync(this.dsuLog, message);
+    }
+
+    this.setValidationRules = (rules) => {
+        bar.setValidationRules(rules);
+    }
+
+    this.setAnchoringEventListener = (listener) => {
+        bar.setAnchoringEventListener(listener);
+    }
+
+    this.setDecisionCallback = (callback) => {
+        bar.setDecisionCallback(callback);
+    }
+
+    this.getAnchoringStrategy = () => {
+        return bar.getAnchoringStrategy();
+    }
+
+    this.addFolder = (fsFolderPath, barPath, options, callback) => {
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+
+        preventUpdateOutsideBatch(bar.addFolder, fsFolderPath, barPath, options, callback);
+    }
+
+    this.addFolderAsync = async (fsFolderPath, barPath, options) => {
+        return convertUpdateFnToAsync(this.addFolder, fsFolderPath, barPath, options);
+    }
+
+    this.addFile = (fsFilePath, barPath, options, callback) => {
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+
+        preventUpdateOutsideBatch(bar.addFile, fsFilePath, barPath, options, callback);
+    }
+
+    this.addFileAsync = async (fsFilePath, barPath, options) => {
+        return convertUpdateFnToAsync(this.addFile, fsFilePath, barPath, options);
+    }
+
+    this.readFile = (fileBarPath, options, callback) => {
+        bar.readFile(fileBarPath, options, callback)
+    }
+
+    this.readFileAsync = async (fileBarPath, options) => {
+        return convertGetFunctionToAsync(this.readFile, fileBarPath, options);
+    }
+
+    this.createReadStream = (fileBarPath, options, callback) => {
+        bar.createReadStream(fileBarPath, options, callback);
+    }
+
+    this.createReadStreamAsync = async (fileBarPath, options) => {
+        return convertGetFunctionToAsync(this.createReadStream, fileBarPath, options);
+    }
+
+    this.createBigFileReadStreamWithRange = (fileBarPath, range, options, callback) => {
+        bar.createBigFileReadStreamWithRange(fileBarPath, range, options, callback);
+    }
+
+    this.createBigFileReadStreamWithRangeAsync = async (fileBarPath, range, options) => {
+        return convertGetFunctionToAsync(this.createBigFileReadStreamWithRange, fileBarPath, range, options);
+    }
+
+    this.extractFolder = (fsFolderPath, barPath, options, callback) => {
+        bar.extractFolder(fsFolderPath, barPath, options, callback);
+    }
+
+    this.extractFolderAsync = async (fsFolderPath, barPath, options) => {
+        return convertGetFunctionToAsync(this.extractFolder, fsFolderPath, barPath, options);
+    }
+
+    this.extractFile = (fsFilePath, barPath, options, callback) => {
+        bar.extractFile(fsFilePath, barPath, options, callback);
+    }
+
+    this.extractFileAsync = async (fsFilePath, barPath, options) => {
+        return convertGetFunctionToAsync(this.extractFile, fsFilePath, barPath, options);
+    }
+    const createFunctionCallObject = (callerInstance, actionName, fn, args) => {
+        return {
+            callerInstance, actionName, fn, args
+        };
+
+    }
+
+    const preventUpdateOutsideBatch = (updateFn, ...args) => {
+        if($$.LEGACY_BEHAVIOUR_ENABLED){
+            return updateFn(...args);
+        }
+
+        if (!this.batchInProgress()) {
+            const callback = args.pop();
+            return callback(Error("Batch not started. Use safeBeginBatch() or safeBeginBatchAsync before calling this method."));
+        }
+
+        updateFn(...args);
+    }
+
+    this.writeFile = (path, data, options, callback) => {
+        if (typeof data === "function") {
+            callback = data;
+            data = undefined;
+            options = undefined;
+        }
+
+        if (typeof options === "function") {
+            callback = options;
+            options = undefined;
+        }
+
+        preventUpdateOutsideBatch(bar.writeFile, path, data, options, callback);
+    }
+
+    this.writeFileAsync = async (path, data, options) => {
+        return convertUpdateFnToAsync(this.writeFile, path, data, options);
+    }
+
+    this.embedFile = (path, data, options, callback) => {
+        if (typeof data === "function") {
+            callback = data;
+            data = undefined;
+            options = undefined;
+        }
+
+        if (typeof options === "function") {
+            callback = options;
+            options = undefined;
+        }
+
+        preventUpdateOutsideBatch(bar.embedFile, path, data, options, callback);
+    }
+
+    this.embedFileAsync = async (path, data, options) => {
+        return convertUpdateFnToAsync(this.embedFile, path, data, options);
+    }
+
+    this.writeFileFromBricks = (path, bricks, options, callback) => {
+        bar.writeFileFromBricks(path, bricks, options, callback);
+    }
+
+    this.writeFileFromBricksAsync = async (path, bricks, options) => {
+        return convertUpdateFnToAsync(this.writeFileFromBricks, path, bricks, options);
+    }
+
+    this.appendBigFileBrick = (path, newSizeSSI, brick, options, callback) => {
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+
+        preventUpdateOutsideBatch(bar.appendBigFileBrick, path, newSizeSSI, brick, options, callback);
+    }
+
+    this.appendBigFileBrickAsync = async (path, newSizeSSI, brick, options) => {
+        return convertUpdateFnToAsync(this.appendBigFileBrick, path, newSizeSSI, brick, options);
+    }
+
+    this.getBigFileBricksMeta = (path, options, callback) => {
+        bar.getBigFileBricksMeta(path, options, callback)
+    }
+
+    this.delete = (path, options, callback) => {
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+
+        preventUpdateOutsideBatch(bar.delete, path, options, callback);
+    }
+
+    this.deleteAsync = async (path, options) => {
+        return convertUpdateFnToAsync(this.delete, path, options);
+    }
+
+
+    this.rename = (srcPath, dstPath, options, callback) => {
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+
+        preventUpdateOutsideBatch(bar.rename, srcPath, dstPath, options, callback);
+    }
+
+    this.renameAsync = async (srcPath, dstPath, options) => {
+        return convertUpdateFnToAsync(this.rename, srcPath, dstPath, options);
+    }
+
+    this.listFiles = (path, options, callback) => {
+        bar.listFiles(path, options, callback);
+    }
+
+    this.listFolders = (path, options, callback) => {
+        bar.listFolders(path, options, callback);
+    }
+
+    this.createFolder = (barPath, options, callback) => {
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+
+        preventUpdateOutsideBatch(bar.createFolder, barPath, options, callback);
+    }
+
+    this.createFolderAsync = async (barPath, options) => {
+        return convertUpdateFnToAsync(this.createFolder, barPath, options);
+    }
+
+    this.readDir = (folderPath, options, callback) => {
+        bar.readDir(folderPath, options, callback);
+    }
+
+    this.readDirAsync = async (folderPath, options) => {
+        return convertGetFunctionToAsync(this.readDir, folderPath, options);
+    }
+
+    this.cloneFolder = (srcPath, destPath, options, callback) => {
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+
+        preventUpdateOutsideBatch(bar.cloneFolder, srcPath, destPath, options, callback);
+    }
+
+    this.cloneFolderAsync = async (srcPath, destPath, options) => {
+        return convertUpdateFnToAsync(this.cloneFolder, srcPath, destPath, options);
+    }
+
+    this.mount = (path, archiveSSI, options, callback) => {
+        if(typeof options === "function"){
+            callback = options;
+            options = undefined;
+        }
+
+        preventUpdateOutsideBatch(bar.mount, path, archiveSSI, options, callback);
+    }
+
+    this.mountAsync = async (path, archiveSSI, options) => {
+        return convertUpdateFnToAsync(this.mount, path, archiveSSI, options);
+    }
+
+    this.unmount = (path, callback) => {
+        preventUpdateOutsideBatch(bar.unmount, path, callback);
+    };
+
+    this.unmountAsync = async (path) => {
+        return convertUpdateFnToAsync(this.unmount, path);
+    }
+
+    this.listMountedDSUs = (path, callback) => {
+        bar.listMountedDSUs(path, callback);
+    };
+
+    this.listMountedDSUsAsync = async (path) => {
+        return convertGetFunctionToAsync(this.listMountedDSUs, path);
+    }
+
+    this.listMountedDossiers = this.listMountedDSUs;
+
+    this.hasUnanchoredChanges = (callback) => {
+        bar.hasUnanchoredChanges(callback);
+    }
+
+    this.hasUnanchoredChangesAsync = async () => {
+        return convertGetFunctionToAsync(this.hasUnanchoredChanges);
+    }
+
+    this.getArchiveForPath = (path, callback) => {
+        bar.getArchiveForPath(path, callback);
+    }
+
+    this.getArchiveForPathAsync = async (path) => {
+        return convertGetFunctionToAsync(this.getArchiveForPath, path);
+    }
+
+    this.stat = (path, callback) => {
+        bar.stat(path, callback);
+    }
+
+    this.statAsync = async (path) => {
+        return convertGetFunctionToAsync(this.stat, path);
+    }
+
+    this.safeBeginBatch = (callback) => {
+        if(bar.batchInProgress()){
+            return callback(Error("This DSU instance is already in batch mode!"));
+            // return callback();
+        }
+
+        if (dsuInstancesRegistry.batchInProgress(this.getAnchorIdSync())) {
+            return callback(Error("Another DSU instance is already in batch mode. Please wait for it to finish."));
+        }
+
+        bar.beginBatch();
+        callback();
+    }
+
+    this.safeBeginBatchAsync = async () => {
+        return convertGetFunctionToAsync(this.safeBeginBatch);
+    }
+
+    this.beginBatch = () => {
+        bar.beginBatch();
+    }
+
+    this.batch = (batch, callback) => {
+        bar.batch(batch, callback);
+    }
+
+    this.batchInProgress = () => {
+        return bar.batchInProgress();
+    }
+
+    this.cancelBatch = (callback) => {
+        bar.cancelBatch(err => {
+            if (err) {
+                if (err.rootCause === constants.ERROR_ROOT_CAUSE.DSU_INVALID_OPERATION) {
+                    return callback();
+                }
+                return callback(err);
+            }
+            dsuInstancesRegistry.notifyBatchCancelled(bar.getAnchorIdSync(), callback);
+        });
+    }
+
+    this.cancelBatchAsync = async () => {
+        return convertUpdateFnToAsync(this.cancelBatch);
+    }
+
+    this.setMergeConflictsHandler = (handler) => {
+        bar.setMergeConflictsHandler(handler);
+    }
+
+    this.commitBatch = (onConflict, callback) => {
+        if (typeof callback === 'undefined') {
+            callback = onConflict;
+            onConflict = undefined;
+        }
+
+        bar.commitBatch(onConflict, err => {
+            if (err) {
+                return this.cancelBatch(callback);
+            }
+            dsuInstancesRegistry.notifyBatchCommitted(bar.getAnchorIdSync(), callback);
+        });
+    };
+
+    this.commitBatchAsync = async () => {
+        return convertUpdateFnToAsync(this.commitBatch);
+    }
+
+    this.refresh = (callback) => {
+        loadNewBarInstance(callback);
+    };
+
+    this.refreshAsync = async () => {
+        return convertGetFunctionToAsync(this.refresh);
+    }
+
+    this.getSSIForMount = (mountPoint, callback) => {
+        bar.getSSIForMount(mountPoint, callback);
+    }
+
+    return this;
+}
+
+module.exports = LegacyDSU;
+},{"../DSUFactoryRegistry/BarFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/BarFactory.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSU.js":[function(require,module,exports){
 const VersionlessDSUController = require("./VersionlessDSUController");
 const DSU_ENTRY_TYPES = {
     FILE: "FILE",
@@ -13580,6 +14041,9 @@ function VersionlessDSU(config) {
         return versionlessDSUController.isBatchInProgress();
     };
 
+    //just an alias due to LegacyDSU apis
+    this.safeBeginBatch = this.beginBatch;
+
     /**
      * Persist batch of changes
      * @param {callback} onConflict defined by StandardDSU interface
@@ -13662,14 +14126,25 @@ function VersionlessDSU(config) {
 
 module.exports = VersionlessDSU;
 
-},{"./VersionlessDSUController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUController.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUContentHandler.js":[function(require,module,exports){
+},{"./VersionlessDSUController":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUController.js","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUContentHandler.js":[function(require,module,exports){
 function VersionlessDSUContentHandler(versionlessDSU, content) {
-    const crypto = require("pskcrypto");
+    const crypto = require("opendsu").loadAPI("crypto");
     const pskPath = require("swarmutils").path;
-
+    const MANIFEST_PATH = "manifest";
     const getCurrentTime = () => {
         return new Date().getTime();
     };
+
+    const readManifestFileContent = () => {
+        let manifestContent;
+        try {
+            manifestContent = this.readFile(MANIFEST_PATH);
+            manifestContent = JSON.parse(manifestContent);
+        } catch (e) {
+            manifestContent = {mounts: {}};
+        }
+        return manifestContent;
+    }
 
     /**
      * @param {string} nodePath
@@ -13824,7 +14299,8 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
         const fs = require(fsModule).promises;
         const path = require(pathModule);
 
-        const dirents = await fs.readdir(folder, { withFileTypes: true });
+        const dirents = await fs.readdir(folder, {withFileTypes: true});
+
         const files = await Promise.all(
             dirents.map((dirent) => {
                 const res = path.resolve(folder, dirent.name);
@@ -14005,7 +14481,6 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
     };
 
     this.addFolder = async (folderPath, basePath, callback) => {
-        folderPath = processPath(folderPath);
         try {
             const relativeFilePaths = await getRelativeFilesFromFsAsync(folderPath);
             for (const relativeFilePath of relativeFilePaths) {
@@ -14075,7 +14550,7 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
 
         const fileEntry = ensureFileEntry(path);
         updateFileWriteTime(path);
-        fileEntry.content = crypto.pskBase64Encode(data);
+        fileEntry.content = crypto.base64URLEncode(data);
     };
 
     this.readFile = (path) => {
@@ -14085,7 +14560,7 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
         }
 
         updateFileAccessTime(path);
-        let fileContent = crypto.pskBase64Decode(content.files[path].content);
+        let fileContent = crypto.base64URLDecode(content.files[path].content);
         if (!$$.Buffer.isBuffer(fileContent)) {
             fileContent = $$.Buffer.from(fileContent);
         }
@@ -14103,7 +14578,7 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
 
         let fileContent = fileEntry.content;
         if (fileContent != null) {
-            fileContent = crypto.pskBase64Decode(fileContent);
+            fileContent = crypto.base64URLDecode(fileContent);
             if (!$$.Buffer.isBuffer(fileContent)) {
                 fileContent = $$.Buffer.from(fileContent);
             }
@@ -14114,12 +14589,13 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
         }
 
         updateFileWriteTime(path);
-        fileEntry.content = crypto.pskBase64Encode(fileContent);
+        fileEntry.content = crypto.base64URLEncode(fileContent);
     };
 
     this.validatePathToMount = (path) => {
         path = processPath(path);
-        if (content.mounts[path]) {
+        const manifestContent = readManifestFileContent();
+        if (manifestContent.mounts[path]) {
             throw new Error(`Path ${path} is already mounted!`);
         }
 
@@ -14165,54 +14641,59 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
         path = processPath(path);
         if (!path || isFolderPresent(path)) {
             const folderInfo = content.folders[path] || {};
-            return { type: "directory", ...folderInfo };
+            return {type: "directory", ...folderInfo};
         }
 
         if (isFilePresent(path)) {
-            const { ctime, mtime, atime } = content.folders[path] || {};
-            return { type: "file", ctime, mtime, atime };
+            const {ctime, mtime, atime} = content.folders[path] || {};
+            return {type: "file", ctime, mtime, atime};
         }
 
         // default case in order to be compliant with standard DSU interface
-        return { type: undefined };
+        return {type: undefined};
     };
 
     this.getSSIForMount = (path) => {
         path = processPath(path);
-        const mountPoint = content.mounts[path];
-        return mountPoint ? mountPoint.identifier : null;
+        const manifestContent = readManifestFileContent();
+        const mountPoint = manifestContent.mounts[path];
+        return mountPoint ? mountPoint : null;
     };
 
     this.mount = (path, identifier, options) => {
         path = processPath(path);
-        content.mounts[path] = {
-            identifier,
-        };
+        let manifestContent = readManifestFileContent();
+        manifestContent.mounts[path] = identifier;
         // set manifest file in order to be compliant with standard DSU interface
-        content.files["manifest"] = "";
+        if (!content.files[MANIFEST_PATH]) {
+            content.files[MANIFEST_PATH] = {};
+        }
+        this.writeFile(MANIFEST_PATH, JSON.stringify(manifestContent));
     };
 
     this.unmount = (path) => {
         path = processPath(path);
-
-        if (!content.mounts[path]) {
+        const manifestContent = readManifestFileContent();
+        if (!manifestContent.mounts[path]) {
             throw new Error(`No mount found at path ${path}`);
         }
 
-        delete content.mounts[path];
+        delete manifestContent.mounts[path]
+        this.writeFile(MANIFEST_PATH, JSON.stringify(manifestContent));
     };
 
     this.getMountedDSUs = (path) => {
         path = processPath(path);
-        const mountedDSUs = Object.keys(content.mounts)
+        const manifestContent = readManifestFileContent();
+        const mountedDSUs = Object.keys(manifestContent.mounts)
             .filter((mountPointPath) => {
                 return isSubPath(mountPointPath, path);
             })
             .map((mountPointPath) => {
-                const { identifier } = content.mounts[mountPointPath];
+                const identifier = manifestContent.mounts[mountPointPath];
                 const result = {
                     path: mountPointPath,
-                    identifier,
+                    identifier
                 };
                 return result;
             });
@@ -14222,10 +14703,9 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
 
     this.getArchiveContextForPath = (path, callback) => {
         path = processPath(path);
-
-        for (let mountPath in content.mounts) {
-            const mountPoint = content.mounts[mountPath];
-            const identifier = mountPoint.identifier;
+        const manifestContent = readManifestFileContent();
+        for (let mountPath in manifestContent.mounts) {
+            const identifier = manifestContent.mounts[mountPath];
             if (mountPath === path) {
                 return getArchive(identifier, (err, archive) => {
                     if (err) {
@@ -14266,13 +14746,13 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
             }
         }
 
-        callback(undefined, { prefixPath: "/", relativePath: path, archive: versionlessDSU });
+        callback(undefined, {prefixPath: "/", relativePath: path, archive: versionlessDSU});
     };
 }
 
 module.exports = VersionlessDSUContentHandler;
 
-},{"fs":false,"opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUController.js":[function(require,module,exports){
+},{"fs":false,"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUController.js":[function(require,module,exports){
 const VersionlessDSUContentHandler = require("./VersionlessDSUContentHandler");
 
 function VersionlessDSUController(versionlessDSU, config) {
@@ -14281,6 +14761,7 @@ function VersionlessDSUController(versionlessDSU, config) {
     let isEncrypted = keySSIObject.isEncrypted();
 
     const openDSU = require("opendsu");
+    const crypto = openDSU.loadAPI("crypto");
     const { SmartUrl } = openDSU.loadAPI("utils");
     const bdns = openDSU.loadApi("bdns");
 
@@ -14317,7 +14798,13 @@ function VersionlessDSUController(versionlessDSU, config) {
 
     const persistDSU = async () => {
         let smartUrl = new SmartUrl(apihubBaseUrl);
-        smartUrl = smartUrl.concatWith(`/versionlessdsu/${versionlessFilePath}`);
+        let path = "/versionlessdsu";
+        if (versionlessFilePath.startsWith("/")) {
+            path = path.concat(versionlessFilePath);
+        } else {
+            path = path.concat("/").concat(versionlessFilePath);
+        }
+        smartUrl = smartUrl.concatWith(path);
 
         let requestBody = JSON.stringify(this.dsuContent);
 
@@ -14329,6 +14816,7 @@ function VersionlessDSUController(versionlessDSU, config) {
             }
         }
 
+        requestBody = crypto.base64URLEncode(requestBody);
         return $$.promisify(smartUrl.doPut)(requestBody);
     };
 
@@ -14350,8 +14838,7 @@ function VersionlessDSUController(versionlessDSU, config) {
     this.createDSU = async (callback) => {
         this.dsuContent = {
             folders: {},
-            files: {},
-            mounts: [],
+            files: {}
         };
 
         try {
@@ -14366,13 +14853,19 @@ function VersionlessDSUController(versionlessDSU, config) {
     this.loadDSU = async (callback) => {
         const loadDSU = () => {
             let smartUrl = new SmartUrl(apihubBaseUrl);
-            smartUrl = smartUrl.concatWith(`/versionlessdsu/${versionlessFilePath}`);
-
+            let path = "/versionlessdsu";
+            if (versionlessFilePath.startsWith("/")) {
+                path = path.concat(versionlessFilePath);
+            } else {
+                path = path.concat("/").concat(versionlessFilePath);
+            }
+            smartUrl = smartUrl.concatWith(path);
             return smartUrl.fetch().then((response) => response.text());
         };
 
         try {
             let result = await loadDSU();
+            result = crypto.base64URLDecode(result);
             if (isEncrypted) {
                 try {
                     result = await decryptAsync(result);
@@ -14665,7 +15158,191 @@ function VersionlessDSUController(versionlessDSU, config) {
 
 module.exports = VersionlessDSUController;
 
-},{"./VersionlessDSUContentHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUContentHandler.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js":[function(require,module,exports){
+},{"./VersionlessDSUContentHandler":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUContentHandler.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/utils/RaceConditionPreventer.js":[function(require,module,exports){
+function RaceConditionPreventer() {
+    const TaskCounter = require("swarmutils").TaskCounter;
+
+    const instancesRegistry = {};
+    const self = this;
+    const delayedFunctionCalls = {};
+    const instancesQueuedForExecution = [];
+
+    self.put = (key, instance) => {
+        if (!instancesRegistry[key]) {
+            instancesRegistry[key] = new Set();
+        }
+        instance = instance ? new WeakRef(instance) : instance;
+        instancesRegistry[key].add(instance);
+    }
+
+    self.set = self.put;
+
+    const getDerefedInstances = (key) => {
+        const instances = new Set();
+        const weakRefs = instancesRegistry[key];
+        if (!weakRefs) {
+            return instances;
+        }
+        for (let weakRef of weakRefs) {
+            instances.add(weakRef.deref());
+        }
+
+        return instances;
+    }
+
+    self.beginBatch = (key, _instance) => {
+        for (let instance of getDerefedInstances(key)) {
+            if (instance && instance === _instance) {
+                instance.beginBatch();
+                return;
+            }
+        }
+    }
+
+    self.batchInProgress = (key) => {
+        const instances = getDerefedInstances(key);
+        for (let instance of instances) {
+            if (instance && instance.batchInProgress()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const functionCallHasCallback = (fnCallObj) => {
+        return fnCallObj.args && typeof fnCallObj.args[fnCallObj.args.length - 1] === "function";
+    }
+
+    self.executeOrDelayAction = (key, fnCallObj) => {
+        const getCommitBatchCallback = (callback) => {
+            return (...args) => {
+                self.notifyBatchCommitted(key, (err) => {
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    self.executeDelayedActions(key, () => callback(...args));
+                });
+            }
+        }
+
+        const executeFn = () => {
+            if (fnCallObj.args) {
+                if (functionCallHasCallback(fnCallObj)) {
+                    const callback = fnCallObj.args[fnCallObj.args.length - 1];
+                    if (fnCallObj.actionName === "commitBatch") {
+                        fnCallObj.args[fnCallObj.args.length - 1] = getCommitBatchCallback(callback);
+                    }
+                }
+                return fnCallObj.fn(...fnCallObj.args);
+            }
+            return fnCallObj.fn();
+        }
+
+        if (!self.batchInProgress(key)) {
+            return executeFn();
+        }
+
+        if (fnCallObj.callerInstance.batchInProgress()) {
+            return executeFn();
+        }
+
+        if (!delayedFunctionCalls[key]) {
+            delayedFunctionCalls[key] = {};
+        }
+
+        let instanceIndex = instancesQueuedForExecution.indexOf(fnCallObj.callerInstance);
+        if (instanceIndex === -1) {
+            instancesQueuedForExecution.push(fnCallObj.callerInstance);
+            instanceIndex = instancesQueuedForExecution.length - 1;
+        }
+
+        if (!delayedFunctionCalls[key][instanceIndex]) {
+            delayedFunctionCalls[key][instanceIndex] = [];
+        }
+
+        delayedFunctionCalls[key][instanceIndex].push(fnCallObj);
+        if (fnCallObj.args && typeof fnCallObj.args[fnCallObj.args.length - 1] === "function") {
+            fnCallObj.args[fnCallObj.args.length - 1]();
+        }
+    }
+
+    const getNoTasks = (key, instanceIndex) => {
+        let noTasks = 0;
+        const functionCalls = delayedFunctionCalls[key][instanceIndex];
+        for (let i = 0; i < functionCalls.length; i++) {
+            if (functionCalls[i].args && typeof functionCalls[i].args[functionCalls[i].args.length - 1] === "function") {
+                noTasks++;
+            }
+        }
+
+        return noTasks;
+    }
+
+    self.executeDelayedActions = (key, callback) => {
+        if (!instancesQueuedForExecution.length) {
+            return callback();
+        }
+
+        const instance = instancesQueuedForExecution.shift();
+        const commitBatchActionIndex = delayedFunctionCalls[key][0].findIndex(call => call.actionName === "commitBatch");
+        delayedFunctionCalls[key][0].splice(commitBatchActionIndex, 1);
+        const taskCounter = new TaskCounter(() => {
+            if (commitBatchActionIndex === -1) {
+                delayedFunctionCalls[key][0] = [];
+                return callback();
+            }
+
+            delayedFunctionCalls[key][0] = delayedFunctionCalls[key][0].slice(0, commitBatchActionIndex + 1);
+            return instance.commitBatch(callback);
+        })
+        taskCounter.increment(getNoTasks(key, 0));
+        delayedFunctionCalls[key][0].forEach((call) => {
+            if (call.args) {
+                let cb = call.args[call.args.length - 1];
+                if (typeof cb === "function") {
+                    call.args[call.args.length - 1] = (...args) => {
+                        cb(...args);
+                        taskCounter.decrement();
+                    }
+                }
+
+                instance[call.actionName](...call.args);
+            } else {
+                instance[call.actionName]();
+            }
+        });
+    }
+
+    self.notifyBatchCommitted = (key, callback) => {
+        const instances = getDerefedInstances(key);
+        if (!instances || !instances.size) {
+            return callback();
+        }
+        const taskCounter = new TaskCounter(() => {
+            callback();
+        });
+
+        taskCounter.increment(instances.size);
+        instances.forEach((instance) => {
+            if (!instance) {
+                taskCounter.decrement();
+                return;
+            }
+            instance.refresh((err) => {
+                if (err) {
+                    return callback(err);
+                }
+                taskCounter.decrement();
+            });
+        })
+    }
+
+    self.notifyBatchCancelled = self.notifyBatchCommitted;
+}
+
+module.exports = RaceConditionPreventer;
+},{"swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js":[function(require,module,exports){
 const {SmartUrl} = require("../utils");
 
 function RemotePersistence() {
@@ -14838,7 +15515,7 @@ function RemotePersistence() {
 
 module.exports = RemotePersistence;
 
-},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","./../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js":[function(require,module,exports){
+},{"../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/promise-runner.js","./../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
 function validateHashLinks(keySSI, hashLinks, callback) {
@@ -14932,7 +15609,7 @@ module.exports = {
     verifySignature
 };
 
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js":[function(require,module,exports){
 const {createOpenDSUErrorWrapper} = require("../error");
 const fakeHistory = {};
 const fakeLastVersion = {};
@@ -14964,7 +15641,6 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
 
             let fakeLastVersionForAnchorId = fakeLastVersion[_anchorId];
             if(fakeLastVersionForAnchorId){
-                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 return callback(undefined);
             }
 
@@ -15099,20 +15775,25 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
                     return callback(undefined, anchorValues);
                 }
                 const historyOfKeySSI = data.map(el => keySSISpace.parse(el));
-                const progressiveHistoryOfKeySSI = [];
-                let previousSignedHashLinkKeySSI = null;
-                for (let i = 0; i <= historyOfKeySSI.length - 1; i++) {
-                    const anchorValueSSIKeySSI = historyOfKeySSI[i];
-                    const signer = determineSigner(anchorIdKeySSI, progressiveHistoryOfKeySSI);
-                    const signature = anchorValueSSIKeySSI.getSignature();
-                    const dataToVerify = anchorValueSSIKeySSI.getDataToSign(anchorIdKeySSI, previousSignedHashLinkKeySSI);
-                    if (!signer.verify(dataToVerify, signature)) {
-                        return callback(Error("Failed to verify signature"));
+                const config = require("opendsu").loadApi("config");
+                const trustLevel = config.get("trustLevel");
+                if(trustLevel === 0){
+                    const progressiveHistoryOfKeySSI = [];
+                    let previousSignedHashLinkKeySSI = null;
+                    for (let i = 0; i <= historyOfKeySSI.length - 1; i++) {
+                        const anchorValueSSIKeySSI = historyOfKeySSI[i];
+                        const signer = determineSigner(anchorIdKeySSI, progressiveHistoryOfKeySSI);
+                        const signature = anchorValueSSIKeySSI.getSignature();
+                        const dataToVerify = anchorValueSSIKeySSI.getDataToSign(anchorIdKeySSI, previousSignedHashLinkKeySSI);
+                        if (!signer.verify(dataToVerify, signature)) {
+                            return callback(Error("Failed to verify signature"));
+                        }
+                        //build history
+                        progressiveHistoryOfKeySSI.push(anchorValueSSIKeySSI);
+                        previousSignedHashLinkKeySSI = anchorValueSSIKeySSI;
                     }
-                    //build history
-                    progressiveHistoryOfKeySSI.push(anchorValueSSIKeySSI);
-                    previousSignedHashLinkKeySSI = anchorValueSSIKeySSI;
                 }
+
                 //all history was validated
                 return callback(undefined, historyOfKeySSI);
             });
@@ -15199,7 +15880,7 @@ module.exports = {
     AnchoringAbstractBehaviour
 }
 
-},{"../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js":[function(require,module,exports){
+},{"../error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/anchoring/index.js":[function(require,module,exports){
 const openDSU = require("opendsu")
 const keyssi = openDSU.loadAPI("keyssi");
 const utils = openDSU.loadAPI("utils");
@@ -15512,7 +16193,7 @@ module.exports = {
     getNextVersionNumberAsync
 }
 
-},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","./RemotePersistence":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js","./anchoring-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js","./anchoringAbstractBehaviour":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js":[function(require,module,exports){
+},{"../bdns":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bdns/index.js","./RemotePersistence":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js","./anchoring-utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js","./anchoringAbstractBehaviour":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bdns/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 const PendingCallMixin = require("../utils/PendingCallMixin");
 const getBaseURL = require("../utils/getBaseURL");
@@ -15571,12 +16252,18 @@ function BDNS() {
     }
 
     this.getRawInfo = (dlDomain, callback) => {
+
+        if(dlDomain && typeof dlDomain === "function"){
+            callback = dlDomain;
+            dlDomain = null;
+        }
+
         if (!isInitialized) {
             return this.addPendingCall(() => {
-                callback(undefined, bdnsCache[dlDomain]);
+                callback(undefined, dlDomain ? bdnsCache[dlDomain] : bdnsCache);
             })
         }
-        callback(undefined, bdnsCache[dlDomain]);
+        callback(undefined, dlDomain ? bdnsCache[dlDomain] : bdnsCache);
     };
 
     this.getBrickStorages = (dlDomain, callback) => {
@@ -15624,13 +16311,22 @@ function BDNS() {
         bdnsCache = bdnsHosts;
     }
 
+
+    this.getOrigin = () => {
+        return getBaseURL();
+    };
+
+    // returns the origin placeholder (value that will be used to define the generic origin)
+    this.getOriginPlaceholder = () => {
+        return "ORIGIN";
+    };
     this.getOriginUrl = getBaseURL;
 }
 
 
 module.exports = new BDNS();
 
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","../utils/getBaseURL":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/BootEngine.js":[function(require,module,exports){
 function BootEngine(getKeySSI) {
     if (typeof getKeySSI !== "function") {
         throw new Error("getSeed missing or not a function");
@@ -15759,8 +16455,9 @@ function promisify(fn) {
 
 module.exports = BootEngine;
 
-},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js":[function(require,module,exports){
 function boot(keySSI) {
+    $$.LEGACY_BEHAVIOUR_ENABLED = true;
     const worker_threads = "worker_threads";
     const { parentPort } = require(worker_threads);
     const { handleMessage } = require("./boot-utils.js");
@@ -15801,8 +16498,9 @@ function boot(keySSI) {
 
 module.exports = boot;
 
-},{"./BootEngine.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js":[function(require,module,exports){
+},{"./BootEngine.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js":[function(require,module,exports){
 function boot(keySSI) {
+    $$.LEGACY_BEHAVIOUR_ENABLED = true;
     const { handleMessage } = require("./boot-utils.js");
 
     onmessage = (message) => {
@@ -15834,7 +16532,7 @@ function boot(keySSI) {
 
 module.exports = boot;
 
-},{"./BootEngine.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/boot-utils.js":[function(require,module,exports){
+},{"./BootEngine.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/BootEngine.js","./boot-utils.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/boot-utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/boot-utils.js":[function(require,module,exports){
 function handleMessage(message, onHandleMessage) {
     // console.log("[worker] Received message", message);
 
@@ -15873,7 +16571,7 @@ module.exports = {
     handleMessage,
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/index.js":[function(require,module,exports){
 let { ENVIRONMENT_TYPES } = require("../moduleConstants.js");
 
 function getBootScript() {
@@ -15889,7 +16587,1400 @@ function getBootScript() {
 
 module.exports = getBootScript();
 
-},{"../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./NodeBootScript":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js","./WorkerBootScript":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bricking/index.js":[function(require,module,exports){
+},{"../moduleConstants.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","./NodeBootScript":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/NodeBootScript.js","./WorkerBootScript":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/WorkerBootScript.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/DSUCodeFileCacheHandler.js":[function(require,module,exports){
+const fs = require("fs");
+const path = require("path");
+
+const readFileAsync = $$.promisify(fs.readFile.bind(fs));
+const writeFileAsync = $$.promisify(fs.writeFile.bind(this));
+const mkdirAsync = $$.promisify(fs.mkdir.bind(this));
+
+const pathExistsAsync = async (path) => {
+    try {
+        await $$.promisify(fs.access.bind(fs))(path);
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
+function isFileInsideFolderStructure(file) {
+    return file.indexOf("/") !== -1;
+}
+
+class DSUCodeFileCacheHandler {
+    constructor(dsu, cacheFolderBasePath) {
+        this.dsu = dsu;
+        this.cacheFolderBasePath = cacheFolderBasePath;
+    }
+
+    async constructCache() {
+        const openDSU = require("opendsu");
+        const keySSISpace = openDSU.loadAPI("keyssi");
+        const resolver = openDSU.loadApi("resolver");
+
+        const mountedDSUs = await $$.promisify(this.dsu.listMountedDossiers)("/");
+
+        let codeFolderName = openDSU.constants.CODE_FOLDER;
+        if (codeFolderName[0] === "/") {
+            codeFolderName = codeFolderName.substring(1);
+        }
+        const codeMount = mountedDSUs.find((mount) => mount.path === codeFolderName);
+        const codeDSU = await $$.promisify(resolver.loadDSU)(codeMount.identifier);
+        const codeFiles = await $$.promisify(codeDSU.listFiles)("/");
+        let lastVersion = await $$.promisify(codeDSU.getLastHashLinkSSI)();
+        lastVersion = lastVersion.getIdentifier();
+        const cacheFolderPath = path.join(this.cacheFolderBasePath, lastVersion);
+        this.cacheFolderPath = cacheFolderPath;
+
+        const readDSUFileAsync = await $$.promisify(codeDSU.readFile);
+
+        const isHashLinkFolderAlreadyPresent = await pathExistsAsync(cacheFolderPath);
+
+        if (!isHashLinkFolderAlreadyPresent) {
+            console.log(`Creating cache folder for DSU ${lastVersion}: ${cacheFolderPath}`);
+            try {
+                await mkdirAsync(cacheFolderPath, { recursive: true });
+            } catch (error) {
+                console.log(`Failed created cacheFolderPath ${cacheFolderPath}`, error);
+            }
+        }
+
+        const createdFoldersMap = {};
+        const availableFilesMap = {};
+
+        for (const codeFile of codeFiles) {
+            if (isFileInsideFolderStructure(codeFile)) {
+                const codeFolder = codeFile.substr(0, codeFile.lastIndexOf("/"));
+                if (!createdFoldersMap[codeFolder]) {
+                    try {
+                        await mkdirAsync(path.join(cacheFolderPath, codeFolder), { recursive: true });
+                    } catch (error) {
+                        if (error.code !== "EEXIST") {
+                            console.log(`Failed to create cache folder ${codeFolder}`, error);
+                        }
+                    }
+                    createdFoldersMap[codeFolder] = true;
+                }
+            }
+
+            try {
+                const filePath = path.join(cacheFolderPath, codeFile);
+
+                let mustWriteFile = true;
+                if (isHashLinkFolderAlreadyPresent) {
+                    mustWriteFile = !(await pathExistsAsync(filePath));
+                }
+
+                if (mustWriteFile) {
+                    const fileContent = await readDSUFileAsync(codeFile);
+                    await writeFileAsync(filePath, fileContent);
+                }
+
+                let relativeFilePath = codeFile;
+                if (relativeFilePath[0] !== "/") {
+                    relativeFilePath = `/${relativeFilePath}`;
+                }
+                availableFilesMap[relativeFilePath] = true;
+            } catch (error) {
+                console.log(`read ${codeFile} error`, error);
+            }
+        }
+
+        this.availableFilesMap = availableFilesMap;
+    }
+
+    async getFileContent(filePath) {
+        if (!this.availableFilesMap) {
+            // Strategy is still constructing cache
+            return null;
+        }
+
+        const fullPath = path.join(this.cacheFolderPath, filePath);
+        if (!this.availableFilesMap[filePath]) {
+            console.log(`File ${fullPath} not present inside DSU cache`);
+            return null;
+        }
+
+        console.log(`Serving file ${fullPath} from DSU cache`);
+        const fileContent = await readFileAsync(fullPath);
+
+        return fileContent;
+    }
+}
+
+module.exports = DSUCodeFileCacheHandler;
+
+},{"fs":false,"opendsu":"opendsu","path":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/apiHandler.js":[function(require,module,exports){
+const querystring = require("querystring");
+
+const handle = (dsu, res, requestedPath) => {
+    const apiQuery = requestedPath.substr("/api?".length);
+    let {name: functionName, arguments: args} = querystring.parse(apiQuery);
+
+    try {
+        args = JSON.parse(args);
+    } catch (err) {
+        res.statusCode = 400;
+        return res.end("Invalid arguments provided");
+    }
+
+    dsu.refresh((err) => {
+        if (err) {
+            res.statusCode = 500;
+            return res.end(err.message);
+        }
+
+        dsu.call(functionName, ...args, (...result) => {
+            res.setHeader("Content-Type", "application/json");
+            res.statusCode = 200;
+            res.end(JSON.stringify(result));
+        });
+    });
+};
+
+module.exports = {
+    handle,
+};
+
+},{"querystring":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/apiStandardHandler.js":[function(require,module,exports){
+const querystring = require("querystring");
+
+const USER_DETAILS = "user-details.json";
+
+const getAppSeed = function (dsu, path, appName, res) {
+    dsu.listMountedDossiers(path, (err, result) => {
+        if (err) {
+            const errorMessage = "Error listing mounted DSU";
+            console.log(errorMessage, err);
+            res.statusCode = 500;
+            return res.end(errorMessage);
+        }
+
+        let selectedDsu = result.find((dsu) => dsu.path === appName);
+        if (!selectedDsu) {
+            const errorMessage = `Dossier with the name ${appName} was not found in the mounted points!`;
+            console.log(errorMessage, err);
+            res.statusCode = 500;
+            return res.end(errorMessage);
+        }
+
+        res.statusCode = 200;
+        res.end(selectedDsu.identifier);
+    });
+};
+
+const getUserDetails = function (dsu, res) {
+    dsu.readFile(USER_DETAILS, (err, fileContent) => {
+        if (err) {
+            const errorMessage = "Error getting user details";
+            console.log(errorMessage, err);
+            res.statusCode = 500;
+            return res.end(errorMessage);
+        }
+
+        const dataSerialization = fileContent.toString();
+        res.statusCode = 200;
+        res.end(dataSerialization);
+    });
+};
+
+const handle = (dsu, res, requestedPath) => {
+    const requestedApiPath = requestedPath.substr("/api-standard".length + 1);
+    const requestedApiPathInfoMatch = requestedApiPath.match(/^([^\/\?]*)[\/\?](.*)$/);
+
+    const apiMethod = requestedApiPathInfoMatch ? requestedApiPathInfoMatch[1] : requestedApiPath;
+    const apiParameter = requestedApiPathInfoMatch ? requestedApiPathInfoMatch[2] : undefined;
+
+    switch (apiMethod) {
+        case "app-seed": {
+            const { path, name } = querystring.parse(apiParameter);
+            getAppSeed(dsu, path, name, res);
+            return;
+        }
+        case "user-details": {
+            getUserDetails(dsu, res);
+            return;
+        }
+    }
+
+    res.statusCode = 403;
+    res.end("Unknow api-standard method");
+};
+
+module.exports = {
+    handle,
+};
+
+},{"querystring":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/downloadHandler.js":[function(require,module,exports){
+const MimeType = require("../browser/util/MimeType");
+
+const handle = (dsu, res, requestedPath) => {
+    function extractPath() {
+        let path = requestedPath.split("/").slice(2); // remove the "/delete" or "/download" part
+        path = path.filter((segment) => segment.length > 0).map((segment) => decodeURIComponent(segment));
+        return path;
+    }
+
+    let path = extractPath();
+    if (!path.length) {
+        res.statusCode = 404;
+        return res.end("File not found");
+    }
+    path = `/${path.join("/")}`;
+    dsu.refresh((err) => {
+        if (err) {
+            res.statusCode = 500;
+            return res.end(err.message);
+        }
+        dsu.readFile(path, (err, stream) => {
+            if (err) {
+                if (err instanceof Error) {
+                    if (err.message.indexOf("could not be found") !== -1) {
+                        res.statusCode = 404;
+                        return res.end("File not found");
+                    }
+
+                    res.statusCode = 500;
+                    return res.end(err.message);
+                }
+
+                res.statusCode = 500;
+                return res.end(Object.prototype.toString.call(err));
+            }
+
+            // Extract the filename
+            const filename = path.split("/").pop();
+
+            let fileExt = filename.substring(filename.lastIndexOf(".") + 1);
+            res.setHeader("Content-Type", MimeType.getMimeTypeFromExtension(fileExt).name);
+            res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+            res.statusCode = 200;
+            res.end(stream);
+        });
+    });
+};
+
+module.exports = {
+    handle,
+};
+
+},{"../browser/util/MimeType":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/browser/util/MimeType.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/fileRequestHandler.js":[function(require,module,exports){
+const MimeType = require("../browser/util/MimeType");
+
+const handle = async (dsu, req, res, seed, requestedPath, dsuCodeFileCacheHandler) => {
+    const { url } = req;
+
+    console.log(`Handling request for file: ${requestedPath}`);
+    let file = requestedPath.split("?")[0]; // remove query params since this is a file request
+    if (!file || file === "/" || file.indexOf(".") === -1) {
+        file = "/index.html";
+    }
+
+    if (file.indexOf("/") !== 0) {
+        file = `/${file}`;
+    }
+    console.log(`Looking for file: ${file}`);
+
+    // console.log(`Handling iframe with KeySSI: ${seed} and file: ${file}`);
+
+    let fileExtension = file.substring(file.lastIndexOf(".") + 1);
+    let mimeType = MimeType.getMimeTypeFromExtension(fileExtension);
+
+    const sendFile = (data) => {
+        res.setHeader("Content-Type", mimeType.name);
+        res.statusCode = 200;
+        let content = data;
+        if (!mimeType.binary) {
+            content = data.toString();
+
+            if (["htm", "html", "xhtml"].includes(fileExtension)) {
+                const baseUrl = `${url.substr(0, url.indexOf("/cloud-wallet"))}/cloud-wallet/${seed}/`;
+                content = content.replace(
+                    "PLACEHOLDER_THAT_WILL_BE_REPLACED_BY_SW_OR_SERVER_WITH_BASE_TAG",
+                    `<base href="${baseUrl}">`
+                );
+            }
+        }
+
+        res.end(content);
+    };
+
+    dsu.readFile(`/app${file}`, async (err, fileContent) => {
+        if (err) {
+            if(dsuCodeFileCacheHandler) {
+                try {
+                    const fileContent = await dsuCodeFileCacheHandler.getFileContent(file);
+                    if(fileContent) {
+                        return sendFile(fileContent);
+                    }                    
+                } catch (error) {
+                    console.log("An error has occurred while getting file from cache", file);
+                }
+            }
+
+            dsu.readFile(`/code${file}`, (err, fileContent) => {
+                if (err) {
+                    //console.log(`Error reading file /code${file}`, err);
+                    res.statusCode = 404;
+                    return res.end("Error reading file");
+                }
+
+                sendFile(fileContent);
+            });
+            return;
+        }
+
+        sendFile(fileContent);
+    });
+};
+
+module.exports = {
+    handle,
+};
+
+},{"../browser/util/MimeType":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/browser/util/MimeType.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/mainDSUSSIHandler.js":[function(require,module,exports){
+const handle = (seed, res) => {
+    res.statusCode = 200;
+    res.end(seed);
+};
+
+module.exports = {
+    handle,
+};
+
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/uploadHandler.js":[function(require,module,exports){
+const querystring = require("querystring");
+
+const Uploader = require("../Uploader");
+
+const handle = (dsu, req, res, requestedPath) => {
+    let uploader;
+    try {
+        const query = requestedPath.substr(requestedPath.indexOf("?") + 1);
+        const queryParams = querystring.parse(query);
+        console.log({ queryParams });
+        uploader = Uploader.configureUploader(queryParams, dsu);
+    } catch (e) {
+        res.setHeader("Content-Type", "application/json");
+        res.statusCode = 500;
+        res.end(JSON.stringify(e.message));
+        return;
+    }
+
+    let data = [];
+    req.on("data", (chunk) => {
+        console.log("chuink", chunk);
+        data.push(chunk);
+        // data += chunk;
+    });
+
+    req.on("end", () => {
+        try {
+            req.body = $$.Buffer.concat(data);
+            console.log("req.body", req.body.toString())
+            uploader.upload(req, function (err, uploadedFiles) {
+                if (err && (!Array.isArray(uploadedFiles) || !uploadedFiles.length)) {
+                    console.log(err);
+                    let statusCode = 400; // Validation errors
+
+                    if (err instanceof Error) {
+                        // This kind of errors should indicate
+                        // a serious problem with the uploader
+                        // and the status code should reflect that
+                        statusCode = 500; // Internal "server" errors
+                    }
+
+                    res.setHeader("Content-Type", "application/json");
+                    res.statusCode = statusCode;
+                    res.end(
+                        JSON.stringify(err, (key, value) => {
+                            if (value instanceof Error) {
+                                return value.message;
+                            }
+
+                            return value;
+                        })
+                    );
+
+                    return;
+                }
+
+                res.setHeader("Content-Type", "application/json");
+                res.statusCode = 201;
+                res.end(JSON.stringify(uploadedFiles));
+            });
+        } catch (err) {
+            console.log("worker error", err);
+            res.statusCode = 500;
+            res.end();
+        }
+    });
+};
+
+module.exports = {
+    handle,
+};
+
+},{"../Uploader":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/Uploader/index.js","querystring":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/walletHandler.js":[function(require,module,exports){
+const FILE_CHUNK_SIZE = 1024 * 1024;
+
+const extractSReadSSIAndFilePathFromRequest = (request) => {
+    const requestedPath = request.url;
+    let urlAfterAppend = requestedPath.substr("/append/".length);
+    let sReadSSI;
+    let filePath;
+    if (urlAfterAppend.indexOf("/") !== -1) {
+        const urlParts = urlAfterAppend.split("/", 2);
+        sReadSSI = urlParts[0];
+        filePath = urlParts[1];
+    } else {
+        sReadSSI = urlAfterAppend;
+        filePath = "/";
+    }
+    if (!filePath) {
+        filePath = "/";
+    }
+    if (!filePath.startsWith("/")) {
+        filePath = `/${filePath}`;
+    }
+
+    return { sReadSSI, filePath };
+};
+
+const isAvailableSpaceInLastBrick = (sizeSSI) => {
+    const totalSize = sizeSSI.getTotalSize();
+    const bufferSize = sizeSSI.getBufferSize();
+    return totalSize % bufferSize !== 0;
+};
+
+const createDSU = async (wallet, response) => {
+    try {
+        const opendsu = require("opendsu");
+        const dbSpace = opendsu.loadApi("db");
+        const keySSISpace = opendsu.loadApi("keyssi");
+        const keySSI = await $$.promisify(wallet.getKeySSIAsObject)();
+        const seedSSI = await $$.promisify(keySSISpace.createSeedSSI)(keySSI.getDLDomain());
+
+        const enclaveDB = await $$.promisify(dbSpace.getMainEnclaveDB)();
+        console.log("Creating DSU from main enclave...");
+        const dsu = await $$.promisify(enclaveDB.createDSU)(seedSSI);
+
+        let sReadSSI = await $$.promisify(dsu.getKeySSIAsObject)();
+        sReadSSI = await $$.promisify(sReadSSI.derive)();
+        const sReadSSIId = sReadSSI.getIdentifier();
+
+        await $$.promisify(wallet.refresh);
+
+        response.statusCode = 200;
+        response.end(sReadSSIId);
+    } catch (error) {
+        console.log("Error creating DSU", error);
+        response.statusCode = 500;
+        return response.end(error.message);
+    }
+};
+
+const appendToDSU = async (wallet, request, response) => {
+    const { sReadSSI, filePath } = extractSReadSSIAndFilePathFromRequest(request);
+    console.log(`Appending file to sReadSSI: ${sReadSSI} at path ${filePath}...`);
+
+    if (!request || !request.pipe || typeof request.pipe !== "function") {
+        response.statusCode = 500;
+        return response.end("File not provided");
+    }
+
+    const Transform = require("stream").Transform;
+    const Writable = require("stream").Writable;
+
+    const keyssiApi = require("opendsu").loadApi("keyssi");
+    const walletKeySSI = await $$.promisify(wallet.getKeySSIAsObject)();
+    const dsuDomain = walletKeySSI.getDLDomain();
+    const templateSeedSSI = keyssiApi.createTemplateSeedSSI(dsuDomain);
+
+    const resolver = require("opendsu").loadApi("resolver");
+    const dsu = await $$.promisify(resolver.loadDSU)(sReadSSI);
+    console.log("Refreshing DSU...")
+    await $$.promisify(dsu.refresh)();
+
+    let bricksMeta;
+    try {
+        bricksMeta = await $$.promisify(dsu.getBigFileBricksMeta)(filePath);
+    } catch (error) {
+        // bricksMeta is not available if the file doesn't exist
+        console.log(`Failed to get bricksMeta for file ${filePath}`, error);
+    }
+
+    let buffer = Buffer.alloc(0);
+
+    let sizeSSI;
+    let needToAppendToLastBrick = false;
+    if (bricksMeta && bricksMeta.length && bricksMeta[0].size) {
+        try {
+            sizeSSI = keyssiApi.parse(bricksMeta[0].size);
+        } catch (error) {
+            console.error(`Failed to parse sizeSSI ${bricksMeta[0].size} from DSU ${sReadSSI}`, error);
+        }
+        if (sizeSSI && isAvailableSpaceInLastBrick(sizeSSI)) {
+            // we need to load the last brick and append it to the initially read buffer
+            // so that we can overwrite the last brick from the file
+            needToAppendToLastBrick = true;
+            const brickingApi = require("opendsu").loadApi("bricking");
+            let lastBrickHashLink = bricksMeta[bricksMeta.length - 1].hashLink;
+            try {
+                lastBrickHashLink = keyssiApi.parse(lastBrickHashLink);
+            } catch (error) {
+                console.error(`Failed to parse hashlinkSSI ${lastBrickHashLink} from DSU ${sReadSSI}`, error);
+            }
+            const lastBrick = await $$.promisify(brickingApi.getBrick)(lastBrickHashLink);
+            buffer = $$.Buffer.from(lastBrick);
+            console.log(`Found available space in the last brick having existing ${lastBrick.byteLength} byte(s)`);
+        }
+    }
+
+    const chunkTransform = new Transform({
+        async transform(data, encoding, callback) {
+            var allData = Buffer.concat([buffer, data]);
+            console.log(`Transforming chunk of ${data.byteLength} byte(s)`);
+            var totalLength = allData.length;
+            var remainder = totalLength % FILE_CHUNK_SIZE;
+            var cutoff = totalLength - remainder;
+            for (var i = 0; i < cutoff; i += FILE_CHUNK_SIZE) {
+                var chunk = allData.slice(i, i + FILE_CHUNK_SIZE);
+                console.log(`Extracting chunk from start ${i} and end ${i + FILE_CHUNK_SIZE} and total size ${chunk.byteLength}`);
+                this.push(chunk);
+            }
+            buffer = allData.slice(cutoff, totalLength);
+            callback();
+        },
+        flush(callback) {
+            this.push(buffer);
+            console.log(`Extracting remaining ${buffer.byteLength} byte(s)`);
+            callback();
+        },
+    });
+
+    let shouldAppendToExistingFile = !!bricksMeta && !!bricksMeta.length && !!sizeSSI;
+    const writeStream = new Writable({
+        async write(data, encoding, callback) {
+            try {
+                console.log(`Writing ${data.byteLength} byte(s) to brick...`);
+                const bricking = require("opendsu").loadApi("bricking");
+                const options = {
+                    maxBrickSize: FILE_CHUNK_SIZE * 5, // ensure only 1 brick is constructed for chunk
+                };
+                const buffer = data;
+                const result = await $$.promisify(bricking.constructBricksFromData)(templateSeedSSI, buffer, options);
+                if (result.length !== 1) {
+                    // we should have exactly one brick for each buffer size
+                    console.error(
+                        `Saved data of chunk size ${FILE_CHUNK_SIZE} didn't generate exactly one brick (but ${result.length})`
+                    );
+                    throw new Error("Invalid brick count for data chunk");
+                }
+
+                const brickToAppend = result[0];
+                if (shouldAppendToExistingFile) {
+                    const totalSize = sizeSSI.getTotalSize();
+                    const bufferSize = sizeSSI.getBufferSize();
+                    const newTotalSize = isAvailableSpaceInLastBrick(sizeSSI)
+                        ? Math.floor(totalSize / bufferSize) * bufferSize + data.byteLength
+                        : totalSize + data.byteLength;
+                    sizeSSI = keyssiApi.createSizeSSI(dsuDomain, newTotalSize, bufferSize);
+
+                    console.log(`Setting new sizeSSI of totalSize: ${newTotalSize} / buffer size ${bufferSize}`);
+
+                    await $$.promisify(dsu.appendBigFileBrick)(filePath, sizeSSI.getIdentifier(), brickToAppend);
+                } else {
+                    console.log(`Setting sizeSSI of totalSize: ${data.byteLength} / buffer size ${FILE_CHUNK_SIZE}`);
+                    sizeSSI = keyssiApi.createSizeSSI(dsuDomain, data.byteLength, FILE_CHUNK_SIZE);
+                    const bricks = [{ size: sizeSSI.getIdentifier() }, brickToAppend];
+                    await $$.promisify(dsu.writeFileFromBricks)(filePath, bricks);
+
+                    // new file was created so now we can append to it
+                    shouldAppendToExistingFile = true;
+                }
+
+                callback();
+            } catch (error) {
+                console.log(`Failed to write ${data.byteLength} byte(s) to brick`, error);
+                callback(error);
+            }
+        },
+    });
+
+    writeStream.on("finish", async () => {
+        response.statusCode = 200;
+        response.end();
+    });
+
+    writeStream.on("error", (err) => {
+        console.log("Encountered write error", err);
+        response.statusCode = 500;
+        response.end(err.message);
+    });
+
+    request.pipe(chunkTransform).pipe(writeStream);
+};
+
+module.exports = {
+    createDSU,
+    appendToDSU,
+};
+
+},{"opendsu":"opendsu","stream":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/Uploader/FileReadableStreamAdapter.js":[function(require,module,exports){
+const { Readable } = require('stream');
+const util = require('util');
+
+/**
+ * Stream.Readable adapter for File ReadableStream
+ * @param {File} file
+ * @param {object} options
+ */
+function FileReadableStreamAdapter(file, options) {
+    if (!(this instanceof FileReadableStreamAdapter)) {
+        return new FileReadableStreamAdapter(file, options);
+    }
+
+    this.fileStreamReader = file.stream().getReader();
+    Readable.call(this, options);
+}
+util.inherits(FileReadableStreamAdapter, Readable);
+
+/**
+ * Reads data from the File ReadableStreamDefaulReader
+ * and pushes it into our Readable stream
+ */
+FileReadableStreamAdapter.prototype._read = function (size) {
+    const pushData = (result) => {
+        const done = result.done;
+        const data = result.value;
+        if (done) {
+            this.push(null);
+            return;
+        }
+
+        if (this.push($$.Buffer.from(data))) {
+            return this.fileStreamReader.read().then(pushData);
+        }
+    }
+    this.fileStreamReader.read()
+        .then(pushData);
+}
+
+module.exports = FileReadableStreamAdapter;
+
+},{"stream":false,"util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/Uploader/index.js":[function(require,module,exports){
+const FileReadableStreamAdapter = require("./FileReadableStreamAdapter");
+
+const IS_NODE_ENV = typeof $$ !== "undefined" && $$.environmentType && $$.environmentType === "nodejs";
+
+/**
+ * Constructor
+ *
+ * @param {object} options
+ * @param {string} options.inputName
+ * @param {RawDossier} options.dossier
+ * @param {string} options.uploadPath
+ * @param {string} options.filename
+ * @param {Array} options.allowedMimeTypes
+ * @param {string} options.maxSize
+ * @param {Boolean} options.preventOverwrite
+ */
+function Uploader(options) {
+    this.inputName = null;
+    this.dossier = null;
+    this.filename = null; // Must be configured when doing a request body upload
+    this.maxSize = null; // When not null file size validation is done
+    this.allowedMimeTypes = null; // When not null, mime type validation is done
+    this.uploadPath = null;
+    this.preventOverwrite = false;
+    this.uploadMultipleFiles = false;
+    this.sizeMultiplier = {
+        b: 1,
+        k: 1000,
+        m: 1000000,
+    };
+
+    this.configure(options);
+}
+
+// static method which creates/updates a given upload
+Uploader.configureUploader = function (config, dossier, uploader) {
+    config = config || {};
+
+    if (!config.path) {
+        throw new Error('Upload path is required. Ex: "POST /upload?path=/path/to/upload/folder"');
+    }
+
+    if (!config.input && !config.filename) {
+        throw new Error(
+            '"input" query parameter is required when doing multipart/form-data uploads or "filename" query parameter for request body uploads. Ex: POST /upload?input=files[] or POST /upload?filename=my-file.big'
+        );
+    }
+
+    let uploadPath = config.path;
+    if (uploadPath.substr(-1) !== "/") {
+        uploadPath += "/";
+    }
+
+    let allowedTypes;
+    if (typeof config.allowedTypes === "string" && config.allowedTypes.length) {
+        allowedTypes = config.allowedTypes.split(",").filter((type) => type.length > 0);
+    } else {
+        allowedTypes = [];
+    }
+    const options = {
+        inputName: config.input,
+        filename: config.filename,
+        maxSize: config.maxSize,
+        allowedMimeTypes: allowedTypes,
+        dossier,
+        uploadPath: uploadPath,
+        preventOverwrite: config.preventOverwrite,
+    };
+
+    if (!uploader) {
+        uploader = new Uploader(options);
+    } else {
+        uploader.configure(options);
+    }
+
+    return uploader;
+};
+
+
+Uploader.prototype.Error = {
+    UNKNOWN: "UNKNOWN_UPLOAD_ERROR",
+    NO_FILES: "NO_FILES",
+    INVALID_FILE: "INVALID_FILE",
+    INVALID_TYPE: "INVALID_TYPE",
+    MAX_SIZE_EXCEEDED: "MAX_SIZE_EXCEEDED",
+    FILE_EXISTS: "FILE_EXISTS"
+};
+
+Uploader.prototype.configure = function (options) {
+    options = options || {};
+
+    if (
+        (typeof options.inputName !== "string" || !options.inputName) &&
+        (typeof options.filename !== "string" || !options.filename)
+    ) {
+        throw new Error("The input name or filename is required");
+    }
+
+    if (typeof options.dossier !== "object") {
+        throw new Error("The dossier is required and must be an instance of RawDossier");
+    }
+
+    if (typeof options.uploadPath !== "string" || !options.uploadPath.length) {
+        throw new Error("The upload path is missing");
+    }
+
+    this.inputName = options.inputName;
+    this.dossier = options.dossier;
+    this.uploadPath = options.uploadPath;
+    this.preventOverwrite = Boolean(options.preventOverwrite);
+    if (this.inputName) {
+        this.uploadMultipleFiles = this.inputName.substr(-2) === "[]";
+    }
+    this.filename = options.filename || null;
+    if (typeof options.maxSize === "number" || typeof options.maxSize === "string") {
+        this.maxSize = options.maxSize;
+    }
+
+    if (Array.isArray(options.allowedMimeTypes)) {
+        this.allowedMimeTypes = options.allowedMimeTypes;
+    }
+};
+
+/**
+ * @param {object|any} body
+ * @throws {object}
+ */
+Uploader.prototype.validateRequestBody = function (body) {
+    const inputName = this.inputName;
+    const filename = this.filename;
+
+    if (this.isMultipartUpload && !inputName) {
+        const error = {
+            message: `No files have been uploaded or the "input" parameter hasn't been set`,
+            code: this.Error.NO_FILES,
+        };
+        throw error;
+    }
+
+    if (!this.isMultipartUpload && !filename) {
+        const error = {
+            message: `No files have been uploaded or the "filename" parameter hasn't been set`,
+            code: this.Error.NO_FILES,
+        };
+        throw error;
+    }
+
+    const __uploadExists = () => {
+        if (this.isMultipartUpload) {
+            if (this.uploadMultipleFiles) {
+                return Array.isArray(body[inputName]);
+            }
+
+            if (IS_NODE_ENV) {
+                return !!body[inputName];
+            }
+
+            return body[inputName] instanceof File;
+        }
+
+        return body;
+    };
+
+    if (!__uploadExists()) {
+        const error = {
+            message: `No files have been uploaded or the "input"/"filename" parameters are missing`,
+            code: this.Error.NO_FILES,
+        };
+        throw error;
+    }
+};
+
+/**
+ * Validate a single file
+ *
+ * @param {File} file
+ * @throws {object}
+ */
+Uploader.prototype.validateFile = function (file) {
+    if (!IS_NODE_ENV && !file instanceof File) {
+        const error = {
+            message: "File must be an instance of File",
+            code: this.Error.INVALID_FILE,
+        };
+        throw error;
+    }
+
+    if (Array.isArray(this.allowedMimeTypes) && this.allowedMimeTypes.length) {
+        const fileType = file.type;
+        if (this.allowedMimeTypes.indexOf(fileType) === -1) {
+            const error = {
+                message: "File type is not allowed",
+                code: this.Error.INVALID_TYPE,
+            };
+            throw error;
+        }
+    }
+
+    if (this.maxSize !== null) {
+        let unit = "b";
+        if (typeof this.maxSize === "string") {
+            unit = this.maxSize.substr("-1").toLowerCase();
+        }
+
+        const sizeMultiplier = this.sizeMultiplier[unit] || this.sizeMultiplier["b"];
+        const maxSize = parseInt(this.maxSize, 10) * sizeMultiplier;
+
+        if (isNaN(maxSize)) {
+            const error = {
+                message: `Invalid max size parameter: ${this.maxSize}`,
+                code: this.Error.MAX_SIZE_EXCEEDED,
+            };
+            throw error;
+        }
+
+        if (file.size > maxSize) {
+            const error = {
+                message: `The file size must not exceed ${maxSize} bytes`,
+                code: this.Error.MAX_SIZE_EXCEEDED,
+            };
+            throw error;
+        }
+    }
+};
+
+/**
+ * Create a File object from the request body
+ * @param {EventRequest} request
+ * @return {File}
+ */
+Uploader.prototype.createFileFromRequest = function (request) {
+    const requestBody = request.body;
+    let file;
+    if (IS_NODE_ENV) {
+        file = {
+            name: this.filename,
+            content: requestBody,
+            type: request.headers["content-type"] || "application/octet-stream",
+            size: $$.Buffer.byteLength(requestBody),
+        };
+    } else {
+        const type = request.get("Content-Type") || "application/octet-stream";
+        file = new File([requestBody], this.filename, {
+            type,
+        });
+    }
+
+    return file;
+};
+
+/**
+ * @param {File} file
+ * @param {callback} callback
+ */
+Uploader.prototype.uploadFile = function (file, callback) {
+    const destFile = `${this.uploadPath}${file.name}`;
+    this.dossier.refresh((err) => {
+        if (err) {
+            return callback(err);
+        }
+        let uploadPath = this.uploadPath;
+        if (uploadPath.substr(-1) === "/") {
+            uploadPath = uploadPath.substr(0, uploadPath.length - 1);
+        }
+
+        const writeFile = () => {
+            const doWriting = () => {
+                this.dossier.writeFile(destFile, fileAsStreamOrBuffer, {ignoreMounts: false}, (err) => {
+                    callback(err, {
+                        path: destFile,
+                    });
+                });
+            };
+
+            let fileAsStreamOrBuffer;
+            if (IS_NODE_ENV) {
+                fileAsStreamOrBuffer = file.content;
+                doWriting();
+            } else {
+                if (typeof file.stream === "function") {
+                    fileAsStreamOrBuffer = new FileReadableStreamAdapter(file);
+                    return doWriting();
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    fileAsStreamOrBuffer = e.target.result;
+                    let sep = ";base64,";
+                    if (fileAsStreamOrBuffer.indexOf(";base64,") !== -1) {
+                        fileAsStreamOrBuffer = fileAsStreamOrBuffer.split(sep)[1];
+                        fileAsStreamOrBuffer = atob(fileAsStreamOrBuffer);
+                    }
+                    return doWriting();
+                };
+                reader.onerror = function (e) {
+                    reader.abort();
+                };
+                reader.onabort = function (e) {
+                    return callback(reader.error);
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        if (this.preventOverwrite) {
+            // Check that file doesn't exist
+            this.dossier.listFiles(uploadPath, (err, files) => {
+                if (files) {
+                    if (files.indexOf(file.name) !== -1) {
+                        const err = {
+                            message: "File exists",
+                            code: this.Error.FILE_EXISTS,
+                        };
+                        return callback(err, {
+                            path: destFile,
+                        });
+                    }
+                }
+
+                writeFile();
+            });
+        } else {
+            writeFile();
+        }
+    });
+};
+
+/**
+ * TODO: Support for uploading the request body payload
+ * @param {EventRequest} request
+ * @param {callback} callback
+ */
+Uploader.prototype.upload = function (request, callback) {
+    if (IS_NODE_ENV) {
+        this.isMultipartUpload =
+            typeof body === "object" &&
+            !(body instanceof ArrayBuffer) &&
+            request.headers["content-type"] &&
+            request.headers["content-type"].indexOf("text/plain") === -1;
+    } else {
+        this.isMultipartUpload = typeof request.body === "object" && !(request.body instanceof ArrayBuffer);
+    }
+
+    console.log({isMultipartUpload: this.isMultipartUpload})
+
+    try {
+        this.validateRequestBody(request.body);
+    } catch (e) {
+        return callback(e);
+    }
+
+    let files = [];
+
+    if (this.isMultipartUpload) {
+        if (!this.uploadMultipleFiles) {
+            files.push(request.body[this.inputName]);
+        } else {
+            files = request.body[this.inputName];
+        }
+    } else {
+        const file = this.createFileFromRequest(request);
+        files.push(file);
+    }
+
+    const filesUploaded = [];
+
+    const uploadFileCallback = (file, err) => {
+        const _callback = function (err, result) {
+            const srcFile = {
+                name: file.name,
+                type: file.type,
+            };
+
+            if (err) {
+                err = {
+                    message: JSON.stringify(err),
+                    code: this.Error.UNKNOWN,
+                };
+
+                filesUploaded.push({
+                    file: srcFile,
+                    error: err,
+                });
+            } else {
+                filesUploaded.push({
+                    file: srcFile,
+                    result,
+                });
+            }
+
+            if (filesUploaded.length === files.length) {
+                let errors = filesUploaded.filter((item) => item.error !== undefined);
+                const uploadedFiles = filesUploaded.filter((item) => item.result !== undefined);
+
+                errors = errors.length ? errors : null;
+                callback(errors, uploadedFiles);
+            }
+        };
+
+        if (err) {
+            return _callback.call(this, err);
+        }
+        return _callback.bind(this);
+    };
+
+    const filesCopy = [...files];
+
+    const recursiveUpload = () => {
+        const file = filesCopy.shift();
+
+        if (!file) {
+            return;
+        }
+
+        try {
+            this.validateFile(file);
+        } catch (e) {
+            uploadFileCallback(file, e);
+            recursiveUpload();
+            return;
+        }
+
+        this.uploadFile(file, (err, result) => {
+            const callback = uploadFileCallback(file);
+            callback(err, result);
+            recursiveUpload();
+        });
+    };
+    recursiveUpload();
+};
+
+module.exports = Uploader;
+
+},{"./FileReadableStreamAdapter":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/Uploader/FileReadableStreamAdapter.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/browser/util/MimeType.js":[function(require,module,exports){
+const extensionsMimeTypes = {
+    "aac": {
+        name: "audio/aac",
+        binary: true
+    },
+    "abw": {
+        name: "application/x-abiword",
+        binary: true
+    },
+    "arc": {
+        name: "application/x-freearc",
+        binary: true
+    },
+    "avi": {
+        name: "video/x-msvideo",
+        binary: true
+    },
+    "azw": {
+        name: "application/vnd.amazon.ebook",
+        binary: true
+    },
+    "bin": {
+        name: "application/octet-stream",
+        binary: true
+    }, "bmp": {
+        name: "image/bmp",
+        binary: true
+    }, "bz": {
+        name: "application/x-bzip",
+        binary: true
+    }, "bz2": {
+        name: "application/x-bzip2",
+        binary: true
+    }, "csh": {
+        name: "application/x-csh",
+        binary: false
+    }, "css": {
+        name: "text/css",
+        binary: false
+    }, "csv": {
+        name: "text/csv",
+        binary: false
+    }, "doc": {
+        name: "application/msword",
+        binary: true
+    }, "docx": {
+        name: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        binary: true
+    }, "eot": {
+        name: "application/vnd.ms-fontobject",
+        binary: true
+    }, "epub": {
+        name: "application/epub+zip",
+        binary: true
+    }, "gz": {
+        name: "application/gzip",
+        binary: true
+    }, "gif": {
+        name: "image/gif",
+        binary: true
+    }, "htm": {
+        name: "text/html",
+        binary: false
+    }, "html": {
+        name: "text/html",
+        binary: false
+    }, "ico": {
+        name: "image/vnd.microsoft.icon",
+        binary: true
+    }, "ics": {
+        name: "text/calendar",
+        binary: false
+    }, "jpeg": {
+        name: "image/jpeg",
+        binary: true
+    }, "jpg": {
+        name: "image/jpeg",
+        binary: true
+    }, "js": {
+        name: "text/javascript",
+        binary: false
+    }, "json": {
+        name: "application/json",
+        binary: false
+    }, "jsonld": {
+        name: "application/ld+json",
+        binary: false
+    }, "mid": {
+        name: "audio/midi",
+        binary: true
+    }, "midi": {
+        name: "audio/midi",
+        binary: true
+    }, "mjs": {
+        name: "text/javascript",
+        binary: false
+    }, "mp3": {
+        name: "audio/mpeg",
+        binary: true
+    }, "mpeg": {
+        name: "video/mpeg",
+        binary: true
+    },
+	"mp4": {
+		name: "video/mp4",
+		binary: true
+	},"mpkg": {
+        name: "application/vnd.apple.installer+xm",
+        binary: true
+    }, "odp": {
+        name: "application/vnd.oasis.opendocument.presentation",
+        binary: true
+    }, "ods": {
+        name: "application/vnd.oasis.opendocument.spreadsheet",
+        binary: true
+    }, "odt": {
+        name: "application/vnd.oasis.opendocument.text",
+        binary: true
+    }, "oga": {
+        name: "audio/ogg",
+        binary: true
+    },
+    "ogv": {
+        name: "video/ogg",
+        binary: true
+    },
+    "ogx": {
+        name: "application/ogg",
+        binary: true
+    },
+    "opus": {
+        name: "audio/opus",
+        binary: true
+    },
+    "otf": {
+        name: "font/otf",
+        binary: true
+    },
+    "png": {
+        name: "image/png",
+        binary: true
+    },
+    "pdf": {
+        name: "application/pdf",
+        binary: true
+    },
+    "php": {
+        name: "application/php",
+        binary: false
+    },
+    "ppt": {
+        name: "application/vnd.ms-powerpoint",
+        binary: true
+    },
+    "pptx": {
+        name: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        binary: true
+    },
+    "rtf": {
+        name: "application/rtf",
+        binary: true
+    },
+    "sh": {
+        name: "application/x-sh",
+        binary: false
+    },
+    "svg": {
+        name: "image/svg+xml",
+        binary: false
+    },
+    "swf": {
+        name: "application/x-shockwave-flash",
+        binary: true
+    },
+    "tar": {
+        name: "application/x-tar",
+        binary: true
+    },
+    "tif": {
+        name: "image/tiff",
+        binary: true
+    },
+    "tiff": {
+        name: "image/tiff",
+        binary: true
+    },
+    "ts": {
+        name: "video/mp2t",
+        binary: true
+    },
+    "ttf": {
+        name: "font/ttf",
+        binary: true
+    },
+    "txt": {
+        name: "text/plain",
+        binary: false
+    },
+    "vsd": {
+        name: "application/vnd.visio",
+        binary: true
+    },
+    "wav": {
+        name: "audio/wav",
+        binary: true
+    },
+    "weba": {
+        name: "audio/webm",
+        binary: true
+    },
+    "webm": {
+        name: "video/webm",
+        binary: true
+    },
+    "webp": {
+        name: "image/webp",
+        binary: true
+    },
+    "woff": {
+        name: "font/woff",
+        binary: true
+    },
+    "woff2": {
+        name: "font/woff2",
+        binary: true
+    },
+    "xhtml": {
+        name: "application/xhtml+xml",
+        binary: false
+    },
+    "xls": {
+        name: "application/vnd.ms-excel",
+        binary: true
+    },
+    "xlsx": {
+        name: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        binary: true
+    },
+    "xml": {
+        name: "text/xml",
+        binary: false
+    },
+    "xul": {
+        name: "application/vnd.mozilla.xul+xml",
+        binary: true
+    },
+    "zip": {
+        name: "application/zip",
+        binary: true
+    },
+    "3gp": {
+        name: "video/3gpp",
+        binary: true
+    },
+    "3g2": {
+        name: "video/3gpp2",
+        binary: true
+    },
+    "7z": {
+        name: "application/x-7z-compressed",
+        binary: true
+    }
+};
+
+const defaultMimeType = {
+    name: "text/plain",
+    binary: false
+};
+module.exports.getMimeTypeFromExtension = function (extension) {
+    if (typeof extensionsMimeTypes[extension] !== "undefined") {
+        return extensionsMimeTypes[extension];
+    }
+    return defaultMimeType;
+};
+
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bricking/index.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const constants = require("../moduleConstants");
 const cache = require("../cache/").getCacheForVault(constants.CACHE.ENCRYPTED_BRICKS_CACHE);
@@ -16116,7 +18207,7 @@ const constructBricksFromData = (keySSI, data, options, callback) => {
 
 module.exports = {getBrick, putBrick, getMultipleBricks, constructBricksFromData};
 
-},{"../cache/":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/FSCache.js":[function(require,module,exports){
+},{"../cache/":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/promise-runner.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/cache/FSCache.js":[function(require,module,exports){
 let stores = {};
 const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
@@ -16196,7 +18287,7 @@ function FSCache(folderName) {
 
 
 module.exports.FSCache = FSCache;
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js":[function(require,module,exports){
 let stores = {};
 const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
@@ -16317,7 +18408,7 @@ function IndexedDBCache(storeName, lifetime) {
 
 
 module.exports.IndexedDBCache  = IndexedDBCache;
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/MemoryCache.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/cache/MemoryCache.js":[function(require,module,exports){
 
 const constants = require("../moduleConstants");
 
@@ -16358,7 +18449,7 @@ function MemoryCache(useWeakRef) {
 
 
 module.exports.MemoryCache = MemoryCache;
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/cache/index.js":[function(require,module,exports){
 let stores = {};
 const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
@@ -16408,7 +18499,7 @@ module.exports = {
     getMemoryCache,
     getWeakRefMemoryCache
 }
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./FSCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/FSCache.js","./IndexeDBCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js","./MemoryCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/MemoryCache.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfig.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./FSCache":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/cache/FSCache.js","./IndexeDBCache":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js","./MemoryCache":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/cache/MemoryCache.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/config/autoConfig.js":[function(require,module,exports){
 const config = require("./index");
 const constants = require("../moduleConstants");
 const system = require("../system");
@@ -16445,7 +18536,7 @@ setGlobalVariable("printOpenDSUError", errorModule.printOpenDSUError);
 
 
 
-},{"../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js","../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js":[function(require,module,exports){
+},{"../error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/system/index.js","../utils/getBaseURL":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./index":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js":[function(require,module,exports){
 
 module.exports = function(environment){
         const config = require("./index.js");
@@ -16462,9 +18553,9 @@ module.exports = function(environment){
         }
         console.log("Environment for vault", environment.appName,  config.get(constants.CACHE.VAULT_TYPE))
 }
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./index.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","./index.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/config/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/config/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
-const config = {};
+const config = {trustLevel: 1};
 
 function set(key, value) {
     config[key] = value;
@@ -16497,22 +18588,6 @@ function readEnvFile(callback) {
     });
 }
 
-function writeEnvFile(env, callback) {
-    const sc = require("opendsu").loadAPI("sc");
-    sc.getMainDSU((err, mainDSU) => {
-        if (err) {
-            return callback(createOpenDSUErrorWrapper(`Failed to get main DSU`, err));
-        }
-        mainDSU.writeFile(constants.ENVIRONMENT_PATH, JSON.stringify(env), (err)=>{
-            if (err) {
-                return callback(createOpenDSUErrorWrapper(`Failed to write env`, err));
-            }
-            callback();
-        });
-    });
-}
-
-
 function setEnv(key, value, callback) {
     //update environment.json
     readEnvFile((err, env) => {
@@ -16520,7 +18595,8 @@ function setEnv(key, value, callback) {
             return callback(createOpenDSUErrorWrapper(`Failed to read env file`, err));
         }
         env[key] = value;
-        writeEnvFile(env, callback);
+        const scAPI = require("opendsu").loadAPI("sc");
+        scAPI.configEnvironment(env, callback);
     });
 }
 
@@ -16551,7 +18627,7 @@ module.exports = {
 };
 
 
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./autoConfigFromEnvironment":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","./autoConfigFromEnvironment":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/config/autoConfigFromEnvironment.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/contracts/index.js":[function(require,module,exports){
 const getBaseURL = require("../utils/getBaseURL");
 
 const {
@@ -16698,7 +18774,7 @@ module.exports = {
     generateNoncedCommandForSpecificServer,
 };
 
-},{"../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/utils.js":[function(require,module,exports){
+},{"../utils/getBaseURL":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/contracts/utils.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/contracts/utils.js":[function(require,module,exports){
 const { fetch, doPost } = require("../http");
 const promiseRunner = require("../utils/promise-runner");
 
@@ -16856,7 +18932,7 @@ module.exports = {
     callContractEndpointUsingBdns,
 };
 
-},{"../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js":[function(require,module,exports){
+},{"../http":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/index.js","../utils/promise-runner":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/promise-runner.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js":[function(require,module,exports){
 function InstanceReadyMixin(target) {
 
 	target.isInstanceReady = false;
@@ -16885,7 +18961,7 @@ function InstanceReadyMixin(target) {
 }
 
 module.exports = InstanceReadyMixin;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js":[function(require,module,exports){
 const JWT_ERRORS = {
 	EMPTY_JWT_PROVIDED: 'EMPTY_JWT_PROVIDED',
 	INVALID_JWT_FORMAT: 'INVALID_JWT_FORMAT',
@@ -16954,7 +19030,7 @@ module.exports = {
 	getDefaultJWTOptions: getDefaultJWTOptions,
 	VALIDATION_STRATEGIES
 };
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/index.js":[function(require,module,exports){
 const {createJWTVc, loadJWTVc} = require('./vc/jwtVc');
 const {createJWTVp, loadJWTVp} = require('./vp/jwtVp');
 const validationStrategies = require('./validationStrategies');
@@ -17043,7 +19119,7 @@ module.exports = {
     parseJWTSegments,
     JWT_ERRORS: require('./constants').JWT_ERRORS
 };
-},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./validationStrategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js","./vc/jwtVc":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js","./vp/jwtVp":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/index.js":[function(require,module,exports){
+},{"./constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js","./validationStrategies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js","./vc/jwtVc":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js","./vp/jwtVp":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/index.js":[function(require,module,exports){
 const { JWT_ERRORS, IMMUTABLE_PUBLIC_CLAIMS } = require('../constants');
 const { base64UrlEncode } = require('../utils');
 const { signJWT } = require('./sign');
@@ -17127,7 +19203,7 @@ class JWT {
 }
 
 module.exports = JWT;
-},{"../InstanceReadyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js","../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/model.js":[function(require,module,exports){
+},{"../InstanceReadyMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/InstanceReadyMixin.js","../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js","./sign":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/model.js":[function(require,module,exports){
 const { JWT_DEFAULTS, JWT_ERRORS, getDefaultJWTOptions } = require('../constants');
 const utils = require('../utils');
 
@@ -17207,7 +19283,7 @@ function defaultJWTParser(encodedJWT, callback) {
 module.exports = {
 	defaultJWTBuilder, defaultJWTParser
 };
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/sign.js":[function(require,module,exports){
 const openDSU = require('opendsu');
 const w3cDID = openDSU.loadAPI('w3cdid');
 const crypto = openDSU.loadAPI('crypto');
@@ -17301,7 +19377,7 @@ function signUsingDID(issuer, dataToSign, callback) {
 module.exports = {
     signJWT
 };
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js":[function(require,module,exports){
 const opendsu = require('opendsu');
 const w3cDID = opendsu.loadAPI('w3cdid');
 const crypto = opendsu.loadAPI('crypto');
@@ -17493,7 +19569,7 @@ module.exports = {
     verifyRootsOfTrust,
     verifyEncryptedCredential
 };
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js":[function(require,module,exports){
 const opendsu = require('opendsu');
 const w3cDID = opendsu.loadAPI('w3cdid');
 const scAPI = opendsu.loadAPI('sc');
@@ -17815,7 +19891,7 @@ module.exports = {
     asymmetricalEncryption,
     asymmetricalDecryption
 };
-},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js":[function(require,module,exports){
+},{"./constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js":[function(require,module,exports){
 const {JWT_ERRORS} = require("../constants");
 const utils = require("../utils");
 
@@ -17884,7 +19960,7 @@ class DefaultValidationStrategy {
 }
 
 module.exports = DefaultValidationStrategy;
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/validationStrategies/index.js":[function(require,module,exports){
 const VALIDATION_STRATEGIES = require('../constants').VALIDATION_STRATEGIES;
 const DefaultValidationStrategy = require("./defaultValidationStrategy");
 const RootOfTrustValidationStrategy = require("./rootOfTrustValidationStrategy");
@@ -17993,7 +20069,7 @@ module.exports = {
 
     VALIDATION_STRATEGIES
 };
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","./defaultValidationStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js","./rootOfTrustValidationStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","./defaultValidationStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/validationStrategies/defaultValidationStrategy.js","./rootOfTrustValidationStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/validationStrategies/rootOfTrustValidationStrategy.js":[function(require,module,exports){
 const {JWT_ERRORS, LABELS} = require("../constants");
 const utils = require("../utils");
 
@@ -18063,7 +20139,7 @@ class RootOfTrustValidationStrategy {
 }
 
 module.exports = RootOfTrustValidationStrategy;
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/vc/jwtVc.js":[function(require,module,exports){
 const JWT = require('../jwt');
 const JWT_ERRORS = require('../constants').JWT_ERRORS;
 const { dateTimeFormatter, isValidURL } = require('../utils');
@@ -18233,7 +20309,7 @@ function loadJWTVc(encodedJWTVc) {
 module.exports = {
 	createJWTVc, loadJWTVc
 };
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/model.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vc/model.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/vc/model.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/vc/model.js":[function(require,module,exports){
 const {JWT_DEFAULTS, JWT_ERRORS} = require('../constants');
 const {defaultJWTParser, defaultJWTBuilder} = require('../jwt/model');
 const utils = require('../utils');
@@ -18313,7 +20389,7 @@ function jwtVcVerifier(decodedJWT, rootsOfTrust, callback) {
 module.exports = {
     jwtVcBuilder, jwtVcParser, jwtVcVerifier
 };
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/vp/jwtVp.js":[function(require,module,exports){
 const JWT = require('../jwt');
 const JWT_ERRORS = require('../constants').JWT_ERRORS;
 const { jwtVpBuilder, jwtVpParser, jwtVpVerifier } = require('./model');
@@ -18437,7 +20513,7 @@ function loadJWTVp(encodedJWTVp) {
 module.exports = {
 	createJWTVp, loadJWTVp
 };
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/model.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/vp/model.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/index.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js","./model":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/vp/model.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/vp/model.js":[function(require,module,exports){
 const {JWT_DEFAULTS, JWT_ERRORS} = require('../constants');
 const {defaultJWTParser, defaultJWTBuilder} = require('../jwt/model');
 const utils = require('../utils');
@@ -18511,7 +20587,7 @@ function jwtVpVerifier(decodedJWT, rootsOfTrust, callback) {
 module.exports = {
     jwtVpBuilder, jwtVpParser, jwtVpVerifier
 };
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/constants.js","../jwt/model":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/model.js","../jwt/verify":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/jwt/verify.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/crypto/index.js":[function(require,module,exports){
 const keySSIResolver = require("key-ssi-resolver");
 const crypto = require("pskcrypto");
 const cryptoRegistry = keySSIResolver.CryptoAlgorithmsRegistry;
@@ -18535,6 +20611,11 @@ const hash = (keySSI, data, callback) => {
     console.log("This function is obsolete");
     callback(undefined, hashSync(keySSI, data));
 };
+
+const getRandomSecret = (length) => {
+    const bytes = crypto.randomBytes(length);
+    return bytes.toString("hex");
+}
 
 const hashSync = (keySSI, data) => {
     console.log("This function is obsolete");
@@ -18796,7 +20877,6 @@ const verifyDIDAuthToken = (jwt, listOfIssuers, callback) => {
     verifyToken(jwt, listOfIssuers, verifyDID_JWT, callback);
 };
 
-
 function createBloomFilter(options) {
     const BloomFilter = require("psk-dbf");
     return new BloomFilter(options);
@@ -18812,6 +20892,19 @@ const base64UrlEncodeJOSE = (data) => {
         data = $$.Buffer.from(data);
     }
     return data.toString("base64").replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
+}
+
+const base64UrlDecodeJOSE = (data) => {
+    if ($$.Buffer.isBuffer(data)) {
+        data = data.toString();
+    }
+    data = data.replaceAll('-', '+').replaceAll('_', '/');
+    const padding = data.length % 4;
+    if (padding) {
+        data += '='.repeat(4 - padding);
+    }
+
+    return $$.Buffer.from(data, "base64");
 }
 
 const convertKeySSIObjectToMnemonic = (keySSIObject) => {
@@ -18868,13 +20961,17 @@ module.exports = {
     createAuthTokenForDID,
     createCredentialForDID,
     base64UrlEncodeJOSE,
+    base64UrlDecodeJOSE,
+    base64URLEncode: base64UrlEncodeJOSE,
+    base64URLDecode: base64UrlDecodeJOSE,
     sha256JOSE,
     joseAPI: require("pskcrypto").joseAPI,
     convertKeySSIObjectToMnemonic,
-    convertMnemonicToKeySSIIdentifier
+    convertMnemonicToKeySSIIdentifier,
+    getRandomSecret
 };
 
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js","./jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jwt.js","./mnemonic":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/mnemonic.js","key-ssi-resolver":"key-ssi-resolver","psk-dbf":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jwt.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","./index":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/crypto/index.js","./jwt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/crypto/jwt.js","./mnemonic":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/crypto/mnemonic.js","key-ssi-resolver":"key-ssi-resolver","psk-dbf":false,"pskcrypto":"pskcrypto"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/crypto/jwt.js":[function(require,module,exports){
 const keySSIResolver = require("key-ssi-resolver");
 const cryptoRegistry = keySSIResolver.CryptoAlgorithmsRegistry;
 const SSITypes = keySSIResolver.SSITypes;
@@ -19226,7 +21323,7 @@ module.exports = {
     verifyDID_JWT
 };
 
-},{"../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/mnemonic.js":[function(require,module,exports){
+},{"../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/crypto/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/crypto/mnemonic.js":[function(require,module,exports){
 let WORDLISTS = {};
 WORDLISTS["english"] = [
     "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse",
@@ -19606,11 +21703,11 @@ module.exports = {
     Mnemonic
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js":[function(require,module,exports){
 module.exports.TimestampMergingStrategy = function(){
 
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js":[function(require,module,exports){
 /*
     An OpenDSU  BasicDB is a simple noSQL database
     The DB is used with a concept of "table" and rows (records) that have multiple versions
@@ -19862,16 +21959,35 @@ function BasicDB(storageStrategy, conflictSolvingStrategy, options) {
         storageStrategy.beginBatch()
     }
 
+    this.safeBeginBatch = (callback) => {
+        storageStrategy.safeBeginBatch(callback);
+    }
+
+    this.safeBeginBatchAsync = async () => {
+        return await storageStrategy.safeBeginBatchAsync();
+    }
+
     this.cancelBatch = (callback) => {
         storageStrategy.cancelBatch(callback)
+    }
+
+    this.cancelBatchAsync = async () => {
+        return await storageStrategy.cancelBatchAsync();
     }
 
     this.commitBatch = (callback) => {
         storageStrategy.commitBatch(callback)
     }
 
+    this.commitBatchAsync = async () => {
+        return await storageStrategy.commitBatchAsync();
+    }
 
-    bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent"]);
+    this.batchInProgress = () => {
+        return storageStrategy.batchInProgress();
+    }
+
+    bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent", "batchInProgress"]);
     //============================================================
     // To not add others property on this object below this call =
     //============================================================
@@ -19879,7 +21995,7 @@ function BasicDB(storageStrategy, conflictSolvingStrategy, options) {
 
 module.exports = BasicDB;
 
-},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js":[function(require,module,exports){
 module.exports = {
     ensure_WalletDB_DSU_Initialisation: function (keySSI, dbName, callback) {
         let resolver = require("../../resolver");
@@ -19925,21 +22041,27 @@ module.exports = {
                     if (err) {
                         return callback(createOpenDSUErrorWrapper("Failed to create wrapper DSU while initialising shared database " + dbName, err));
                     }
-                    res.beginBatch();
-                    res.mount("/data", writableDSU.getCreationSSI(), function (err, resSSI) {
+                    res.safeBeginBatch(err => {
                         if (err) {
-                            return callback(createOpenDSUErrorWrapper("Failed to mount writable DSU in wrapper DSU while initialising shared database " + dbName, err));
+                            return callback(createOpenDSUErrorWrapper("Failed to begin batch", err));
                         }
-                        res.commitBatch((err) => {
+                        res.mount("/data", writableDSU.getCreationSSI(), function (err, resSSI) {
                             if (err) {
-                                return callback(createOpenDSUErrorWrapper("Failed to anchor batch", err));
+                                const mountError = createOpenDSUErrorWrapper("Failed to mount writable DSU in wrapper DSU while initialising shared database " + dbName, err)
+                                res.cancelBatch(error => {
+                                    if (error) {
+                                        return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, error, mountError));
+                                    }
+
+                                    return callback(mountError);
+                                })
                             }
-                            keySSI.derive((err, derivedKeySSI)=>{
+                            res.commitBatch((err) => {
                                 if (err) {
-                                    return callback(createOpenDSUErrorWrapper(`Failed to derive keySSI ${keySSI.getIdentifier()}`, err));
+                                    return callback(createOpenDSUErrorWrapper("Failed to anchor batch", err));
                                 }
-                                doStorageDSUInitialisation(writableDSU, derivedKeySSI);
-                            })
+                                doStorageDSUInitialisation(writableDSU, keySSI);
+                            });
                         });
                     });
                 });
@@ -19986,7 +22108,7 @@ module.exports = {
                 return callback(err);
             }
 
-            if(!keySSI){
+            if (!keySSI) {
                 try {
                     keySSI = await $$.promisify(mainDSU.readFile)(DB_KEY_SSI_PATH);
                     keySSI = keySSI.toString();
@@ -20010,10 +22132,23 @@ module.exports = {
                         return callback(createOpenDSUErrorWrapper(`Failed to get storageDSU's keySSI`, e));
                     }
 
+                    try{
+                        await mainDSU.safeBeginBatchAsync();
+                    } catch (e) {
+                        return callback(createOpenDSUErrorWrapper(`Failed to begin batch`, e));
+                    }
+
                     try {
                         await $$.promisify(mainDSU.writeFile)(DB_KEY_SSI_PATH, keySSI.getIdentifier());
+                        await mainDSU.commitBatchAsync();
                     } catch (e) {
-                        return callback(createOpenDSUErrorWrapper(`Failed to store key SSI in mainDSU for db <${dbName}>`, e));
+                        const writeFileError = createOpenDSUErrorWrapper(`Failed to store key SSI in mainDSU for db <${dbName}>`, e);
+                        try {
+                            await mainDSU.cancelBatchAsync();
+                        } catch (error) {
+                            return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, error, writeFileError));
+                        }
+                        return callback(writeFileError);
                     }
 
                     return callback(undefined, storageDSU, keySSI);
@@ -20026,28 +22161,114 @@ module.exports = {
                 return callback(createOpenDSUErrorWrapper(`Failed to load storage DSU for db <${dbName}>`, e));
             }
 
-            if(typeof keySSI === "string") {
-                try{
+            if (typeof keySSI === "string") {
+                try {
                     keySSI = keySSISpace.parse(keySSI);
-                }catch (e) {
+                } catch (e) {
                     return callback(createOpenDSUErrorWrapper(`Failed to parse keySSI <${keySSI}>`, e));
                 }
             }
+
+            try {
+                await mainDSU.safeBeginBatchAsync();
+            } catch (e) {
+                return callback(createOpenDSUErrorWrapper(`Failed to begin batch`, e));
+            }
+
             try {
                 await $$.promisify(mainDSU.writeFile)(DB_KEY_SSI_PATH, keySSI.getIdentifier());
+                await mainDSU.commitBatchAsync();
             } catch (e) {
-                return callback(createOpenDSUErrorWrapper(`Failed to store key SSI in mainDSU for db <${dbName}>`, e));
+                const writeFileError = createOpenDSUErrorWrapper(`Failed to store key SSI in mainDSU for db <${dbName}>`, e);
+                try {
+                    await mainDSU.cancelBatchAsync();
+                } catch (error) {
+                    return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, error, writeFileError));
+                }
+                return callback(writeFileError);
             }
 
             return callback(undefined, storageDSU, keySSI);
         })
     },
     ensure_MultiUserDB_DSU_Initialisation: function (keySSI, dbName, userId, callback) {
+    },
+    initialiseVersionlessDB: function (dbName, keySSI, callback) {
+        $$.LEGACY_BEHAVIOUR_ENABLED = true;
+        if (typeof keySSI === "function") {
+            callback = keySSI;
+            keySSI = undefined;
+        }
+        const openDSU = require("opendsu");
+        let resolver = openDSU.loadAPI("resolver");
+        let scAPI = openDSU.loadAPI("sc");
+        let keySSISpace = openDSU.loadAPI("keyssi");
+        let storageDSU;
+        const DB_KEY_SSI_PATH = `/db/${dbName}`;
+        scAPI.getMainDSU(async (err, mainDSU) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (!keySSI) {
+                try {
+                    keySSI = await $$.promisify(mainDSU.readFile)(DB_KEY_SSI_PATH);
+                    keySSI = keySSI.toString();
+
+                } catch (e) {
+                    try {
+                        storageDSU = await $$.promisify(resolver.createVersionlessDSU)();
+                    } catch (e) {
+                        return callback(createOpenDSUErrorWrapper(`Failed to create Seed DSU`, e));
+                    }
+
+                    try {
+                        keySSI = await $$.promisify(storageDSU.getKeySSIAsObject)();
+                    } catch (e) {
+                        return callback(createOpenDSUErrorWrapper(`Failed to get storageDSU's keySSI`, e));
+                    }
+
+                    try {
+                        await $$.promisify(mainDSU.writeFile)(DB_KEY_SSI_PATH, keySSI.getIdentifier());
+                    } catch (e) {
+                        const writeFileError = createOpenDSUErrorWrapper(`Failed to store key SSI in mainDSU for db <${dbName}>`, e);
+                        return callback(writeFileError);
+                    }
+
+                    return callback(undefined, storageDSU, keySSI);
+                }
+            }
+
+            try {
+                storageDSU = await $$.promisify(resolver.loadDSU)(keySSI)
+            } catch (e) {
+                return callback(createOpenDSUErrorWrapper(`Failed to load storage DSU for db <${dbName}>`, e));
+            }
+
+            if (typeof keySSI === "string") {
+                try {
+                    keySSI = keySSISpace.parse(keySSI);
+                } catch (e) {
+                    return callback(createOpenDSUErrorWrapper(`Failed to parse keySSI <${keySSI}>`, e));
+                }
+            }
+
+            try {
+                await $$.promisify(mainDSU.writeFile)(DB_KEY_SSI_PATH, keySSI.getIdentifier());
+            } catch (e) {
+                const writeFileError = createOpenDSUErrorWrapper(`Failed to store key SSI in mainDSU for db <${dbName}>`, e);
+                return callback(writeFileError);
+            }
+
+            return callback(undefined, storageDSU, keySSI);
+        })
     }
 }
 
-},{"../../keyssi":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js","../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/index.js":[function(require,module,exports){
+},{"../../keyssi":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/keyssi/index.js","../../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../../resolver":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/resolver/index.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/index.js":[function(require,module,exports){
 let util = require("./impl/DSUDBUtil")
+const {SingleDSUStorageStrategy} = require("./storageStrategies/SingleDSUStorageStrategy");
+const {TimestampMergingStrategy: ConflictStrategy} = require("./conflictSolvingStrategies/timestampMergingStrategy");
 
 function getBasicDB(storageStrategy, conflictSolvingStrategy, options) {
     let BasicDB = require("./impl/BasicDB");
@@ -20088,6 +22309,7 @@ let getSimpleWalletDB = (dbName, options) => {
 
     util.initialiseWalletDB(dbName, options.keySSI, (err, _storageDSU, keySSI) => {
         if (err) {
+            console.error("Failed to initialise WalletDB_DSU " + dbName, err);
             return db.dispatchEvent("error", createOpenDSUErrorWrapper("Failed to initialise WalletDB_DSU " + dbName, err));
         }
 
@@ -20128,6 +22350,35 @@ const getMainEnclaveDB = (callback) => {
 const getSharedEnclaveDB = (callback) => {
     require("opendsu").loadAPI("sc").getSharedEnclave(callback);
 }
+
+const getVersionlessDB = (dbName, options) => {
+    options = options || {};
+    let VersionlessStorageStrategy = require("./storageStrategies/VersionlessStorageStrategy").VersionlessStorageStrategy;
+    let storageStrategy = new VersionlessStorageStrategy();
+    let ConflictStrategy = require("./conflictSolvingStrategies/timestampMergingStrategy").TimestampMergingStrategy;
+    let db = getBasicDB(storageStrategy, new ConflictStrategy(), options);
+
+    util.initialiseVersionlessDB(dbName, options.keySSI, (err, _storageDSU, keySSI) => {
+        if (err) {
+            console.error("Failed to initialise WalletDB_DSU " + dbName, err);
+            return db.dispatchEvent("error", createOpenDSUErrorWrapper("Failed to initialise WalletDB_DSU " + dbName, err));
+        }
+
+        db.getShareableSSI = function () {
+            return keySSI;
+        };
+
+        db.getStorageDSU = function () {
+            return _storageDSU;
+        }
+
+        storageStrategy.initialise(_storageDSU, dbName);
+        console.log("Finishing initialisation");
+    })
+
+    return db;
+}
+
 module.exports = {
     getBasicDB,
     getWalletDB(keySSI, dbName) {
@@ -20143,10 +22394,11 @@ module.exports = {
     getMainEnclave: getMainEnclaveDB,
     mainEnclaveIsInitialised,
     getSharedEnclave: getSharedEnclaveDB,
-    getSharedEnclaveDB
+    getSharedEnclaveDB,
+    getVersionlessDB
 }
 
-},{"./conflictSolvingStrategies/timestampMergingStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js","./impl/BasicDB":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js","./impl/DSUDBUtil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js","./storageStrategies/MemoryStorageStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js","./storageStrategies/SingleDSUStorageStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js":[function(require,module,exports){
+},{"./conflictSolvingStrategies/timestampMergingStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/conflictSolvingStrategies/timestampMergingStrategy.js","./impl/BasicDB":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/impl/BasicDB.js","./impl/DSUDBUtil":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/impl/DSUDBUtil.js","./storageStrategies/MemoryStorageStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js","./storageStrategies/SingleDSUStorageStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js","./storageStrategies/VersionlessStorageStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/VersionlessStorageStrategy.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/MemoryStorageStrategy.js":[function(require,module,exports){
 function MemoryStorageStrategy() {
     const ObservableMixin = require("../../utils/ObservableMixin");
     const operators = require("./operators");
@@ -20332,12 +22584,28 @@ function MemoryStorageStrategy() {
     this.beginBatch = () => {
     }
 
+    this.safeBeginBatch = (callback) => {
+        callback(undefined);
+    }
+
+    this.safeBeginBatchAsync = async () => {
+
+    }
+
     this.commitBatch = (callback) => {
         callback(undefined);
     }
 
+    this.commitBatchAsync = async () => {
+
+    }
+
     this.cancelBatch = (callback) => {
         callback(undefined);
+    }
+
+    this.cancelBatchAsync = async () => {
+
     }
 
     this.getUniqueIdAsync = async () => {
@@ -20402,7 +22670,7 @@ function MemoryStorageStrategy() {
 }
 
 module.exports = MemoryStorageStrategy;
-},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js":[function(require,module,exports){
 function Query(queryArray) {
     let conditions = [];
     const operators = require("./operators");
@@ -20506,10 +22774,54 @@ function Query(queryArray) {
 }
 
 module.exports = Query;
-},{"./operators":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js":[function(require,module,exports){
-const ObservableMixin = require("../../utils/ObservableMixin");
+},{"./operators":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSURecordStorageStrategy.js":[function(require,module,exports){
+function SingleDSURecordStorageStrategy(storageDSU) {
+    this.storeRecord = (recordPath, newRecord, oldRecord, callback) => {
+        storageDSU.writeFile(recordPath, JSON.stringify(newRecord), callback);
+    }
 
-function SingleDSUStorageStrategy() {
+    this.getRecord = (recordPath, callback) => {
+        storageDSU.readFile(recordPath, function (err, res) {
+            let record;
+            let retErr = undefined;
+            if (err) {
+                retErr = createOpenDSUErrorWrapper(`Failed to read record in ${recordPath}`, err);
+            } else {
+                try {
+                    record = JSON.parse(res);
+                } catch (newErr) {
+                    retErr = createOpenDSUErrorWrapper(`Failed to parse record in ${recordPath}: ${res}`, retErr);
+                    //let's try to check if the res contains the record twice... at some point there was a bug on this topic
+                    let serializedRecord = res;
+                    if (ArrayBuffer.isView(serializedRecord) || serializedRecord.buffer) {
+                        serializedRecord = new TextDecoder().decode(serializedRecord);
+                    }
+                    let halfOfRes = serializedRecord.slice(0, serializedRecord.length / 2);
+                    let isDuplicated = (serializedRecord === halfOfRes + halfOfRes);
+                    if (isDuplicated) {
+                        try {
+                            record = JSON.parse(halfOfRes);
+                            console.log("We caught an error during record retrieval process and fix it. (duplicate content)");
+                            //we ignore the original error because we were able to fix it.
+                            retErr = undefined;
+                        } catch (err) {
+                            console.log("We caught an error during record retrieval process and we failed to fix it!");
+                        }
+                    } else {
+                        console.log(retErr);
+                    }
+                }
+            }
+            callback(retErr, record);
+        });
+    }
+}
+
+module.exports = SingleDSURecordStorageStrategy;
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSUStorageStrategy.js":[function(require,module,exports){
+const ObservableMixin = require("../../utils/ObservableMixin");
+const SingleDSURecordStorageStrategy = require("./SingleDSURecordStorageStrategy");
+function SingleDSUStorageStrategy(recordStorageStrategy) {
     let volatileMemory = {}
     let self = this
     let storageDSU;
@@ -20521,6 +22833,9 @@ function SingleDSUStorageStrategy() {
     this.initialise = function (_storageDSU, _dbName) {
         storageDSU = _storageDSU;
         dbName = _dbName;
+        if(!recordStorageStrategy){
+            recordStorageStrategy = new SingleDSURecordStorageStrategy(storageDSU);
+        }
         this.dispatchEvent("initialised");
     }
 
@@ -20534,12 +22849,32 @@ function SingleDSUStorageStrategy() {
         }
     }
 
+    this.safeBeginBatch = (callback) => {
+        storageDSU.safeBeginBatch(callback);
+    }
+
+    this.safeBeginBatchAsync = async () => {
+        return await storageDSU.safeBeginBatchAsync();
+    }
+
     this.cancelBatch = (callback) => {
         storageDSU.cancelBatch(callback);
     }
 
+    this.cancelBatchAsync = async () => {
+        return await storageDSU.cancelBatchAsync();
+    }
+
     this.commitBatch = (callback) => {
         storageDSU.commitBatch(callback);
+    }
+
+    this.commitBatchAsync = async () => {
+        return await storageDSU.commitBatchAsync();
+    }
+
+    this.batchInProgress = () => {
+        return storageDSU.batchInProgress();
     }
 
     this.getAllRecords = (tableName, callback) => {
@@ -20612,21 +22947,7 @@ function SingleDSUStorageStrategy() {
                     filteredRecords.push(record);
                 }
             }
-            // Object.values(tbl).forEach(record => {
-            //     let recordIsValid = true;
-            //     for (let i = 0; i < conditionsArray.length; i++) {
-            //         const condition = conditionsArray[i];
-            //         const [field, operator, value] = condition.split(" ");
-            //         if (!operators[operator](record[field], value) || record.__deleted) {
-            //             recordIsValid = false;
-            //             break;
-            //         }
-            //     }
-            //
-            //     if (recordIsValid) {
-            //         filteredRecords.push(record);
-            //     }
-            // })
+
             const {getCompareFunctionForObjects} = require("./utils");
             filteredRecords.sort(getCompareFunctionForObjects(sort, conditionsArray[0].split(" ")[0]))
             callback(undefined, filteredRecords.slice(0, limit));
@@ -20690,23 +23011,34 @@ function SingleDSUStorageStrategy() {
             }
 
             const __filterIndexedTable = () => {
-                storageDSU.listFiles(getIndexPath(tableName, indexName), (err, values) => {
+                storageDSU.listFiles(getIndexPath(tableName, indexName), async (err, values) => {
                     if (err) {
                         return callback(createOpenDSUErrorWrapper(`Failed read values for field ${indexName}`, err));
                     }
 
                     const pks = [];
                     const uniqueIndexedValues = [];
-                    values.forEach(value => {
+
+                    for (let i = 0; i < values.length; i++) {
+                        const value = values[i];
                         const splitValue = value.split("/");
-                        if (pks.indexOf(splitValue[1]) === -1) {
+                        const indexOfPk = pks.indexOf(splitValue[1]);
+                        if (indexOfPk === -1) {
                             pks.push(splitValue[1]);
                             uniqueIndexedValues.push(splitValue[0]);
                         } else {
+                            const pk = pks[indexOfPk];
+                            const record = await $$.promisify(this.getRecord, this)(tableName, pk)
+                            if (record.__deleted) {
+                                pks.splice(indexOfPk, 1);
+                                uniqueIndexedValues.splice(indexOfPk, 1);
+                            } else {
+                                uniqueIndexedValues[indexOfPk] = record;
+                            }
                             console.warn(`Record with pk ${splitValue[1]} already indexed on field ${indexName}`);
                         }
-                    })
 
+                    }
                     let filteredValues = query.filterValuesForIndex(uniqueIndexedValues);
                     query.sortValues(filteredValues, sort);
                     const getNextRecordForValue = getNextRecordFunction(tableName, indexName)
@@ -20924,6 +23256,7 @@ function SingleDSUStorageStrategy() {
         }
         storageDSU.delete(getIndexPath(tableName, fieldName, oldValue, pk), callback);
     }
+
     function deleteIndexesForRecord(tableName, pk, oldRecord, newRecord, callback) {
         const fields = Object.keys(oldRecord);
         getIndexedFieldsList(tableName, (err, indexedFields) => {
@@ -20943,7 +23276,7 @@ function SingleDSUStorageStrategy() {
             taskCounter.increment(fields.length);
             fields.forEach(field => {
                 if (indexedFields.findIndex(indexedField => indexedField === field) !== -1) {
-                    deleteValueForIndex(tableName, field, pk, oldRecord[field], newRecord[field],  (err) => {
+                    deleteValueForIndex(tableName, field, pk, oldRecord[field], newRecord[field], (err) => {
                         if (err) {
                             return callback(createOpenDSUErrorWrapper(`Failed to delete index for field ${field} in table ${tableName}`, err));
                         }
@@ -20973,7 +23306,7 @@ function SingleDSUStorageStrategy() {
       Insert a record
     */
     this.insertRecord = function (tableName, key, record, callback) {
-        this.updateRecord(tableName, key, undefined, record,  callback);
+        this.updateRecord(tableName, key, undefined, record, callback);
     };
 
     function getPrimaryKeys(tableName, callback) {
@@ -21008,19 +23341,13 @@ function SingleDSUStorageStrategy() {
         }
 
         const recordPath = getRecordPath(tableName, key);
-        let batchInProgress = false;
-        if (storageDSU.batchInProgress()) {
-            batchInProgress = true
-        } else {
-            storageDSU.beginBatch();
-        }
-        storageDSU.writeFile(recordPath, JSON.stringify(newRecord), function (err, res) {
+        recordStorageStrategy.storeRecord(recordPath, newRecord, oldRecord, function (err, res) {
             if (err) {
                 return callback(createOpenDSUErrorWrapper(`Failed to update record in ${recordPath}`, err));
             }
 
             if (typeof oldRecord !== "undefined") {
-                return deleteIndexesForRecord(tableName, key,  oldRecord, newRecord, (err) => {
+                return deleteIndexesForRecord(tableName, key, oldRecord, newRecord, (err) => {
                     if (err) {
                         return callback(createOpenDSUErrorWrapper(`Failed to delete index files for record ${JSON.stringify(newRecord)}`, err));
                     }
@@ -21030,10 +23357,7 @@ function SingleDSUStorageStrategy() {
                             return callback(createOpenDSUErrorWrapper(`Failed to update indexes for record ${newRecord}`, err));
                         }
 
-                        if (batchInProgress) {
-                            return callback(undefined, newRecord);
-                        }
-                        storageDSU.commitBatch(err => callback(err, newRecord));
+                        callback(err, newRecord);
                     });
                 });
             }
@@ -21043,10 +23367,7 @@ function SingleDSUStorageStrategy() {
                     return callback(createOpenDSUErrorWrapper(`Failed to update indexes for record ${newRecord}`, err));
                 }
 
-                if (batchInProgress) {
-                    return callback(undefined, newRecord);
-                }
-                storageDSU.commitBatch(err => callback(err, newRecord));
+                callback(err, newRecord)
             });
         });
     };
@@ -21056,39 +23377,7 @@ function SingleDSUStorageStrategy() {
      */
     this.getRecord = function (tableName, key, callback) {
         const recordPath = getRecordPath(tableName, key);
-        storageDSU.readFile(recordPath, function (err, res) {
-            let record;
-            let retErr = undefined;
-            if (err) {
-                retErr = createOpenDSUErrorWrapper(`Failed to read record in ${recordPath}`, err);
-            } else {
-                try {
-                    record = JSON.parse(res);
-                } catch (newErr) {
-                    retErr = createOpenDSUErrorWrapper(`Failed to parse record in ${recordPath}: ${res}`, retErr);
-                    //let's try to check if the res contains the record twice... at some point there was a bug on this topic
-                    let serializedRecord = res;
-                    if (ArrayBuffer.isView(serializedRecord) || serializedRecord.buffer) {
-                        serializedRecord = new TextDecoder().decode(serializedRecord);
-                    }
-                    let halfOfRes = serializedRecord.slice(0, serializedRecord.length / 2);
-                    let isDuplicated = (serializedRecord === halfOfRes + halfOfRes);
-                    if (isDuplicated) {
-                        try {
-                            record = JSON.parse(halfOfRes);
-                            console.log("We caught an error during record retrieval process and fix it. (duplicate content)");
-                            //we ignore the original error because we were able to fix it.
-                            retErr = undefined;
-                        } catch (err) {
-                            console.log("We caught an error during record retrieval process and we failed to fix it!");
-                        }
-                    } else {
-                        console.log(retErr);
-                    }
-                }
-            }
-            callback(retErr, record);
-        });
+        recordStorageStrategy.getRecord(recordPath, callback);
     };
 
     const READ_WRITE_KEY_TABLE = "KeyValueTable";
@@ -21154,7 +23443,289 @@ function SingleDSUStorageStrategy() {
 }
 
 module.exports.SingleDSUStorageStrategy = SingleDSUStorageStrategy;
-},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./SingleDSURecordStorageStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSURecordStorageStrategy.js","./operators":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/VersionlessStorageStrategy.js":[function(require,module,exports){
+/**
+ * a constructor that implements the {@link VersionlessStorageStrategy} interface and stores data multiple {@link VersionlessDSU}.
+ * When a new record is inserted a new {@link VersionlessDSU} is created and the data is stored in it.
+ * When a record is updated, the data is stored in the same {@link VersionlessDSU} as the previous version of the record.
+ * The paths of all the {@link VersionlessDSU}s are stored in a {@link VersionlessDSU} called RootVersionlessDSU that is created using the {@link createVersionlessDSU} method of the {@link resolver} module.
+ * A versionless DSU is created using the {@link createVersionlessDSU} method of the {@link resolver} module.
+ * The path of the VersionlessDSU is databaseName/tableName/pk
+ */
+const Query = require("./Query");
+const operators = require("./operators");
+const {getCompareFunctionForObjects} = require("./utils");
+
+function VersionlessStorageStrategy() {
+    const self = this;
+    let rootDSU;
+    let dbName;
+    const DATA_PATH = "data";
+
+    const openDSU = require("opendsu");
+    const resolver = openDSU.loadAPI("resolver");
+    const ObservableMixin = openDSU.loadAPI("utils").ObservableMixin;
+
+    ObservableMixin(this);
+
+    this.initialise = function (_rootDSU, _dbName) {
+        rootDSU = _rootDSU;
+        dbName = _dbName;
+        this.dispatchEvent("initialised");
+    }
+
+
+    this.beginBatch = () => {
+
+    }
+
+    this.safeBeginBatch = (callback) => {
+    }
+
+    this.safeBeginBatchAsync = async () => {
+    }
+
+    this.cancelBatch = (callback) => {
+    }
+
+    this.cancelBatchAsync = async () => {
+    }
+
+    this.commitBatch = (callback) => {
+    }
+
+    this.commitBatchAsync = async () => {
+    }
+
+    this.batchInProgress = () => {
+    }
+
+    function getPrimaryKeys(tableName, callback) {
+        rootDSU.listFiles(getRecordsPath(tableName), (err, data) => {
+            if (err) {
+                return callback(createOpenDSUErrorWrapper(`Failed to get primary keys for table ${tableName}`, err));
+            }
+            callback(undefined, data);
+        });
+    }
+
+    function readTheWholeTable(tableName, callback) {
+        getPrimaryKeys(tableName, (err, recordKeys) => {
+            if (err) {
+                return callback(createOpenDSUErrorWrapper(`Failed to read the records in table ${tableName}`, err));
+            }
+            const table = {};
+            if (recordKeys.length === 0) {
+                return callback(undefined, table);
+            }
+
+            const TaskCounter = require("swarmutils").TaskCounter;
+            const tc = new TaskCounter(() => {
+                return callback(undefined, table);
+            });
+            tc.increment(recordKeys.length);
+            recordKeys.forEach(recordKey => {
+                self.getRecord(tableName, recordKey, (err, record) => {
+                    if (err) {
+                        return callback(createOpenDSUErrorWrapper(`Failed to get record ${recordKey} in table ${tableName}`, err));
+                    }
+
+                    table[recordKey] = record;
+                    tc.decrement();
+                });
+            })
+        });
+    }
+
+    // Get the whole content of the table
+    this.getAllRecords = (tableName, callback) => {
+        readTheWholeTable(tableName, (err, tbl) => {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(undefined, Object.values(tbl));
+        })
+    }
+
+    /*
+          Get the whole content of the table and asynchronously returns an array with all the  records satisfying the condition tested by the filterFunction
+       */
+    const filterTable = function (tableName, conditionsArray, sort, limit, callback) {
+        readTheWholeTable(tableName, (err, tbl) => {
+            if (err) {
+                return callback(createOpenDSUErrorWrapper(`Failed to read table ${tableName}`, err));
+            }
+
+            const operators = require("./operators");
+            const filteredRecords = [];
+            const records = Object.values(tbl);
+            for (let i = 0; i < records.length; i++) {
+                const record = records[i];
+                if (record.__deleted) {
+                    continue;
+                }
+                let recordIsValid = true;
+                for (let i = 0; i < conditionsArray.length; i++) {
+                    const condition = conditionsArray[i];
+                    const [field, operator, value] = condition.split(" ");
+                    if (!operators[operator](record[field], value)) {
+                        recordIsValid = false;
+                        break;
+                    }
+                }
+
+                if (recordIsValid) {
+                    filteredRecords.push(record);
+                }
+            }
+
+            const {getCompareFunctionForObjects} = require("./utils");
+            filteredRecords.sort(getCompareFunctionForObjects(sort, conditionsArray[0].split(" ")[0]))
+            callback(undefined, filteredRecords.slice(0, limit));
+        });
+    };
+
+    this.filter = function (tableName, conditionsArray, sort, limit, callback) {
+        if (typeof conditionsArray === "function") {
+            callback = conditionsArray;
+            conditionsArray = undefined;
+            sort = undefined;
+            limit = undefined;
+        }
+
+        if (typeof conditionsArray === "undefined") {
+            conditionsArray = "__timestamp > 0";
+        }
+
+        if (typeof conditionsArray === "string") {
+            conditionsArray = [conditionsArray];
+        } else if (!Array.isArray(conditionsArray)) {
+            return callback(Error(`Condition argument of filter function need to be string or array of strings`));
+        }
+        let Query = require("./Query");
+        let query = new Query(conditionsArray);
+
+        if (typeof sort === "function") {
+            callback = sort;
+            sort = undefined;
+            limit = undefined;
+        }
+
+        if (typeof limit === "function") {
+            callback = limit;
+            limit = undefined;
+        }
+
+        if (typeof limit === "undefined") {
+            limit = Infinity;
+        }
+
+        if (typeof sort === "undefined") {
+            sort = "asc";
+        }
+
+        filterTable(tableName, conditionsArray, sort, limit, callback);
+    }
+
+    this.addIndex = function (tableName, fieldName, forceReindex, callback) {
+        callback();
+    }
+
+    this.getIndexedFields = function (tableName, callback) {
+        callback(undefined, []);
+    };
+
+    /*
+      Insert a record
+    */
+    this.insertRecord = function (tableName, key, record, callback) {
+        this.updateRecord(tableName, key, undefined, record, callback);
+    };
+
+    const getVersionlessDSUPath = (tableName, key) => {
+        return dbName + "/" + tableName + "/" + key;
+    }
+
+    const getRecordsPath = (tableName) => {
+        return dbName + "/" + tableName + "/" + "records";
+    }
+
+    const getVersionlessDSUPathInRootDSU = (tableName, key) => {
+        return getRecordsPath(tableName) + "/" + key;
+    }
+    /*
+        Update a record
+     */
+    this.updateRecord = function (tableName, key, oldRecord, newRecord, callback) {
+        let versionlessDSUPath = getVersionlessDSUPath(tableName, key);
+        resolver.createVersionlessDSU(versionlessDSUPath, (err, versionlessDSU) => {
+            if (err) {
+                return callback(err);
+            }
+            versionlessDSU.writeFile(DATA_PATH, JSON.stringify(newRecord), async (err) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                if(!oldRecord){
+                    let versionlessSSI;
+                    [err, versionlessSSI] = await $$.call(versionlessDSU.getKeySSIAsString);
+                    if(err) {
+                        return callback(err);
+                    }
+
+                    [err, res] = await $$.call(rootDSU.writeFile, getVersionlessDSUPathInRootDSU(tableName, key), versionlessSSI);
+
+                    if(err) {
+                        return callback(err);
+                    }
+                }
+
+                callback(undefined, newRecord);
+            });
+        });
+    };
+
+    /*
+        Get a single row from a table
+     */
+    this.getRecord = function (tableName, key, callback) {
+        let versionlessDSUPath = getVersionlessDSUPath(tableName, key);
+        rootDSU.readFile(getVersionlessDSUPathInRootDSU(tableName, key), async (err, versionlessDSUSSI) => {
+            if (err) {
+                return callback(err);
+            }
+
+            versionlessDSUSSI = versionlessDSUSSI.toString();
+            let versionlessDSU;
+            [err, versionlessDSU] = await $$.call(resolver.loadDSU, versionlessDSUSSI);
+            if(err) {
+                return callback(err);
+            }
+
+            let record;
+            [err, record] = await $$.call(versionlessDSU.readFile, DATA_PATH);
+            if(err) {
+                return callback(err);
+            }
+
+            callback(undefined, JSON.parse(record));
+        });
+    };
+
+    const READ_WRITE_KEY_TABLE = "KeyValueTable";
+    this.writeKey = function (key, value, callback) {
+
+    };
+
+    this.readKey = function (key, callback) {
+
+    }
+}
+
+module.exports.VersionlessStorageStrategy = VersionlessStorageStrategy;
+},{"./Query":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./operators":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js":[function(require,module,exports){
 module.exports = {
     "<": function (x, y) {
         return x < y
@@ -21197,7 +23768,7 @@ module.exports = {
     }
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js":[function(require,module,exports){
 function getCompareFunction(sortOrder) {
     if (sortOrder === "asc" || sortOrder === "ascending") {
         return function (a, b) {
@@ -21242,11 +23813,11 @@ module.exports = {
     getCompareFunction,
     getCompareFunctionForObjects
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dc/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dc/index.js":[function(require,module,exports){
 /*
 html API space
 */
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -21801,7 +24372,7 @@ function AppBuilderService(environment, opts) {
     }
 }
 module.exports = AppBuilderService;
-},{"./DossierBuilder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./FileService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/FileService.js","./commands/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/BuildWallet.js":[function(require,module,exports){
+},{"./DossierBuilder":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./FileService":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/FileService.js","./commands/utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/BuildWallet.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const resolver = openDSU.loadAPI("resolver");
 const keySSISpace = openDSU.loadAPI("keyssi");
@@ -21816,14 +24387,28 @@ function BuildWallet() {
 
     const __ensureEnvIsInitialised = (writableDSU, callback) => {
         writableDSU.readFile("/environment.json", async (err, env) => {
+            //TODO: check if env is a valid JSON
             if (err) {
+                try {
+                    await writableDSU.safeBeginBatchAsync();
+                } catch (e) {
+                    return callback(createOpenDSUErrorWrapper(`Failed to begin batch`, e));
+                }
+
                 try {
                     await $$.promisify(writableDSU.writeFile)("/environment.json", JSON.stringify({
                         vaultDomain: vaultDomain,
                         didDomain: vaultDomain
                     }))
+                    await writableDSU.commitBatchAsync();
                 } catch (e) {
-                    return callback(e);
+                    const writeFileError = createOpenDSUErrorWrapper(`Failed to store environment.json`, e);
+                    try {
+                        await writableDSU.cancelBatchAsync();
+                    } catch (error) {
+                        return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, error, writeFileError));
+                    }
+                    return callback(writeFileError);
                 }
             }
 
@@ -21889,8 +24474,12 @@ function BuildWallet() {
                         await $$.promisify(scAPI.setEnclave)(enclave, enclaveType);
                         callback();
                     } catch (e) {
-                        callback(createOpenDSUErrorWrapper("Failed to set shared enclave", e));
+                        return callback(createOpenDSUErrorWrapper("Failed to set shared enclave", e));
                     }
+                })
+
+                enclave.on("error", (err) => {
+                    return callback(createOpenDSUErrorWrapper("Failed to set shared enclave", err));
                 })
             } else {
                 callback();
@@ -21923,19 +24512,33 @@ const initialiseWallet = (callback) => {
         }
 
         scAPI.setMainDSU(buildWallet);
-        buildWallet.ensureMainEnclaveExists(err => {
-            if (err) {
+        const _ensureEnclavesExist = () => {
+            buildWallet.ensureMainEnclaveExists(err => {
+                if (err) {
+                    return callback(err);
+                }
+                buildWallet.ensureSharedEnclaveExists(callback);
+            })
+        }
+        const sc = scAPI.getSecurityContext();
+        if (sc.isInitialised()) {
+            _ensureEnclavesExist()
+        } else {
+            sc.on("initialised", () => {
+                _ensureEnclavesExist();
+            });
+
+            sc.on("error", (err) => {
                 return callback(err);
-            }
-            buildWallet.ensureSharedEnclaveExists(callback);
-        })
+            });
+        }
     });
 }
 
 module.exports = {
     initialiseWallet
 };
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -22168,7 +24771,7 @@ const DossierBuilder = function (sourceDSU, varStore) {
 
 module.exports = DossierBuilder;
 
-},{"./commands":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js","./commands/VarStore":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js","./commands/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/FileService.js":[function(require,module,exports){
+},{"./commands":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/index.js","./commands/VarStore":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js","./commands/utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js","./index":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/index.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/FileService.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -22289,7 +24892,7 @@ function FileService(options) {
 }
 
 module.exports = FileService;
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -22394,7 +24997,7 @@ class Command {
 }
 
 module.exports = Command;
-},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js":[function(require,module,exports){
+},{"./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Registry.js":[function(require,module,exports){
 /**
  * List of all available commands to the Dossier Builder
  * Without being here, they can't be used
@@ -22428,7 +25031,7 @@ const _getByName = function(cmdName){
 }
 
 module.exports = _getByName;
-},{"./addFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js":[function(require,module,exports){
+},{"./addFile":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/VarStore.js":[function(require,module,exports){
 /**
  * @module commands
  * A simple variable store
@@ -22473,7 +25076,7 @@ const VarStore = function(){
 }
 
 module.exports = VarStore;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFile.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/addFile.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -22561,7 +25164,7 @@ class AddFileCommand extends Command{
 }
 
 module.exports = AddFileCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -22632,7 +25235,7 @@ class AddFolderCommand extends Command {
 }
 
 module.exports = AddFolderCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -22823,7 +25426,7 @@ class CreateDSUCommand extends Command{
 }
 
 module.exports = CreateDSUCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./genKey":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createFile.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./genKey":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/createFile.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -22889,7 +25492,7 @@ class CreateFileCommand extends Command{
 }
 
 module.exports = CreateFileCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/define.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/define.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -22971,7 +25574,7 @@ class DefineCommand extends Command {
 }
 
 module.exports = DefineCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/delete.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/delete.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23026,7 +25629,7 @@ class DeleteCommand extends Command {
 
 module.exports = DeleteCommand;
 
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/derive.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/derive.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23087,7 +25690,7 @@ class DeriveCommand extends Command{
 }
 
 module.exports = DeriveCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/endWith.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/endWith.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23139,7 +25742,7 @@ class EndWithCommand extends Command{
 }
 
 module.exports = EndWithCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/genKey.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23288,7 +25891,7 @@ class GenKeyCommand extends Command {
 }
 
 module.exports = GenKeyCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23360,7 +25963,7 @@ class GetIdentifierCommand extends Command{
 }
 
 module.exports = GetIdentifierCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/index.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23383,7 +25986,7 @@ module.exports = {
     WithCommand: require('./with'),
     _getByName: require('./Registry')
 }
-},{"./Registry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./addFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/mount.js":[function(require,module,exports){
+},{"./Registry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./addFile":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/addFile.js","./addFolder":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/addFolder.js","./createDSU":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/createDSU.js","./createFile":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/createFile.js","./define":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/define.js","./delete":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/delete.js","./derive":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/derive.js","./endWith":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/endWith.js","./genKey":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/genKey.js","./getIndentifier":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/getIndentifier.js","./mount":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/mount.js","./objToArray":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js","./readFile":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./with":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/with.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/mount.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23518,7 +26121,7 @@ class MountCommand extends Command {
 }
 
 module.exports = MountCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./readFile":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./readFile":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/readFile.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/objToArray.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23575,7 +26178,7 @@ class ObjToArrayCommand extends Command{
 }
 
 module.exports = ObjToArrayCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/readFile.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/readFile.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23637,7 +26240,7 @@ class ReadFileCommand extends Command{
 }
 
 module.exports = ReadFileCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js":[function(require,module,exports){
 /**
  * @module Commands
  */
@@ -23748,7 +26351,7 @@ module.exports = {
     KEY_TYPE,
     DSU_TYPE
 };
-},{"fs":false,"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/with.js":[function(require,module,exports){
+},{"fs":false,"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/with.js":[function(require,module,exports){
 /**
  * @module Commands
  * @memberOf dt
@@ -23875,7 +26478,7 @@ class WithCommand extends Command {
 }
 
 module.exports = WithCommand;
-},{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/index.js":[function(require,module,exports){
+},{"./Command":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/index.js":[function(require,module,exports){
 /**
  * @module dt
  */
@@ -23909,7 +26512,7 @@ module.exports = {
     AppBuilderService: require('./AppBuilderService')
 }
 
-},{"./AppBuilderService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js","./BuildWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/BuildWallet.js","./DossierBuilder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./commands":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js":[function(require,module,exports){
+},{"./AppBuilderService":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js","./BuildWallet":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/BuildWallet.js","./DossierBuilder":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./commands":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/commands/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js":[function(require,module,exports){
 const {createCommandObject} = require("./lib/createCommandObject");
 
 function APIHUBProxy(domain, did) {
@@ -23961,7 +26564,7 @@ function APIHUBProxy(domain, did) {
 }
 
 module.exports = APIHUBProxy;
-},{".././../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js":[function(require,module,exports){
+},{".././../utils/BindAutoPendingFunctions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js":[function(require,module,exports){
 const constants = require("./constants");
 
 function Enclave_Mixin(target, did, keySSI) {
@@ -24136,12 +26739,32 @@ function Enclave_Mixin(target, did, keySSI) {
         target.storageDB.beginBatch();
     }
 
+    target.safeBeginBatch = (forDID, callback) => {
+        target.storageDB.safeBeginBatch(callback);
+    }
+
+    target.safeBeginBatchAsync = async (forDID) => {
+        return await target.storageDB.safeBeginBatchAsync();
+    }
+
     target.commitBatch = (forDID, callback) => {
         target.storageDB.commitBatch(callback);
     }
 
+    target.commitBatchAsync = async (forDID) => {
+        return await target.storageDB.commitBatchAsync();
+    }
+
     target.cancelBatch = (forDID, callback) => {
         target.storageDB.cancelBatch(callback);
+    }
+
+    target.cancelBatchAsync = async (forDID) => {
+        return await target.storageDB.cancelBatchAsync();
+    }
+
+    target.batchInProgress = (forDID) => {
+        return target.storageDB.batchInProgress();
     }
 
     target.readKey = (forDID, key, callback) => {
@@ -24178,28 +26801,28 @@ function Enclave_Mixin(target, did, keySSI) {
         const keySSIIdentifier = seedSSI.getIdentifier();
         const isExistingKeyError = (error) => error.originalMessage === errorAPI.DB_INSERT_EXISTING_RECORD_ERROR;
 
-        function registerDerivedKeySSIs(derivedKeySSI, sReadSSIIdentifier) {
+        function registerDerivedKeySSIs(derivedKeySSI, sReadSSIIdentifier, cb) {
             target.storageDB.insertRecord(constants.TABLE_NAMES.KEY_SSIS, derivedKeySSI.getIdentifier(), {capableOfSigningKeySSI: keySSIIdentifier}, (err) => {
                 if (err && !isExistingKeyError(err)) {
                     // ignore if KeySSI is already present
-                    return callback(err);
+                    return cb(err);
                 }
                 target.storageDB.insertRecord(constants.TABLE_NAMES.SREAD_SSIS, derivedKeySSI.getIdentifier(), {sReadSSI: sReadSSIIdentifier}, (err) => {
                     if (err && !isExistingKeyError(err)) {
                         // ignore if sReadSSI is already present
-                        return callback(err);
+                        return cb(err);
                     }
 
                     if (typeof derivedKeySSI.derive !== "function") {
-                        return callback();
+                        return cb();
                     }
 
                     derivedKeySSI.derive((err, _derivedKeySSI) => {
                         if (err) {
-                            return callback(err);
+                            return cb(err);
                         }
 
-                        registerDerivedKeySSIs(_derivedKeySSI, sReadSSIIdentifier);
+                        registerDerivedKeySSIs(_derivedKeySSI, sReadSSIIdentifier, cb);
                     })
 
                 });
@@ -24212,7 +26835,23 @@ function Enclave_Mixin(target, did, keySSI) {
             }
 
             const sReadSSIIdentifier = sReadSSI.getIdentifier();
-            return registerDerivedKeySSIs(seedSSI, sReadSSIIdentifier);
+            target.storageDB.safeBeginBatch((err) => {
+                if (err) {
+                    return callback(err);
+                }
+                return registerDerivedKeySSIs(seedSSI, sReadSSIIdentifier, (err) => {
+                    if (err) {
+                        return target.storageDB.cancelBatch((err) => {
+                            if (err) {
+                                return callback(err);
+                            }
+                            callback(err);
+                        });
+                    }
+
+                    target.storageDB.commitBatch(callback);
+                });
+            });
         })
     }
 
@@ -24247,7 +26886,23 @@ function Enclave_Mixin(target, did, keySSI) {
 
         if (keySSI.getFamilyName() === openDSU.constants.KEY_SSI_FAMILIES.SEED_SSI_FAMILY) {
             const keySSIIdentifier = keySSI.getIdentifier();
-            target.storageDB.insertRecord(constants.TABLE_NAMES.KEY_SSIS, keySSIIdentifier, {keySSI: keySSIIdentifier}, callback)
+            target.storageDB.safeBeginBatch((err) => {
+                if (err) {
+                    return callback(err);
+                }
+                target.storageDB.insertRecord(constants.TABLE_NAMES.KEY_SSIS, keySSIIdentifier, {keySSI: keySSIIdentifier}, (err) => {
+                    if (err) {
+                        return target.storageDB.cancelBatch((err) => {
+                            if (err) {
+                                return callback(err);
+                            }
+                            callback(err);
+                        });
+                    }
+
+                    target.storageDB.commitBatch(callback);
+                });
+            })
         } else {
             callback();
         }
@@ -24270,7 +26925,23 @@ function Enclave_Mixin(target, did, keySSI) {
             }
         }
         const keySSIIdentifier = sReadSSI.getIdentifier();
-        target.storageDB.insertRecord(constants.TABLE_NAMES.SREAD_SSIS, aliasSSI.getIdentifier(), {sReadSSI: keySSIIdentifier}, callback)
+        target.storageDB.safeBeginBatch((err) => {
+            if (err) {
+                return callback(err);
+            }
+            target.storageDB.insertRecord(constants.TABLE_NAMES.SREAD_SSIS, aliasSSI.getIdentifier(), {sReadSSI: keySSIIdentifier}, (err) => {
+                if (err) {
+                    return target.storageDB.cancelBatch((err) => {
+                        if (err) {
+                            return callback(err);
+                        }
+                        callback(err);
+                    });
+                }
+
+                target.storageDB.commitBatch(callback);
+            });
+        })
     }
 
     target.getReadForKeySSI = (forDID, keySSI, callback) => {
@@ -24327,25 +26998,89 @@ function Enclave_Mixin(target, did, keySSI) {
 
         target.storageDB.getRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, storedDID.getIdentifier(), (err, res) => {
             if (err || !res) {
-                return target.storageDB.insertRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, storedDID.getIdentifier(), {privateKeys: privateKeys}, callback);
+                return target.storageDB.safeBeginBatch((err) => {
+                    if (err) {
+                        return callback(err);
+                    }
+                    target.storageDB.insertRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, storedDID.getIdentifier(), {privateKeys: privateKeys}, (err, rec) => {
+                        if (err) {
+                            return target.storageDB.cancelBatch((err) => {
+                                if (err) {
+                                    return callback(err);
+                                }
+                                callback(err);
+                            });
+                        }
+
+                        target.storageDB.commitBatch(err => callback(err, rec));
+                    });
+                })
             }
 
             privateKeys.forEach(privateKey => {
                 res.privateKeys.push(privateKey);
             })
-            target.storageDB.updateRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, storedDID.getIdentifier(), res, callback);
+            target.storageDB.safeBeginBatch((err) => {
+                if (err) {
+                    return callback(err);
+                }
+                target.storageDB.updateRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, storedDID.getIdentifier(), res, (err) => {
+                    if (err) {
+                        return target.storageDB.cancelBatch((err) => {
+                            if (err) {
+                                return callback(err);
+                            }
+                            callback(err);
+                        });
+                    }
+
+                    target.storageDB.commitBatch(callback);
+                });
+            })
         });
     }
 
-    target.addPrivateKeyForDID = (didDocument, privateKey, callback) => {
+    target.addPrivateKeyForDID = (forDid, didDocument, privateKey, callback) => {
         const privateKeyObj = {privateKeys: [privateKey]}
         target.storageDB.getRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, didDocument.getIdentifier(), (err, res) => {
             if (err || !res) {
-                return target.storageDB.insertRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, didDocument.getIdentifier(), privateKeyObj, callback);
+                return target.storageDB.safeBeginBatch((err) => {
+                    if (err) {
+                        return callback(err);
+                    }
+                    return target.storageDB.insertRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, didDocument.getIdentifier(), privateKeyObj, (err) => {
+                        if (err) {
+                            return target.storageDB.cancelBatch((err) => {
+                                if (err) {
+                                    return callback(err);
+                                }
+                                callback(err);
+                            });
+                        }
+
+                        target.storageDB.commitBatch(callback);
+                    });
+                })
             }
 
             res.privateKeys.push(privateKey);
-            target.storageDB.updateRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, didDocument.getIdentifier(), res, callback);
+            target.storageDB.safeBeginBatch((err) => {
+                if (err) {
+                    return callback(err);
+                }
+                target.storageDB.updateRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, didDocument.getIdentifier(), res, (err) => {
+                    if (err) {
+                        return target.storageDB.cancelBatch((err) => {
+                            if (err) {
+                                return callback(err);
+                            }
+                            callback(err);
+                        });
+                    }
+
+                    target.storageDB.commitBatch(callback);
+                });
+            })
         });
     }
 
@@ -24365,11 +27100,26 @@ function Enclave_Mixin(target, did, keySSI) {
             alias = generateUid(10).toString("hex");
         }
 
-        target.storageDB.insertRecord(constants.TABLE_NAMES.PRIVATE_KEYS, alias, {
-            privateKey: privateKey,
-            type: type
-        }, callback)
+        target.storageDB.safeBeginBatch((err) => {
+            if (err) {
+                return callback(err);
+            }
+            target.storageDB.insertRecord(constants.TABLE_NAMES.PRIVATE_KEYS, alias, {
+                privateKey: privateKey,
+                type: type
+            }, (err, rec) => {
+                if (err) {
+                    return target.storageDB.cancelBatch((err) => {
+                        if (err) {
+                            return callback(err);
+                        }
+                        callback(err);
+                    });
+                }
 
+                target.storageDB.commitBatch(err => callback(err, rec));
+            });
+        });
     }
 
     target.storeSecretKey = (forDID, secretKey, alias, callback) => {
@@ -24383,7 +27133,23 @@ function Enclave_Mixin(target, did, keySSI) {
             alias = generateUid(10).toString("hex");
         }
 
-        target.storageDB.insertRecord(constants.TABLE_NAMES.SECRET_KEYS, alias, {secretKey: secretKey}, callback)
+        target.storageDB.safeBeginBatch((err) => {
+            if (err) {
+                return callback(err);
+            }
+            target.storageDB.insertRecord(constants.TABLE_NAMES.SECRET_KEYS, alias, {secretKey: secretKey}, (err, res) => {
+                if (err) {
+                    return target.storageDB.cancelBatch((err) => {
+                        if (err) {
+                            return callback(err);
+                        }
+                        callback(err);
+                    });
+                }
+
+                target.storageDB.commitBatch(err => callback(err, res));
+            })
+        })
     };
 
     target.generateSecretKey = (forDID, secretKeyAlias, callback) => {
@@ -24520,13 +27286,18 @@ function Enclave_Mixin(target, did, keySSI) {
             didTo = didFrom;
             didFrom = forDID;
         }
-        getPrivateInfoForDID(didFrom.getIdentifier(), (err, privateKeys) => {
-            if (err) {
-                return callback(createOpenDSUErrorWrapper(`Failed to get private info for did ${didFrom.getIdentifier()}`, err));
-            }
+        const privateKeys = didFrom.getPrivateKeys();
+        if (typeof privateKeys[privateKeys.length - 1] === "undefined") {
+            getPrivateInfoForDID(didFrom.getIdentifier(), (err, privateKeys) => {
+                if (err) {
+                    return callback(createOpenDSUErrorWrapper(`Failed to get private info for did ${didFrom.getIdentifier()}`, err));
+                }
 
+                CryptoSkills.applySkill(didFrom.getMethodName(), CryptoSkills.NAMES.ENCRYPT_MESSAGE, privateKeys, didFrom, didTo, message, callback);
+            });
+        } else {
             CryptoSkills.applySkill(didFrom.getMethodName(), CryptoSkills.NAMES.ENCRYPT_MESSAGE, privateKeys, didFrom, didTo, message, callback);
-        });
+        }
     }
 
     target.decryptMessage = (forDID, didTo, encryptedMessage, callback) => {
@@ -24535,13 +27306,19 @@ function Enclave_Mixin(target, did, keySSI) {
             encryptedMessage = didTo;
             didTo = forDID;
         }
-        getPrivateInfoForDID(didTo.getIdentifier(), (err, privateKeys) => {
-            if (err) {
-                return callback(createOpenDSUErrorWrapper(`Failed to get private info for did ${didTo.getIdentifier()}`, err));
-            }
 
+        const privateKeys = didTo.getPrivateKeys();
+        if (typeof privateKeys[privateKeys.length - 1] === "undefined") {
+            getPrivateInfoForDID(didTo.getIdentifier(), (err, privateKeys) => {
+                if (err) {
+                    return callback(createOpenDSUErrorWrapper(`Failed to get private info for did ${didTo.getIdentifier()}`, err));
+                }
+
+                CryptoSkills.applySkill(didTo.getMethodName(), CryptoSkills.NAMES.DECRYPT_MESSAGE, privateKeys, didTo, encryptedMessage, callback);
+            });
+        } else {
             CryptoSkills.applySkill(didTo.getMethodName(), CryptoSkills.NAMES.DECRYPT_MESSAGE, privateKeys, didTo, encryptedMessage, callback);
-        });
+        }
     };
 
 
@@ -24659,13 +27436,20 @@ function Enclave_Mixin(target, did, keySSI) {
     }
 
     target.loadDSURecoveryMode = (forDID, ssi, contentRecoveryFnc, callback) => {
-        target.loadDSU(forDID, ssi, {contentRecoveryFnc, recoveryMode: true}, callback);
+        const defaultOptions = {recoveryMode: true};
+        let options = {contentRecoveryFnc, recoveryMode: true};
+        if (typeof contentRecoveryFnc === "object") {
+            options = contentRecoveryFnc;
+        }
+
+        options = Object.assign(defaultOptions, options);
+        target.loadDSU(forDID, ssi, options, callback);
     }
 }
 
 module.exports = Enclave_Mixin;
 
-},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js":[function(require,module,exports){
 const {createCommandObject} = require("./lib/createCommandObject");
 
 function HighSecurityProxy(domain, did) {
@@ -24724,7 +27508,7 @@ function HighSecurityProxy(domain, did) {
 }
 
 module.exports = HighSecurityProxy;
-},{".././../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js":[function(require,module,exports){
+},{".././../utils/BindAutoPendingFunctions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js":[function(require,module,exports){
 function MemoryEnclave() {
     const EnclaveMixin = require("./Enclave_Mixin");
     EnclaveMixin(this);
@@ -24743,6 +27527,9 @@ function MemoryEnclave() {
         return openDSU.constants.ENCLAVE_TYPES.MEMORY_ENCLAVE;
     };
 
+    this.getKeySSI = (callback) => {
+        callback(undefined, "ssi::::")
+    }
     this.isInitialised = () => {
         return initialised
     }
@@ -24751,7 +27538,7 @@ function MemoryEnclave() {
 }
 
 module.exports = MemoryEnclave;
-},{"./Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js":[function(require,module,exports){
+},{"./Enclave_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js":[function(require,module,exports){
 function PathKeyMapping(enclaveHandler) {
     const utils = require("./utils");
     const openDSU = require("opendsu");
@@ -24865,7 +27652,7 @@ function PathKeyMapping(enclaveHandler) {
 }
 
 module.exports = PathKeyMapping;
-},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js":[function(require,module,exports){
+},{"./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/utils.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js":[function(require,module,exports){
 const {createOpenDSUErrorWrapper} = require("../../error");
 
 function ProxyMixin(target) {
@@ -25072,11 +27859,8 @@ function ProxyMixin(target) {
 }
 
 module.exports = ProxyMixin;
-},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./lib/commandsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js":[function(require,module,exports){
+},{"../../error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./lib/commandsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js":[function(require,module,exports){
 const { createCommandObject } = require("./lib/createCommandObject");
-const ProxyMixin = require("./ProxyMixin");
-const openDSU = require('../../index');
-const w3cDID = openDSU.loadAPI("w3cdid");
 
 function RemoteEnclave(clientDID, remoteDID, requestTimeout) {
     let initialised = false;
@@ -25084,11 +27868,13 @@ function RemoteEnclave(clientDID, remoteDID, requestTimeout) {
 
     this.commandsMap = new Map();
     this.requestTimeout = requestTimeout ?? DEFAULT_TIMEOUT;
-
+    
+    const ProxyMixin = require("./ProxyMixin");
     ProxyMixin(this);
 
     const init = async () => {
         try {
+            const w3cDID = require("opendsu").loadAPI("w3cdid");
             this.clientDIDDocument = await $$.promisify(w3cDID.resolveDID)(clientDID);
             this.remoteDIDDocument = await $$.promisify(w3cDID.resolveDID)(remoteDID);
         }
@@ -25097,7 +27883,7 @@ function RemoteEnclave(clientDID, remoteDID, requestTimeout) {
         }
         this.initialised = true;
         this.dispatchEvent("initialised");
-
+        this.subscribe();
     }
 
     this.isInitialised = () => {
@@ -25108,6 +27894,10 @@ function RemoteEnclave(clientDID, remoteDID, requestTimeout) {
         callback(undefined, did);
     }
 
+    this.callLambda = (lambdaName, ...args) => {
+        this.__putCommandObject(lambdaName, ...args);
+    }
+
     this.__putCommandObject = (commandName, ...args) => {
         const callback = args.pop();
         args.push(clientDID);
@@ -25116,9 +27906,8 @@ function RemoteEnclave(clientDID, remoteDID, requestTimeout) {
         const commandID = JSON.parse(command).commandID;
         this.commandsMap.set(commandID, { "callback": callback, "time": Date.now() });
 
-        if (this.commandsMap.size == 1) {
-            this.subscribe();
-
+        if (this.commandsMap.size === 1) {
+            this.clientDIDDocument.startWaitingForMessages();
         }
 
         this.clientDIDDocument.sendMessage(command, this.remoteDIDDocument, (err, res) => {
@@ -25130,7 +27919,7 @@ function RemoteEnclave(clientDID, remoteDID, requestTimeout) {
     }
 
     this.subscribe = () => {
-        this.clientDIDDocument.waitForMessages((err, res) => {
+        this.clientDIDDocument.subscribe((err, res) => {
             if (err) {
                 console.log(err);
                 return;
@@ -25147,7 +27936,7 @@ function RemoteEnclave(clientDID, remoteDID, requestTimeout) {
                 callback(err, JSON.stringify(commandResult));
 
                 this.commandsMap.delete(commandID);
-                if (this.commandsMap.size == 0) {
+                if (this.commandsMap.size === 0) {
                     this.clientDIDDocument.stopWaitingForMessages();
                 }
             }
@@ -25163,17 +27952,109 @@ function RemoteEnclave(clientDID, remoteDID, requestTimeout) {
         const callback = this.commandsMap.get(commandID).callback;
         callback(createOpenDSUErrorWrapper(`Timeout for command ${commandID}`), undefined);
         this.commandsMap.delete(commandID);
-        if (this.commandsMap.size == 0) {
+        if (this.commandsMap.size === 0) {
             this.clientDIDDocument.stopWaitingForMessages();
         }
     }
 
     init();
-
 }
 
 module.exports = RemoteEnclave;
-},{"../../index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/index.js","./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js":[function(require,module,exports){
+},{"./ProxyMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/VersionlessDSUEnclave.js":[function(require,module,exports){
+function VersionlessDSUEnclave(keySSI, did) {
+    const openDSU = require("opendsu");
+    const constants = require("./constants");
+    const db = openDSU.loadAPI("db");
+    const resolver = openDSU.loadAPI("resolver");
+    const config = openDSU.loadAPI("config");
+    const keySSISpace = openDSU.loadAPI("keyssi");
+    const DB_NAME = constants.DB_NAMES.WALLET_DB_ENCLAVE;
+    const EnclaveMixin = require("./Enclave_Mixin");
+
+    EnclaveMixin(this, did, keySSI);
+
+    let versionlessDSU;
+    let initialised = false;
+    const init = async () => {
+        if (!keySSI) {
+            try {
+                keySSI = await $$.promisify(config.getEnv)(openDSU.constants.MAIN_ENCLAVE.KEY_SSI);
+            } catch (e) {}
+
+            if (!keySSI) {
+                try {
+                    versionlessDSU = await $$.promisify(resolver.createVersionlessDSU)();
+                } catch (e) {
+                    throw createOpenDSUErrorWrapper(`Failed to create versionless DSU`, e);
+                }
+
+                try {
+                    keySSI = await $$.promisify(versionlessDSU.getKeySSIAsString)();
+                } catch (e) {
+                    throw createOpenDSUErrorWrapper(`Failed to get enclave DSU KeySSI`, e);
+                }
+                try {
+                    await $$.promisify(config.setEnv)(openDSU.constants.MAIN_ENCLAVE.KEY_SSI, keySSI);
+                } catch (e) {
+                    throw createOpenDSUErrorWrapper(`Failed to store enclave DSU KeySSI`, e);
+                }
+            }
+        }
+
+        await $$.promisify(resolver.invalidateDSUCache)(keySSI);
+
+        this.storageDB = db.getVersionlessDB(DB_NAME, { keySSI });
+        this.storageDB.on("error", (err) => {
+            this.dispatchEvent("error", err);
+        });
+        this.storageDB.on("initialised", async () => {
+            if (typeof keySSI === "string") {
+                keySSI = keySSISpace.parse(keySSI);
+            }
+            let privateKey;
+            try {
+                privateKey = await $$.promisify(this.storageDB.getRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0);
+            } catch (e) {}
+            if (!privateKey) {
+                await $$.promisify(this.storageDB.insertRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0, {
+                    privateKey: keySSI.getEncryptionKey(),
+                });
+            }
+
+            initialised = true;
+            this.finishInitialisation();
+            this.dispatchEvent("initialised");
+        });
+    };
+
+    this.getKeySSI = (forDID, callback) => {
+        if (typeof forDID === "function") {
+            callback = forDID;
+            forDID = undefined;
+        }
+        callback(undefined, keySSI);
+    };
+
+    this.getEnclaveType = () => {
+        return openDSU.constants.ENCLAVE_TYPES.VERSIONLESS_DSU_ENCLAVE;
+    };
+
+    this.isInitialised = () => {
+        return initialised;
+    };
+
+    const bindAutoPendingFunctions = require("../../utils/BindAutoPendingFunctions").bindAutoPendingFunctions;
+    bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent", "beginBatch", "isInitialised", "getEnclaveType"]);
+
+    init();
+}
+
+module.exports = VersionlessDSUEnclave;
+
+},{"../../utils/BindAutoPendingFunctions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./Enclave_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js":[function(require,module,exports){
+const {createOpenDSUErrorWrapper} = require("../../error");
+
 function WalletDBEnclave(keySSI, did) {
     const openDSU = require("opendsu");
     const constants = require("./constants");
@@ -25222,10 +28103,10 @@ function WalletDBEnclave(keySSI, did) {
             }
         }
 
-        try{
+        try {
             await $$.promisify(resolver.invalidateDSUCache)(keySSI);
             this.storageDB = db.getSimpleWalletDB(DB_NAME, {keySSI});
-        }catch (e) {
+        } catch (e) {
             this.dispatchEvent("error", e)
         }
         this.storageDB.on("error", err => {
@@ -25237,12 +28118,32 @@ function WalletDBEnclave(keySSI, did) {
             }
             enclaveDSU = this.storageDB.getStorageDSU();
             let privateKey;
-            try{
+            try {
                 privateKey = await $$.promisify(this.storageDB.getRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0);
             } catch (e) {
             }
             if (!privateKey) {
-                await $$.promisify(this.storageDB.insertRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0, {privateKey: keySSI.getPrivateKey()});
+                try{
+                    await this.storageDB.safeBeginBatchAsync();
+                } catch (e) {
+                    this.dispatchEvent("error", e);
+                }
+
+                try {
+                    await $$.promisify(this.storageDB.insertRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0, {privateKey: keySSI.getPrivateKey()});
+                    await this.storageDB.commitBatchAsync();
+                } catch (e) {
+                    const insertError = createOpenDSUErrorWrapper(`Failed to insert private key`, e);
+                    try {
+                        await this.storageDB.cancelBatchAsync();
+                    } catch (error) {
+                        const newError = createOpenDSUErrorWrapper(`Failed to cancel batch`, error, insertError);
+                        this.dispatchEvent("error", newError);
+                        return
+                    }
+                    this.dispatchEvent("error", insertError);
+                    return
+                }
             }
 
             initialised = true;
@@ -25259,7 +28160,7 @@ function WalletDBEnclave(keySSI, did) {
         callback(undefined, keySSI);
     }
 
-    this.getDSU = (forDID, callback)=>{
+    this.getDSU = (forDID, callback) => {
         if (typeof forDID === "function") {
             callback = forDID;
             forDID = undefined;
@@ -25287,7 +28188,7 @@ function WalletDBEnclave(keySSI, did) {
 }
 
 module.exports = WalletDBEnclave;
-},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js":[function(require,module,exports){
+},{"../../error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","../../utils/BindAutoPendingFunctions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./Enclave_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js":[function(require,module,exports){
 const pathModule = require("path");
 const constants = require("./constants");
 
@@ -25309,32 +28210,57 @@ function WalletDBEnclaveHandler(walletDBEnclaveDSU, config) {
 
     this.storePathKeySSI = (pathKeySSI, callback) => {
         if (typeof pathKeySSI === "string") {
-            try{
+            try {
                 pathKeySSI = keySSISpace.parse(pathKeySSI);
-            }catch (e) {
+            } catch (e) {
                 return callback(e);
             }
         }
         const __storePathKeySSI = () => {
             const filePath = pathModule.join(constants.PATHS.SCATTERED_PATH_KEYS, pathKeySSI.getSpecificString(), pathKeySSI.getIdentifier());
-            walletDBEnclaveDSU.writeFile(filePath, async err => {
+            walletDBEnclaveDSU.safeBeginBatch(err => {
                 if (err) {
                     return callback(err);
                 }
 
-                try {
-                    const files = await $$.promisify(walletDBEnclaveDSU.listFiles)(constants.PATHS.SCATTERED_PATH_KEYS);
-                    if (files.length === config.maxNoScatteredKeys) {
+                walletDBEnclaveDSU.writeFile(filePath, async err => {
+                    if (err) {
+                        const writeFileError = createOpenDSUErrorWrapper(`Failed to store path key SSI <${pathKeySSI.getIdentifier()}>`, err);
                         try {
-                            await compactPathKeys();
+                            await walletDBEnclaveDSU.cancelBatchAsync();
                         } catch (e) {
-                            return callback(e);
+                            return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, e, writeFileError));
                         }
+                        return callback(writeFileError);
                     }
-                    callback();
-                } catch (e) {
-                    return callback(e);
-                }
+
+                    try {
+                        const files = await $$.promisify(walletDBEnclaveDSU.listFiles)(constants.PATHS.SCATTERED_PATH_KEYS);
+                        if (files.length === config.maxNoScatteredKeys) {
+                            try {
+                                await compactPathKeys();
+                            } catch (e) {
+                                const compactPathKeysError = createOpenDSUErrorWrapper(`Failed to compact path keys`, e);
+                                try {
+                                    await walletDBEnclaveDSU.cancelBatchAsync();
+                                } catch (error) {
+                                    return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, error, compactPathKeysError));
+                                }
+                                return callback(compactPathKeysError);
+                            }
+                        }
+                    } catch (e) {
+                        const listFilesError = createOpenDSUErrorWrapper(`Failed to list files`, e);
+                        try {
+                            await walletDBEnclaveDSU.cancelBatchAsync();
+                        } catch (error) {
+                            return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, error, listFilesError));
+                        }
+                        return callback(listFilesError);
+                    }
+
+                    walletDBEnclaveDSU.commitBatch(callback);
+                })
             })
         };
 
@@ -25371,7 +28297,7 @@ function WalletDBEnclaveHandler(walletDBEnclaveDSU, config) {
     }
 
     this.loadPaths = (callback) => {
-        const __loadPaths = ()=> {
+        const __loadPaths = () => {
             loadCompactedPathKeys((err, compactedKeys) => {
                 if (err) {
                     return callback(err);
@@ -25444,7 +28370,7 @@ function WalletDBEnclaveHandler(walletDBEnclaveDSU, config) {
 }
 
 module.exports = WalletDBEnclaveHandler;
-},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js":[function(require,module,exports){
+},{"./constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","path":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/constants.js":[function(require,module,exports){
 module.exports = {
     TABLE_NAMES: {
         KEY_SSIS: "keyssis",
@@ -25463,7 +28389,7 @@ module.exports = {
         WALLET_DB_ENCLAVE: "walletdb_enclave"
     }
 };
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js":[function(require,module,exports){
 module.exports = {
     INSERT_RECORD: "insertRecord",
     UPDATE_RECORD: "updateRecord",
@@ -25491,7 +28417,7 @@ module.exports = {
     DECRYPT_MESSAGE: "decryptMessage",
     GET_PRIVATE_INFO_FOR_DID:"getPrivateInfoForDID"
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js":[function(require,module,exports){
 const createCommandObject = (commandName, ...args) => {
     const commandID = require('crypto').randomBytes(32).toString("base64")
 
@@ -25507,7 +28433,7 @@ const createCommandObject = (commandName, ...args) => {
 module.exports = {
     createCommandObject
 }
-},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/utils.js":[function(require,module,exports){
+},{"crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/utils.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const keySSISpace = openDSU.loadAPI("keyssi");
 
@@ -25602,7 +28528,7 @@ module.exports = {
     getKeySSIMapping,
     mergeMappings
 }
-},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
 function initialiseWalletDBEnclave(keySSI, did) {
@@ -25627,6 +28553,11 @@ function initialiseHighSecurityProxy(domain, did) {
 function initialiseRemoteEnclave(clientDID, remoteDID) {
     const RemoteEnclave = require("./impl/RemoteEnclave");
     return new RemoteEnclave(clientDID, remoteDID);}
+
+function initialiseVersionlessDSUEnclave(versionlessSSI) {
+    const VersionlessDSUEnclave = require("./impl/VersionlessDSUEnclave");
+    return new VersionlessDSUEnclave(versionlessSSI);
+}
 
 function connectEnclave(forDID, enclaveDID, ...args) {
     throw Error("Not implemented");
@@ -25653,6 +28584,7 @@ registerEnclave(constants.ENCLAVE_TYPES.WALLET_DB_ENCLAVE, initialiseWalletDBEnc
 registerEnclave(constants.ENCLAVE_TYPES.APIHUB_ENCLAVE, initialiseAPIHUBProxy);
 registerEnclave(constants.ENCLAVE_TYPES.HIGH_SECURITY_ENCLAVE, initialiseHighSecurityProxy);
 registerEnclave(constants.ENCLAVE_TYPES.MQ_PROXY_ENCLAVE, initialiseRemoteEnclave)
+registerEnclave(constants.ENCLAVE_TYPES.VERSIONLESS_DSU_ENCLAVE, initialiseVersionlessDSUEnclave);
 
 module.exports = {
     initialiseWalletDBEnclave,
@@ -25660,6 +28592,7 @@ module.exports = {
     initialiseAPIHUBProxy,
     initialiseHighSecurityProxy,
     initialiseRemoteEnclave,
+    initialiseVersionlessDSUEnclave,
     connectEnclave,
     createEnclave,
     registerEnclave,
@@ -25667,7 +28600,7 @@ module.exports = {
     ProxyMixin: require("./impl/ProxyMixin")
 }
 
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./impl/APIHUBProxy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js","./impl/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./impl/HighSecurityProxy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js","./impl/MemoryEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js","./impl/ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./impl/RemoteEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js","./impl/WalletDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","./impl/APIHUBProxy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/APIHUBProxy.js","./impl/Enclave_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./impl/HighSecurityProxy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/HighSecurityProxy.js","./impl/MemoryEnclave":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js","./impl/ProxyMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./impl/RemoteEnclave":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/RemoteEnclave.js","./impl/VersionlessDSUEnclave":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/VersionlessDSUEnclave.js","./impl/WalletDBEnclave":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
 function detectRootCauseType(arr, priorityList){
@@ -25964,7 +28897,7 @@ module.exports = {
     httpToRootCauseErrorCode
 }
 
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","./../utils/observable":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/browser/index.js":[function(require,module,exports){
 function callGlobalHandler(res){
 	if($$.httpUnknownResponseGlobalHandler){
 		$$.httpUnknownResponseGlobalHandler(res);
@@ -26068,7 +29001,7 @@ module.exports = {
 	doPut: generateMethodForRequestWithData('PUT'),
 	doGet
 }
-},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/index.js":[function(require,module,exports){
 /**
  * http API space
  */
@@ -26103,7 +29036,7 @@ module.exports.unpoll = function(request){
 	rm.cancelRequest(request);
 }
 
-},{"./browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js","./node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/index.js","./serviceWorker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js","./utils/PollRequestManager":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js","./utils/interceptors":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/interceptors.js","overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/common.js":[function(require,module,exports){
+},{"./browser":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/browser/index.js","./node":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/node/index.js","./serviceWorker":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js","./utils/PollRequestManager":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js","./utils/interceptors":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/utils/interceptors.js","overwrite-require":"overwrite-require"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/node/common.js":[function(require,module,exports){
 const userAgent = 'PSK NodeAgent/0.0.1';
 const signatureHeaderName = process.env.vmq_signature_header_name || "x-signature";
 
@@ -26193,7 +29126,7 @@ module.exports = {
 	buildOptions,
 	getNetworkForOptions
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/fetch.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/node/fetch.js":[function(require,module,exports){
 const http = require("http");
 const https = require("https");
 const URL = require("url");
@@ -26427,7 +29360,7 @@ module.exports = {
 	fetch
 }
 
-},{"http":false,"https":false,"url":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/index.js":[function(require,module,exports){
+},{"http":false,"https":false,"url":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/node/index.js":[function(require,module,exports){
 
 const {setContentTypeByData,buildOptions,getNetworkForOptions} = require("./common.js");
 const {httpToRootCauseErrorCode, createOpenDSUErrorWrapper} = require("../../error");
@@ -26505,7 +29438,7 @@ module.exports = {
 	doPut: generateMethodForRequestWithData('PUT')
 }
 
-},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","./common.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/common.js","./fetch":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/fetch.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js":[function(require,module,exports){
+},{"../../error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","./common.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/node/common.js","./fetch":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/node/fetch.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js":[function(require,module,exports){
 function generateMethodForRequestWithData(httpMethod) {
 	return function (url, data, options, callback) {
 		if(typeof options === "function"){
@@ -26553,7 +29486,7 @@ module.exports = {
 	doGet: require("./../browser").doGet
 }
 
-},{"./../browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js":[function(require,module,exports){
+},{"./../browser":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/browser/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/utils/PollRequestManager.js":[function(require,module,exports){
 function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTimeout = 1000){
 
 	const requests = new Map();
@@ -26763,7 +29696,7 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 
 module.exports = PollRequestManager;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/utils/interceptors.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/utils/interceptors.js":[function(require,module,exports){
 let interceptors = [];
 
 function registerInterceptor(interceptor){
@@ -26869,7 +29802,7 @@ function enable(handler){
 }
 
 module.exports = {enable};
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/keyssi/index.js":[function(require,module,exports){
 const keySSIResolver = require("key-ssi-resolver");
 const keySSIFactory = keySSIResolver.KeySSIFactory;
 const SSITypes = keySSIResolver.SSITypes;
@@ -26878,11 +29811,29 @@ const parse = (ssiString, options) => {
     return keySSIFactory.create(ssiString, options);
 };
 
-const createSeedSSI = (domain, vn, hint, callback) => {
-    return we_createSeedSSI(openDSU.loadAPI("sc").getMainEnclave(), domain, vn, hint, callback);
+const createSeedSSI = (domain, privateKey, vn, hint, callback) => {
+    return we_createSeedSSI(openDSU.loadAPI("sc").getMainEnclave(), domain, privateKey, vn, hint, callback);
 };
 
-const we_createSeedSSI = (enclave, domain, vn, hint, callback) => {
+const isJson = (obj) => {
+    if (typeof obj === "object") {
+        return true;
+    }
+
+    try {
+        JSON.parse(obj);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+const we_createSeedSSI = (enclave, domain, privateKey, vn, hint, callback) => {
+    if (typeof privateKey === "function") {
+        callback = privateKey;
+        privateKey = undefined;
+    }
+
     if (typeof vn == "function") {
         callback = vn;
         vn = undefined;
@@ -26893,10 +29844,20 @@ const we_createSeedSSI = (enclave, domain, vn, hint, callback) => {
         hint = undefined;
     }
 
+    if (isJson(privateKey)) {
+        hint = privateKey;
+        privateKey = undefined;
+    }
+
+    if (isJson(vn)) {
+        hint = vn;
+        vn = undefined;
+    }
+
     let seedSSI = keySSIFactory.createType(SSITypes.SEED_SSI);
 
     if (typeof callback === "function") {
-        seedSSI.initialize(domain, undefined, undefined, vn, hint, (err => {
+        seedSSI.initialize(domain, privateKey, undefined, vn, hint, (err => {
             if (err) {
                 return callback(err);
             }
@@ -26908,7 +29869,7 @@ const we_createSeedSSI = (enclave, domain, vn, hint, callback) => {
             }
         }));
     } else {
-        seedSSI.initialize(domain, undefined, undefined, vn, hint);
+        seedSSI.initialize(domain, privateKey, undefined, vn, hint);
     }
     return seedSSI;
 };
@@ -27156,6 +30117,12 @@ const createEmbedSSI = (domain, data) => {
     return embedSSI;
 }
 
+const createVersionlessSSI = (domain, path, encryptionKey, vn, hint) => {
+    const versionlessSSI = keySSIFactory.createType(SSITypes.VERSIONLESS_SSI);
+    versionlessSSI.initialize(domain, path, encryptionKey, vn, hint);
+    return versionlessSSI;
+};
+
 module.exports = {
     parse,
     createSeedSSI,
@@ -27183,10 +30150,11 @@ module.exports = {
     createSizeSSI,
     createPathKeySSI,
     we_createPathKeySSI,
-    createEmbedSSI
+    createEmbedSSI,
+    createVersionlessSSI
 };
 
-},{"../anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/lock/index.js":[function(require,module,exports){
+},{"../anchoring":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/anchoring/index.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/lock/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants").ERROR_ROOT_CAUSE;
 
 function handlePromise(promise, message) {
@@ -27246,7 +30214,7 @@ exposed.unlock = function (id, secret, callback) {
 };
 module.exports = exposed;
 
-},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js":[function(require,module,exports){
+},{"../bdns":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/index.js","../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js":[function(require,module,exports){
 const apis = {};
 function defineApi(name, implementation){
 	if(typeof implementation !== "function"){
@@ -27260,7 +30228,7 @@ function getApis(){
 }
 
 module.exports = {defineApi, getApis}
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js":[function(require,module,exports){
 const registry = require("../apisRegistry");
 
 /*
@@ -27354,8 +30322,7 @@ registry.defineApi("registerDSU", async function (dsu) {
     //TODO: temporary fix, this apiRegistry is now instantiated for each mapping message
     if (!dsu.batchInProgress()) {
         this.registeredDSUs.push(dsu);
-        await $$.promisify(dsu.refresh)();
-        dsu.beginBatch();
+        dsu.safeBeginBatchAsync();
     }
 
     return promisifyDSUAPIs(dsu);
@@ -27416,8 +30383,8 @@ registry.defineApi("loadArraySSIDSU", async function (domain, arr) {
     let dsu ;
     try {
         dsu = await resolver.loadDSU(keySSI);
-    }catch(er){
-        if(exists){
+    } catch (e) {
+        if (exists) {
             throw createOpenDSUErrorWrapper("Failed to load ConstDSU that exists", e);
         }
     }
@@ -27538,7 +30505,7 @@ registry.defineApi("recoverDSU", function (ssi, recoveryFnc, callback) {
 });
 
 
-},{"../apisRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js":[function(require,module,exports){
+},{"../apisRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js":[function(require,module,exports){
 const mappingRegistry = require("./../mappingRegistry.js");
 
 async function validateMessage(message){
@@ -27550,7 +30517,7 @@ async function digestMessage(message){
 }
 
 mappingRegistry.defineMapping(validateMessage, digestMessage);
-},{"./../mappingRegistry.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js":[function(require,module,exports){
+},{"./../mappingRegistry.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js":[function(require,module,exports){
 errorTypes = {
   "UNKNOWN": {
     errorCode: 0,
@@ -27727,7 +30694,7 @@ module.exports = {
   addNewErrorType
 }
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/index.js":[function(require,module,exports){
 const mappingRegistry = require("./mappingRegistry.js");
 const apisRegistry = require("./apisRegistry.js");
 const errMap = require("./errorsMap.js")
@@ -27955,8 +30922,7 @@ function MappingEngine(storageService, options) {
             return reject(Error(`Failed to acquire lock`));
           }
 
-          await $$.promisify(storageService.refresh)();
-          storageService.beginBatch();
+          // await storageService.safeBeginBatchAsync();
 
           //commitPromisses will contain promises for each of message
           let commitPromisses = [];
@@ -28081,7 +31047,7 @@ module.exports = {
   defineApi: apisRegistry.defineApi
 }
 
-},{"./apisRegistry.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","./defaultApis":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js","./defaultMappings":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js","./errorsMap.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js","./mappingRegistry.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js","./messagesPipe":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js":[function(require,module,exports){
+},{"./apisRegistry.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","./defaultApis":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js","./defaultMappings":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js","./errorsMap.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js","./mappingRegistry.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js","./messagesPipe":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js":[function(require,module,exports){
 const mappingRegistry = [];
 function defineMapping(matchFunction, mappingFunction){
 	mappingRegistry.push({matchFunction, mappingFunction});
@@ -28095,7 +31061,7 @@ module.exports = {
 	defineMapping,
 	getMappings
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/messagesPipe/index.js":[function(require,module,exports){
 module.exports = function (maxGroupSize, maxQueuingTime, groupingFunction) {
 
     this.queue = [];
@@ -28156,111 +31122,120 @@ module.exports = function (maxGroupSize, maxQueuingTime, groupingFunction) {
     startWaitingMessages();
 
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js":[function(require,module,exports){
 const ENVIRONMENT_TYPES = require("../overwrite-require/moduleConstants");
 
 let cachedKeySSIResolver = undefined;
 
 
 module.exports = {
-	ENVIRONMENT_TYPES,
-	CODE_FOLDER: "/code",
-	CONSTITUTION_FOLDER: '/code/constitution',
-	BLOCKCHAIN_FOLDER: '/blockchain',
-	APP_FOLDER: '/app',
-	DOMAIN_IDENTITY_FILE: '/domain_identity',
-	ASSETS_FOLDER: "/assets",
-	TRANSACTIONS_FOLDER: "/transactions",
-	APPS_FOLDER: "/apps",
-	DATA_FOLDER: "/data",
-	MANIFEST_FILE: "/manifest",
-	BDNS_ROOT_HOSTS: "BDNS_ROOT_HOSTS",
-	ENVIRONMENT_PATH: "/environment.json",
-	SECURITY_CONTEXT_KEY_SSI: "scKeySSI",
-	VAULT_DOMAIN: "vaultDomain",
-	DOMAIN: "domain",
-	DID_DOMAIN: "didDomain",
-	MAIN_APP_DID: "mainAppDID",
-	NOTIFICATION_TYPES: {
-		ERROR: "error",
-		WARN: "warn",
-		INFO: "info",
-		DEV: "dev"
-	},
-	MAIN_ENCLAVE: {
-		TYPE: "enclaveType",
-		DID: "enclaveDID",
-		KEY_SSI: "enclaveKeySSI"
-	},
-	SHARED_ENCLAVE: {
-		TYPE: "sharedEnclaveType",
-		DID: "sharedEnclaveDID",
-		KEY_SSI: "sharedEnclaveKeySSI",
-	},
-	ENCLAVE_TYPES: {
-		WALLET_DB_ENCLAVE: "WalletDBEnclave",
-		MEMORY_ENCLAVE: "MemoryEnclave",
-		APIHUB_ENCLAVE: "ApihubEnclave",
-		HIGH_SECURITY_ENCLAVE: "HighSecurityEnclave"
-	},
-	CACHE: {
-		FS: "fs",
-		MEMORY: "memory",
-		INDEXED_DB: "cache.indexedDB",
-		VAULT_TYPE: "cache.vaultType",
-		BASE_FOLDER: "internal-volume/cache",
-		BASE_FOLDER_CONFIG_PROPERTY: "fsCache.baseFolder",
-		ENCRYPTED_BRICKS_CACHE: "encrypted-bricks-cache",
-		ANCHORING_CACHE: "anchoring-cache",
-		NO_CACHE: "no-cache"
-	},
-	DOMAINS: {
-		VAULT: "vault"
-	},
-	VAULT:{
-		BRICKS_STORE: "bricks",
-		ANCHORS_STORE: "anchors"
-	},
-	BRICKS_DOMAIN_KEY: "bricksDomain",
-	LOADER_ENVIRONMENT_JSON:{
-		AGENT: "agent",
-		SERVER: "server",
-		VAULT: "vault",
-		MOBILE: "mobile",
-	},
+    ENVIRONMENT_TYPES,
+    CODE_FOLDER: "/code",
+    CONSTITUTION_FOLDER: '/code/constitution',
+    BLOCKCHAIN_FOLDER: '/blockchain',
+    APP_FOLDER: '/app',
+    DOMAIN_IDENTITY_FILE: '/domain_identity',
+    ASSETS_FOLDER: "/assets",
+    TRANSACTIONS_FOLDER: "/transactions",
+    APPS_FOLDER: "/apps",
+    DATA_FOLDER: "/data",
+    MANIFEST_FILE: "/manifest",
+    BDNS_ROOT_HOSTS: "BDNS_ROOT_HOSTS",
+    ENVIRONMENT_PATH: "/environment.json",
+    SECURITY_CONTEXT_KEY_SSI: "scKeySSI",
+    VAULT_DOMAIN: "vaultDomain",
+    DOMAIN: "domain",
+    DID_DOMAIN: "didDomain",
+    MAIN_APP_DID: "mainAppDID",
+    NOTIFICATION_TYPES: {
+        ERROR: "error",
+        WARN: "warn",
+        INFO: "info",
+        DEV: "dev"
+    },
+    MAIN_ENCLAVE: {
+        TYPE: "enclaveType",
+        DID: "enclaveDID",
+        KEY_SSI: "enclaveKeySSI"
+    },
+    SHARED_ENCLAVE: {
+        TYPE: "sharedEnclaveType",
+        DID: "sharedEnclaveDID",
+        KEY_SSI: "sharedEnclaveKeySSI",
+    },
+    ENCLAVE_TYPES: {
+        WALLET_DB_ENCLAVE: "WalletDBEnclave",
+        MEMORY_ENCLAVE: "MemoryEnclave",
+        APIHUB_ENCLAVE: "ApihubEnclave",
+        HIGH_SECURITY_ENCLAVE: "HighSecurityEnclave",
+        VERSIONLESS_DSU_ENCLAVE: "VersionlessDSUEnclave",
+        MQ_PROXY_ENCLAVE: "MQProxyEnclave"
+    },
+    CACHE: {
+        FS: "fs",
+        MEMORY: "memory",
+        INDEXED_DB: "cache.indexedDB",
+        VAULT_TYPE: "cache.vaultType",
+        BASE_FOLDER: "internal-volume/cache",
+        BASE_FOLDER_CONFIG_PROPERTY: "fsCache.baseFolder",
+        ENCRYPTED_BRICKS_CACHE: "encrypted-bricks-cache",
+        ANCHORING_CACHE: "anchoring-cache",
+        NO_CACHE: "no-cache"
+    },
+    DOMAINS: {
+        VAULT: "vault"
+    },
+    VAULT: {
+        BRICKS_STORE: "bricks",
+        ANCHORS_STORE: "anchors"
+    },
+    BRICKS_DOMAIN_KEY: "bricksDomain",
+    LOADER_ENVIRONMENT_JSON: {
+        AGENT: "agent",
+        SERVER: "server",
+        VAULT: "vault",
+        MOBILE: "mobile",
+    },
     BOOT_CONFIG_FILE: 'boot-cfg.json',
     ERROR_ROOT_CAUSE: {
         UNKNOWN_ERROR: "unknown",
         NETWORK_ERROR: "network",
         THROTTLER_ERROR: "throttler",
         BUSINESS_ERROR: "business",
-		DATA_INPUT: "dataInput",
-		MISSING_DATA: "missingData"
+        DATA_INPUT: "dataInput",
+        MISSING_DATA: "missingData",
+        DSU_INVALID_OPERATION: "dsuInvalidOperation"
     },
-	 get KEY_SSIS(){
-		if(cachedKeySSIResolver === undefined){
-			cachedKeySSIResolver = require("key-ssi-resolver");
-		}
-		 return cachedKeySSIResolver.SSITypes;
-	 },
-	 get KEY_SSI_FAMILIES(){
-		if(cachedKeySSIResolver === undefined){
-			cachedKeySSIResolver = require("key-ssi-resolver");
-		}
-		 return cachedKeySSIResolver.SSIFamilies;
-	 },
-	get CRYPTO_FUNCTION_TYPES(){
-		if(cachedKeySSIResolver === undefined){
-			cachedKeySSIResolver = require("key-ssi-resolver");
-		}
-		return cachedKeySSIResolver.CryptoFunctionTypes;
-	}
+    get KEY_SSIS() {
+        if (cachedKeySSIResolver === undefined) {
+            cachedKeySSIResolver = require("key-ssi-resolver");
+        }
+        return cachedKeySSIResolver.SSITypes;
+    },
+    get DSUTypes() {
+        if (cachedKeySSIResolver === undefined) {
+            cachedKeySSIResolver = require("key-ssi-resolver");
+        }
+        return cachedKeySSIResolver.DSUTypes;
+    },
+    get KEY_SSI_FAMILIES() {
+        if (cachedKeySSIResolver === undefined) {
+            cachedKeySSIResolver = require("key-ssi-resolver");
+        }
+        return cachedKeySSIResolver.SSIFamilies;
+    },
+    get CRYPTO_FUNCTION_TYPES() {
+        if (cachedKeySSIResolver === undefined) {
+            cachedKeySSIResolver = require("key-ssi-resolver");
+        }
+        return cachedKeySSIResolver.CryptoFunctionTypes;
+    }
 }
 
 
 
 
-},{"../overwrite-require/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","key-ssi-resolver":"key-ssi-resolver"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/mq/mqClient.js":[function(require,module,exports){
+},{"../overwrite-require/moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/moduleConstants.js","key-ssi-resolver":"key-ssi-resolver"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/mq/mqClient.js":[function(require,module,exports){
 /*
 Message Queues API space
 */
@@ -28484,7 +31459,6 @@ function MQHandler(didDocument, domain, pollingTimeout) {
                         request.then(response => response.json())
                             .then((response) => {
                                 if(self.stopReceivingMessages){
-
                                     return callback(new Error("Message rejected by client"));
                                 }
                                 //the return value of the listing callback helps to stop the polling mechanism in case that
@@ -28547,14 +31521,18 @@ function MQHandler(didDocument, domain, pollingTimeout) {
     };
 
     this.readAndWaitForMessages = (callback) => {
-        consumeMessage("get", true, getSafeMessageRead(callback));
+        consumeMessage("take", true, getSafeMessageRead(callback));
     };
 
     this.readAndWaitForMore = (waitForMore, callback) => {
+        if(typeof waitForMore === "function" && typeof callback === "undefined"){
+            callback = waitForMore;
+            waitForMore = undefined;
+        }
         consumeMessage("get", waitForMore ? waitForMore() : true, getSafeMessageRead(callback));
     };
 
-    this.subscribe = this.readAndWaitForMessages;
+    this.subscribe = this.readAndWaitForMore;
 
     this.abort = (callback) => {
         let request = callback.__requestInProgress;
@@ -28616,7 +31594,7 @@ module.exports = {
     getMQHandlerForDID
 }
 
-},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/notifications/index.js":[function(require,module,exports){
+},{"../bdns":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/observable.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/notifications/index.js":[function(require,module,exports){
 /*
 KeySSI Notification API space
 */
@@ -28728,7 +31706,7 @@ module.exports = {
     isSubscribed
 }
 
-},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/index.js":[function(require,module,exports){
+},{"../bdns":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bdns/index.js","../http":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/index.js","../utils/observable":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/index.js":[function(require,module,exports){
 const createOIDC = (options) => {
     const OIDC = require("./src/oidc/OIDC");
     return new OIDC(options);
@@ -28740,7 +31718,7 @@ module.exports = {
     constants: require("./src/oidc/constants"),
 
 }
-},{"./src/oidc/OIDC":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js","./src/oidc/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js","./src/util/Storage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js":[function(require,module,exports){
+},{"./src/oidc/OIDC":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js","./src/oidc/constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js","./src/util/Storage":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js":[function(require,module,exports){
 class Client {
     constructor(options) {
         this.options = options;
@@ -28769,7 +31747,7 @@ class Client {
 
 
 module.exports = Client;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js":[function(require,module,exports){
 class Issuer {
     constructor(options) {
         this.options = options;
@@ -28793,7 +31771,7 @@ class Issuer {
 
 
 module.exports = Issuer;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/OIDC.js":[function(require,module,exports){
 const RedirectInteraction = require('./interactions/Redirect');
 const IFrameInteraction = require('./interactions/IFrame');
 const PopupInteraction = require('./interactions/Popup');
@@ -29124,7 +32102,7 @@ class OIDC {
 
 OIDC.utils = {Browser};
 module.exports = OIDC;
-},{"../util/Browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js","../util/Crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js","../util/Storage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js","./Client":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js","./Issuer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js","./grants/AuthorizationCode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js","./grants/RefreshToken":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js","./interactions/IFrame":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js","./interactions/Popup":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js","./interactions/Redirect":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js":[function(require,module,exports){
+},{"../util/Browser":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js","../util/Crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js","../util/Storage":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js","./Client":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/Client.js","./Issuer":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/Issuer.js","./grants/AuthorizationCode":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js","./grants/RefreshToken":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js","./interactions/IFrame":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js","./interactions/Popup":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js","./interactions/Redirect":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/constants.js":[function(require,module,exports){
 module.exports = {
     ID_TOKEN: 'session.idToken',
     ACCESS_TOKEN: 'session.accessToken',
@@ -29141,7 +32119,7 @@ module.exports = {
     TOKEN_CHECK_INTERVAL: 1000 * 30,
     TOKEN_EXPIRATION_THRESHOLD: 1000 * 60,
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/AuthorizationCode.js":[function(require,module,exports){
 const Crypto = require('../../util/Crypto');
 
 
@@ -29192,7 +32170,7 @@ class AuthorizationCode {
 
 
 module.exports = AuthorizationCode;
-},{"../../util/Crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js":[function(require,module,exports){
+},{"../../util/Crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/grants/RefreshToken.js":[function(require,module,exports){
 class RefreshToken {
     static refreshToken(issuer, client, options) {
         const params = new URLSearchParams();
@@ -29213,7 +32191,7 @@ class RefreshToken {
 
 
 module.exports = RefreshToken;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/IFrame.js":[function(require,module,exports){
 const Promises = require('../../util/Promises');
 const Interaction = require('./Interaction');
 
@@ -29287,7 +32265,7 @@ class IFrame extends Interaction {
 
 
 module.exports = IFrame;
-},{"../../util/Promises":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js":[function(require,module,exports){
+},{"../../util/Promises":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js":[function(require,module,exports){
 const Browser = require('../../util/Browser');
 
 
@@ -29319,7 +32297,7 @@ class Interaction {
 
 
 module.exports = Interaction;
-},{"../../util/Browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js":[function(require,module,exports){
+},{"../../util/Browser":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Popup.js":[function(require,module,exports){
 const Interaction = require('./Interaction');
 const Promises = require('../../util/Promises');
 
@@ -29374,7 +32352,7 @@ class Popup extends Interaction {
 
 
 module.exports = Popup;
-},{"../../util/Promises":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js":[function(require,module,exports){
+},{"../../util/Promises":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Redirect.js":[function(require,module,exports){
 const Interaction = require('./Interaction');
 const Promises = require('../../util/Promises');
 
@@ -29399,7 +32377,7 @@ class Redirect extends Interaction {
 
 
 module.exports = Redirect;
-},{"../../util/Promises":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js":[function(require,module,exports){
+},{"../../util/Promises":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js","./Interaction":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/oidc/interactions/Interaction.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Browser.js":[function(require,module,exports){
 function parseUrlHash(hash) {
     return parseUrlParams(hash.substring(1));
 }
@@ -29459,7 +32437,7 @@ module.exports = {
     getCurrentLocation,
     isItMe
 };
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Crypto.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadAPI("crypto");
 
@@ -29491,7 +32469,7 @@ module.exports = {
     generateCodeChallenge,
     decodeBase64EncodedData
 }
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Promises.js":[function(require,module,exports){
 function flatPromise() {
     let resolve, reject;
     let promise = new Promise((_resolve, _reject) => {
@@ -29506,7 +32484,7 @@ function flatPromise() {
 module.exports = {
     flatPromise
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js":[function(require,module,exports){
 const {prettyByte} = require("@msgpack/msgpack/dist/utils/prettyByte");
 
 class Storage {
@@ -29546,9 +32524,11 @@ const getStorage = () => {
 module.exports = {
     getStorage
 };
-},{"@msgpack/msgpack/dist/utils/prettyByte":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js":[function(require,module,exports){
+},{"@msgpack/msgpack/dist/utils/prettyByte":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/resolver/index.js":[function(require,module,exports){
 const KeySSIResolver = require("key-ssi-resolver");
-const keySSISpace = require("opendsu").loadApi("keyssi");
+const openDSU = require("opendsu");
+const keySSISpace = openDSU.loadAPI("keyssi");
+const crypto = openDSU.loadAPI("crypto");
 const constants = require("../moduleConstants");
 
 let {ENVIRONMENT_TYPES, KEY_SSIS} = require("../moduleConstants.js");
@@ -29557,9 +32537,11 @@ const cache = require("../cache");
 const {createOpenDSUErrorWrapper} = require("../error");
 let dsuCache = cache.getWeakRefMemoryCache("mainDSUsCache");
 
-const getResolver = (options) => {
-    options = options || {};
-    return KeySSIResolver.initialize(options);
+const getResolver = () => {
+    if (typeof $$.keySSIResolver === "undefined") {
+        $$.keySSIResolver = KeySSIResolver.initialize();
+    }
+    return $$.keySSIResolver;
 };
 
 const registerDSUFactory = (type, factory) => {
@@ -29629,6 +32611,37 @@ const createDSUForExistingSSI = (ssi, options, callback) => {
     options.useSSIAsIdentifier = true;
     createDSU(ssi, options, callback);
 };
+
+const createVersionlessDSU = (filePath, encryptionKey, domain, callback) => {
+    const bdnsSpace = require("opendsu").loadApi("bdns");
+
+    if (typeof domain === "function") {
+        callback = domain;
+        domain = bdnsSpace.getOriginPlaceholder();
+    }
+    if (typeof encryptionKey === "function") {
+        callback = encryptionKey;
+        domain = bdnsSpace.getOriginPlaceholder();
+        encryptionKey = undefined;
+    }
+
+    if(typeof filePath === "function") {
+        callback = filePath;
+        filePath = crypto.generateRandom(32).toString("hex");
+        domain = bdnsSpace.getOriginPlaceholder();
+        encryptionKey = undefined;
+    }
+
+    if(typeof encryptionKey === "string" && encryptionKey) {
+        // specific string must have 32 characters required for versionlessDSU encrypt
+        if(encryptionKey.length !== 32) {
+            throw new Error(`encryptionKey must have exactly 32 characters (${encryptionKey.length} provided)`)
+        }
+    }
+
+    const versionlessSSI = keySSISpace.createVersionlessSSI(domain, filePath, encryptionKey);
+    createDSU(versionlessSSI, callback);
+}
 
 /**
  * Check if the DSU is up to date by comparing its
@@ -29840,12 +32853,7 @@ const loadFallbackDSU = (keySSI, options, callback) => {
                     if (index < versions.length - 1) {
                         return tryToRunRecoveryContentFnc(keySSI, dsuInstance, options, versions.slice(0, index), versions[versions.length - 1], callback);
                     }
-                    let error;
-                    //in this case we are able to load the latest version ... basically we believe that no recovery need is it
-                    if(window && !window.confirm('It looks that we were able to load the latest version. Are you sure that recovery mechanism is necessary?')){
-                        error = new Error("User decided to abort recovery because invalid state detected.");
-                    }
-                    callback(error, dsuInstance);
+                    callback(undefined, dsuInstance);
                 })
             }
 
@@ -29878,7 +32886,7 @@ const loadDSU = (keySSI, options, callback) => {
     }
 
     const loadDSU = (addInCache) => {
-
+        
         const keySSIResolver = getResolver(options);
         keySSIResolver.loadDSU(keySSI, options, (err, dsuInstance) => {
             if (err) {
@@ -30149,6 +33157,7 @@ module.exports = {
     createConstDSU,
     createArrayDSU,
     createDSUForExistingSSI,
+    createVersionlessDSU,
     loadDSU,
     getDSUHandler,
     registerDSUFactory,
@@ -30157,7 +33166,7 @@ module.exports = {
     dsuExists
 };
 
-},{"../cache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./resolver-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","syndicate":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js":[function(require,module,exports){
+},{"../cache":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/cache/index.js","../error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../moduleConstants.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","./resolver-utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js","key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu","syndicate":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js":[function(require,module,exports){
 function getWebWorkerBootScript(dsuKeySSI) {
     const scriptLocation = document.currentScript
         ? document.currentScript
@@ -30189,223 +33198,247 @@ module.exports = {
     getNodeWorkerBootScript,
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/sc/index.js":[function(require,module,exports){
 /*
     Security Context related functionalities
 
  */
 
-    const constants = require("../moduleConstants");
-    const openDSU = require("opendsu");
-    const config = openDSU.loadAPI("config")
-    const crypto = openDSU.loadAPI("crypto")
-    const MainDSU = require("./lib/MainDSU");
-    const SecurityContext = require("./lib/SecurityContext");
-    
-    const getVaultDomain = (callback) => {
-        config.getEnv(constants.VAULT_DOMAIN, (err, vaultDomain) => {
-            if (err || !vaultDomain) {
-                console.log(`The property <${constants.DOMAIN}> is deprecated in environment.js. Use the property <${constants.VAULT_DOMAIN}> instead`)
-                return config.getEnv(constants.DOMAIN, callback);
-            }
-    
-            callback(undefined, vaultDomain);
+const constants = require("../moduleConstants");
+const openDSU = require("opendsu");
+const config = openDSU.loadAPI("config")
+const crypto = openDSU.loadAPI("crypto")
+const MainDSU = require("./lib/MainDSU");
+const SecurityContext = require("./lib/SecurityContext");
+
+const getVaultDomain = (callback) => {
+    config.getEnv(constants.VAULT_DOMAIN, (err, vaultDomain) => {
+        if (err || !vaultDomain) {
+            console.log(`The property <${constants.DOMAIN}> is deprecated in environment.js. Use the property <${constants.VAULT_DOMAIN}> instead`)
+            return config.getEnv(constants.DOMAIN, callback);
+        }
+
+        callback(undefined, vaultDomain);
+    });
+}
+
+const getDIDDomain = (callback) => {
+    config.getEnv(constants.DID_DOMAIN, callback);
+}
+
+const securityContextIsInitialised = () => {
+    if (typeof $$.sc === "undefined") {
+        return false;
+    }
+
+    return $$.sc.isInitialised();
+}
+
+const getSecurityContext = () => {
+    if (typeof $$.sc === "undefined") {
+        $$.sc = new SecurityContext();
+    }
+
+    return $$.sc;
+};
+
+const refreshSecurityContext = (pin) => {
+    $$.sc = new SecurityContext(undefined, pin);
+    return $$.sc;
+};
+
+const getMainEnclave = (callback) => {
+    if (!$$.sc && !callback) {
+        return;
+    }
+    const sc = getSecurityContext();
+    if (sc.isInitialised()) {
+        return sc.getMainEnclaveDB(callback);
+    } else {
+        sc.on("initialised", () => {
+            sc.getMainEnclaveDB(callback);
         });
     }
-    
-    const getDIDDomain = (callback) => {
-        config.getEnv(constants.DID_DOMAIN, callback);
-    }
-    
-    const securityContextIsInitialised = () => {
-        if (typeof $$.sc === "undefined") {
-            return false;
-        }
-    
-        return $$.sc.isInitialised();
-    }
-    
-    const getSecurityContext = () => {
-        if (typeof $$.sc === "undefined") {
-            $$.sc = new SecurityContext();
-        }
-    
-        return $$.sc;
-    };
-    
-    const refreshSecurityContext = (pin) => {
-        $$.sc = new SecurityContext(undefined, pin);
-        return $$.sc;
-    };
-    
-    const getMainEnclave = (callback) => {
-        if (!$$.sc && !callback) {
-            return;
-        }
-        const sc = getSecurityContext();
-        if (sc.isInitialised()) {
-            return sc.getMainEnclaveDB(callback);
-        } else {
-            sc.on("initialised", () => {
-                sc.getMainEnclaveDB(callback);
-            });
-        }
-    }
-    
-    const getSharedEnclave = (callback) => {
-        const sc = getSecurityContext();
-        if (sc.isInitialised()) {
+}
+
+const getSharedEnclave = (callback) => {
+    const sc = getSecurityContext();
+    if (sc.isInitialised()) {
+        sc.getSharedEnclaveDB(callback);
+    } else {
+        sc.on("initialised", () => {
             sc.getSharedEnclaveDB(callback);
-        } else {
-            sc.on("initialised", () => {
-                sc.getSharedEnclaveDB(callback);
-            });
-        }
-    }
-    
-    const sharedEnclaveExists = () => {
-        const sc = getSecurityContext();
-        return sc.sharedEnclaveExists();
-    }
-    
-    const configEnvironment = (config, refreshSC, callback) => {
-        if (typeof refreshSC === "function") {
-            callback = refreshSC;
-            refreshSC = true;
-        }
-        MainDSU.getMainDSU((err, mainDSU) => {
-            if (err) {
-                return callback(createOpenDSUErrorWrapper("Failed to get main DSU", err));
-            }
-    
-            mainDSU.writeFile(constants.ENVIRONMENT_PATH, JSON.stringify(config), (err) => {
-                if (err) {
-                    return callback(createOpenDSUErrorWrapper("Failed to write env", err));
-                }
-    
-                if (refreshSC) {
-                    const pin = getSecurityContext().getPaddedPIN();
-                    const sc = refreshSecurityContext(pin);
-                    sc.on("initialised", () => callback(undefined, sc));
-                } else {
-                    const sc = getSecurityContext();
-                    if (securityContextIsInitialised()) {
-                        return callback(undefined, sc);
-                    }
-    
-                    sc.on("initialised", () => {
-                        callback(undefined, sc)
-                    });
-                }
-            });
         });
     }
-    
-    const setEnclave = (enclave, type, callback) => {
-        config.readEnvFile((err, config) => {
+}
+
+const sharedEnclaveExists = () => {
+    const sc = getSecurityContext();
+    return sc.sharedEnclaveExists();
+}
+
+const configEnvironment = (config, refreshSC, callback) => {
+    if (typeof refreshSC === "function") {
+        callback = refreshSC;
+        refreshSC = true;
+    }
+    MainDSU.getMainDSU(async (err, mainDSU) => {
+        if (err) {
+            return callback(createOpenDSUErrorWrapper("Failed to get main DSU", err));
+        }
+
+        let [error, env] = await $$.call(mainDSU.readFile, constants.ENVIRONMENT_PATH);
+        if (error) {
+            return callback(createOpenDSUErrorWrapper("Failed to read env", error));
+        }
+
+        if(crypto.sha256(JSON.parse(env.toString())) === crypto.sha256(config)){
+            return callback(undefined, getSecurityContext());
+        }
+
+        mainDSU.safeBeginBatch(err => {
+            if (err) {
+                return callback(createOpenDSUErrorWrapper("Failed to begin batch", err));
+            }
+            mainDSU.writeFile(constants.ENVIRONMENT_PATH, JSON.stringify(config), async (err) => {
+                if (err) {
+                    const writeFileError = createOpenDSUErrorWrapper("Failed to write env", err);
+                    try {
+                        await mainDSU.cancelBatchAsync();
+                    }catch (e) {
+                        return callback(createOpenDSUErrorWrapper("Failed to cancel batch", e, writeFileError));
+                    }
+                    return callback(writeFileError);
+                }
+
+                mainDSU.commitBatch(err => {
+                    if (err) {
+                        return callback(createOpenDSUErrorWrapper("Failed to commit batch", err));
+                    }
+                    if (refreshSC) {
+                        const pin = getSecurityContext().getPaddedPIN();
+                        const sc = refreshSecurityContext(pin);
+                        sc.on("initialised", () => callback(undefined, sc));
+                    } else {
+                        const sc = getSecurityContext();
+                        if (securityContextIsInitialised()) {
+                            return callback(undefined, sc);
+                        }
+
+                        sc.on("initialised", () => {
+                            callback(undefined, sc)
+                        });
+                    }
+                });
+            });
+        });
+    });
+}
+
+const setEnclave = (enclave, type, callback) => {
+    config.readEnvFile((err, config) => {
+        if (err) {
+            return callback(err);
+        }
+        enclave.getDID((err, did) => {
             if (err) {
                 return callback(err);
             }
-            enclave.getDID((err, did) => {
+
+            config[openDSU.constants[type].DID] = did;
+            enclave.getKeySSI((err, keySSI) => {
                 if (err) {
                     return callback(err);
                 }
-    
-                config[openDSU.constants[type].DID] = did;
-                enclave.getKeySSI((err, keySSI) => {
-                    if (err) {
-                        return callback(err);
-                    }
-    
-                    setEnclaveKeySSI(type, keySSI, config);
-    
-                    config[openDSU.constants[type].TYPE] = enclave.getEnclaveType();
-                    configEnvironment(config, callback);
-    
-                })
+
+                setEnclaveKeySSI(type, keySSI, config);
+
+                config[openDSU.constants[type].TYPE] = enclave.getEnclaveType();
+                configEnvironment(config, callback);
             })
         })
+    })
+}
+
+const setEnclaveKeySSI = (type, keySSI, config) => {
+    const sc = getSecurityContext();
+    const pin = sc.getPaddedPIN();
+    if (typeof keySSI !== "string") {
+        keySSI = keySSI.getIdentifier();
     }
-    
-    const setEnclaveKeySSI = (type, keySSI, config) => {
-        const sc = getSecurityContext();
-        const pin = sc.getPaddedPIN();
-        if (typeof keySSI !== "string") {
-            keySSI = keySSI.getIdentifier();
+
+    if (type != "SHARED_ENCLAVE" || pin == undefined) {
+        config[openDSU.constants[type].KEY_SSI] = keySSI;
+        return;
+    }
+
+    const decodedBase58 = crypto.decodeBase58(keySSI);
+    const encryptedKey = crypto.encrypt(decodedBase58, pin)
+    const base58EncryptedKey = crypto.encodeBase58(encryptedKey);
+    config[openDSU.constants[type].KEY_SSI] = base58EncryptedKey;
+}
+
+const deleteEnclave = (type, callback) => {
+    config.readEnvFile((err, env) => {
+        if (err) {
+            return callback(err);
         }
 
-        if (type != "SHARED_ENCLAVE" || pin == undefined) {
-            config[openDSU.constants[type].KEY_SSI] = keySSI;
-            return;
-        }
+        delete env[openDSU.constants[type].DID];
+        delete env[openDSU.constants[type].KEY_SSI];
+        delete env[openDSU.constants[type].TYPE];
+        configEnvironment(env, callback);
+    })
+}
 
-        const decodedBase58 = crypto.decodeBase58(keySSI);
-        const encryptedKey = crypto.encrypt(decodedBase58, pin)
-        const base58EncryptedKey = crypto.encodeBase58(encryptedKey);
-        config[openDSU.constants[type].KEY_SSI] = base58EncryptedKey;
-    
-    }
-    
-    const deleteEnclave = (type, callback) => {
-        config.readEnvFile((err, env) => {
-            if (err) {
-                return callback(err);
-            }
-    
-            delete env[openDSU.constants[type].DID];
-            delete env[openDSU.constants[type].KEY_SSI];
-            delete env[openDSU.constants[type].TYPE];
-            configEnvironment(env, callback);
-        })
-    }
-    
-    const deleteSharedEnclave = (callback) => {
-        deleteEnclave("SHARED_ENCLAVE", callback);
-    }
-    
-    const setMainEnclave = (enclave, callback) => {
-        setEnclave(enclave, "MAIN_ENCLAVE", callback);
-    };
-    
-    const setSharedEnclave = (enclave, callback) => {
-        setEnclave(enclave, "SHARED_ENCLAVE", callback);
-    };
-    
-    const setPIN = (pin) => {
-        const sc = getSecurityContext();
-        sc.setPIN(pin);
-    }
+const deleteSharedEnclave = (callback) => {
+    deleteEnclave("SHARED_ENCLAVE", callback);
+}
 
-    const isPINNeeded = async () => {
-        const sc = getSecurityContext();
-        return await sc.isPINNeeded();
-    }
+const setMainEnclave = (enclave, callback) => {
+    setEnclave(enclave, "MAIN_ENCLAVE", callback);
+};
+
+const setSharedEnclave = (enclave, callback) => {
+    setEnclave(enclave, "SHARED_ENCLAVE", callback);
+};
+
+const setPIN = (pin) => {
+    const sc = getSecurityContext();
+    sc.setPIN(pin);
+}
+
+const isPINNeeded = async () => {
+    const sc = getSecurityContext();
+    return await sc.isPINNeeded();
+}
+
+
+module.exports = {
+    setMainDSU: MainDSU.setMainDSU,
+    getMainDSU: MainDSU.getMainDSU,
+    getVaultDomain,
+    getSecurityContext,
+    refreshSecurityContext,
+    getDIDDomain,
+    securityContextIsInitialised,
+    getMainEnclave,
+    setMainEnclave,
+    getSharedEnclave,
+    setSharedEnclave,
+    setEnclave,
+    deleteSharedEnclave,
+    configEnvironment,
+    sharedEnclaveExists,
+    setPIN,
+    setEnclaveKeySSI,
+    isPINNeeded
+};
     
-    
-    module.exports = {
-        setMainDSU: MainDSU.setMainDSU,
-        getMainDSU: MainDSU.getMainDSU,
-        getVaultDomain,
-        getSecurityContext,
-        refreshSecurityContext,
-        getDIDDomain,
-        securityContextIsInitialised,
-        getMainEnclave,
-        setMainEnclave,
-        getSharedEnclave,
-        setSharedEnclave,
-        setEnclave,
-        deleteSharedEnclave,
-        configEnvironment,
-        sharedEnclaveExists,
-        setPIN,
-        setEnclaveKeySSI,
-        isPINNeeded
-    };
-    
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./lib/MainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js","./lib/SecurityContext":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","./lib/MainDSU":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js","./lib/SecurityContext":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js":[function(require,module,exports){
 function InMemoryMainDSU() {
     const obj = {};
+    let batchInProgress = false;
     obj["/environment.json"] = Buffer.from(JSON.stringify({
         vaultDomain: "vault",
         didDomain: "vault"
@@ -30413,12 +33446,44 @@ function InMemoryMainDSU() {
 
     obj["environment.json"] = obj["/environment.json"];
 
+    const preventUpdateOutsideBatch = (updateFn, ...args) => {
+        if($$.LEGACY_BEHAVIOUR_ENABLED){
+            return updateFn(...args);
+        }
+
+        if (!this.batchInProgress()) {
+            const callback = args.pop();
+            return callback(Error("Batch not started. Use safeBeginBatch() or safeBeginBatchAsync before calling this method."));
+        }
+
+        updateFn(...args);
+    }
+    const convertUpdateFnToAsync = (updateFn, ...args) => {
+        if (!this.batchInProgress()) {
+            throw Error("No batch has been started");
+        }
+
+        return $$.promisify(updateFn)(...args);
+    }
+
+    const convertGetFunctionToAsync = (getFn, ...args) => {
+        return $$.promisify(getFn)(...args);
+    }
+
     this.writeFile = (path, data, callback) => {
         if (!path.startsWith("/")) {
             path = `/${path}`;
         }
-        obj[path] = data;
-        callback();
+
+        const _writeFile = (path, data, callback) => {
+            obj[path] = data;
+            callback();
+        }
+        preventUpdateOutsideBatch(_writeFile, path, data, callback);
+    }
+
+    this.writeFileAsync = async (path, data) => {
+        return convertUpdateFnToAsync(this.writeFile, path, data);
     }
 
     this.readFile = (path, callback) => {
@@ -30428,13 +33493,42 @@ function InMemoryMainDSU() {
         callback(undefined, obj[path]);
     }
 
+    this.readFileAsync = async (path) => {
+        return convertGetFunctionToAsync(this.readFile, path);
+    }
+
+    this.batchInProgress = () => {
+        return batchInProgress;
+    }
+
+    this.safeBeginBatch = (callback) => {
+        if (this.batchInProgress()) {
+            return callback(Error("Batch already in progress"));
+        }
+        batchInProgress = true;
+        callback();
+    }
+
+    this.safeBeginBatchAsync = async () => {
+        return convertGetFunctionToAsync(this.safeBeginBatch);
+    }
+
+    this.commitBatch = (callback) => {
+        batchInProgress = false;
+        callback();
+    }
+
+    this.commitBatchAsync = async () => {
+        convertUpdateFnToAsync(this.commitBatch);
+    }
+
     this.refresh = (callback)=>{
         callback();
     }
 }
 
 module.exports = InMemoryMainDSU;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js":[function(require,module,exports){
 const constants = require("../../moduleConstants");
 const {getURLForSsappContext} = require("../../utils/getURLForSsappContext");
 const openDSU = require("opendsu");
@@ -30522,7 +33616,7 @@ module.exports = {
     setMainDSU
 }
 
-},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/getURLForSsappContext":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js","./InMemoryMainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/getURLForSsappContext":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js","./InMemoryMainDSU":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js":[function(require,module,exports){
 const constants = require("../../moduleConstants");
 
 function SecurityContext(target, PIN) {
@@ -30614,7 +33708,6 @@ function SecurityContext(target, PIN) {
         }
 
         enclave = enclaveAPI.createEnclave(enclaveType);
-        await initSharedEnclave();
         const __saveEnclaveDIDAndFinishInit = async () => {
             if (typeof enclaveDID === "undefined") {
                 enclaveDID = await $$.promisify(enclave.getDID)();
@@ -30624,6 +33717,8 @@ function SecurityContext(target, PIN) {
                     throw createOpenDSUErrorWrapper(`Failed to set env enclaveDID`, e);
                 }
             }
+
+            await initSharedEnclave();
 
             if (!sharedEnclave || isPromise(sharedEnclave)) {
                 return finishInit();
@@ -30732,7 +33827,7 @@ function SecurityContext(target, PIN) {
 
     const wrapEnclave = (asDID, enclave) => {
         const wrappedEnclave = {};
-        let asyncDBMethods = ["insertRecord", "updateRecord", "getRecord", "deleteRecord", "filter", "commitBatch", "cancelBatch", "getKeySSI", "readKey", "writeKey", "getAllRecords", "addIndex"];
+        let asyncDBMethods = ["insertRecord", "updateRecord", "getRecord", "deleteRecord", "filter", "getKeySSI", "readKey", "writeKey", "getAllRecords", "addIndex"];
         for (let i = 0; i < asyncDBMethods.length; i++) {
             wrappedEnclave[asyncDBMethods[i]] = (...args) => {
                 return enclave[asyncDBMethods[i]](asDID, ...args);
@@ -30862,7 +33957,7 @@ function SecurityContext(target, PIN) {
 
 module.exports = SecurityContext;
 
-},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/DSUStorage.js":[function(require,module,exports){
+},{"../../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/BindAutoPendingFunctions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/storage/DSUStorage.js":[function(require,module,exports){
 const { fetch } = require("./utils");
 
 // helpers
@@ -31172,12 +34267,12 @@ function getDSUStorage() {
 
 module.exports = getDSUStorage;
 
-},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/index.js":[function(require,module,exports){
+},{"./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/storage/utils.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/storage/index.js":[function(require,module,exports){
 module.exports = {
   getDSUStorage: require("./DSUStorage")
 };
 
-},{"./DSUStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/DSUStorage.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/utils.js":[function(require,module,exports){
+},{"./DSUStorage":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/storage/DSUStorage.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/storage/utils.js":[function(require,module,exports){
 function promisify(fun) {
   return function (...args) {
     return new Promise((resolve, reject) => {
@@ -31220,7 +34315,29 @@ module.exports = {
   fetch: executeFetch,
 };
 
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/svd/index.js":[function(require,module,exports){
+const FastSVD = require("fast-svd").FastSVD
+
+class FsSVDStorage {
+    constructor(directory) {
+        this.persistence = FastSVD.createFSPersistence(directory);
+        this.factory = new FastSVD.createFactory(this.persistence);
+    }
+    registerType(typeName, typeDescription) {
+        this.factory.registerType(typeName, typeDescription);
+    }
+    createSession() {
+        return new FastSVD.createSession(this.factory);
+    }
+}
+
+const createFsSVDStorage = (directory) => {
+    return new FsSVDStorage(directory);
+}
+module.exports = {
+    createFsSVDStorage
+}
+},{"fast-svd":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/system/index.js":[function(require,module,exports){
 const envVariables = {};
 function getEnvironmentVariable(name){
     if (typeof envVariables[name] !== "undefined") {
@@ -31253,7 +34370,7 @@ module.exports = {
     getBaseURL
 }
 
-},{"../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js":[function(require,module,exports){
+},{"../utils/getBaseURL":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/getBaseURL.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js":[function(require,module,exports){
 const PendingCallMixin = require("./PendingCallMixin");
 /*
     Utility to make classes that depend on some initialisation easier to use.
@@ -31341,7 +34458,7 @@ module.exports.bindParallelAutoPendingFunctions = function(obj, exceptionList){
     return obj;
 };
 
-},{"./PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js":[function(require,module,exports){
+},{"./PendingCallMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 function ObservableMixin(target) {
     let observers = {};
@@ -31405,7 +34522,7 @@ function ObservableMixin(target) {
 
 module.exports = ObservableMixin;
 
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js":[function(require,module,exports){
 function PendingCallMixin(target) {
     let pendingCalls = [];
     let serialPendingCalls = [];
@@ -31454,7 +34571,7 @@ function PendingCallMixin(target) {
 }
 
 module.exports = PendingCallMixin;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/SmartUrl.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/SmartUrl.js":[function(require,module,exports){
 function SmartUrl(bdnsEntry){
     const {fetch, doPut, doPost, doGet} = require("opendsu").loadAPI("http");
     let url = typeof bdnsEntry === "string" ? bdnsEntry : bdnsEntry.url;
@@ -31518,7 +34635,7 @@ function SmartUrl(bdnsEntry){
 }
 
 module.exports = SmartUrl;
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/array.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/array.js":[function(require,module,exports){
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -31528,7 +34645,7 @@ function shuffle(array) {
 
 module.exports.shuffle = shuffle;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/getBaseURL.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 const system = require("../system");
 function getBaseURL(){
@@ -31567,7 +34684,7 @@ function getBaseURL(){
 }
 
 module.exports = getBaseURL;
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","../system":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/system/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js":[function(require,module,exports){
 function getURLForSsappContext(relativePath) {
     if (window["$$"] && $$.SSAPP_CONTEXT && $$.SSAPP_CONTEXT.BASE_URL && $$.SSAPP_CONTEXT.SEED) {
         // if we have a BASE_URL then we prefix the fetch url with BASE_URL
@@ -31582,7 +34699,7 @@ module.exports = {
     getURLForSsappContext
 }
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/index.js":[function(require,module,exports){
 module.exports = {
     bindAutoPendingFunctions: require("./BindAutoPendingFunctions").bindAutoPendingFunctions,
     bindParallelAutoPendingFunctions: require("./BindAutoPendingFunctions").bindParallelAutoPendingFunctions,
@@ -31594,7 +34711,7 @@ module.exports = {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
-},{"./BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./SmartUrl":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/SmartUrl.js","./promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js":[function(require,module,exports){
+},{"./BindAutoPendingFunctions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./PendingCallMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./SmartUrl":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/SmartUrl.js","./promise-runner":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/promise-runner.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/observable.js":[function(require,module,exports){
 module.exports.createObservable = function(){
 	let observableMixin = require("./ObservableMixin");
 	let obs = {};
@@ -31602,7 +34719,7 @@ module.exports.createObservable = function(){
 	observableMixin(obs);
 	return obs;
 }
-},{"./ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js":[function(require,module,exports){
+},{"./ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/promise-runner.js":[function(require,module,exports){
 const arrayUtils = require("./array");
 const { OpenDSUSafeCallback, createOpenDSUErrorWrapper } = require('./../error')
 
@@ -31761,7 +34878,7 @@ module.exports = {
   runEnoughForMajority,
 };
 
-},{"./../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","./array":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/array.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js":[function(require,module,exports){
+},{"./../error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","./array":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/array.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js":[function(require,module,exports){
 const cryptoSkillsRegistry = {};
 const methodsNames = require("../didMethodsNames");
 const KeyDID_CryptographicSkills = require("./KeyDID_CryptographicSkills");
@@ -31790,7 +34907,7 @@ module.exports = {
     NAMES: require("./cryptographicSkillsNames"),
     CryptographicSkillsMixin: require("./CryptographicSkillsMixin")
 };
-},{"../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js","./GroupDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js","./KeyDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js","./NameDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js","./SReadDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js","./SSI_KeyDID_CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js","./cryptographicSkillsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js":[function(require,module,exports){
+},{"../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js","./GroupDID_CryptographicSkills":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js","./KeyDID_CryptographicSkills":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js","./NameDID_CryptographicSkills":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js","./SReadDID_CryptographicSkills":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js","./SSI_KeyDID_CryptographicSkills":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js","./cryptographicSkillsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js":[function(require,module,exports){
 function CryptographicSkillsMixin(target) {
     target = target || {};
     const crypto = require("pskcrypto");
@@ -31986,7 +35103,7 @@ function CryptographicSkillsMixin(target) {
 
 module.exports = CryptographicSkillsMixin;
 
-},{"opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js":[function(require,module,exports){
+},{"opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/GroupDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function GroupDID_CryptographicSkills() {
@@ -31999,7 +35116,7 @@ function GroupDID_CryptographicSkills() {
 }
 
 module.exports = GroupDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/KeyDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function KeyDID_CryptographicSkills() {
@@ -32012,7 +35129,7 @@ function KeyDID_CryptographicSkills() {
 }
 
 module.exports = KeyDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/NameDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function NameDID_CryptographicSkills() {
@@ -32025,7 +35142,7 @@ function NameDID_CryptographicSkills() {
 }
 
 module.exports = NameDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SReadDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function SReadDID_CryptographicSkills() {
@@ -32038,7 +35155,7 @@ function SReadDID_CryptographicSkills() {
 }
 
 module.exports = SReadDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/SSI_KeyDID_CryptographicSkills.js":[function(require,module,exports){
 const didDocumentsFactory = require("../didDocumentsFactory");
 const didMethodsNames = require("../didMethodsNames");
 function SSI_KeyDID_CryptographicSkills() {
@@ -32051,7 +35168,7 @@ function SSI_KeyDID_CryptographicSkills() {
 }
 
 module.exports = SSI_KeyDID_CryptographicSkills;
-},{"../didDocumentsFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js":[function(require,module,exports){
+},{"../didDocumentsFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js","../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./CryptographicSkillsMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkillsMixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/cryptographicSkillsNames.js":[function(require,module,exports){
 module.exports = {
     CREATE_DID_DOCUMENT:"createDID_Document",
     SIGN: "sign",
@@ -32059,7 +35176,7 @@ module.exports = {
     ENCRYPT_MESSAGE: "encryptMessage",
     DECRYPT_MESSAGE: "decryptMessage"
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js":[function(require,module,exports){
 /*
     W3CDID Minxin is abstracting the DID document for OpenDSU compatible DID methods
 
@@ -32211,7 +35328,18 @@ function W3CDID_Mixin(target, enclave) {
                 return callback(createOpenDSUErrorWrapper(`Failed to parse received message`, err));
             }
 
-            target.decryptMessage(message, callback);
+            target.decryptMessage(message, (err, decryptedMessage) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                mqHandler.deleteMessage(encryptedMessage.messageId, (err) => {
+                    if (err) {
+                        return callback(createOpenDSUErrorWrapper(`Failed to delete message`, err));
+                    }
+                    callback(undefined, decryptedMessage);
+                })
+            });
         });
     };
 
@@ -32221,7 +35349,7 @@ function W3CDID_Mixin(target, enclave) {
             .getMQHandlerForDID(target);
 
         target.onCallback = (err, encryptedMessage, notificationHandler) => {
-            if(target.stopReceivingMessages){
+            if (target.stopReceivingMessages) {
                 console.log(`Received message for unsubscribed DID`);
                 return;
             }
@@ -32230,7 +35358,7 @@ function W3CDID_Mixin(target, enclave) {
                 return callback(createOpenDSUErrorWrapper(`Failed to read message`, err));
             }
 
-            if(notificationHandler){
+            if (notificationHandler) {
                 notificationHandler();
             }
 
@@ -32253,6 +35381,14 @@ function W3CDID_Mixin(target, enclave) {
             .getMQHandlerForDID(target);
         mqHandler.stopReceivingMessages = true;
         target.stopReceivingMessages = true;
+    }
+
+    target.startWaitingForMessages = function () {
+        const mqHandler = require("opendsu")
+            .loadAPI("mq")
+            .getMQHandlerForDID(target);
+        mqHandler.stopReceivingMessages = false;
+        target.stopReceivingMessages = false;
     }
 
     target.getEnclave = () => {
@@ -32280,7 +35416,7 @@ function W3CDID_Mixin(target, enclave) {
 
 module.exports = W3CDID_Mixin;
 
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js":[function(require,module,exports){
 
 /*
     W3CVC Mixin is abstracting a JWT based credential
@@ -32307,12 +35443,12 @@ function W3CVC_Mixin(){
 
 module.exports = W3CVC_Mixin;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didDocumentsFactory.js":[function(require,module,exports){
 const methodsNames = require("./didMethodsNames");
 const createNameDIDDocument = require("./didssi/NameDID_Document").initiateDIDDocument;
 const createGroupDID_Document = require("./didssi/GroupDID_Document").initiateDIDDocument;
 const createSReadDID_Document = require("./didssi/SReadDID_Document").initiateDIDDocument;
-const createSSI_KeyDID_Document = require("./didssi/KeyDID_Document").initiateDIDDocument;
+const createSSI_KeyDID_Document = require("./didssi/SSIKeyDID_Document").initiateDIDDocument;
 const createKeyDID_Document = require("./w3cdids/KeyDID_Document").initiateDIDDocument;
 
 const didsConstructors = {};
@@ -32335,7 +35471,7 @@ module.exports = {
     registerDID_Document_Constructor,
     createDID_Document
 }
-},{"./didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/GroupDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./didssi/KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./didssi/NameDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./didssi/SReadDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","./w3cdids/KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js":[function(require,module,exports){
+},{"./didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/GroupDID_Document":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./didssi/NameDID_Document":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./didssi/SReadDID_Document":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","./didssi/SSIKeyDID_Document":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/SSIKeyDID_Document.js","./w3cdids/KeyDID_Document":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js":[function(require,module,exports){
 module.exports = {
     OPENDSU_METHOD_NAME: "ssi",
     KEY_SUBTYPE: "key",
@@ -32345,10 +35481,10 @@ module.exports = {
     GROUP_METHOD_NAME: "ssi:group",
     DEMO_METHOD_NAME: "demo"
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js":[function(require,module,exports){
 const {createOpenDSUErrorWrapper} = require("../../error");
 
-function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation) {
+function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation, desiredPrivateKey) {
     if (arguments.length === 4) {
         isInitialisation = name;
         name = domain;
@@ -32372,7 +35508,7 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
     const generatePublicKey = async () => {
         let seedSSI;
         try {
-            seedSSI = await $$.promisify(keySSISpace.createSeedSSI)(domain);
+            seedSSI = await $$.promisify(keySSISpace.createSeedSSI)(domain, desiredPrivateKey);
         } catch (e) {
             return target.dispatchEvent("error", createOpenDSUErrorWrapper(`Failed to create SeedSSI`, e));
         }
@@ -32389,7 +35525,6 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
             return target.dispatchEvent("error", createOpenDSUErrorWrapper(`Failed to create constDSU`, e));
         }
 
-        constDSU.beginBatch();
         try {
             target.dsu = await $$.promisify(resolver.createSeedDSU)(domain);
         } catch (e) {
@@ -32410,13 +35545,25 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
         }
 
         try {
-            await $$.promisify(constDSU.mount)(WRITABLE_DSU_PATH, seedSSI);
+            await constDSU.safeBeginBatchAsync();
         } catch (e) {
-            return target.dispatchEvent("error", createOpenDSUErrorWrapper(`Failed to mount writable DSU`, e));
+            return target.dispatchEvent("error", createOpenDSUErrorWrapper(`Failed to begin batch in Const DSU`, e));
         }
 
         try {
-            await $$.promisify(constDSU.commitBatch)();
+            await $$.promisify(constDSU.mount)(WRITABLE_DSU_PATH, seedSSI);
+        } catch (e) {
+            const mountError = createOpenDSUErrorWrapper(`Failed to mount writable DSU`, e);
+            try {
+                await constDSU.cancelBatchAsync();
+            }catch (error) {
+                return target.dispatchEvent("error", createOpenDSUErrorWrapper(`Failed to cancel batch in Const DSU`, error));
+            }
+            return target.dispatchEvent("error", mountError);
+        }
+
+        try {
+            await constDSU.commitBatchAsync();
         } catch (e) {
             return target.dispatchEvent("error", createOpenDSUErrorWrapper(`Failed to commit batch in Const DSU`, e));
         }
@@ -32493,14 +35640,33 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
     };
 
     target.addPublicKey = (publicKey, callback) => {
-        target.dsu.writeFile(`${PUB_KEYS_PATH}/${publicKey.toString("hex")}`, callback);
+        target.dsu.safeBeginBatch((err) => {
+            if (err) {
+                return callback(createOpenDSUErrorWrapper(`Failed to begin batch`, err));
+            }
+
+            target.dsu.writeFile(`${PUB_KEYS_PATH}/${publicKey.toString("hex")}`, async (err) => {
+                if (err) {
+                    const writeError = createOpenDSUErrorWrapper(`Failed to add public key for did ${target.getIdentifier()}`, err);
+                    try {
+                        await target.dsu.cancelBatchAsync();
+                    }catch (e) {
+                        return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, e, writeError));
+                    }
+                    return callback(writeError);
+                }
+
+                target.dsu.commitBatch(callback);
+            });
+        });
     }
 }
 
 module.exports = ConstDID_Document_Mixin;
 
-},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js":[function(require,module,exports){
+},{"../../error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
+const {createOpenDSUErrorWrapper} = require("../../error");
 
 function GroupDID_Document(enclave, domain, groupName, isInitialisation) {
     if (typeof domain === "undefined" || typeof groupName === "undefined") {
@@ -32614,10 +35780,9 @@ function GroupDID_Document(enclave, domain, groupName, isInitialisation) {
             const membersIds = Object.keys(members);
             const noMembers = membersIds.length;
             let senderDIDDocument;
-            try{
+            try {
                 senderDIDDocument = await $$.promisify(w3cDID.resolveDID)(membersIds[0]);
-            }
-            catch (e) {
+            } catch (e) {
                 return callback(e);
             }
             let counter = noMembers;
@@ -32672,24 +35837,43 @@ function GroupDID_Document(enclave, domain, groupName, isInitialisation) {
                 return callback(err);
             }
 
-            if (operation === "remove") {
-                identities.forEach(id => {
-                    if (typeof members[id] !== "undefined") {
-                        delete members[id];
-                    }
-                });
+            if (operation === "remove" || operation === "add") {
+                if (operation === "remove") {
+                    identities.forEach(id => {
+                        if (typeof members[id] !== "undefined") {
+                            delete members[id];
+                        }
+                    });
+                } else {
+                    identities.forEach((id, index) => {
+                        if (typeof id === "object") {
+                            id = id.getIdentifier();
+                        }
+                        if (typeof members[id] === "undefined") {
+                            members[id] = info[index];
+                        }
+                    });
+                }
 
-                return this.dsu.writeFile(MEMBERS_FILE, JSON.stringify(members), callback);
-            } else if (operation === "add") {
-                identities.forEach((id, index) => {
-                    if (typeof id === "object") {
-                        id = id.getIdentifier();
+                return this.dsu.safeBeginBatch(err => {
+                    if (err) {
+                        return callback(err);
                     }
-                    if (typeof members[id] === "undefined") {
-                        members[id] = info[index];
-                    }
-                });
-                return this.dsu.writeFile(MEMBERS_FILE, JSON.stringify(members), callback);
+
+                    this.dsu.writeFile(MEMBERS_FILE, JSON.stringify(members), async err => {
+                        if (err) {
+                            const writeError = createOpenDSUErrorWrapper(`Failed to write members`, err);
+                            try{
+                                await this.dsu.cancelBatchAsync();
+                            }catch (e) {
+                                return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, e, writeError));
+                            }
+                            return callback(writeError);
+                        }
+
+                        this.dsu.commitBatch(callback);
+                    });
+                })
             } else {
                 callback(Error(`Invalid operation ${operation}`));
             }
@@ -32700,7 +35884,7 @@ function GroupDID_Document(enclave, domain, groupName, isInitialisation) {
 
     try {
         this.init();
-    }catch (e) {
+    } catch (e) {
         this.dispatchEvent("error", e);
     }
     return this;
@@ -32716,104 +35900,10 @@ module.exports = {
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js":[function(require,module,exports){
+},{"../../error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","../../utils/BindAutoPendingFunctions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 
-function KeyDID_Document(enclave, isInitialisation, seedSSI) {
-    let DID_mixin = require("../W3CDID_Mixin");
-    DID_mixin(this, enclave);
-    const ObservableMixin = require("../../utils/ObservableMixin");
-    ObservableMixin(this);
-    const openDSU = require("opendsu");
-    const dbAPI = openDSU.loadAPI("db");
-    const keySSISpace = openDSU.loadAPI("keyssi");
-    const crypto = openDSU.loadAPI("crypto");
-
-    let tokens;
-    const __init = async () => {
-        if (!isInitialisation) {
-            tokens = seedSSI;
-            seedSSI = undefined;
-        }
-
-        if (typeof seedSSI === "string") {
-            try {
-                seedSSI = keySSISpace.parse(seedSSI);
-            } catch (e) {
-                return this.dispatchEvent("error", createOpenDSUErrorWrapper(`Failed to parse ssi ${seedSSI}`));
-            }
-        }
-
-        setTimeout(()=>{
-            this.dispatchEvent("initialised");
-        },1)
-    }
-
-    this.getMethodName = () => {
-        return methodsNames.SSI_KEY_SUBTYPE;
-    }
-
-    this.getDomain = () => {
-        let domain;
-        if (!isInitialisation) {
-            domain = tokens[0];
-        } else {
-            domain = seedSSI.getDLDomain();
-        }
-
-        return domain;
-    }
-
-    const getRawPublicKey = () => {
-        let publicKey;
-        if (!isInitialisation) {
-            publicKey = crypto.decodeBase58(tokens[1])
-        } else {
-            publicKey = seedSSI.getPublicKey("raw");
-        }
-
-        return publicKey;
-    }
-
-    this.getPublicKey = (format, callback) => {
-        let pubKey = getRawPublicKey();
-        try {
-            pubKey = crypto.convertPublicKey(pubKey, format);
-        } catch (e) {
-            return callback(createOpenDSUErrorWrapper(`Failed to convert public key to ${format}`, e));
-        }
-
-        callback(undefined, pubKey);
-    };
-
-    this.getIdentifier = () => {
-        const domain = this.getDomain();
-        let publicKey = getRawPublicKey();
-        publicKey = crypto.encodeBase58(publicKey);
-        return `did:ssi:key:${domain}:${publicKey}`;
-    };
-
-    this.getPrivateKeys = () => {
-        return [seedSSI.getPrivateKey()];
-    };
-
-    __init();
-    return this;
-}
-
-module.exports = {
-    initiateDIDDocument: function (enclave, seedSSI) {
-        return new KeyDID_Document(enclave, true, seedSSI);
-    },
-    createDIDDocument: function (enclave, tokens) {
-        return new KeyDID_Document(enclave, false,  [tokens[3], tokens[4]]);
-    }
-};
-
-},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js":[function(require,module,exports){
-const methodsNames = require("../didMethodsNames");
-
-function NameDID_Document(enclave, domain, name, isInitialisation) {
+function NameDID_Document(enclave, domain, name, isInitialisation, desiredPrivateKey) {
     if (arguments.length === 3) {
         isInitialisation = name;
         name = domain;
@@ -32824,7 +35914,7 @@ function NameDID_Document(enclave, domain, name, isInitialisation) {
     }
 
     let mixin = require("./ConstDID_Document_Mixin");
-    mixin(this, enclave, domain, name, isInitialisation);
+    mixin(this, enclave, domain, name, isInitialisation, desiredPrivateKey);
     const bindAutoPendingFunctions = require("../../utils/BindAutoPendingFunctions").bindAutoPendingFunctions;
 
     this.getMethodName = () => {
@@ -32846,15 +35936,15 @@ function NameDID_Document(enclave, domain, name, isInitialisation) {
 
 
 module.exports = {
-    initiateDIDDocument: function (enclave, domain, name) {
-        return new NameDID_Document(enclave, domain, name, true);
+    initiateDIDDocument: function (enclave, domain, name, desiredPrivateKey) {
+        return new NameDID_Document(enclave, domain, name, true, desiredPrivateKey);
     },
-    createDIDDocument: function (enclave, tokens) {
-        return new NameDID_Document(enclave, tokens[3], tokens[4], false);
+    createDIDDocument: function (enclave, tokens, desiredPrivateKey) {
+        return new NameDID_Document(enclave, tokens[3], tokens[4], false, desiredPrivateKey);
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 
 function SReadDID_Document(enclave, isInitialisation, seedSSI) {
@@ -32965,7 +36055,104 @@ module.exports = {
     }
 };
 
-},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js":[function(require,module,exports){
+},{"../../utils/BindAutoPendingFunctions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./ConstDID_Document_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/ConstDID_Document_Mixin.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/SSIKeyDID_Document.js":[function(require,module,exports){
+const methodsNames = require("../didMethodsNames");
+
+function SSIKeyDID_Document(enclave, isInitialisation, seedSSI) {
+    let DID_mixin = require("../W3CDID_Mixin");
+    DID_mixin(this, enclave);
+    const ObservableMixin = require("../../utils/ObservableMixin");
+    ObservableMixin(this);
+    const openDSU = require("opendsu");
+    const dbAPI = openDSU.loadAPI("db");
+    const keySSISpace = openDSU.loadAPI("keyssi");
+    const crypto = openDSU.loadAPI("crypto");
+
+    let tokens;
+    const __init = async () => {
+        if (!isInitialisation) {
+            tokens = seedSSI;
+            seedSSI = undefined;
+        }
+
+        if (typeof seedSSI === "string") {
+            try {
+                seedSSI = keySSISpace.parse(seedSSI);
+            } catch (e) {
+                return this.dispatchEvent("error", createOpenDSUErrorWrapper(`Failed to parse ssi ${seedSSI}`));
+            }
+        }
+
+        setTimeout(()=>{
+            this.dispatchEvent("initialised");
+        },1)
+    }
+
+    this.getMethodName = () => {
+        return methodsNames.SSI_KEY_SUBTYPE;
+    }
+
+    this.getDomain = () => {
+        let domain;
+        if (!isInitialisation) {
+            domain = tokens[0];
+        } else {
+            domain = seedSSI.getDLDomain();
+        }
+
+        return domain;
+    }
+
+    const getRawPublicKey = () => {
+        let publicKey;
+        if (!isInitialisation) {
+            publicKey = crypto.decodeBase58(tokens[1])
+        } else {
+            publicKey = seedSSI.getPublicKey("raw");
+        }
+
+        return publicKey;
+    }
+
+    this.getPublicKey = (format, callback) => {
+        let pubKey = getRawPublicKey();
+        try {
+            pubKey = crypto.convertPublicKey(pubKey, format);
+        } catch (e) {
+            return callback(createOpenDSUErrorWrapper(`Failed to convert public key to ${format}`, e));
+        }
+
+        callback(undefined, pubKey);
+    };
+
+    this.getIdentifier = () => {
+        const domain = this.getDomain();
+        let publicKey = getRawPublicKey();
+        publicKey = crypto.encodeBase58(publicKey);
+        return `did:ssi:key:${domain}:${publicKey}`;
+    };
+
+    this.getPrivateKeys = () => {
+        if(typeof seedSSI === "undefined"){
+            return [];
+        }
+        return [seedSSI.getPrivateKey()];
+    };
+
+    __init();
+    return this;
+}
+
+module.exports = {
+    initiateDIDDocument: function (enclave, seedSSI) {
+        return new SSIKeyDID_Document(enclave, true, seedSSI);
+    },
+    createDIDDocument: function (enclave, tokens) {
+        return new SSIKeyDID_Document(enclave, false,  [tokens[3], tokens[4]]);
+    }
+};
+
+},{"../../utils/ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js":[function(require,module,exports){
 function storeDIDInSC(didDocument, callback) {
     const securityContext = require("opendsu").loadAPI("sc").getSecurityContext();
     const __registerDID = () => {
@@ -32987,7 +36174,7 @@ function storeDIDInSC(didDocument, callback) {
 }
 
 const openDSU = require("opendsu");
-const KeyDIDDocument = require("./KeyDID_Document");
+const KeyDIDDocument = require("./SSIKeyDID_Document");
 const dbAPI = openDSU.loadAPI("db")
 const __ensureEnclaveExistsThenExecute = (fn, enclave, ...args) => {
     if (typeof enclave === "undefined") {
@@ -33024,8 +36211,8 @@ function SReadDID_Method() {
     }
 }
 
-function KeyDID_Method() {
-    let KeyDIDDocument = require("./KeyDID_Document");
+function SSIKeyDID_Method() {
+    let KeyDIDDocument = require("./SSIKeyDID_Document");
     this.create = function (enclave, seedSSI, callback) {
         const keyDIDDocument = KeyDIDDocument.initiateDIDDocument(enclave, seedSSI);
         keyDIDDocument.on("error", callback);
@@ -33048,13 +36235,18 @@ function KeyDID_Method() {
 function NameDID_Method() {
     const NameDIDDocument = require("./NameDID_Document");
 
-    this.create = (enclave, domain, publicName, callback) => {
+    this.create = (enclave, domain, publicName, secret, callback) => {
+        if(typeof secret === "function"){
+            callback = secret;
+            secret = undefined;
+        }
+
         if (typeof publicName === "function") {
             callback = publicName;
             publicName = domain;
             domain = undefined;
         }
-        const nameDIDDocument = NameDIDDocument.initiateDIDDocument(enclave, domain, publicName);
+        const nameDIDDocument = NameDIDDocument.initiateDIDDocument(enclave, domain, publicName, secret);
 
         nameDIDDocument.on("error", (err) => {
             return callback(err);
@@ -33105,8 +36297,8 @@ function GroupDID_Method() {
     }
 }
 
-function create_KeyDID_Method() {
-    return new KeyDID_Method();
+function create_SSIKeyDID_Method() {
+    return new SSIKeyDID_Method();
 }
 
 function create_SReadDID_Method() {
@@ -33123,13 +36315,13 @@ function create_GroupDID_Method() {
 
 
 module.exports = {
-    create_KeyDID_Method,
+    create_SSIKeyDID_Method,
     create_SReadDID_Method,
     create_NameDID_Method,
     create_GroupDID_Method
 }
 
-},{"./GroupDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/KeyDID_Document.js","./NameDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./SReadDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js":[function(require,module,exports){
+},{"./GroupDID_Document":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./NameDID_Document":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./SReadDID_Document":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","./SSIKeyDID_Document":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/SSIKeyDID_Document.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js":[function(require,module,exports){
 let didDocuments = {};
 
 function CommunicationHub() {
@@ -33161,8 +36353,6 @@ function CommunicationHub() {
         if(!didDocuments[identifier]){
             didDocuments[identifier] = did;
         }
-        console.log(did === didDocuments[identifier], identifier, did, didDocuments[identifier]);
-        console.log(didDocuments);
         fnToExecute(undefined, didDocuments[identifier]);
     }
 
@@ -33325,7 +36515,7 @@ module.exports = {
     getCommunicationHub
 }
 
-},{"opendsu":"opendsu","soundpubsub":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/TypicalBusinessLogicHub.js":[function(require,module,exports){
+},{"opendsu":"opendsu","soundpubsub":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/hubs/TypicalBusinessLogicHub.js":[function(require,module,exports){
 const {createOpenDSUErrorWrapper} = require("../../error");
 const getCheckVariableFunction = function (envVariableName, hubContext, selector,  callback) {
     if (hubContext[selector]) {
@@ -33420,7 +36610,7 @@ const getTypicalBusinessLogicHub = () => {
 module.exports = {
     getTypicalBusinessLogicHub
 }
-},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/index.js":[function(require,module,exports){
+},{"../../error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/index.js":[function(require,module,exports){
 /*
     OpenDSU W3C compatible  ID pluginisable resolver  that can resolve arbitrary DID methods.
 
@@ -33459,6 +36649,49 @@ const dbAPI = openDSU.loadAPI("db");
  */
 function createIdentity(didMethod, ...args) {
     we_createIdentity(undefined, didMethod, ...args);
+}
+
+function resolveNameDID(domain, publicName, secret, callback) {
+    if(typeof secret == "function"){
+        callback = secret;
+        secret = undefined;
+    }
+    const identifier = `did:ssi:name:${domain}:${publicName}`;
+    if(secret){
+        resolveDID(identifier, (err, didDocument)=>{
+            if(err){
+                createIdentity("ssi:name", domain, publicName, secret, callback);
+            }
+            else{
+                registerNameDIDSecret(domain, publicName, secret, (err)=>{
+                    if(err){
+                        return callback(err);
+                    }
+                    // A new DID document instance, containing the new private key is needed
+                    resolveDID(identifier, callback)
+                });
+            }
+        })
+    }
+    else{
+        resolveDID(identifier, callback);
+    }
+}
+
+function registerNameDIDSecret(domain, publicName, secret, callback) {
+    const sc = openDSU.loadAPI("sc");
+    sc.getMainEnclave((err, enclave)=>{
+        if(err){
+            return callback(err, undefined);
+        }
+        const identifier = `did:ssi:name:${domain}:${publicName}`;
+        resolveDID(identifier, (err, didDoc)=>{
+            if(err){
+                return callback(err, undefined);
+            }
+            enclave.addPrivateKeyForDID(didDoc, secret, callback);
+        });
+    })
 }
 
 function we_createIdentity(enclave, didMethod, ...args) {
@@ -33530,7 +36763,7 @@ function registerDIDMethod(method, implementation) {
 
 
 registerDIDMethod(methodsNames.S_READ_SUBTYPE, require("./didssi/ssiMethods").create_SReadDID_Method());
-registerDIDMethod(methodsNames.SSI_KEY_SUBTYPE, require("./didssi/ssiMethods").create_KeyDID_Method());
+registerDIDMethod(methodsNames.SSI_KEY_SUBTYPE, require("./didssi/ssiMethods").create_SSIKeyDID_Method());
 registerDIDMethod(methodsNames.NAME_SUBTYPE, require("./didssi/ssiMethods").create_NameDID_Method());
 
 registerDIDMethod(methodsNames.GROUP_METHOD_NAME, require("./didssi/ssiMethods").create_GroupDID_Method());
@@ -33545,6 +36778,8 @@ module.exports = {
     resolveDID,
     we_resolveDID,
     registerDIDMethod,
+    resolveNameDID,
+    registerNameDIDSecret,
     CryptographicSkills: require("./CryptographicSkills/CryptographicSkills"),
     W3CDIDMixin: require('./W3CDID_Mixin'),
     W3CCVCMixin: require('./W3CVC_Mixin'),
@@ -33552,7 +36787,7 @@ module.exports = {
     getTypicalBusinessLogicHub: require("./hubs/TypicalBusinessLogicHub").getTypicalBusinessLogicHub
 }
 
-},{"./CryptographicSkills/CryptographicSkills":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js","./W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","./W3CVC_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js","./didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/ssiMethods":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js","./hubs/CommunicationHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js","./hubs/TypicalBusinessLogicHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/TypicalBusinessLogicHub.js","./w3cdids/didMethods":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js":[function(require,module,exports){
+},{"./CryptographicSkills/CryptographicSkills":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/CryptographicSkills/CryptographicSkills.js","./W3CDID_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","./W3CVC_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/W3CVC_Mixin.js","./didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","./didssi/ssiMethods":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js","./hubs/CommunicationHub":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js","./hubs/TypicalBusinessLogicHub":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/hubs/TypicalBusinessLogicHub.js","./w3cdids/didMethods":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js":[function(require,module,exports){
 const methodsNames = require("../didMethodsNames");
 
 function KeyDID_Document(enclave, isInitialisation, publicKey, privateKey) {
@@ -33642,7 +36877,7 @@ module.exports = {
     }
 };
 
-},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/didMethods.js":[function(require,module,exports){
 const KeyDIDDocument = require("./KeyDID_Document");
 
 function KeyDID_Method() {
@@ -33681,7 +36916,7 @@ module.exports = {
         return new KeyDID_Method();
     }
 }
-},{"./KeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/node.js":[function(require,module,exports){
+},{"./KeyDID_Document":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/w3cdids/KeyDID_Document.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/workers/bootScript/node.js":[function(require,module,exports){
 module.exports = () => {
     const worker_threads = "worker_threads";
     const { parentPort } = require(worker_threads);
@@ -33705,7 +36940,7 @@ module.exports = () => {
         setTimeout(() => process.exit(1), 100);
     });
 }
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/web.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/workers/bootScript/web.js":[function(require,module,exports){
 module.exports = () => {
     addEventListener('message', (event) => {
         const { functionName, payload } = event.data;
@@ -33726,7 +36961,7 @@ module.exports = () => {
         console.error("[workers] web worker error", error);
     });
 }
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/functions.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/workers/functions.js":[function(require,module,exports){
 function runSyncFunction({ apiSpaceName, functionName, params }) {
     const openDSU = require("opendsu");
     const api = openDSU.loadAPI(apiSpaceName);
@@ -33746,7 +36981,7 @@ module.exports = {
     runSyncFunction,
     runSyncFunctionOnlyFromWorker
 }
-},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/workers/index.js":[function(require,module,exports){
 function getWebWorkerBootScript() {
     const scriptLocation = document.currentScript
         ? document.currentScript
@@ -33922,10 +37157,11 @@ module.exports = {
     createPool,
     getFunctionsRegistry
 }
-},{"../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./bootScript/node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/node.js","./bootScript/web":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/web.js","./functions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/functions.js","opendsu":"opendsu","syndicate":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
+},{"../moduleConstants.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","./bootScript/node":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/workers/bootScript/node.js","./bootScript/web":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/workers/bootScript/web.js","./functions":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/workers/functions.js","opendsu":"opendsu","syndicate":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
+
 if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined") {
     process.env.OPENDSU_ENABLE_DEBUG = IS_DEV_MODE.toString();
 }
@@ -33980,12 +37216,18 @@ function Logger(className, moduleName, logFile) {
     }
 
     const getLogMessage = (data) => {
-        let msg;
+        let msg = '';
         try {
             if (typeof data === "object") {
-                msg = JSON.stringify(data) + " ";
+                if (data instanceof Error) {
+                    msg = `${data.message}\n${data.stack}`;
+                } else if (data.debug_stack || data.debug_message) {
+                    msg = data.toString();
+                } else {
+                    msg = JSON.stringify(data) + " ";
+                }
             } else {
-                msg = data + " "
+                msg = data + " ";
             }
         } catch (e) {
             msg = e.message + " ";
@@ -34137,7 +37379,7 @@ module.exports = {
     getLogger
 }
 
-},{"./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
+},{"./moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
 module.exports = {
   BROWSER_ENVIRONMENT_TYPE: 'browser',
   MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
@@ -34148,7 +37390,7 @@ module.exports = {
   NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
 let logger = console;
 
 if(typeof $$.Buffer === "undefined"){
@@ -34468,7 +37710,7 @@ $$.registerGlobalSymbol("throttlingEvent", function (...args) {
     logger.log(...args);
 });
 
-},{"buffer":false,"psklogger":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-cache/lib/Cache.js":[function(require,module,exports){
+},{"buffer":false,"psklogger":false,"swarmutils":"swarmutils"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/psk-cache/lib/Cache.js":[function(require,module,exports){
 const DEFAULT_ITEMS_LIMIT = 1000;
 const DEFAULT_STORAGE_LEVELS = 3;
 
@@ -34591,7 +37833,7 @@ function Cache(options) {
 
 module.exports = Cache;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -34696,7 +37938,7 @@ module.exports = {
     convertKeysToKeyObjects
 }
 
-},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js":[function(require,module,exports){
+},{"../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js":[function(require,module,exports){
 module.exports = {
     curveName: 'secp256k1',
     encodingFormat: 'base64',
@@ -34712,7 +37954,7 @@ module.exports = {
     publicKeyType: 'spki'
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -34750,7 +37992,7 @@ module.exports = {
     symmetricDecrypt
 }
 
-},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js":[function(require,module,exports){
+},{"../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -34787,7 +38029,7 @@ module.exports = {
     verifyDigitalSignature
 }
 
-},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js":[function(require,module,exports){
+},{"../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -34825,7 +38067,7 @@ class ECEphemeralKeyAgreement {
 
 module.exports = ECEphemeralKeyAgreement
 
-},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js":[function(require,module,exports){
+},{"../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js":[function(require,module,exports){
 'use strict';
 
 const cipher = require('./cipher')
@@ -34855,7 +38097,7 @@ module.exports = {
     PublicKeyDeserializer: require('./pkdeserializer')
 }
 
-},{"./cipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js","./digitalsig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js","./ecephka":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js","./kdf":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js","./kmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js","./pkdeserializer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js","./pkserializer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js":[function(require,module,exports){
+},{"./cipher":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/cipher.js","./digitalsig":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js","./ecephka":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/ecephka.js","./kdf":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js","./kmac":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js","./pkdeserializer":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js","./pkserializer":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kdf.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -34886,7 +38128,7 @@ module.exports = {
     KDF2
 }
 
-},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js":[function(require,module,exports){
+},{"../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/kmac.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -34913,7 +38155,7 @@ module.exports = {
     verifyKMAC
 }
 
-},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js":[function(require,module,exports){
+},{"../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","./index":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto')
@@ -34947,7 +38189,7 @@ function PublicKeyDeserializer() {
 
 module.exports = new PublicKeyDeserializer()
 
-},{"../../lib/ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js":[function(require,module,exports){
+},{"../../lib/ECKeyGenerator":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js":[function(require,module,exports){
 const config = require('../config');
 
 function PublicKeySerializer() {
@@ -34976,7 +38218,7 @@ function PublicKeySerializer() {
 
 module.exports = new PublicKeySerializer()
 
-},{"../../lib/ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js":[function(require,module,exports){
+},{"../../lib/ECKeyGenerator":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -35045,7 +38287,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     };
 }
 
-},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -35105,7 +38347,7 @@ module.exports.encrypt = function (senderECSigningKeyPair, receiverECDHPublicKey
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 };
 
-},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js":[function(require,module,exports){
+},{"../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -35113,7 +38355,7 @@ module.exports = {
   decrypt: require('./decrypt').decrypt,
   getDecodedECDHPublicKeyFromEncEnvelope: require('../common').getDecodedECDHPublicKeyFromEncEnvelope
 }
-},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js":[function(require,module,exports){
+},{"../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/decrypt.js","./encrypt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/encrypt.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto');
@@ -35178,7 +38420,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     };
 }
 
-},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto');
@@ -35233,9 +38475,9 @@ module.exports.encrypt = function (senderECDHKeyPair, receiverECDHPublicKey, mes
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 };
 
-},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js":[function(require,module,exports){
-arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
-},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js":[function(require,module,exports){
+},{"../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js":[function(require,module,exports){
+arguments[4]["/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
+},{"../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/decrypt.js","./encrypt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/encrypt.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -35287,7 +38529,7 @@ module.exports.decrypt = function (receiverECDHKeyPair, encEnvelope, options) {
     return mycrypto.symmetricDecrypt(symmetricCipherKey, ciphertext, iv, options)
 }
 
-},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js":[function(require,module,exports){
+},{"../../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const utils = require('../utils')
@@ -35348,7 +38590,7 @@ module.exports.encrypt = function (message, ...receiverECDHPublicKeys) {
     }
 }
 
-},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js":[function(require,module,exports){
+},{"../../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -35357,7 +38599,7 @@ module.exports = {
   getRecipientECDHPublicKeysFromEncEnvelope: require('../utils').getRecipientECDHPublicKeysFromEncEnvelope
 }
 
-},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js":[function(require,module,exports){
+},{"../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/decrypt.js","./encrypt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/encrypt.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -35408,7 +38650,7 @@ module.exports.decrypt = function (receiverECDHKeyPair, encEnvelope, options) {
     }
 }
 
-},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js":[function(require,module,exports){
+},{"../../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -35457,9 +38699,9 @@ module.exports.encrypt = function (senderECSigningKeyPair, message, ...receiverE
     return eciesGEEnvelope;
 }
 
-},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js":[function(require,module,exports){
-arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"][0].apply(exports,arguments)
-},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js":[function(require,module,exports){
+},{"../../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../ecies-ge-anon":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js":[function(require,module,exports){
+arguments[4]["/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js"][0].apply(exports,arguments)
+},{"../utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js","./decrypt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/decrypt.js","./encrypt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/encrypt.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/index.js":[function(require,module,exports){
 'use strict';
 
 const sender = require('./sender')
@@ -35475,7 +38717,7 @@ module.exports = {
 
 
 
-},{"./recipient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js","./sender":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js":[function(require,module,exports){
+},{"./recipient":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js","./sender":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/recipient.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -35559,7 +38801,7 @@ module.exports.parseKeyBuffer = function (keyBuffer, options) {
     }
 }
 
-},{"../../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js":[function(require,module,exports){
+},{"../../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/utils/sender.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../../crypto')
@@ -35597,7 +38839,7 @@ module.exports.senderMultiRecipientECIESEncrypt = function(message, ...receiverE
     return $$.Buffer.from(JSON.stringify(eciesInstancesArray))
 }
 
-},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js":[function(require,module,exports){
+},{"../../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","../../ecies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -35648,7 +38890,7 @@ module.exports.decrypt = function (receiverECDHPrivateKey, encEnvelope, options)
     return mycrypto.symmetricDecrypt(symmetricEncryptionKey, ciphertext, iv, options)
 }
 
-},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js":[function(require,module,exports){
+},{"../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
@@ -35690,9 +38932,9 @@ module.exports.encrypt = function (receiverECDHPublicKey, message, options) {
     return common.createEncryptedEnvelopeObject(receiverECDHPublicKey, ephemeralPublicKey, ciphertext, iv, tag, options)
 }
 
-},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js":[function(require,module,exports){
-arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
-},{"../common":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js","./encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js":[function(require,module,exports){
+},{"../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","../config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js":[function(require,module,exports){
+arguments[4]["/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js"][0].apply(exports,arguments)
+},{"../common":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js","./decrypt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/decrypt.js","./encrypt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/encrypt.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js":[function(require,module,exports){
 module.exports = {
     ecies_encrypt: require("./ecies").encrypt,
     ecies_decrypt: require("./ecies").decrypt,
@@ -35708,7 +38950,7 @@ module.exports = {
     ecies_group_getRecipientECDHPublicKeysFromEncEnvelope: require("./ecies-group-encryption/ecies-ge-doa").getRecipientECDHPublicKeysFromEncEnvelope
 }
 
-},{"./ecies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js","./ecies-doa-ds":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js","./ecies-doa-kmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js","./ecies-group-encryption/ecies-ge-anon":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js","./ecies-group-encryption/ecies-ge-doa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js","./ecies/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js":[function(require,module,exports){
+},{"./ecies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js","./ecies-doa-ds":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-ds/index.js","./ecies-doa-kmac":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-doa-kmac/index.js","./ecies-group-encryption/ecies-ge-anon":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-anon/index.js","./ecies-group-encryption/ecies-ge-doa":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies-group-encryption/ecies-ge-doa/index.js","./ecies/index":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/ecies/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js":[function(require,module,exports){
 var jws = require('./jws');
 
 module.exports = function (jwt, options) {
@@ -35739,7 +38981,7 @@ module.exports = function (jwt, options) {
     }
     return payload;
 };
-},{"./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js":[function(require,module,exports){
+},{"./jws":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js":[function(require,module,exports){
 module.exports = {
     verify: require('./verify'),
     sign: require('./sign'),
@@ -35750,7 +38992,7 @@ Object.defineProperty(module.exports, 'decode', {
     value: require('./decode'),
 });
 
-},{"./decode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js","./verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js":[function(require,module,exports){
+},{"./decode":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./sign":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js","./verify":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js":[function(require,module,exports){
 var getParamBytesForAlg = require('./param-bytes-for-alg');
 
 var MAX_OCTET = 0x80,
@@ -35934,7 +39176,7 @@ module.exports = {
     derToJose: derToJose,
     joseToDer: joseToDer
 };
-},{"./param-bytes-for-alg":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js":[function(require,module,exports){
+},{"./param-bytes-for-alg":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js":[function(require,module,exports){
 var crypto = require('crypto');
 var formatEcdsa = require('./ecdsa-sig-formatter');
 var util = require('util');
@@ -36185,7 +39427,7 @@ module.exports = function jwa(algorithm) {
         verify: verifierFactories[algo](bits),
     }
 };
-},{"./ecdsa-sig-formatter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js","crypto":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js":[function(require,module,exports){
+},{"./ecdsa-sig-formatter":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/ecdsa-sig-formatter.js","crypto":false,"util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/param-bytes-for-alg.js":[function(require,module,exports){
 'use strict';
 
 function getParamSize(keySize) {
@@ -36209,7 +39451,7 @@ function getParamBytesForAlg(alg) {
 }
 
 module.exports = getParamBytesForAlg;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js":[function(require,module,exports){
 var asn = require('../../lib/asn1/asn1');
 var crypto = require('crypto')
 var BN = asn.bignum
@@ -36262,7 +39504,7 @@ function factor(e, d, n) {
 }
 
 module.exports = factor
-},{"../../lib/asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js":[function(require,module,exports){
+},{"../../lib/asn1/asn1":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js":[function(require,module,exports){
 var asn = require('../../lib/asn1/asn1')
 var factor = require('./factor')
 var one = new asn.bignum(1)
@@ -36496,7 +39738,7 @@ module.exports = {
     jwk2pem: jwk2pem,
     BN: asn.bignum
 }
-},{"../../lib/asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./factor":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js":[function(require,module,exports){
+},{"../../lib/asn1/asn1":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./factor":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/factor.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js":[function(require,module,exports){
 /*global module, process*/
 var Stream = require('stream');
 var util = require('util');
@@ -36551,7 +39793,7 @@ DataStream.prototype.end = function end(data) {
 };
 
 module.exports = DataStream;
-},{"stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js":[function(require,module,exports){
+},{"stream":false,"util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js":[function(require,module,exports){
 /*global exports*/
 var SignStream = require('./sign-stream');
 var VerifyStream = require('./verify-stream');
@@ -36574,7 +39816,7 @@ exports.createSign = function createSign(opts) {
 exports.createVerify = function createVerify(opts) {
     return new VerifyStream(opts);
 };
-},{"./sign-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js","./verify-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js":[function(require,module,exports){
+},{"./sign-stream":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js","./verify-stream":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/sign-stream.js":[function(require,module,exports){
 var DataStream = require('./data-stream');
 var jwa = require('../jwa');
 var Stream = require('stream');
@@ -36651,7 +39893,7 @@ SignStream.prototype.sign = function sign() {
 SignStream.sign = jwsSign;
 
 module.exports = SignStream;
-},{"../jwa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js":[function(require,module,exports){
+},{"../jwa":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js":[function(require,module,exports){
 module.exports = function toString(obj) {
     if (typeof obj === 'string')
         return obj;
@@ -36659,7 +39901,7 @@ module.exports = function toString(obj) {
         return obj.toString();
     return JSON.stringify(obj);
 };
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/verify-stream.js":[function(require,module,exports){
 /*global module*/
 var DataStream = require('./data-stream');
 var jwa = require('../jwa');
@@ -36779,7 +40021,7 @@ VerifyStream.isValid = isValidJws;
 VerifyStream.verify = jwsVerify;
 
 module.exports = VerifyStream;
-},{"../jwa":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js":[function(require,module,exports){
+},{"../jwa":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwa/index.js","./data-stream":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/data-stream.js","./tostring":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/tostring.js","stream":false,"util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js":[function(require,module,exports){
 var JsonWebTokenError = function (message, error) {
     Error.call(this, message);
     if(Error.captureStackTrace) {
@@ -36794,7 +40036,7 @@ JsonWebTokenError.prototype = Object.create(Error.prototype);
 JsonWebTokenError.prototype.constructor = JsonWebTokenError;
 
 module.exports = JsonWebTokenError;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js":[function(require,module,exports){
 var JsonWebTokenError = require('./JsonWebTokenError');
 
 var NotBeforeError = function (message, date) {
@@ -36808,7 +40050,7 @@ NotBeforeError.prototype = Object.create(JsonWebTokenError.prototype);
 NotBeforeError.prototype.constructor = NotBeforeError;
 
 module.exports = NotBeforeError;
-},{"./JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js":[function(require,module,exports){
+},{"./JsonWebTokenError":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js":[function(require,module,exports){
 var JsonWebTokenError = require('./JsonWebTokenError');
 
 var TokenExpiredError = function (message, expiredAt) {
@@ -36822,7 +40064,7 @@ TokenExpiredError.prototype = Object.create(JsonWebTokenError.prototype);
 TokenExpiredError.prototype.constructor = TokenExpiredError;
 
 module.exports = TokenExpiredError;
-},{"./JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js":[function(require,module,exports){
+},{"./JsonWebTokenError":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js":[function(require,module,exports){
 module.exports = function (time, iat) {
     var timestamp = iat || Math.floor(Date.now() / 1000);
 
@@ -36833,7 +40075,7 @@ module.exports = function (time, iat) {
     }
 
 };
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/sign.js":[function(require,module,exports){
 var timespan = require('./lib/timespan');
 var jws = require('./jws');
 
@@ -36964,7 +40206,7 @@ module.exports = function (payload, secretOrPrivateKey, options, callback) {
         return jws.sign({header: header, payload: payload, secret: secretOrPrivateKey, encoding: encoding});
     }
 };
-},{"./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/timespan":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js":[function(require,module,exports){
+},{"./jws":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/timespan":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/verify.js":[function(require,module,exports){
 var JsonWebTokenError = require('./lib/JsonWebTokenError');
 var NotBeforeError = require('./lib/NotBeforeError');
 var TokenExpiredError = require('./lib/TokenExpiredError');
@@ -37190,7 +40432,7 @@ module.exports = function (jwtString, secretOrPublicKey, options, callback) {
         return done(null, payload);
     });
 };
-},{"./decode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./jwkToPemConverter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js","./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js","./lib/NotBeforeError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js","./lib/TokenExpiredError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js","./lib/timespan":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js":[function(require,module,exports){
+},{"./decode":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./jwkToPemConverter":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js","./jws":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/JsonWebTokenError":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js","./lib/NotBeforeError":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js","./lib/TokenExpiredError":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js","./lib/timespan":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js":[function(require,module,exports){
 const utils = require("./utils/cryptoUtils");
 
 function ECKeyGenerator() {
@@ -37336,7 +40578,7 @@ exports.createECKeyGenerator = () => {
     return new ECKeyGenerator();
 };
 
-},{"./keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js":[function(require,module,exports){
+},{"./keyEncoder":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./utils/cryptoUtils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js":[function(require,module,exports){
 function PskCrypto() {
     const crypto = require('crypto');
     const utils = require("./utils/cryptoUtils");
@@ -37556,7 +40798,7 @@ module.exports = new PskCrypto();
 
 
 
-},{"../js-mutual-auth-ecies/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js","../jsonWebToken":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js","../signsensusDS/ssutil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js","./ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","./PskEncryption":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js","./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","./utils/eth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js":[function(require,module,exports){
+},{"../js-mutual-auth-ecies/index":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js","../jsonWebToken":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js","../signsensusDS/ssutil":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js","./ECKeyGenerator":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","./PskEncryption":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js","./utils/cryptoUtils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","./utils/eth":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js":[function(require,module,exports){
 function PskEncryption(algorithm) {
     const crypto = require("crypto");
     const utils = require("./utils/cryptoUtils");
@@ -37665,7 +40907,7 @@ function PskEncryption(algorithm) {
 
 module.exports = PskEncryption;
 
-},{"./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js":[function(require,module,exports){
+},{"./utils/cryptoUtils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js":[function(require,module,exports){
 var asn1 = require('./asn1');
 var inherits = require('util').inherits;
 
@@ -37726,7 +40968,7 @@ Entity.prototype.encode = function encode(data, enc, /* internal */ reporter) {
   return this._getEncoder(enc).encode(data, reporter);
 };
 
-},{"./asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false,"vm":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js":[function(require,module,exports){
+},{"./asn1":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false,"vm":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js":[function(require,module,exports){
 var asn1 = exports;
 
 asn1.bignum = require('./bignum/bn');
@@ -37737,7 +40979,7 @@ asn1.constants = require('./constants/index');
 asn1.decoders = require('./decoders/index');
 asn1.encoders = require('./encoders/index');
 
-},{"./api":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js","./base/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","./bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","./constants/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js","./decoders/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js","./encoders/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js":[function(require,module,exports){
+},{"./api":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/api.js","./base/index":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","./bignum/bn":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","./constants/index":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js","./decoders/index":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js","./encoders/index":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 const Reporter = require('../base').Reporter;
 
@@ -37856,7 +41098,7 @@ EncoderBuffer.prototype.join = function join(out, offset) {
     return out;
 };
 
-},{"../base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js":[function(require,module,exports){
+},{"../base":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js","util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js":[function(require,module,exports){
 var base = exports;
 
 base.Reporter = require('./reporter').Reporter;
@@ -37864,7 +41106,7 @@ base.DecoderBuffer = require('./buffer').DecoderBuffer;
 base.EncoderBuffer = require('./buffer').EncoderBuffer;
 base.Node = require('./node');
 
-},{"./buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js","./node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js","./reporter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js":[function(require,module,exports){
+},{"./buffer":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/base/buffer.js","./node":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js","./reporter":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/base/node.js":[function(require,module,exports){
 var Reporter = require('../base').Reporter;
 var EncoderBuffer = require('../base').EncoderBuffer;
 //var assert = require('double-check').assert;
@@ -38464,7 +41706,7 @@ Node.prototype._encodePrimitive = function encodePrimitive(tag, data) {
     throw new Error('Unsupported tag: ' + tag);
 };
 
-},{"../base":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js":[function(require,module,exports){
+},{"../base":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/base/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/base/reporter.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 function Reporter(options) {
@@ -38568,7 +41810,7 @@ ReporterError.prototype.rethrow = function rethrow(msg) {
   return this;
 };
 
-},{"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js":[function(require,module,exports){
+},{"util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js":[function(require,module,exports){
 (function (module, exports) {
 
 'use strict';
@@ -41011,7 +44253,7 @@ Mont.prototype.invm = function invm(a) {
 
 })(typeof module === 'undefined' || module, this);
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js":[function(require,module,exports){
 var constants = require('../constants');
 
 exports.tagClass = {
@@ -41055,7 +44297,7 @@ exports.tag = {
 };
 exports.tagByName = constants._reverse(exports.tag);
 
-},{"../constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js":[function(require,module,exports){
+},{"../constants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/index.js":[function(require,module,exports){
 var constants = exports;
 
 // Helper
@@ -41076,7 +44318,7 @@ constants._reverse = function reverse(map) {
 
 constants.der = require('./der');
 
-},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js":[function(require,module,exports){
+},{"./der":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/constants/der.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 var asn1 = require('../asn1');
@@ -41369,13 +44611,13 @@ function derDecodeLen(buf, primitive, fail) {
   return len;
 }
 
-},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js":[function(require,module,exports){
+},{"../asn1":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/index.js":[function(require,module,exports){
 var decoders = exports;
 
 decoders.der = require('./der');
 decoders.pem = require('./pem');
 
-},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js":[function(require,module,exports){
+},{"./der":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","./pem":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 
 const asn1 = require('../asn1');
@@ -41425,7 +44667,7 @@ PEMDecoder.prototype.decode = function decode(data, options) {
     return DERDecoder.prototype.decode.call(this, input, options);
 };
 
-},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js":[function(require,module,exports){
+},{"../asn1":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 const asn1 = require('../asn1');
 const base = asn1.base;
@@ -41695,13 +44937,13 @@ function encodeTag(tag, primitive, cls, reporter) {
     return res;
 }
 
-},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js":[function(require,module,exports){
+},{"../asn1":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/index.js":[function(require,module,exports){
 var encoders = exports;
 
 encoders.der = require('./der');
 encoders.pem = require('./pem');
 
-},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js":[function(require,module,exports){
+},{"./der":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","./pem":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
 var asn1 = require('../asn1');
@@ -41725,7 +44967,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
   return out.join('\n');
 };
 
-},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js":[function(require,module,exports){
+},{"../asn1":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js":[function(require,module,exports){
 'use strict'
 
 const asn1 = require('./asn1/asn1');
@@ -41898,7 +45140,7 @@ KeyEncoder.prototype.encodePublic = function (publicKey, originalFormat, destina
 
 module.exports = KeyEncoder;
 
-},{"./asn1/asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./asn1/bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js":[function(require,module,exports){
+},{"./asn1/asn1":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./asn1/bignum/bn":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js":[function(require,module,exports){
 const stream = require('stream');
 const util = require('util');
 
@@ -41923,7 +45165,7 @@ DuplexStream.prototype._read = function (n) {
 };
 
 module.exports = DuplexStream;
-},{"stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js":[function(require,module,exports){
+},{"stream":false,"util":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js":[function(require,module,exports){
 const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 const BASE = ALPHABET.length;
 const LEADER = ALPHABET.charAt(0);
@@ -42058,7 +45300,7 @@ module.exports = {
     encode,
     decode
 };
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js":[function(require,module,exports){
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const BASE_MAP = {};
 for (let i = 0; i < ALPHABET.length; i++) {
@@ -42175,7 +45417,7 @@ module.exports = {
     encode: encodeBase64,
     decode: decodeBase64
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js":[function(require,module,exports){
 const base58 = require('./base58');
 const base64 = require('./base64');
 const keyEncoder = require("../keyEncoder");
@@ -42314,7 +45556,7 @@ module.exports = {
 };
 
 
-},{"../keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./base58":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js","./base64":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js":[function(require,module,exports){
+},{"../keyEncoder":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","./base58":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/base58.js","./base64":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/base64.js","crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js":[function(require,module,exports){
 const keyEncoder = require("../keyEncoder");
 const BN = require('../asn1/bignum/bn');
 const ECKeyGenerator = require("../ECKeyGenerator");
@@ -42404,7 +45646,7 @@ module.exports = {
     verify
 };
 
-},{"../ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../PskCrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","../asn1/bignum/bn":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","../keyEncoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","../utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js":[function(require,module,exports){
+},{"../ECKeyGenerator":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../PskCrypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","../asn1/bignum/bn":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/asn1/bignum/bn.js","../keyEncoder":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js","../utils/cryptoUtils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js":[function(require,module,exports){
 const stream = require('stream');
 
 
@@ -42432,7 +45674,7 @@ module.exports            = isStream;
 module.exports.isReadable = isReadable;
 module.exports.isWritable = isWritable;
 module.exports.isDuplex   = isDuplex;
-},{"stream":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js":[function(require,module,exports){
+},{"stream":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js":[function(require,module,exports){
 /*
  SignSens helper functions
  */
@@ -42631,1400 +45873,7 @@ exports.createSignature = function (agent,counter, nextPublic, arr, size){
 
     return agent + ":" + counter + ":" + nextPublic + ":" + result;
 }
-},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/DSUCodeFileCacheHandler.js":[function(require,module,exports){
-const fs = require("fs");
-const path = require("path");
-
-const readFileAsync = $$.promisify(fs.readFile.bind(fs));
-const writeFileAsync = $$.promisify(fs.writeFile.bind(this));
-const mkdirAsync = $$.promisify(fs.mkdir.bind(this));
-
-const pathExistsAsync = async (path) => {
-    try {
-        await $$.promisify(fs.access.bind(fs))(path);
-        return true;
-    } catch (error) {
-        return false;
-    }
-};
-
-function isFileInsideFolderStructure(file) {
-    return file.indexOf("/") !== -1;
-}
-
-class DSUCodeFileCacheHandler {
-    constructor(dsu, cacheFolderBasePath) {
-        this.dsu = dsu;
-        this.cacheFolderBasePath = cacheFolderBasePath;
-    }
-
-    async constructCache() {
-        const openDSU = require("opendsu");
-        const keySSISpace = openDSU.loadAPI("keyssi");
-        const resolver = openDSU.loadApi("resolver");
-
-        const mountedDSUs = await $$.promisify(this.dsu.listMountedDossiers)("/");
-
-        let codeFolderName = openDSU.constants.CODE_FOLDER;
-        if (codeFolderName[0] === "/") {
-            codeFolderName = codeFolderName.substring(1);
-        }
-        const codeMount = mountedDSUs.find((mount) => mount.path === codeFolderName);
-        const codeDSU = await $$.promisify(resolver.loadDSU)(codeMount.identifier);
-        const codeFiles = await $$.promisify(codeDSU.listFiles)("/");
-        let lastVersion = await $$.promisify(codeDSU.getLastHashLinkSSI)();
-        lastVersion = lastVersion.getIdentifier();
-        const cacheFolderPath = path.join(this.cacheFolderBasePath, lastVersion);
-        this.cacheFolderPath = cacheFolderPath;
-
-        const readDSUFileAsync = await $$.promisify(codeDSU.readFile);
-
-        const isHashLinkFolderAlreadyPresent = await pathExistsAsync(cacheFolderPath);
-
-        if (!isHashLinkFolderAlreadyPresent) {
-            console.log(`Creating cache folder for DSU ${lastVersion}: ${cacheFolderPath}`);
-            try {
-                await mkdirAsync(cacheFolderPath, { recursive: true });
-            } catch (error) {
-                console.log(`Failed created cacheFolderPath ${cacheFolderPath}`, error);
-            }
-        }
-
-        const createdFoldersMap = {};
-        const availableFilesMap = {};
-
-        for (const codeFile of codeFiles) {
-            if (isFileInsideFolderStructure(codeFile)) {
-                const codeFolder = codeFile.substr(0, codeFile.lastIndexOf("/"));
-                if (!createdFoldersMap[codeFolder]) {
-                    try {
-                        await mkdirAsync(path.join(cacheFolderPath, codeFolder), { recursive: true });
-                    } catch (error) {
-                        if (error.code !== "EEXIST") {
-                            console.log(`Failed to create cache folder ${codeFolder}`, error);
-                        }
-                    }
-                    createdFoldersMap[codeFolder] = true;
-                }
-            }
-
-            try {
-                const filePath = path.join(cacheFolderPath, codeFile);
-
-                let mustWriteFile = true;
-                if (isHashLinkFolderAlreadyPresent) {
-                    mustWriteFile = !(await pathExistsAsync(filePath));
-                }
-
-                if (mustWriteFile) {
-                    const fileContent = await readDSUFileAsync(codeFile);
-                    await writeFileAsync(filePath, fileContent);
-                }
-
-                let relativeFilePath = codeFile;
-                if (relativeFilePath[0] !== "/") {
-                    relativeFilePath = `/${relativeFilePath}`;
-                }
-                availableFilesMap[relativeFilePath] = true;
-            } catch (error) {
-                console.log(`read ${codeFile} error`, error);
-            }
-        }
-
-        this.availableFilesMap = availableFilesMap;
-    }
-
-    async getFileContent(filePath) {
-        if (!this.availableFilesMap) {
-            // Strategy is still constructing cache
-            return null;
-        }
-
-        const fullPath = path.join(this.cacheFolderPath, filePath);
-        if (!this.availableFilesMap[filePath]) {
-            console.log(`File ${fullPath} not present inside DSU cache`);
-            return null;
-        }
-
-        console.log(`Serving file ${fullPath} from DSU cache`);
-        const fileContent = await readFileAsync(fullPath);
-
-        return fileContent;
-    }
-}
-
-module.exports = DSUCodeFileCacheHandler;
-
-},{"fs":false,"opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/apiHandler.js":[function(require,module,exports){
-const querystring = require("querystring");
-
-const handle = (dsu, res, requestedPath) => {
-    const apiQuery = requestedPath.substr("/api?".length);
-    let {name: functionName, arguments: args} = querystring.parse(apiQuery);
-
-    try {
-        args = JSON.parse(args);
-    } catch (err) {
-        res.statusCode = 400;
-        return res.end("Invalid arguments provided");
-    }
-
-    dsu.refresh((err) => {
-        if (err) {
-            res.statusCode = 500;
-            return res.end(err.message);
-        }
-
-        dsu.call(functionName, ...args, (...result) => {
-            res.setHeader("Content-Type", "application/json");
-            res.statusCode = 200;
-            res.end(JSON.stringify(result));
-        });
-    });
-};
-
-module.exports = {
-    handle,
-};
-
-},{"querystring":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/apiStandardHandler.js":[function(require,module,exports){
-const querystring = require("querystring");
-
-const USER_DETAILS = "user-details.json";
-
-const getAppSeed = function (dsu, path, appName, res) {
-    dsu.listMountedDossiers(path, (err, result) => {
-        if (err) {
-            const errorMessage = "Error listing mounted DSU";
-            console.log(errorMessage, err);
-            res.statusCode = 500;
-            return res.end(errorMessage);
-        }
-
-        let selectedDsu = result.find((dsu) => dsu.path === appName);
-        if (!selectedDsu) {
-            const errorMessage = `Dossier with the name ${appName} was not found in the mounted points!`;
-            console.log(errorMessage, err);
-            res.statusCode = 500;
-            return res.end(errorMessage);
-        }
-
-        res.statusCode = 200;
-        res.end(selectedDsu.identifier);
-    });
-};
-
-const getUserDetails = function (dsu, res) {
-    dsu.readFile(USER_DETAILS, (err, fileContent) => {
-        if (err) {
-            const errorMessage = "Error getting user details";
-            console.log(errorMessage, err);
-            res.statusCode = 500;
-            return res.end(errorMessage);
-        }
-
-        const dataSerialization = fileContent.toString();
-        res.statusCode = 200;
-        res.end(dataSerialization);
-    });
-};
-
-const handle = (dsu, res, requestedPath) => {
-    const requestedApiPath = requestedPath.substr("/api-standard".length + 1);
-    const requestedApiPathInfoMatch = requestedApiPath.match(/^([^\/\?]*)[\/\?](.*)$/);
-
-    const apiMethod = requestedApiPathInfoMatch ? requestedApiPathInfoMatch[1] : requestedApiPath;
-    const apiParameter = requestedApiPathInfoMatch ? requestedApiPathInfoMatch[2] : undefined;
-
-    switch (apiMethod) {
-        case "app-seed": {
-            const { path, name } = querystring.parse(apiParameter);
-            getAppSeed(dsu, path, name, res);
-            return;
-        }
-        case "user-details": {
-            getUserDetails(dsu, res);
-            return;
-        }
-    }
-
-    res.statusCode = 403;
-    res.end("Unknow api-standard method");
-};
-
-module.exports = {
-    handle,
-};
-
-},{"querystring":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/downloadHandler.js":[function(require,module,exports){
-const MimeType = require("../browser/util/MimeType");
-
-const handle = (dsu, res, requestedPath) => {
-    function extractPath() {
-        let path = requestedPath.split("/").slice(2); // remove the "/delete" or "/download" part
-        path = path.filter((segment) => segment.length > 0).map((segment) => decodeURIComponent(segment));
-        return path;
-    }
-
-    let path = extractPath();
-    if (!path.length) {
-        res.statusCode = 404;
-        return res.end("File not found");
-    }
-    path = `/${path.join("/")}`;
-    dsu.refresh((err) => {
-        if (err) {
-            res.statusCode = 500;
-            return res.end(err.message);
-        }
-        dsu.readFile(path, (err, stream) => {
-            if (err) {
-                if (err instanceof Error) {
-                    if (err.message.indexOf("could not be found") !== -1) {
-                        res.statusCode = 404;
-                        return res.end("File not found");
-                    }
-
-                    res.statusCode = 500;
-                    return res.end(err.message);
-                }
-
-                res.statusCode = 500;
-                return res.end(Object.prototype.toString.call(err));
-            }
-
-            // Extract the filename
-            const filename = path.split("/").pop();
-
-            let fileExt = filename.substring(filename.lastIndexOf(".") + 1);
-            res.setHeader("Content-Type", MimeType.getMimeTypeFromExtension(fileExt).name);
-            res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-            res.statusCode = 200;
-            res.end(stream);
-        });
-    });
-};
-
-module.exports = {
-    handle,
-};
-
-},{"../browser/util/MimeType":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/browser/util/MimeType.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/fileRequestHandler.js":[function(require,module,exports){
-const MimeType = require("../browser/util/MimeType");
-
-const handle = async (dsu, req, res, seed, requestedPath, dsuCodeFileCacheHandler) => {
-    const { url } = req;
-
-    console.log(`Handling request for file: ${requestedPath}`);
-    let file = requestedPath.split("?")[0]; // remove query params since this is a file request
-    if (!file || file === "/" || file.indexOf(".") === -1) {
-        file = "/index.html";
-    }
-
-    if (file.indexOf("/") !== 0) {
-        file = `/${file}`;
-    }
-    console.log(`Looking for file: ${file}`);
-
-    // console.log(`Handling iframe with KeySSI: ${seed} and file: ${file}`);
-
-    let fileExtension = file.substring(file.lastIndexOf(".") + 1);
-    let mimeType = MimeType.getMimeTypeFromExtension(fileExtension);
-
-    const sendFile = (data) => {
-        res.setHeader("Content-Type", mimeType.name);
-        res.statusCode = 200;
-        let content = data;
-        if (!mimeType.binary) {
-            content = data.toString();
-
-            if (["htm", "html", "xhtml"].includes(fileExtension)) {
-                const baseUrl = `${url.substr(0, url.indexOf("/cloud-wallet"))}/cloud-wallet/${seed}/`;
-                content = content.replace(
-                    "PLACEHOLDER_THAT_WILL_BE_REPLACED_BY_SW_OR_SERVER_WITH_BASE_TAG",
-                    `<base href="${baseUrl}">`
-                );
-            }
-        }
-
-        res.end(content);
-    };
-
-    dsu.readFile(`/app${file}`, async (err, fileContent) => {
-        if (err) {
-            if(dsuCodeFileCacheHandler) {
-                try {
-                    const fileContent = await dsuCodeFileCacheHandler.getFileContent(file);
-                    if(fileContent) {
-                        return sendFile(fileContent);
-                    }                    
-                } catch (error) {
-                    console.log("An error has occurred while getting file from cache", file);
-                }
-            }
-
-            dsu.readFile(`/code${file}`, (err, fileContent) => {
-                if (err) {
-                    //console.log(`Error reading file /code${file}`, err);
-                    res.statusCode = 404;
-                    return res.end("Error reading file");
-                }
-
-                sendFile(fileContent);
-            });
-            return;
-        }
-
-        sendFile(fileContent);
-    });
-};
-
-module.exports = {
-    handle,
-};
-
-},{"../browser/util/MimeType":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/browser/util/MimeType.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/mainDSUSSIHandler.js":[function(require,module,exports){
-const handle = (seed, res) => {
-    res.statusCode = 200;
-    res.end(seed);
-};
-
-module.exports = {
-    handle,
-};
-
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/uploadHandler.js":[function(require,module,exports){
-const querystring = require("querystring");
-
-const Uploader = require("../Uploader");
-
-const handle = (dsu, req, res, requestedPath) => {
-    let uploader;
-    try {
-        const query = requestedPath.substr(requestedPath.indexOf("?") + 1);
-        const queryParams = querystring.parse(query);
-        console.log({ queryParams });
-        uploader = Uploader.configureUploader(queryParams, dsu);
-    } catch (e) {
-        res.setHeader("Content-Type", "application/json");
-        res.statusCode = 500;
-        res.end(JSON.stringify(e.message));
-        return;
-    }
-
-    let data = [];
-    req.on("data", (chunk) => {
-        console.log("chuink", chunk);
-        data.push(chunk);
-        // data += chunk;
-    });
-
-    req.on("end", () => {
-        try {
-            req.body = $$.Buffer.concat(data);
-            console.log("req.body", req.body.toString())
-            uploader.upload(req, function (err, uploadedFiles) {
-                if (err && (!Array.isArray(uploadedFiles) || !uploadedFiles.length)) {
-                    console.log(err);
-                    let statusCode = 400; // Validation errors
-
-                    if (err instanceof Error) {
-                        // This kind of errors should indicate
-                        // a serious problem with the uploader
-                        // and the status code should reflect that
-                        statusCode = 500; // Internal "server" errors
-                    }
-
-                    res.setHeader("Content-Type", "application/json");
-                    res.statusCode = statusCode;
-                    res.end(
-                        JSON.stringify(err, (key, value) => {
-                            if (value instanceof Error) {
-                                return value.message;
-                            }
-
-                            return value;
-                        })
-                    );
-
-                    return;
-                }
-
-                res.setHeader("Content-Type", "application/json");
-                res.statusCode = 201;
-                res.end(JSON.stringify(uploadedFiles));
-            });
-        } catch (err) {
-            console.log("worker error", err);
-            res.statusCode = 500;
-            res.end();
-        }
-    });
-};
-
-module.exports = {
-    handle,
-};
-
-},{"../Uploader":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/Uploader/index.js","querystring":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/walletHandler.js":[function(require,module,exports){
-const FILE_CHUNK_SIZE = 1024 * 1024;
-
-const extractSReadSSIAndFilePathFromRequest = (request) => {
-    const requestedPath = request.url;
-    let urlAfterAppend = requestedPath.substr("/append/".length);
-    let sReadSSI;
-    let filePath;
-    if (urlAfterAppend.indexOf("/") !== -1) {
-        const urlParts = urlAfterAppend.split("/", 2);
-        sReadSSI = urlParts[0];
-        filePath = urlParts[1];
-    } else {
-        sReadSSI = urlAfterAppend;
-        filePath = "/";
-    }
-    if (!filePath) {
-        filePath = "/";
-    }
-    if (!filePath.startsWith("/")) {
-        filePath = `/${filePath}`;
-    }
-
-    return { sReadSSI, filePath };
-};
-
-const isAvailableSpaceInLastBrick = (sizeSSI) => {
-    const totalSize = sizeSSI.getTotalSize();
-    const bufferSize = sizeSSI.getBufferSize();
-    return totalSize % bufferSize !== 0;
-};
-
-const createDSU = async (wallet, response) => {
-    try {
-        const opendsu = require("opendsu");
-        const dbSpace = opendsu.loadApi("db");
-        const keySSISpace = opendsu.loadApi("keyssi");
-        const keySSI = await $$.promisify(wallet.getKeySSIAsObject)();
-        const seedSSI = await $$.promisify(keySSISpace.createSeedSSI)(keySSI.getDLDomain());
-
-        const enclaveDB = await $$.promisify(dbSpace.getMainEnclaveDB)();
-        console.log("Creating DSU from main enclave...");
-        const dsu = await $$.promisify(enclaveDB.createDSU)(seedSSI);
-
-        let sReadSSI = await $$.promisify(dsu.getKeySSIAsObject)();
-        sReadSSI = await $$.promisify(sReadSSI.derive)();
-        const sReadSSIId = sReadSSI.getIdentifier();
-
-        await $$.promisify(wallet.refresh);
-
-        response.statusCode = 200;
-        response.end(sReadSSIId);
-    } catch (error) {
-        console.log("Error creating DSU", error);
-        response.statusCode = 500;
-        return response.end(error.message);
-    }
-};
-
-const appendToDSU = async (wallet, request, response) => {
-    const { sReadSSI, filePath } = extractSReadSSIAndFilePathFromRequest(request);
-    console.log(`Appending file to sReadSSI: ${sReadSSI} at path ${filePath}...`);
-
-    if (!request || !request.pipe || typeof request.pipe !== "function") {
-        response.statusCode = 500;
-        return response.end("File not provided");
-    }
-
-    const Transform = require("stream").Transform;
-    const Writable = require("stream").Writable;
-
-    const keyssiApi = require("opendsu").loadApi("keyssi");
-    const walletKeySSI = await $$.promisify(wallet.getKeySSIAsObject)();
-    const dsuDomain = walletKeySSI.getDLDomain();
-    const templateSeedSSI = keyssiApi.createTemplateSeedSSI(dsuDomain);
-
-    const resolver = require("opendsu").loadApi("resolver");
-    const dsu = await $$.promisify(resolver.loadDSU)(sReadSSI);
-    console.log("Refreshing DSU...")
-    await $$.promisify(dsu.refresh)();
-
-    let bricksMeta;
-    try {
-        bricksMeta = await $$.promisify(dsu.getBigFileBricksMeta)(filePath);
-    } catch (error) {
-        // bricksMeta is not available if the file doesn't exist
-        console.log(`Failed to get bricksMeta for file ${filePath}`, error);
-    }
-
-    let buffer = Buffer.alloc(0);
-
-    let sizeSSI;
-    let needToAppendToLastBrick = false;
-    if (bricksMeta && bricksMeta.length && bricksMeta[0].size) {
-        try {
-            sizeSSI = keyssiApi.parse(bricksMeta[0].size);
-        } catch (error) {
-            console.error(`Failed to parse sizeSSI ${bricksMeta[0].size} from DSU ${sReadSSI}`, error);
-        }
-        if (sizeSSI && isAvailableSpaceInLastBrick(sizeSSI)) {
-            // we need to load the last brick and append it to the initially read buffer
-            // so that we can overwrite the last brick from the file
-            needToAppendToLastBrick = true;
-            const brickingApi = require("opendsu").loadApi("bricking");
-            let lastBrickHashLink = bricksMeta[bricksMeta.length - 1].hashLink;
-            try {
-                lastBrickHashLink = keyssiApi.parse(lastBrickHashLink);
-            } catch (error) {
-                console.error(`Failed to parse hashlinkSSI ${lastBrickHashLink} from DSU ${sReadSSI}`, error);
-            }
-            const lastBrick = await $$.promisify(brickingApi.getBrick)(lastBrickHashLink);
-            buffer = $$.Buffer.from(lastBrick);
-            console.log(`Found available space in the last brick having existing ${lastBrick.byteLength} byte(s)`);
-        }
-    }
-
-    const chunkTransform = new Transform({
-        async transform(data, encoding, callback) {
-            var allData = Buffer.concat([buffer, data]);
-            console.log(`Transforming chunk of ${data.byteLength} byte(s)`);
-            var totalLength = allData.length;
-            var remainder = totalLength % FILE_CHUNK_SIZE;
-            var cutoff = totalLength - remainder;
-            for (var i = 0; i < cutoff; i += FILE_CHUNK_SIZE) {
-                var chunk = allData.slice(i, i + FILE_CHUNK_SIZE);
-                console.log(`Extracting chunk from start ${i} and end ${i + FILE_CHUNK_SIZE} and total size ${chunk.byteLength}`);
-                this.push(chunk);
-            }
-            buffer = allData.slice(cutoff, totalLength);
-            callback();
-        },
-        flush(callback) {
-            this.push(buffer);
-            console.log(`Extracting remaining ${buffer.byteLength} byte(s)`);
-            callback();
-        },
-    });
-
-    let shouldAppendToExistingFile = !!bricksMeta && !!bricksMeta.length && !!sizeSSI;
-    const writeStream = new Writable({
-        async write(data, encoding, callback) {
-            try {
-                console.log(`Writing ${data.byteLength} byte(s) to brick...`);
-                const bricking = require("opendsu").loadApi("bricking");
-                const options = {
-                    maxBrickSize: FILE_CHUNK_SIZE * 5, // ensure only 1 brick is constructed for chunk
-                };
-                const buffer = data;
-                const result = await $$.promisify(bricking.constructBricksFromData)(templateSeedSSI, buffer, options);
-                if (result.length !== 1) {
-                    // we should have exactly one brick for each buffer size
-                    console.error(
-                        `Saved data of chunk size ${FILE_CHUNK_SIZE} didn't generate exactly one brick (but ${result.length})`
-                    );
-                    throw new Error("Invalid brick count for data chunk");
-                }
-
-                const brickToAppend = result[0];
-                if (shouldAppendToExistingFile) {
-                    const totalSize = sizeSSI.getTotalSize();
-                    const bufferSize = sizeSSI.getBufferSize();
-                    const newTotalSize = isAvailableSpaceInLastBrick(sizeSSI)
-                        ? Math.floor(totalSize / bufferSize) * bufferSize + data.byteLength
-                        : totalSize + data.byteLength;
-                    sizeSSI = keyssiApi.createSizeSSI(dsuDomain, newTotalSize, bufferSize);
-
-                    console.log(`Setting new sizeSSI of totalSize: ${newTotalSize} / buffer size ${bufferSize}`);
-
-                    await $$.promisify(dsu.appendBigFileBrick)(filePath, sizeSSI.getIdentifier(), brickToAppend);
-                } else {
-                    console.log(`Setting sizeSSI of totalSize: ${data.byteLength} / buffer size ${FILE_CHUNK_SIZE}`);
-                    sizeSSI = keyssiApi.createSizeSSI(dsuDomain, data.byteLength, FILE_CHUNK_SIZE);
-                    const bricks = [{ size: sizeSSI.getIdentifier() }, brickToAppend];
-                    await $$.promisify(dsu.writeFileFromBricks)(filePath, bricks);
-
-                    // new file was created so now we can append to it
-                    shouldAppendToExistingFile = true;
-                }
-
-                callback();
-            } catch (error) {
-                console.log(`Failed to write ${data.byteLength} byte(s) to brick`, error);
-                callback(error);
-            }
-        },
-    });
-
-    writeStream.on("finish", async () => {
-        response.statusCode = 200;
-        response.end();
-    });
-
-    writeStream.on("error", (err) => {
-        console.log("Encountered write error", err);
-        response.statusCode = 500;
-        response.end(err.message);
-    });
-
-    request.pipe(chunkTransform).pipe(writeStream);
-};
-
-module.exports = {
-    createDSU,
-    appendToDSU,
-};
-
-},{"opendsu":"opendsu","stream":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/Uploader/FileReadableStreamAdapter.js":[function(require,module,exports){
-const { Readable } = require('stream');
-const util = require('util');
-
-/**
- * Stream.Readable adapter for File ReadableStream
- * @param {File} file
- * @param {object} options
- */
-function FileReadableStreamAdapter(file, options) {
-    if (!(this instanceof FileReadableStreamAdapter)) {
-        return new FileReadableStreamAdapter(file, options);
-    }
-
-    this.fileStreamReader = file.stream().getReader();
-    Readable.call(this, options);
-}
-util.inherits(FileReadableStreamAdapter, Readable);
-
-/**
- * Reads data from the File ReadableStreamDefaulReader
- * and pushes it into our Readable stream
- */
-FileReadableStreamAdapter.prototype._read = function (size) {
-    const pushData = (result) => {
-        const done = result.done;
-        const data = result.value;
-        if (done) {
-            this.push(null);
-            return;
-        }
-
-        if (this.push($$.Buffer.from(data))) {
-            return this.fileStreamReader.read().then(pushData);
-        }
-    }
-    this.fileStreamReader.read()
-        .then(pushData);
-}
-
-module.exports = FileReadableStreamAdapter;
-
-},{"stream":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/Uploader/index.js":[function(require,module,exports){
-const FileReadableStreamAdapter = require("./FileReadableStreamAdapter");
-
-const IS_NODE_ENV = typeof $$ !== "undefined" && $$.environmentType && $$.environmentType === "nodejs";
-
-/**
- * Constructor
- *
- * @param {object} options
- * @param {string} options.inputName
- * @param {RawDossier} options.dossier
- * @param {string} options.uploadPath
- * @param {string} options.filename
- * @param {Array} options.allowedMimeTypes
- * @param {string} options.maxSize
- * @param {Boolean} options.preventOverwrite
- */
-function Uploader(options) {
-    this.inputName = null;
-    this.dossier = null;
-    this.filename = null; // Must be configured when doing a request body upload
-    this.maxSize = null; // When not null file size validation is done
-    this.allowedMimeTypes = null; // When not null, mime type validation is done
-    this.uploadPath = null;
-    this.preventOverwrite = false;
-    this.uploadMultipleFiles = false;
-    this.sizeMultiplier = {
-        b: 1,
-        k: 1000,
-        m: 1000000,
-    };
-
-    this.configure(options);
-}
-
-// static method which creates/updates a given upload
-Uploader.configureUploader = function (config, dossier, uploader) {
-    config = config || {};
-
-    if (!config.path) {
-        throw new Error('Upload path is required. Ex: "POST /upload?path=/path/to/upload/folder"');
-    }
-
-    if (!config.input && !config.filename) {
-        throw new Error(
-            '"input" query parameter is required when doing multipart/form-data uploads or "filename" query parameter for request body uploads. Ex: POST /upload?input=files[] or POST /upload?filename=my-file.big'
-        );
-    }
-
-    let uploadPath = config.path;
-    if (uploadPath.substr(-1) !== "/") {
-        uploadPath += "/";
-    }
-
-    let allowedTypes;
-    if (typeof config.allowedTypes === "string" && config.allowedTypes.length) {
-        allowedTypes = config.allowedTypes.split(",").filter((type) => type.length > 0);
-    } else {
-        allowedTypes = [];
-    }
-    const options = {
-        inputName: config.input,
-        filename: config.filename,
-        maxSize: config.maxSize,
-        allowedMimeTypes: allowedTypes,
-        dossier,
-        uploadPath: uploadPath,
-        preventOverwrite: config.preventOverwrite,
-    };
-
-    if (!uploader) {
-        uploader = new Uploader(options);
-    } else {
-        uploader.configure(options);
-    }
-
-    return uploader;
-};
-
-
-Uploader.prototype.Error = {
-    UNKNOWN: "UNKNOWN_UPLOAD_ERROR",
-    NO_FILES: "NO_FILES",
-    INVALID_FILE: "INVALID_FILE",
-    INVALID_TYPE: "INVALID_TYPE",
-    MAX_SIZE_EXCEEDED: "MAX_SIZE_EXCEEDED",
-    FILE_EXISTS: "FILE_EXISTS"
-};
-
-Uploader.prototype.configure = function (options) {
-    options = options || {};
-
-    if (
-        (typeof options.inputName !== "string" || !options.inputName) &&
-        (typeof options.filename !== "string" || !options.filename)
-    ) {
-        throw new Error("The input name or filename is required");
-    }
-
-    if (typeof options.dossier !== "object") {
-        throw new Error("The dossier is required and must be an instance of RawDossier");
-    }
-
-    if (typeof options.uploadPath !== "string" || !options.uploadPath.length) {
-        throw new Error("The upload path is missing");
-    }
-
-    this.inputName = options.inputName;
-    this.dossier = options.dossier;
-    this.uploadPath = options.uploadPath;
-    this.preventOverwrite = Boolean(options.preventOverwrite);
-    if (this.inputName) {
-        this.uploadMultipleFiles = this.inputName.substr(-2) === "[]";
-    }
-    this.filename = options.filename || null;
-    if (typeof options.maxSize === "number" || typeof options.maxSize === "string") {
-        this.maxSize = options.maxSize;
-    }
-
-    if (Array.isArray(options.allowedMimeTypes)) {
-        this.allowedMimeTypes = options.allowedMimeTypes;
-    }
-};
-
-/**
- * @param {object|any} body
- * @throws {object}
- */
-Uploader.prototype.validateRequestBody = function (body) {
-    const inputName = this.inputName;
-    const filename = this.filename;
-
-    if (this.isMultipartUpload && !inputName) {
-        const error = {
-            message: `No files have been uploaded or the "input" parameter hasn't been set`,
-            code: this.Error.NO_FILES,
-        };
-        throw error;
-    }
-
-    if (!this.isMultipartUpload && !filename) {
-        const error = {
-            message: `No files have been uploaded or the "filename" parameter hasn't been set`,
-            code: this.Error.NO_FILES,
-        };
-        throw error;
-    }
-
-    const __uploadExists = () => {
-        if (this.isMultipartUpload) {
-            if (this.uploadMultipleFiles) {
-                return Array.isArray(body[inputName]);
-            }
-
-            if (IS_NODE_ENV) {
-                return !!body[inputName];
-            }
-
-            return body[inputName] instanceof File;
-        }
-
-        return body;
-    };
-
-    if (!__uploadExists()) {
-        const error = {
-            message: `No files have been uploaded or the "input"/"filename" parameters are missing`,
-            code: this.Error.NO_FILES,
-        };
-        throw error;
-    }
-};
-
-/**
- * Validate a single file
- *
- * @param {File} file
- * @throws {object}
- */
-Uploader.prototype.validateFile = function (file) {
-    if (!IS_NODE_ENV && !file instanceof File) {
-        const error = {
-            message: "File must be an instance of File",
-            code: this.Error.INVALID_FILE,
-        };
-        throw error;
-    }
-
-    if (Array.isArray(this.allowedMimeTypes) && this.allowedMimeTypes.length) {
-        const fileType = file.type;
-        if (this.allowedMimeTypes.indexOf(fileType) === -1) {
-            const error = {
-                message: "File type is not allowed",
-                code: this.Error.INVALID_TYPE,
-            };
-            throw error;
-        }
-    }
-
-    if (this.maxSize !== null) {
-        let unit = "b";
-        if (typeof this.maxSize === "string") {
-            unit = this.maxSize.substr("-1").toLowerCase();
-        }
-
-        const sizeMultiplier = this.sizeMultiplier[unit] || this.sizeMultiplier["b"];
-        const maxSize = parseInt(this.maxSize, 10) * sizeMultiplier;
-
-        if (isNaN(maxSize)) {
-            const error = {
-                message: `Invalid max size parameter: ${this.maxSize}`,
-                code: this.Error.MAX_SIZE_EXCEEDED,
-            };
-            throw error;
-        }
-
-        if (file.size > maxSize) {
-            const error = {
-                message: `The file size must not exceed ${maxSize} bytes`,
-                code: this.Error.MAX_SIZE_EXCEEDED,
-            };
-            throw error;
-        }
-    }
-};
-
-/**
- * Create a File object from the request body
- * @param {EventRequest} request
- * @return {File}
- */
-Uploader.prototype.createFileFromRequest = function (request) {
-    const requestBody = request.body;
-    let file;
-    if (IS_NODE_ENV) {
-        file = {
-            name: this.filename,
-            content: requestBody,
-            type: request.headers["content-type"] || "application/octet-stream",
-            size: $$.Buffer.byteLength(requestBody),
-        };
-    } else {
-        const type = request.get("Content-Type") || "application/octet-stream";
-        file = new File([requestBody], this.filename, {
-            type,
-        });
-    }
-
-    return file;
-};
-
-/**
- * @param {File} file
- * @param {callback} callback
- */
-Uploader.prototype.uploadFile = function (file, callback) {
-    const destFile = `${this.uploadPath}${file.name}`;
-    this.dossier.refresh((err) => {
-        if (err) {
-            return callback(err);
-        }
-        let uploadPath = this.uploadPath;
-        if (uploadPath.substr(-1) === "/") {
-            uploadPath = uploadPath.substr(0, uploadPath.length - 1);
-        }
-
-        const writeFile = () => {
-            const doWriting = () => {
-                this.dossier.writeFile(destFile, fileAsStreamOrBuffer, {ignoreMounts: false}, (err) => {
-                    callback(err, {
-                        path: destFile,
-                    });
-                });
-            };
-
-            let fileAsStreamOrBuffer;
-            if (IS_NODE_ENV) {
-                fileAsStreamOrBuffer = file.content;
-                doWriting();
-            } else {
-                if (typeof file.stream === "function") {
-                    fileAsStreamOrBuffer = new FileReadableStreamAdapter(file);
-                    return doWriting();
-                }
-
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    fileAsStreamOrBuffer = e.target.result;
-                    let sep = ";base64,";
-                    if (fileAsStreamOrBuffer.indexOf(";base64,") !== -1) {
-                        fileAsStreamOrBuffer = fileAsStreamOrBuffer.split(sep)[1];
-                        fileAsStreamOrBuffer = atob(fileAsStreamOrBuffer);
-                    }
-                    return doWriting();
-                };
-                reader.onerror = function (e) {
-                    reader.abort();
-                };
-                reader.onabort = function (e) {
-                    return callback(reader.error);
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        if (this.preventOverwrite) {
-            // Check that file doesn't exist
-            this.dossier.listFiles(uploadPath, (err, files) => {
-                if (files) {
-                    if (files.indexOf(file.name) !== -1) {
-                        const err = {
-                            message: "File exists",
-                            code: this.Error.FILE_EXISTS,
-                        };
-                        return callback(err, {
-                            path: destFile,
-                        });
-                    }
-                }
-
-                writeFile();
-            });
-        } else {
-            writeFile();
-        }
-    });
-};
-
-/**
- * TODO: Support for uploading the request body payload
- * @param {EventRequest} request
- * @param {callback} callback
- */
-Uploader.prototype.upload = function (request, callback) {
-    if (IS_NODE_ENV) {
-        this.isMultipartUpload =
-            typeof body === "object" &&
-            !(body instanceof ArrayBuffer) &&
-            request.headers["content-type"] &&
-            request.headers["content-type"].indexOf("text/plain") === -1;
-    } else {
-        this.isMultipartUpload = typeof request.body === "object" && !(request.body instanceof ArrayBuffer);
-    }
-
-    console.log({isMultipartUpload: this.isMultipartUpload})
-
-    try {
-        this.validateRequestBody(request.body);
-    } catch (e) {
-        return callback(e);
-    }
-
-    let files = [];
-
-    if (this.isMultipartUpload) {
-        if (!this.uploadMultipleFiles) {
-            files.push(request.body[this.inputName]);
-        } else {
-            files = request.body[this.inputName];
-        }
-    } else {
-        const file = this.createFileFromRequest(request);
-        files.push(file);
-    }
-
-    const filesUploaded = [];
-
-    const uploadFileCallback = (file, err) => {
-        const _callback = function (err, result) {
-            const srcFile = {
-                name: file.name,
-                type: file.type,
-            };
-
-            if (err) {
-                err = {
-                    message: JSON.stringify(err),
-                    code: this.Error.UNKNOWN,
-                };
-
-                filesUploaded.push({
-                    file: srcFile,
-                    error: err,
-                });
-            } else {
-                filesUploaded.push({
-                    file: srcFile,
-                    result,
-                });
-            }
-
-            if (filesUploaded.length === files.length) {
-                let errors = filesUploaded.filter((item) => item.error !== undefined);
-                const uploadedFiles = filesUploaded.filter((item) => item.result !== undefined);
-
-                errors = errors.length ? errors : null;
-                callback(errors, uploadedFiles);
-            }
-        };
-
-        if (err) {
-            return _callback.call(this, err);
-        }
-        return _callback.bind(this);
-    };
-
-    const filesCopy = [...files];
-
-    const recursiveUpload = () => {
-        const file = filesCopy.shift();
-
-        if (!file) {
-            return;
-        }
-
-        try {
-            this.validateFile(file);
-        } catch (e) {
-            uploadFileCallback(file, e);
-            recursiveUpload();
-            return;
-        }
-
-        this.uploadFile(file, (err, result) => {
-            const callback = uploadFileCallback(file);
-            callback(err, result);
-            recursiveUpload();
-        });
-    };
-    recursiveUpload();
-};
-
-module.exports = Uploader;
-
-},{"./FileReadableStreamAdapter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/Uploader/FileReadableStreamAdapter.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/browser/util/MimeType.js":[function(require,module,exports){
-const extensionsMimeTypes = {
-    "aac": {
-        name: "audio/aac",
-        binary: true
-    },
-    "abw": {
-        name: "application/x-abiword",
-        binary: true
-    },
-    "arc": {
-        name: "application/x-freearc",
-        binary: true
-    },
-    "avi": {
-        name: "video/x-msvideo",
-        binary: true
-    },
-    "azw": {
-        name: "application/vnd.amazon.ebook",
-        binary: true
-    },
-    "bin": {
-        name: "application/octet-stream",
-        binary: true
-    }, "bmp": {
-        name: "image/bmp",
-        binary: true
-    }, "bz": {
-        name: "application/x-bzip",
-        binary: true
-    }, "bz2": {
-        name: "application/x-bzip2",
-        binary: true
-    }, "csh": {
-        name: "application/x-csh",
-        binary: false
-    }, "css": {
-        name: "text/css",
-        binary: false
-    }, "csv": {
-        name: "text/csv",
-        binary: false
-    }, "doc": {
-        name: "application/msword",
-        binary: true
-    }, "docx": {
-        name: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        binary: true
-    }, "eot": {
-        name: "application/vnd.ms-fontobject",
-        binary: true
-    }, "epub": {
-        name: "application/epub+zip",
-        binary: true
-    }, "gz": {
-        name: "application/gzip",
-        binary: true
-    }, "gif": {
-        name: "image/gif",
-        binary: true
-    }, "htm": {
-        name: "text/html",
-        binary: false
-    }, "html": {
-        name: "text/html",
-        binary: false
-    }, "ico": {
-        name: "image/vnd.microsoft.icon",
-        binary: true
-    }, "ics": {
-        name: "text/calendar",
-        binary: false
-    }, "jpeg": {
-        name: "image/jpeg",
-        binary: true
-    }, "jpg": {
-        name: "image/jpeg",
-        binary: true
-    }, "js": {
-        name: "text/javascript",
-        binary: false
-    }, "json": {
-        name: "application/json",
-        binary: false
-    }, "jsonld": {
-        name: "application/ld+json",
-        binary: false
-    }, "mid": {
-        name: "audio/midi",
-        binary: true
-    }, "midi": {
-        name: "audio/midi",
-        binary: true
-    }, "mjs": {
-        name: "text/javascript",
-        binary: false
-    }, "mp3": {
-        name: "audio/mpeg",
-        binary: true
-    }, "mpeg": {
-        name: "video/mpeg",
-        binary: true
-    },
-	"mp4": {
-		name: "video/mp4",
-		binary: true
-	},"mpkg": {
-        name: "application/vnd.apple.installer+xm",
-        binary: true
-    }, "odp": {
-        name: "application/vnd.oasis.opendocument.presentation",
-        binary: true
-    }, "ods": {
-        name: "application/vnd.oasis.opendocument.spreadsheet",
-        binary: true
-    }, "odt": {
-        name: "application/vnd.oasis.opendocument.text",
-        binary: true
-    }, "oga": {
-        name: "audio/ogg",
-        binary: true
-    },
-    "ogv": {
-        name: "video/ogg",
-        binary: true
-    },
-    "ogx": {
-        name: "application/ogg",
-        binary: true
-    },
-    "opus": {
-        name: "audio/opus",
-        binary: true
-    },
-    "otf": {
-        name: "font/otf",
-        binary: true
-    },
-    "png": {
-        name: "image/png",
-        binary: true
-    },
-    "pdf": {
-        name: "application/pdf",
-        binary: true
-    },
-    "php": {
-        name: "application/php",
-        binary: false
-    },
-    "ppt": {
-        name: "application/vnd.ms-powerpoint",
-        binary: true
-    },
-    "pptx": {
-        name: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        binary: true
-    },
-    "rtf": {
-        name: "application/rtf",
-        binary: true
-    },
-    "sh": {
-        name: "application/x-sh",
-        binary: false
-    },
-    "svg": {
-        name: "image/svg+xml",
-        binary: false
-    },
-    "swf": {
-        name: "application/x-shockwave-flash",
-        binary: true
-    },
-    "tar": {
-        name: "application/x-tar",
-        binary: true
-    },
-    "tif": {
-        name: "image/tiff",
-        binary: true
-    },
-    "tiff": {
-        name: "image/tiff",
-        binary: true
-    },
-    "ts": {
-        name: "video/mp2t",
-        binary: true
-    },
-    "ttf": {
-        name: "font/ttf",
-        binary: true
-    },
-    "txt": {
-        name: "text/plain",
-        binary: false
-    },
-    "vsd": {
-        name: "application/vnd.visio",
-        binary: true
-    },
-    "wav": {
-        name: "audio/wav",
-        binary: true
-    },
-    "weba": {
-        name: "audio/webm",
-        binary: true
-    },
-    "webm": {
-        name: "video/webm",
-        binary: true
-    },
-    "webp": {
-        name: "image/webp",
-        binary: true
-    },
-    "woff": {
-        name: "font/woff",
-        binary: true
-    },
-    "woff2": {
-        name: "font/woff2",
-        binary: true
-    },
-    "xhtml": {
-        name: "application/xhtml+xml",
-        binary: false
-    },
-    "xls": {
-        name: "application/vnd.ms-excel",
-        binary: true
-    },
-    "xlsx": {
-        name: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        binary: true
-    },
-    "xml": {
-        name: "text/xml",
-        binary: false
-    },
-    "xul": {
-        name: "application/vnd.mozilla.xul+xml",
-        binary: true
-    },
-    "zip": {
-        name: "application/zip",
-        binary: true
-    },
-    "3gp": {
-        name: "video/3gpp",
-        binary: true
-    },
-    "3g2": {
-        name: "video/3gpp2",
-        binary: true
-    },
-    "7z": {
-        name: "application/x-7z-compressed",
-        binary: true
-    }
-};
-
-const defaultMimeType = {
-    name: "text/plain",
-    binary: false
-};
-module.exports.getMimeTypeFromExtension = function (extension) {
-    if (typeof extensionsMimeTypes[extension] !== "undefined") {
-        return extensionsMimeTypes[extension];
-    }
-    return defaultMimeType;
-};
-
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
+},{"crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
 function product(args) {
     if(!args.length){
         return [ [] ];
@@ -44050,7 +45899,7 @@ function objectProduct(obj) {
 }
 
 module.exports = objectProduct;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
 var meta = "meta";
 
 function OwM(serialized){
@@ -44141,7 +45990,7 @@ OwM.prototype.setMetaFor = function(obj, name, value){
 };
 
 module.exports = OwM;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
 function QueueElement(content) {
 	this.content = content;
 	this.next = null;
@@ -44242,7 +46091,7 @@ Queue.prototype.inspect = Queue.prototype.toString;
 
 module.exports = Queue;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
 const HEADER_SIZE_RESEARVED = 4;
 
 function SwarmPacker(){
@@ -44391,7 +46240,7 @@ SwarmPacker.getHeader = function(pack){
     return header;
 };
 module.exports = SwarmPacker;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
 
 function TaskCounter(finalCallback) {
 	let results = [];
@@ -44441,7 +46290,7 @@ function TaskCounter(finalCallback) {
 }
 
 module.exports = TaskCounter;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
 const OwM = require("./OwM");
 
 /*
@@ -44497,7 +46346,7 @@ exports.jsonToNative = function(serialisedValues, result){
     };
 
 };
-},{"./OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
+},{"./OwM":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
 function replaceAll(str, search, replacement) {
     return str.split(search).join(replacement);
 }
@@ -44684,7 +46533,7 @@ module.exports = {
     extname
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
 const PING = "PING";
 const PONG = "PONG";
 
@@ -44776,7 +46625,7 @@ module.exports.enableLifeLine = function(timeout){
         }
     }, interval);
 };
-},{"child_process":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
+},{"child_process":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
 var commands = {};
 var commands_help = {};
 
@@ -44847,7 +46696,7 @@ module.exports = {
 };
 
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
 const removeDir = (...args) => {
     const fs = require("fs");
     if (typeof fs.rm !== "function") {
@@ -44868,7 +46717,7 @@ module.exports = {
     removeDirSync,
     removeDir
 }
-},{"fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
+},{"fs":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
 
 function encode(buffer) {
     return buffer.toString('base64')
@@ -44935,7 +46784,7 @@ exports.short_uuid = function(callback) {
         callback(null, encode(buf));
     });
 };
-},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
+},{"crypto":false}],"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
 function UidGenerator(minBuffers, buffersSize) {
     const Queue = require("./Queue");
     var PSKBuffer = typeof $$ !== "undefined" && $$.PSKBuffer ? $$.PSKBuffer : $$.Buffer;
@@ -45037,12 +46886,12 @@ module.exports.createUidGenerator = function (minBuffers, bufferSize) {
     return new UidGenerator(minBuffers, bufferSize);
 };
 
-},{"./Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":false}],"bar-fs-adapter":[function(require,module,exports){
+},{"./Queue":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":false}],"bar-fs-adapter":[function(require,module,exports){
 module.exports.createFsAdapter = () => {
     const FsAdapter = require("./lib/FsAdapter");
     return new FsAdapter();
 };
-},{"./lib/FsAdapter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js"}],"bar":[function(require,module,exports){
+},{"./lib/FsAdapter":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar-fs-adapter/lib/FsAdapter.js"}],"bar":[function(require,module,exports){
 
 const ArchiveConfigurator = require("./lib/ArchiveConfigurator");
 const createFolderBrickStorage = require("./lib/obsolete/FolderBrickStorage").createFolderBrickStorage;
@@ -45123,7 +46972,7 @@ module.exports.createBrickStorageService = (archiveConfigurator, keySSI) => {
 
     return brickStorageService;
 };
-},{"./lib/Archive":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Archive.js","./lib/ArchiveConfigurator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js","./lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./lib/BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./lib/BrickMapController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js","./lib/BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./lib/BrickMapStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./lib/BrickMapStrategy/BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","./lib/BrickStorageService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./lib/obsolete/FileBrickStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js","./lib/obsolete/FolderBrickStorage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js"}],"key-ssi-resolver":[function(require,module,exports){
+},{"./lib/Archive":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Archive.js","./lib/ArchiveConfigurator":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js","./lib/Brick":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/Brick.js","./lib/BrickMap":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMap.js","./lib/BrickMapController":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapController.js","./lib/BrickMapDiff":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./lib/BrickMapStrategy":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./lib/BrickMapStrategy/BrickMapStrategyMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","./lib/BrickStorageService":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./lib/obsolete/FileBrickStorage":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/obsolete/FileBrickStorage.js","./lib/obsolete/FolderBrickStorage":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/bar/lib/obsolete/FolderBrickStorage.js"}],"key-ssi-resolver":[function(require,module,exports){
 const KeySSIResolver = require('./lib/KeySSIResolver');
 const DSUFactory = require("./lib/DSUFactoryRegistry");
 
@@ -45159,17 +47008,218 @@ module.exports = {
     CryptoFunctionTypes: require('./lib/CryptoAlgorithms/CryptoFunctionTypes'),
     SSITypes: require("./lib/KeySSIs/SSITypes"),
     SSIFamilies: require("./lib/KeySSIs/SSIFamilies"),
+    DSUTypes: require("./lib/DSUFactoryRegistry/DSUTypes"),
     DSUFactory: require("./lib/DSUFactoryRegistry"),
     KeySSIMixin: require('./lib/KeySSIs/KeySSIMixin'),
     CryptoAlgorithmsMixin: require('./lib/CryptoAlgorithms/CryptoAlgorithmsMixin')
 };
 
-},{"./lib/CryptoAlgorithms/CryptoAlgorithmsMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./lib/CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./lib/CryptoAlgorithms/CryptoFunctionTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./lib/DSUFactoryRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js","./lib/KeySSIResolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js","./lib/KeySSIs/KeySSIFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./lib/KeySSIs/KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./lib/KeySSIs/SSIFamilies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","./lib/KeySSIs/SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","bar":"bar"}],"opendsu":[function(require,module,exports){
+},{"./lib/CryptoAlgorithms/CryptoAlgorithmsMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsMixin.js","./lib/CryptoAlgorithms/CryptoAlgorithmsRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoAlgorithmsRegistry.js","./lib/CryptoAlgorithms/CryptoFunctionTypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/CryptoAlgorithms/CryptoFunctionTypes.js","./lib/DSUFactoryRegistry":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/index.js","./lib/DSUFactoryRegistry/DSUTypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/DSUTypes.js","./lib/KeySSIResolver":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIResolver.js","./lib/KeySSIs/KeySSIFactory":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIFactory.js","./lib/KeySSIs/KeySSIMixin":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","./lib/KeySSIs/SSIFamilies":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSIFamilies.js","./lib/KeySSIs/SSITypes":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","bar":"bar"}],"opendsu/bootScripts/NodeThreadWorkerBootScript":[function(require,module,exports){
+const http = require("http");
+const worker_threads = "worker_threads";
+const { parentPort, workerData } = require(worker_threads);
+let cookie = workerData.cookie;
+const openDSU = require("opendsu");
+const resolver = openDSU.loadApi("resolver");
+
+const walletHandler = require("./walletHandler");
+const apiHandler = require("./apiHandler");
+const apiStandardHandler = require("./apiStandardHandler");
+const uploadHandler = require("./uploadHandler");
+const downloadHandler = require("./downloadHandler");
+const fileRequestHandler = require("./fileRequestHandler");
+const mainDSUSSIHandler = require("./mainDSUSSIHandler");
+const DSUCodeFileCacheHandler = require("./DSUCodeFileCacheHandler");
+
+//we inject a supplementary tag in order make it more clear the source of the log
+let originalLog = console.log;
+console.log = function (...args) {
+    originalLog("\t[CloudWallet]", ...args);
+};
+
+const initialiseEnclave = (enclaveType, keySSI) => {
+    const enclaveAPI = openDSU.loadAPI("enclave");
+    const scAPI = openDSU.loadAPI("sc");
+    return new Promise((resolve, reject) => {
+        if (!keySSI) {
+            console.log(`KeySSI not specified for enclave ${enclaveType}`);
+            return reject();
+        }
+        const enclave = enclaveAPI.initialiseWalletDBEnclave(keySSI);
+        enclave.on("initialised", async () => {
+            try {
+                await $$.promisify(scAPI.setEnclave)(enclave, enclaveType);
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+        });
+    });
+};
+
+function boot() {
+    const sendErrorAndExit = (error) => {
+        parentPort.postMessage({ error });
+        setTimeout(() => {
+            process.exit(1);
+        }, 100);
+    };
+
+    process.on("uncaughtException", (error) => {
+        console.error("uncaughtException inside worker", error);
+        sendErrorAndExit(error);
+    });
+
+    if (!workerData) {
+        return sendErrorAndExit("invalid data");
+    }
+
+    if (!workerData.seed || typeof workerData.seed !== "string") {
+        return sendErrorAndExit("missing or invalid seed");
+    }
+    if (!workerData.authorizationKey) {
+        return sendErrorAndExit("missing authorizationKey");
+    }
+
+    let { seed, authorizationKey, cacheContainerPath, walletAnchorId } = workerData;
+    let dsuCodeFileCacheHandler; // used to construct local FS cache from DSU mounted at /code
+
+    const startHttpServer = (dsu) => {
+        let httpServer = http.createServer(function (req, res) {
+            const { method, url } = req;
+
+            if (!req.headers || req.headers.authorization !== authorizationKey) {
+                res.statusCode = 403;
+                return res.end("Unauthorized request");
+            }
+
+            if(req.headers.cookie){
+                cookie = req.headers.cookie;
+            }
+
+            const requestedPath = url;
+
+            console.log(`Handling url: ${requestedPath}`);
+
+            if (method === "PUT" && requestedPath.indexOf("/create-dsu") === 0) {
+                return walletHandler.createDSU(dsu, res);
+            }
+
+            if (method === "PUT" && requestedPath.indexOf("/append/") === 0) {
+                return walletHandler.appendToDSU(dsu, req, res);
+            }
+
+            if (requestedPath.indexOf("/api-standard") === 0) {
+                return apiStandardHandler.handle(dsu, res, requestedPath);
+            }
+
+            if (requestedPath.indexOf("/api?") === 0) {
+                return apiHandler.handle(dsu, res, requestedPath);
+            }
+
+            if (requestedPath.indexOf("/upload") === 0) {
+                return uploadHandler.handle(dsu, req, res, requestedPath);
+            }
+
+            if (requestedPath.indexOf("/download") === 0) {
+                return downloadHandler.handle(dsu, res, requestedPath);
+            }
+
+            if (requestedPath.indexOf("/getSSIForMainDSU") === 0) {
+                return mainDSUSSIHandler.handle(seed, res);
+            }
+            const seedForHtmlContent = walletAnchorId || seed;
+            fileRequestHandler.handle(dsu, req, res, seedForHtmlContent, requestedPath, dsuCodeFileCacheHandler);
+        });
+
+        httpServer.listen(0, function () {
+            const serverPort = httpServer.address().port;
+            parentPort.postMessage({ port: serverPort, status: "started" });
+        });
+    };
+
+    try {
+        console.log("Trying to load DSU for seed ===============================================", seed);
+        const keySSISpace = openDSU.loadAPI("keyssi");
+        const SSITypes = require("key-ssi-resolver").SSITypes;
+        const seedSSI = keySSISpace.parse(seed);
+        const isWallet = seedSSI.getTypeName() === SSITypes.WALLET_SSI;
+        const http = openDSU.loadAPI("http");
+        http.registerInterceptor((data, callback)=>{
+            let {url, headers} = data;
+            if (cookie) {
+                if(!headers){
+                    headers = {};
+                }
+                headers.cookie = cookie;
+            }
+            callback(undefined, {url, headers})
+        });
+        resolver.loadDSU(seed, async (err, dsu) => {
+            if (err) {
+                console.log(`Error loading DSU`, err);
+                return sendErrorAndExit(err);
+            }
+
+            if (isWallet) {
+                try {
+                    console.log(`Wallet detected for seed ${seed}`);
+                    const writableDSU = dsu.getWritableDSU();
+
+                    dsu.writeFile = (path, data, callback) => {
+                        writableDSU.writeFile(path, data, callback);
+                    };
+                    dsu.readFile = (path, callback) => {
+                        writableDSU.readFile(path, callback);
+                    };
+
+                    const constants = openDSU.constants;
+                    const environmentConfig = JSON.parse(await $$.promisify(dsu.readFile)(constants.ENVIRONMENT_PATH));
+                    console.log(`Loaded environment config for wallet ${seed}`, environmentConfig);
+
+                    await initialiseEnclave("MAIN_ENCLAVE", environmentConfig[constants.MAIN_ENCLAVE.KEY_SSI]);
+                    await initialiseEnclave("SHARED_ENCLAVE", environmentConfig[constants.SHARED_ENCLAVE.KEY_SSI]);
+                } catch (error) {
+                    console.log(`Error loading wallet`, error);
+                    return sendErrorAndExit(error);
+                }
+            }
+
+            if (cacheContainerPath) {
+                try {
+                    dsuCodeFileCacheHandler = new DSUCodeFileCacheHandler(dsu, cacheContainerPath);
+
+                    // construct the cache in parallel since it takes a bit of time
+                    setTimeout(async () => {
+                        try {
+                            await dsuCodeFileCacheHandler.constructCache();
+                        } catch (error) {
+                            console.log("Failed to construct DSU cache", error);
+                        }
+                    });
+                } catch (error) {
+                    console.log("Failed to create DSU code handler", error)
+                }
+            }
+
+            rawDossier = dsu;
+            startHttpServer(dsu);
+        });
+    } catch (error) {
+        parentPort.postMessage({ error, status: "failed" });
+        process.exit(-1);
+    }
+}
+
+boot();
+
+},{"./DSUCodeFileCacheHandler":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/DSUCodeFileCacheHandler.js","./apiHandler":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/apiHandler.js","./apiStandardHandler":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/apiStandardHandler.js","./downloadHandler":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/downloadHandler.js","./fileRequestHandler":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/fileRequestHandler.js","./mainDSUSSIHandler":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/mainDSUSSIHandler.js","./uploadHandler":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/uploadHandler.js","./walletHandler":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bootScripts/NodeThreadWorkerBootScript/walletHandler.js","http":false,"key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"opendsu":[function(require,module,exports){
 /*
 html API space
 */
 
 let constants = require("./moduleConstants.js");
+
 
 switch ($$.environmentType) {
     case constants.ENVIRONMENT_TYPES.WEB_WORKER_ENVIRONMENT_TYPE:
@@ -45228,6 +47278,7 @@ if(!PREVENT_DOUBLE_LOADING_OF_OPENDSU.INITIALISED){
             case "storage": return require("./storage"); break;
             case "credentials": return require("./credentials"); break;
             case "lock": return require("./lock"); break;
+            case "svd": return require("./svd"); break;
             default: throw new Error("Unknown API space " + apiSpaceName);
         }
     }
@@ -45299,7 +47350,7 @@ if(!PREVENT_DOUBLE_LOADING_OF_OPENDSU.INITIALISED){
 module.exports = PREVENT_DOUBLE_LOADING_OF_OPENDSU;
 
 
-},{"./anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js","./bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","./boot":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/index.js","./bricking":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bricking/index.js","./cache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","./config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/index.js","./config/autoConfig":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfig.js","./contracts":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/contracts/index.js","./credentials":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/credentials/index.js","./crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js","./db":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/index.js","./dc":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dc/index.js","./dt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/index.js","./enclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js","./error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","./http":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js","./keyssi":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js","./lock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/lock/index.js","./m2dsu":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/index.js","./moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./mq/mqClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/mq/mqClient.js","./notifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/notifications/index.js","./oauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/index.js","./resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js","./sc":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/index.js","./storage":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/index.js","./system":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/system/index.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","./w3cdid":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/index.js","./workers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/index.js"}],"overwrite-require":[function(require,module,exports){
+},{"./anchoring":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/anchoring/index.js","./bdns":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bdns/index.js","./boot":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/boot/index.js","./bricking":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/bricking/index.js","./cache":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/cache/index.js","./config":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/config/index.js","./config/autoConfig":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/config/autoConfig.js","./contracts":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/contracts/index.js","./credentials":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/credentials/index.js","./crypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/crypto/index.js","./db":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/db/index.js","./dc":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dc/index.js","./dt":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/dt/index.js","./enclave":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/enclave/index.js","./error":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/error/index.js","./http":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/http/index.js","./keyssi":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/keyssi/index.js","./lock":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/lock/index.js","./m2dsu":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/m2dsu/index.js","./moduleConstants.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/moduleConstants.js","./mq/mqClient":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/mq/mqClient.js","./notifications":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/notifications/index.js","./oauth":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/oauth/index.js","./resolver":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/resolver/index.js","./sc":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/sc/index.js","./storage":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/storage/index.js","./svd":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/svd/index.js","./system":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/system/index.js","./utils":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/utils/index.js","./w3cdid":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/w3cdid/index.js","./workers":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/opendsu/workers/index.js"}],"overwrite-require":[function(require,module,exports){
 /*
  require and $$.require are overwriting the node.js defaults in loading modules for increasing security, speed and making it work to the privatesky runtime build with browserify.
  The privatesky code for domains should work in node and browsers.
@@ -45370,17 +47421,6 @@ function enableForEnvironment(envType){
             console.log("Called of an undefined function!!!!");
             throw new Error("Called of an undefined function");
         };
-        if (typeof(global.webshimsRequire) == "undefined") {
-            global.webshimsRequire = global.functionUndefined;
-        }
-
-        if (typeof(global.domainRequire) == "undefined") {
-            global.domainRequire = global.functionUndefined;
-        }
-
-        if (typeof(global.pskruntimeRequire) == "undefined") {
-            global.pskruntimeRequire = global.functionUndefined;
-        }
     }
 
     const pastRequests = {};
@@ -45680,6 +47720,21 @@ function enableForEnvironment(envType){
         return promisifiedFn;
     };
 
+   $$.callAsync = async function (func, ...args) {
+        let error, result;
+        try {
+            result =  await func(...args);
+        } catch(err) {
+            error = err
+        }
+        return [error, result];
+    }
+
+    $$.call = async function (func, ...args) {
+        let asyncFunc = $$.promisify(func);
+        return $$.callAsync(asyncFunc, ...args);
+    }
+ 
     $$.makeSaneCallback = function makeSaneCallback(fn) {
         let alreadyCalled = false;
         let prevErr;
@@ -45714,7 +47769,7 @@ module.exports = {
     constants: require("./moduleConstants")
 };
 
-},{"./Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js"}],"psk-cache":[function(require,module,exports){
+},{"./Logger":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js"}],"psk-cache":[function(require,module,exports){
 const Cache = require("./lib/Cache")
 let cacheInstance;
 
@@ -45751,7 +47806,7 @@ module.exports = {
     }
 };
 
-},{"./lib/Cache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-cache/lib/Cache.js"}],"pskcrypto":[function(require,module,exports){
+},{"./lib/Cache":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/psk-cache/lib/Cache.js"}],"pskcrypto":[function(require,module,exports){
 const PskCrypto = require("./lib/PskCrypto");
 const ssutil = require("./signsensusDS/ssutil");
 
@@ -45762,206 +47817,7 @@ module.exports.hashValues = ssutil.hashValues;
 module.exports.DuplexStream = require("./lib/utils/DuplexStream");
 
 module.exports.isStream = require("./lib/utils/isStream");
-},{"./lib/PskCrypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","./lib/utils/DuplexStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js","./lib/utils/isStream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js","./signsensusDS/ssutil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js"}],"swarm-engine/bootScripts/NodeThreadWorkerBootScript":[function(require,module,exports){
-const http = require("http");
-const worker_threads = "worker_threads";
-const { parentPort, workerData } = require(worker_threads);
-let cookie = workerData.cookie;
-const openDSU = require("opendsu");
-const resolver = openDSU.loadApi("resolver");
-
-const walletHandler = require("./walletHandler");
-const apiHandler = require("./apiHandler");
-const apiStandardHandler = require("./apiStandardHandler");
-const uploadHandler = require("./uploadHandler");
-const downloadHandler = require("./downloadHandler");
-const fileRequestHandler = require("./fileRequestHandler");
-const mainDSUSSIHandler = require("./mainDSUSSIHandler");
-const DSUCodeFileCacheHandler = require("./DSUCodeFileCacheHandler");
-
-//we inject a supplementary tag in order make it more clear the source of the log
-let originalLog = console.log;
-console.log = function (...args) {
-    originalLog("\t[CloudWallet]", ...args);
-};
-
-const initialiseEnclave = (enclaveType, keySSI) => {
-    const enclaveAPI = openDSU.loadAPI("enclave");
-    const scAPI = openDSU.loadAPI("sc");
-    return new Promise((resolve, reject) => {
-        if (!keySSI) {
-            console.log(`KeySSI not specified for enclave ${enclaveType}`);
-            return reject();
-        }
-        const enclave = enclaveAPI.initialiseWalletDBEnclave(keySSI);
-        enclave.on("initialised", async () => {
-            try {
-                await $$.promisify(scAPI.setEnclave)(enclave, enclaveType);
-                resolve();
-            } catch (e) {
-                reject(e);
-            }
-        });
-    });
-};
-
-function boot() {
-    const sendErrorAndExit = (error) => {
-        parentPort.postMessage({ error });
-        setTimeout(() => {
-            process.exit(1);
-        }, 100);
-    };
-
-    process.on("uncaughtException", (error) => {
-        console.error("uncaughtException inside worker", error);
-        sendErrorAndExit(error);
-    });
-
-    if (!workerData) {
-        return sendErrorAndExit("invalid data");
-    }
-
-    if (!workerData.seed || typeof workerData.seed !== "string") {
-        return sendErrorAndExit("missing or invalid seed");
-    }
-    if (!workerData.authorizationKey) {
-        return sendErrorAndExit("missing authorizationKey");
-    }
-
-    let { seed, authorizationKey, cacheContainerPath, walletAnchorId } = workerData;
-    let dsuCodeFileCacheHandler; // used to construct local FS cache from DSU mounted at /code
-
-    const startHttpServer = (dsu) => {
-        let httpServer = http.createServer(function (req, res) {
-            const { method, url } = req;
-
-            if (!req.headers || req.headers.authorization !== authorizationKey) {
-                res.statusCode = 403;
-                return res.end("Unauthorized request");
-            }
-
-            if(req.headers.cookie){
-                cookie = req.headers.cookie;
-            }
-
-            const requestedPath = url;
-
-            console.log(`Handling url: ${requestedPath}`);
-
-            if (method === "PUT" && requestedPath.indexOf("/create-dsu") === 0) {
-                return walletHandler.createDSU(dsu, res);
-            }
-
-            if (method === "PUT" && requestedPath.indexOf("/append/") === 0) {
-                return walletHandler.appendToDSU(dsu, req, res);
-            }
-
-            if (requestedPath.indexOf("/api-standard") === 0) {
-                return apiStandardHandler.handle(dsu, res, requestedPath);
-            }
-
-            if (requestedPath.indexOf("/api?") === 0) {
-                return apiHandler.handle(dsu, res, requestedPath);
-            }
-
-            if (requestedPath.indexOf("/upload") === 0) {
-                return uploadHandler.handle(dsu, req, res, requestedPath);
-            }
-
-            if (requestedPath.indexOf("/download") === 0) {
-                return downloadHandler.handle(dsu, res, requestedPath);
-            }
-
-            if (requestedPath.indexOf("/getSSIForMainDSU") === 0) {
-                return mainDSUSSIHandler.handle(seed, res);
-            }
-            const seedForHtmlContent = walletAnchorId || seed;
-            fileRequestHandler.handle(dsu, req, res, seedForHtmlContent, requestedPath, dsuCodeFileCacheHandler);
-        });
-
-        httpServer.listen(0, function () {
-            const serverPort = httpServer.address().port;
-            parentPort.postMessage({ port: serverPort, status: "started" });
-        });
-    };
-
-    try {
-        console.log("Trying to load DSU for seed ===============================================", seed);
-        const keySSISpace = openDSU.loadAPI("keyssi");
-        const SSITypes = require("key-ssi-resolver").SSITypes;
-        const seedSSI = keySSISpace.parse(seed);
-        const isWallet = seedSSI.getTypeName() === SSITypes.WALLET_SSI;
-        const http = openDSU.loadAPI("http");
-        http.registerInterceptor((data, callback)=>{
-            let {url, headers} = data;
-            if (cookie) {
-                if(!headers){
-                    headers = {};
-                }
-                headers.cookie = cookie;
-            }
-            callback(undefined, {url, headers})
-        });
-        resolver.loadDSU(seed, async (err, dsu) => {
-            if (err) {
-                console.log(`Error loading DSU`, err);
-                return sendErrorAndExit(err);
-            }
-
-            if (isWallet) {
-                try {
-                    console.log(`Wallet detected for seed ${seed}`);
-                    const writableDSU = dsu.getWritableDSU();
-
-                    dsu.writeFile = (path, data, callback) => {
-                        writableDSU.writeFile(path, data, callback);
-                    };
-                    dsu.readFile = (path, callback) => {
-                        writableDSU.readFile(path, callback);
-                    };
-
-                    const constants = openDSU.constants;
-                    const environmentConfig = JSON.parse(await $$.promisify(dsu.readFile)(constants.ENVIRONMENT_PATH));
-                    console.log(`Loaded environment config for wallet ${seed}`, environmentConfig);
-
-                    await initialiseEnclave("MAIN_ENCLAVE", environmentConfig[constants.MAIN_ENCLAVE.KEY_SSI]);
-                    await initialiseEnclave("SHARED_ENCLAVE", environmentConfig[constants.SHARED_ENCLAVE.KEY_SSI]);
-                } catch (error) {
-                    console.log(`Error loading wallet`, error);
-                    return sendErrorAndExit(error);
-                }
-            }
-
-            if (cacheContainerPath) {
-                try {
-                    dsuCodeFileCacheHandler = new DSUCodeFileCacheHandler(dsu, cacheContainerPath);
-
-                    // construct the cache in parallel since it takes a bit of time
-                    setTimeout(async () => {
-                        try {
-                            await dsuCodeFileCacheHandler.constructCache();
-                        } catch (error) {
-                            console.log("Failed to construct DSU cache", error);
-                        }
-                    });
-                } catch (error) {
-                    console.log("Failed to create DSU code handler", error)
-                }
-            }
-
-            rawDossier = dsu;
-            startHttpServer(dsu);
-        });
-    } catch (error) {
-        parentPort.postMessage({ error, status: "failed" });
-        process.exit(-1);
-    }
-}
-
-boot();
-
-},{"./DSUCodeFileCacheHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/DSUCodeFileCacheHandler.js","./apiHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/apiHandler.js","./apiStandardHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/apiStandardHandler.js","./downloadHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/downloadHandler.js","./fileRequestHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/fileRequestHandler.js","./mainDSUSSIHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/mainDSUSSIHandler.js","./uploadHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/uploadHandler.js","./walletHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarm-engine/bootScripts/NodeThreadWorkerBootScript/walletHandler.js","http":false,"key-ssi-resolver":"key-ssi-resolver","opendsu":"opendsu"}],"swarmutils":[function(require,module,exports){
+},{"./lib/PskCrypto":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/PskCrypto.js","./lib/utils/DuplexStream":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/DuplexStream.js","./lib/utils/isStream":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/lib/utils/isStream.js","./signsensusDS/ssutil":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js"}],"swarmutils":[function(require,module,exports){
 
 let cachedUIDGenerator = undefined;
 let cachedSafeUid = undefined;
@@ -46016,8 +47872,8 @@ module.exports.ensureIsBuffer = function (data) {
 module.exports.removeDir = require("./lib/removeDir").removeDir;
 module.exports.removeDirSync = require("./lib/removeDir").removeDirSync;
 
-},{"./lib/Combos":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}]},{},["/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/nodeBoot.js"])
+},{"./lib/Combos":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/cosmin/work/epi29Jun2/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}]},{},["/home/cosmin/work/epi29Jun2/opendsu-sdk/builds/tmp/nodeBoot.js"])
                     ;(function(global) {
-                        global.bundlePaths = {"webshims":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/webshims.js","pskruntime":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/pskruntime.js","pskWebServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/pskWebServer.js","consoleTools":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/consoleTools.js","blockchain":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/blockchain.js","openDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/openDSU.js","nodeBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/nodeBoot.js","testsRuntime":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/testsRuntime.js","bindableModel":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/bindableModel.js","loaderBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/loaderBoot.js","swBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/swBoot.js","iframeBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/iframeBoot.js","launcherBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/launcherBoot.js","testRunnerBoot":"/home/runner/work/opendsu-sdk/opendsu-sdk/psknode/bundles/testRunnerBoot.js"};
+                        global.bundlePaths = {"pskWebServer":"builds/output/pskWebServer.js","openDSU":"builds/output/openDSU.js","nodeBoot":"builds/output/nodeBoot.js","loaderBoot":"builds/output/loaderBoot.js","testsRuntime":"builds/output/testsRuntime.js","bindableModel":"builds/output/bindableModel.js","iframeBoot":"builds/output/iframeBoot.js","versionLessBoot":"builds/output/versionLessBoot.js","testRunnerBoot":"builds/output/testRunnerBoot.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
                 

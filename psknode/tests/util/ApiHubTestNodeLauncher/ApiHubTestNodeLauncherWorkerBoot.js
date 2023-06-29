@@ -1,4 +1,4 @@
-require("../../../../psknode/bundles/testsRuntime");
+require("../../../../builds/output/testsRuntime");
 
 const dc = require("double-check");
 dc.assert.begin("worker", () => {}, 300000); // required in order for the process to not get killed by dc after 2 seconds
