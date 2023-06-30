@@ -12,7 +12,7 @@
   "loaderBoot": {"deps": "overwrite-require, opendsu", "bare": false, "autoLoad": true, "bundleExternal":true},
   "testsRuntime": "overwrite-require, opendsu,  acl-magic, remote-enclave, fast-svd, pskcrypto, psk-cache, double-check, swarmutils, queue, soundpubsub, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, syndicate, apihub, loki-enclave-facade",
   "bindableModel": {"deps": "overwrite-require, queue, soundpubsub, psk-bindable-model","exportedEsModule": "psk-bindable-model" },
-  "iframeBoot": {"deps": "opendsu/bootScripts/browser/iframeBoot:iframeBoot, opendsu, swarmutils, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
+  "iframeBoot": {"deps": "opendsu/bootScripts/browser/iframeBoot:iframeBoot, opendsu, swarmutils, pskcrypto, pskcrypto:crypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
   "versionLessBoot": {"deps": "opendsu/bootScripts/browser/versionless:versionLessBoot, opendsu, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
   "testRunnerBoot": {
     "deps":"overwrite-require, swarmutils",
