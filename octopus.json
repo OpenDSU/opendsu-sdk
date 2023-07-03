@@ -30,7 +30,7 @@
             "src": "https://github.com/opendsu/opendsu-core.git"
         },
         {
-            "name": "remote-enclave",
+            "name": "cloud-enclave",
             "src": "https://github.com/opendsu/remoteEnclaveServer.git"
         },
         {

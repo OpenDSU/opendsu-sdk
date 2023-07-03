@@ -5,7 +5,7 @@ let path = require("path");
 process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve(path.join(__dirname, "../../../"));
 require(path.join(__dirname, '../../bundles/pskWebServer.js'));
 
-const RemoteEnclave = require('remote-enclave');
+const CloudEnclave = require('cloud-enclave');
 path = require("swarmutils").path;
 const fs = require('fs');
 
@@ -18,7 +18,7 @@ function startServer() {
     let options;
     let config;
     if (args.length <= 2) {
-        console.log(`[${TAG}] No config file found, RemoteEnclave will start using default config`);
+        console.log(`[${TAG}] No config file found, CloudEnclave will start using default config`);
     }
     try {
         let fileContent;
@@ -35,16 +35,16 @@ function startServer() {
         config = options.config;
         console.log(`[${TAG}] Working directory for Remote Enclave process:  ${process.cwd()}`);
     } catch (err) {
-        console.log(`[${TAG}] Config file invalid, RemoteEnclave will start using default config, err: ${err}`);
+        console.log(`[${TAG}] Config file invalid, CloudEnclave will start using default config, err: ${err}`);
     }
 
-    const remoteEnclaveServer = RemoteEnclave.createInstance(config);
+    const remoteEnclaveServer = CloudEnclave.createInstance(config);
     remoteEnclaveServer.on("initialised", (did) => {
-        console.log(`[${TAG}] RemoteEnclave initialised with DID: ${did}`);
+        console.log(`[${TAG}] CloudEnclave initialised with DID: ${did}`);
     });
 
     remoteEnclaveServer.on("error", (err) => {
-        console.log(`[${TAG}] RemoteEnclave error: ${err}`);
+        console.log(`[${TAG}] CloudEnclave error: ${err}`);
     });
     remoteEnclaveServer.start();
 }
