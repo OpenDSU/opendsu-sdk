@@ -6,7 +6,7 @@ const logger = new Logger("[RemoteEnclaveNodeLauncherWorkerBoot]");
 async function boot() {
 
     try {
-        const remoteEnclave = require("remote-enclave");
+        const remoteEnclave = require("");
 
         let remoteEnclaveInstance;
         const remoteEnclaveInitialised = new Promise((resolve, reject) => {

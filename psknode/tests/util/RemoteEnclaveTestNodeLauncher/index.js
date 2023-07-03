@@ -3,7 +3,7 @@ const logger = new Logger("[RemoteEnclaveTestNodeLauncherWorkerBoot]");
 
 async function createRemoteEnclaveInstanceAsync(options) {
     process.env.REMOTE_ENCLAVE_SECRET = options.secret;
-    const remoteEnclave = require("remote-enclave");
+    const remoteEnclave = require("");
     logger.info("Starting Remote Enclave instance...", options);
     const remoteEnclaveInstance = remoteEnclave.createInstance(options);
     remoteEnclaveInstance.start();
