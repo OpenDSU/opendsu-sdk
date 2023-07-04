@@ -2,7 +2,7 @@ const Logger = require("../Logger");
 const logger = new Logger("[RemoteEnclaveTestNodeLauncherWorkerBoot]");
 
 async function createRemoteEnclaveInstanceAsync(options) {
-    process.env.REMOTE_ENCLAVE_SECRET = options.secret;
+    process.env.CLOUD_ENCLAVE_SECRET = options.secret;
     const remoteEnclave = require("");
     logger.info("Starting Remote Enclave instance...", options);
     const remoteEnclaveInstance = remoteEnclave.createInstance(options);
@@ -19,8 +19,8 @@ async function createRemoteEnclaveInstanceWorkerAsync(options) {
     const { spawn } = require('node:child_process');
 
     return new Promise((resolve, reject) => {
-        process.env.REMOTE_ENCLAVE_SECRET = options.secret;
-        process.env.REMOTE_ENCLAVE_CONFIG = JSON.stringify(options);
+        process.env.CLOUD_ENCLAVE_SECRET = options.secret;
+        process.env.CLOUD_ENCLAVE_CONFIG = JSON.stringify(options);
         
         const newProcess = spawn("node", ["./opendsu-sdk/psknode/tests/util/RemoteEnclaveTestNodeLauncher/RemoteEnclaveTestNodeLauncherWorkerBoot.js"], {
             env: process.env,
@@ -67,7 +67,7 @@ function RemoteEnclaveTestNodeLauncher(options) {
             bdnsAPI.setBDNSHosts(defaultBdns);
         }
 
-        process.env.REMOTE_ENCLAVE_DOMAIN = domain;
+        process.env.CLOUD_ENCLAVE_DOMAIN = domain;
         const remoteEnclaveNodeDID = useWorker
             ? await createRemoteEnclaveInstanceWorkerAsync(config)
             : await createRemoteEnclaveInstanceAsync(config);

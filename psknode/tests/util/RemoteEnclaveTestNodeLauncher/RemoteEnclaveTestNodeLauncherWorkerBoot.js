@@ -13,7 +13,7 @@ async function boot() {
             const callback = (result) => {
                 resolve(result);
             };
-            remoteEnclaveInstance = remoteEnclave.createInstance(JSON.parse(process.env.REMOTE_ENCLAVE_CONFIG));
+            remoteEnclaveInstance = remoteEnclave.createInstance(JSON.parse(process.env.CLOUD_ENCLAVE_CONFIG));
             remoteEnclaveInstance.start();
             remoteEnclaveInstance.on("initialised", callback);
         });

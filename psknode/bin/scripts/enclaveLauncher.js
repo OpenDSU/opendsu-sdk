@@ -9,8 +9,8 @@ const CloudEnclave = require('cloud-enclave');
 path = require("swarmutils").path;
 const fs = require('fs');
 
-if (!process.env.REMOTE_ENCLAVE_CONFIG_LOCATION) {
-    process.env.REMOTE_ENCLAVE_CONFIG_LOCATION = "./";
+if (!process.env.CLOUD_ENCLAVE_CONFIG_LOCATION) {
+    process.env.CLOUD_ENCLAVE_CONFIG_LOCATION = "./";
 }
 
 function startServer() {
@@ -30,8 +30,8 @@ function startServer() {
         }
 
         options = JSON.parse(fileContent);
-        process.env.REMOTE_ENCLAVE_DOMAIN = options.domain;
-        process.env.REMOTE_ENCLAVE_SECRET = options.config.secret;
+        process.env.CLOUD_ENCLAVE_DOMAIN = options.domain;
+        process.env.CLOUD_ENCLAVE_SECRET = options.config.secret;
         config = options.config;
         console.log(`[${TAG}] Working directory for Remote Enclave process:  ${process.cwd()}`);
     } catch (err) {
