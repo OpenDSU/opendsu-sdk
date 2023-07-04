@@ -1,5 +1,5 @@
 {
-  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, acl-magic, , bar, bar-fs-adapter, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, psk-http-client, swarmutils, queue, soundpubsub, loki-enclave-facade",
+  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, acl-magic, cloud-enclave, bar, bar-fs-adapter, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, psk-http-client, swarmutils, queue, soundpubsub, loki-enclave-facade",
   "openDSU": {"deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, bar, bar-fs-adapter, psk-cache, syndicate",
     "bundleExternal":false,
     "sourceMap": false
@@ -10,7 +10,7 @@
     "exclude": "psklogger",
     "bare": true},
   "loaderBoot": {"deps": "overwrite-require, opendsu", "bare": false, "autoLoad": true, "bundleExternal":true},
-  "testsRuntime": "overwrite-require, opendsu,  acl-magic, , fast-svd, pskcrypto, psk-cache, double-check, swarmutils, queue, soundpubsub, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, syndicate, apihub, loki-enclave-facade",
+  "testsRuntime": "overwrite-require, opendsu,  acl-magic, cloud-enclave, fast-svd, pskcrypto, psk-cache, double-check, swarmutils, queue, soundpubsub, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, syndicate, apihub, loki-enclave-facade",
   "bindableModel": {"deps": "overwrite-require, queue, soundpubsub, psk-bindable-model","exportedEsModule": "psk-bindable-model" },
   "iframeBoot": {"deps": "opendsu/bootScripts/browser/iframeBoot:iframeBoot, opendsu, swarmutils, pskcrypto, pskcrypto:crypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
   "versionLessBoot": {"deps": "opendsu/bootScripts/browser/versionless:versionLessBoot, opendsu, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
