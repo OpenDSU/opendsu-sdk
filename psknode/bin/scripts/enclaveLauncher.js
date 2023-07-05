@@ -1,4 +1,4 @@
-const TAG = "REMOTE-ENCLAVE-SERVER";
+const TAG = "CLOUD-ENCLAVE-SERVER";
 
 let path = require("path");
 
