@@ -160,6 +160,8 @@ const Tir = function () {
         return did;
     }
 
+    this.launchConfigurableCloudEnclaveTestNodeAsync = this.launchConfigurableRemoteEnclaveTestNodeAsync;
+
     this.getRandomAvailablePortAsync = getRandomAvailablePortAsync;
 
     this.launchApiHubTestNodeWithContract = (contractBuildFilePath, domain, config, callback) => {

@@ -1,11 +1,11 @@
 const Logger = require("../Logger");
-const logger = new Logger("[RemoteEnclaveTestNodeLauncherWorkerBoot]");
+const logger = new Logger("[CloudEnclaveTestNodeLauncherWorkerBoot]");
 
 async function createRemoteEnclaveInstanceAsync(options) {
     process.env.CLOUD_ENCLAVE_SECRET = options.secret;
-    const remoteEnclave = require("");
+    const cloudEnclave = require("cloud-enclave");
     logger.info("Starting Remote Enclave instance...", options);
-    const remoteEnclaveInstance = remoteEnclave.createInstance(options);
+    const remoteEnclaveInstance = cloudEnclave.createInstance(options);
     remoteEnclaveInstance.start();
     return new Promise((resolve, reject) => {
         remoteEnclaveInstance.on("initialised", (result) => {
@@ -21,7 +21,7 @@ async function createRemoteEnclaveInstanceWorkerAsync(options) {
     return new Promise((resolve, reject) => {
         process.env.CLOUD_ENCLAVE_SECRET = options.secret;
         process.env.CLOUD_ENCLAVE_CONFIG = JSON.stringify(options);
-        
+
         const newProcess = spawn("node", ["./opendsu-sdk/psknode/tests/util/RemoteEnclaveTestNodeLauncher/RemoteEnclaveTestNodeLauncherWorkerBoot.js"], {
             env: process.env,
         });
@@ -33,7 +33,7 @@ async function createRemoteEnclaveInstanceWorkerAsync(options) {
             else{
                 resolve(stringifiedData.substring(4));
             }
-           
+
         });
         newProcess.on("error", (err) => {
             logger.error("The remote enclave worker has encountered an error", err);
@@ -42,10 +42,7 @@ async function createRemoteEnclaveInstanceWorkerAsync(options) {
     });
 }
 
-
-function RemoteEnclaveTestNodeLauncher(options) {
-    logger.info("Using the following options for launcher", options);
-
+function RemoteEnclaveTestNodeLauncher(config) {
     this.launch = (callback) => {
         callback = $$.makeSaneCallback(callback);
         this.launchAsync()
@@ -54,21 +51,8 @@ function RemoteEnclaveTestNodeLauncher(options) {
     };
 
     this.launchAsync = async () => {
-        const {useWorker, apihubPort, domain, config} = options;
-        const bdnsAPI = require("opendsu").loadApi("bdns");
-        const defaultBdns = {}
-        const apihubURL = `http://localhost:${apihubPort}`;
-        defaultBdns[domain] = {};
-        defaultBdns[domain].anchoringServices = [apihubURL];
-        defaultBdns[domain].brickStorages = [apihubURL];
-        if (options.bdns) {
-            bdnsAPI.setBDNSHosts(options.bdns);
-        } else {
-            bdnsAPI.setBDNSHosts(defaultBdns);
-        }
-
-        process.env.CLOUD_ENCLAVE_DOMAIN = domain;
-        const remoteEnclaveNodeDID = useWorker
+        process.env.CLOUD_ENCLAVE_DOMAIN = config.domain;
+        const remoteEnclaveNodeDID = config.useWorker
             ? await createRemoteEnclaveInstanceWorkerAsync(config)
             : await createRemoteEnclaveInstanceAsync(config);
 
