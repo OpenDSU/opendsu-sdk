@@ -1,10 +1,10 @@
 {
-  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, acl-magic, cloud-enclave, bar, bar-fs-adapter, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, psk-http-client, swarmutils, queue, soundpubsub, loki-enclave-facade",
-  "openDSU": {"deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, bar, bar-fs-adapter, psk-cache, syndicate",
+  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, acl-magic, cloud-enclave, fast-svd, bar, bar-fs-adapter, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, psk-http-client, swarmutils, queue, soundpubsub, loki-enclave-facade",
+  "openDSU": {"deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, fast-svd, bar, bar-fs-adapter, psk-cache, syndicate",
     "bundleExternal":false,
     "sourceMap": false
   },
-  "nodeBoot": {"deps": "opendsu/bootScripts/NodeThreadWorkerBootScript:NodeThreadWorkerBootScript, opendsu, overwrite-require, key-ssi-resolver, psk-cache, pskcrypto, bar, swarmutils, bar-fs-adapter",
+  "nodeBoot": {"deps": "opendsu/bootScripts/NodeThreadWorkerBootScript:NodeThreadWorkerBootScript, opendsu, overwrite-require, key-ssi-resolver, psk-cache, fast-svd, pskcrypto, bar, swarmutils, bar-fs-adapter",
     "autoLoad": true,
     "bundleExternal": false,
     "exclude": "psklogger",
@@ -13,7 +13,7 @@
   "testsRuntime": "overwrite-require, opendsu,  acl-magic, cloud-enclave, fast-svd, pskcrypto, psk-cache, double-check, swarmutils, queue, soundpubsub, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, syndicate, apihub, loki-enclave-facade",
   "bindableModel": {"deps": "overwrite-require, queue, soundpubsub, psk-bindable-model","exportedEsModule": "psk-bindable-model" },
   "iframeBoot": {"deps": "opendsu/bootScripts/browser/iframeBoot:iframeBoot, opendsu, swarmutils, pskcrypto, pskcrypto:crypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
-  "versionLessBoot": {"deps": "opendsu/bootScripts/browser/versionless:versionLessBoot, opendsu, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
+  "versionLessBoot": {"deps": "opendsu/bootScripts/browser/versionless:versionLessBoot, opendsu, fast-svd, pskcrypto","autoLoad": true, "bundleExternal": true, "exclude": "psklogger"},
   "testRunnerBoot": {
     "deps":"overwrite-require, swarmutils",
     "bundleExternal": false
