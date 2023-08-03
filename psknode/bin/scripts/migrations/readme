@@ -1,0 +1,3 @@
+This folder should contain migration files if needed.
+Before launching any process the migrations folder content will be read, any files found will be sorted and then executed.
+Each migration file should expose a single function that returns a Promise which will be fulfilled according to the migration process.
