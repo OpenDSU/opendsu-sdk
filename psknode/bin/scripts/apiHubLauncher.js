@@ -28,12 +28,18 @@ async function testAndExecuteMigrations(){
         if(!migrationsFolderContent.length){
             logger.info(`No migrations scripts found.`);
         }
-        migrationsFolderContent = migrationsFolderContent.sort((a, b) => a.localeCompare(b, 'en', {numeric: true}));
+        migrationsFolderContent = migrationsFolderContent.sort((a, b) =>{
+          return a.name.localeCompare(b.name, 'en', {numeric: true});
+        });
         for(let entry of migrationsFolderContent){
             let name = entry.name;
             if(entry.isDirectory()){
                 logger.info(`Skipping dir <${name}>`);
             }else{
+                if(name.indexOf('.js') === -1){
+                    logger.info(`Skipping file <${name}> because is not *.js`);
+                    continue;
+                }
                 logger.info(`Preparing to execute the migration script <${name}>`);
                 try{
                     let migration = path.join(migrationsFolder,name);
