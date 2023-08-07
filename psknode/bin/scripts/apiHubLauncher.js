@@ -59,7 +59,9 @@ function launch(){
             const ligthDBPort = process.env.LIGHT_DB_PORT || 8081;
             const {createLightDBServerInstance} = require("loki-enclave-facade");
             const storage = process.env.LIGHT_DB_STORAGE || config.lightDBStorage || path.join(rootFolder, "external-volume/lightDB");
-            createLightDBServerInstance(ligthDBPort, path.resolve(storage), (err) => {
+            config.lightDBStorage = storage;
+            config.lightDBPort = ligthDBPort;
+            createLightDBServerInstance(config, (err) => {
                 if (err) {
                     logger.error(`Failed to start LightDB instance`);
                     return logger.error(err);
