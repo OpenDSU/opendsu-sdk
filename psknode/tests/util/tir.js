@@ -16,7 +16,7 @@ const removeDirSync = require("swarmutils").removeDirSync;
 const {createKey, buildConstitution, getRandomAvailablePortAsync} = require("./tir-utils");
 const ApiHubTestNodeLauncher = require("./ApiHubTestNodeLauncher");
 const RemoteEnclaveTestNodeLauncher = require("./RemoteEnclaveTestNodeLauncher");
-
+const LightDBEnclaveTestNodeLauncher = require("./LightDBEnclaveTestNodeLauncher");
 const Tir = function () {
     const domainConfigs = {};
     const rootFolder = fs.mkdtempSync(path.join(os.tmpdir(), "psk_"));
@@ -139,6 +139,7 @@ const Tir = function () {
         }
         config = config || {};
 
+        await this.launchConfigurableLightDBServerTestNodeAsync(config);
         const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
         const {node, ...rest} = await apiHubTestNodeLauncher.launchAsync();
         virtualMQNode = node;
@@ -163,6 +164,16 @@ const Tir = function () {
     this.launchConfigurableCloudEnclaveTestNodeAsync = this.launchConfigurableRemoteEnclaveTestNodeAsync;
 
     this.getRandomAvailablePortAsync = getRandomAvailablePortAsync;
+
+    this.launchConfigurableLightDBServerTestNodeAsync = async (config) => {
+        if (config && typeof config !== "object") {
+            throw new Error("Invalid config specified");
+        }
+        config = config || {};
+
+        const lightDBEnclaveTestNodeLauncher = new LightDBEnclaveTestNodeLauncher(config);
+        await lightDBEnclaveTestNodeLauncher.launchAsync();
+    }
 
     this.launchApiHubTestNodeWithContract = (contractBuildFilePath, domain, config, callback) => {
         if (typeof config === "function") {
