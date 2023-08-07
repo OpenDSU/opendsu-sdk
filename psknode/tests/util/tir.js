@@ -170,7 +170,7 @@ const Tir = function () {
             throw new Error("Invalid config specified");
         }
         config = config || {};
-
+        config.lightDBDynamicPort = true;
         const lightDBEnclaveTestNodeLauncher = new LightDBEnclaveTestNodeLauncher(config);
         await lightDBEnclaveTestNodeLauncher.launchAsync();
     }
