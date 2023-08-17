@@ -87,7 +87,7 @@ function launch(){
     const cluster  = require("cluster");
     const { cpus } = require("os");
     const LokiEnclaveFacade = require("../../../modules/loki-enclave-facade/LokiEnclaveFacade");
-    const numCPUs = 1 || cpus().length;
+    const numCPUs = config.workers || 1 || cpus().length;
 
     if (cluster.isPrimary) {
         logger.log(`Primary process with PID ${process.pid} is running`);
