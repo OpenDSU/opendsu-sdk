@@ -6,4 +6,5 @@ node_modules
 builds/tmp/*_intermediar.js
 builds/output
 psknode
+!psknode/bin/scripts/migrations/
 node_modules

@@ -20,7 +20,15 @@ if (!process.env.PSK_CONFIG_LOCATION) {
 
 let config = API_HUB.getServerConfig();
 
+const cluster  = require("cluster");
+const { cpus } = require("os");
+const numCPUs = config.workers || 1 || cpus().length;
+
 async function testAndExecuteMigrations(){
+    if(!cluster.isPrimary){
+        return;
+    }
+
     try{
         let migrationsFolder = path.join(dirname,"migrations");
         logger.info(`Preparing to test if there are any migrations scripts to be executed before starting.`);
@@ -84,10 +92,6 @@ function launch(){
         return startLightDBInstance();
     }
 
-    const cluster  = require("cluster");
-    const { cpus } = require("os");
-    const LokiEnclaveFacade = require("../../../modules/loki-enclave-facade/LokiEnclaveFacade");
-    const numCPUs = config.workers || 1 || cpus().length;
 
     if (cluster.isPrimary) {
         logger.log(`Primary process with PID ${process.pid} is running`);
