@@ -6,15 +6,6 @@ const fs = require('fs');
 const FIXED_URLS_PATH = path.join(__dirname, "../../../../../apihub-root/external-volume/fixed-urls/FixedUrls.db");
 const LIGHT_DB_URLS_PATH = path.join(__dirname, "../../../../../apihub-root/external-volume/lightDB/FixedUrls.db/database");
 
-console.log("====================================================================================");
-console.log("FIXED_URLS_PATH", FIXED_URLS_PATH);
-console.log("LIGHT_DB_URLS_PATH", LIGHT_DB_URLS_PATH);
-console.log("====================================================================================");
-
-function hasDuplicates(arr) {
-    return new Set(arr).size !== arr.length;
-}
-
 const migrateTableFromLokiToLightDB = async (lokiEnclaveFacadeInstance, tableName, lightDB) => {
     let records;
     try {
