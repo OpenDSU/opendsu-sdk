@@ -1,10 +1,12 @@
 const LokiEnclaveFacade = require("loki-enclave-facade");
+const apihubModule = require("apihub");
 require("opendsu")
 const adapters = LokiEnclaveFacade.Adaptors;
 const path = require('path');
 const fs = require('fs');
-const FIXED_URLS_PATH = path.join(__dirname, "../../../../../apihub-root/external-volume/fixed-urls/FixedUrls.db");
-const LIGHT_DB_URLS_PATH = path.join(__dirname, "../../../../../apihub-root/external-volume/lightDB/FixedUrls.db/database");
+const apihubRootFolder = apihubModule.getServerConfig().storage;
+const FIXED_URLS_PATH = path.join(apihubRootFolder, "external-volume/fixed-urls/FixedUrls.db");
+const LIGHT_DB_URLS_PATH = path.join(apihubRootFolder, "/external-volume/lightDB/FixedUrls.db/database");
 
 const migrateTableFromLokiToLightDB = async (lokiEnclaveFacadeInstance, tableName, lightDB) => {
     let records;
