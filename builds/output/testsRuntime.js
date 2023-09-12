@@ -5342,7 +5342,7 @@ const defaultConfig = {
         },
         "cloudWallet": {
             "module": "./components/cloudWallet",
-            "dsuBootPath": "./psknode/bundles/nodeBoot.js"
+            "dsuBootPath": "./builds/output/nodeBoot.js"
         },
         "stream": {
             "module": "./components/stream"
