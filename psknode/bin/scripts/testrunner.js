@@ -1,6 +1,6 @@
 const path = require('path');
 
-require(path.join(__dirname, "../../bundles/testRunnerBoot"));
+require(path.join(__dirname, "../../../builds/output/testRunnerBoot"));
 
 const argvParser = require(path.join(__dirname, "./argumentsParserUtil"));
 
