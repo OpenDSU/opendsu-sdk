@@ -4132,9 +4132,66 @@ const fs = require("fs");
 const path = require("path");
 const config = require("../../config");
 
+
 function SecretsService(serverRootFolder) {
+    const getStorageFolderPath = () => {
+        return path.join(serverRootFolder, config.getConfig("externalStorage"), "secrets");
+    }
+
+    const lockPath = path.join(getStorageFolderPath(), "secret.lock");
+    const lock = require("../../utils/ExpiringFileLock").getLock(lockPath, 60000);
+    console.log("Secrets Service initialized");
     const logger = $$.getLogger("secrets", "apihub/secrets");
-    const crypto = require("opendsu").loadAPI("crypto");
+    const openDSU = require("opendsu");
+    const crypto = openDSU.loadAPI("crypto");
+    const encryptionKeys = process.env.SSO_SECRETS_ENCRYPTION_KEY.split(",");
+    let latestEncryptionKey = encryptionKeys[0].trim();
+    let successfulEncryptionKeyIndex = 0;
+    const containers = {};
+    let readonlyMode = false;
+    const loadContainerAsync = async (containerName) => {
+        try {
+            containers[containerName] = await getDecryptedSecretsAsync(containerName);
+            console.info("Secrets container", containerName, "loaded");
+        } catch (e) {
+            containers[containerName] = {};
+            console.info("Initializing secrets container", containerName);
+        }
+    }
+
+    this.loadContainersAsync = async () => {
+        ensureFolderExists(getStorageFolderPath());
+        let secretsContainersNames = fs.readdirSync(getStorageFolderPath());
+        if (secretsContainersNames.length) {
+            secretsContainersNames = secretsContainersNames.map((containerName) => {
+                const extIndex = containerName.lastIndexOf(".");
+                return path.basename(containerName).substring(0, extIndex);
+            })
+
+            for (let containerName of secretsContainersNames) {
+                await loadContainerAsync(containerName);
+            }
+        } else {
+            logger.info("No secrets containers found");
+        }
+    }
+
+    this.forceWriteSecretsAsync = async () => {
+        ensureFolderExists(getStorageFolderPath());
+        let secretsContainersNames = fs.readdirSync(getStorageFolderPath());
+        if (secretsContainersNames.length) {
+            secretsContainersNames = secretsContainersNames.map((containerName) => {
+                const extIndex = containerName.lastIndexOf(".");
+                return path.basename(containerName).substring(0, extIndex);
+            })
+
+            for (let containerName of secretsContainersNames) {
+                await writeSecretsAsync(containerName);
+            }
+        } else {
+            logger.info("No secrets containers found");
+        }
+    }
     const createError = (code, message) => {
         const err = Error(message);
         err.code = code
@@ -4152,180 +4209,195 @@ function SecretsService(serverRootFolder) {
         return crypto.encrypt(secret, latestEncryptionKey);
     }
 
-    const writeSecrets = (appName, secrets, callback) => {
-        if (typeof secrets === "object") {
-            secrets = JSON.stringify(secrets);
+    const writeSecrets = (secretsContainerName, callback) => {
+        if (readonlyMode) {
+            return callback(createError(555, `Secrets Service is in readonly mode`));
         }
+        let secrets = containers[secretsContainerName];
+        secrets = JSON.stringify(secrets);
         const encryptedSecrets = encryptSecret(secrets);
-        fs.writeFile(getSecretFilePath(appName), encryptedSecrets, callback);
+        fs.writeFile(getSecretFilePath(secretsContainerName), encryptedSecrets, callback);
     }
 
-    const ensureFolderExists = (folderPath, callback) => {
-        fs.access(folderPath, (err) => {
-            if (err) {
-                fs.mkdir(folderPath, {recursive: true}, callback);
-                return;
+    const writeSecretsAsync = async (secretsContainerName) => {
+        return await $$.promisify(writeSecrets)(secretsContainerName);
+    }
+    const ensureFolderExists = (folderPath) => {
+        try {
+            fs.accessSync(folderPath);
+        } catch (e) {
+            fs.mkdirSync(folderPath, {recursive: true});
+        }
+    }
+
+
+    const getSecretFilePath = (secretsContainerName) => {
+        const folderPath = getStorageFolderPath(secretsContainerName);
+        return path.join(folderPath, `${secretsContainerName}.secret`);
+    }
+
+    const decryptSecret = async (secretsContainerName, encryptedSecret) => {
+        let bufferEncryptionKey = latestEncryptionKey;
+        if (!$$.Buffer.isBuffer(bufferEncryptionKey)) {
+            bufferEncryptionKey = $$.Buffer.from(bufferEncryptionKey, "base64");
+        }
+
+        return crypto.decrypt(encryptedSecret, bufferEncryptionKey);
+    };
+
+    const getDecryptedSecrets = (secretsContainerName, callback) => {
+        const filePath = getSecretFilePath(secretsContainerName);
+        fs.readFile(filePath, async (err, secrets) => {
+            if (err || !secrets) {
+                logger.error(`Failed to read file ${filePath}`);
+                return callback(createError(404, `Failed to read file ${filePath}`));
             }
 
-            callback();
-        })
-    }
-
-    const getStorageFolderPath = () => {
-        return path.join(serverRootFolder, config.getConfig("externalStorage"), "secrets");
-    }
-
-    const getSecretFilePath = (appName) => {
-        const folderPath = getStorageFolderPath(appName);
-        return path.join(folderPath, `${appName}.secret`);
-    }
-
-    const decryptSecret = (appName, encryptedSecret, callback) => {
-        const encryptionKeys = process.env.SSO_SECRETS_ENCRYPTION_KEY.split(",");
-        const latestEncryptionKey = encryptionKeys[0].trim();
-        let decryptedSecret;
-        const _decryptSecretRecursively = (index) => {
-            let encryptionKey = encryptionKeys[index];
-            if (typeof encryptionKey === "undefined") {
-                logger.error(`Failed to decrypt secret. Invalid encryptionKey.`);
-                callback(createError(500, `Failed to decrypt secret`));
-                return;
-            }
-
-            encryptionKey = encryptionKey.trim();
-            let bufferEncryptionKey = encryptionKey;
-            if (!$$.Buffer.isBuffer(bufferEncryptionKey)) {
-                bufferEncryptionKey = $$.Buffer.from(bufferEncryptionKey, "base64");
+            let decryptedSecrets;
+            try {
+                decryptedSecrets = await decryptSecret(secretsContainerName, secrets);
+            } catch (e) {
+                logger.error(`Failed to decrypt secrets`);
+                readonlyMode = true;
+                console.log("Readonly mode activated")
+                return callback(createError(555, `Failed to decrypt secrets`));
             }
 
             try {
-                decryptedSecret = crypto.decrypt(encryptedSecret, bufferEncryptionKey);
+                decryptedSecrets = JSON.parse(decryptedSecrets.toString());
             } catch (e) {
-                _decryptSecretRecursively(index + 1);
-                return;
+                logger.error(`Failed to parse secrets`);
+                return callback(createError(555, `Failed to parse secrets`));
             }
 
-            if (latestEncryptionKey !== encryptionKey) {
-                logger.info(0x501, "Secrets Encryption Key rotation detected");
-                writeSecrets(appName, decryptedSecret.toString(), err => {
-                    if (err) {
-                        logger.info(0x501, `Re-encrypting Recovery Passphrases on disk file ${getSecretFilePath(appName)} failed due to error: ${err}`);
-                        return callback(err);
-                    }
-                    logger.info(0x501, `Re-encrypting Recovery Passphrases on disk file ${getSecretFilePath(appName)} completed`)
-                    callback(undefined, decryptedSecret);
-                });
-
-                return;
-            }
-
-            callback(undefined, decryptedSecret);
-        }
-
-        _decryptSecretRecursively(0);
-    }
-
-    const getDecryptedSecrets = (appName, callback) => {
-        const filePath = getSecretFilePath(appName);
-        fs.readFile(filePath, (err, secrets) => {
-            if (err) {
-                logger.error(`Failed to read file ${filePath}`);
-                return callback(createError(500, `Failed to read file ${filePath}`));
-            }
-
-            decryptSecret(appName, secrets, (err, decryptedSecrets) => {
-                if (err) {
-                    return callback(err);
-                }
-
-                try {
-                    decryptedSecrets = JSON.parse(decryptedSecrets.toString());
-                } catch (e) {
-                    logger.error(`Failed to parse secrets`);
-                    return callback(createError(500, `Failed to parse secrets`));
-                }
-
-                callback(undefined, decryptedSecrets);
-            })
+            callback(undefined, decryptedSecrets);
         });
     }
 
-    this.putSecret = (appName, userId, secret, callback) => {
-        if (typeof process.env.SSO_SECRETS_ENCRYPTION_KEY === "undefined") {
-            logger.warn(`The SSO_SECRETS_ENCRYPTION_KEY is missing from environment.`);
-            return callback(createError(500, `The SSO_SECRETS_ENCRYPTION_KEY is missing from environment.`));
+    const getDecryptedSecretsAsync = async (secretsContainerName) => {
+        return await $$.promisify(getDecryptedSecrets, this)(secretsContainerName);
+    }
+
+    this.putSecretAsync = async (secretsContainerName, userId, secret) => {
+        await lock.lock();
+        let res;
+        try {
+            await loadContainerAsync(secretsContainerName);
+            if (!containers[secretsContainerName]) {
+                containers[secretsContainerName] = {};
+                console.info("Initializing secrets container", secretsContainerName)
+            }
+            containers[secretsContainerName][userId] = secret;
+            res = await writeSecretsAsync(secretsContainerName, userId);
+        } catch (e) {
+            await lock.unlock();
+            throw e;
         }
-        const folderPath = getStorageFolderPath();
-        ensureFolderExists(folderPath, err => {
-            if (err) {
-                return callback(createError(500, `Failed to store secret for user ${userId}`));
-            }
-
-            getDecryptedSecrets(appName, (err, decryptedSecrets) => {
-                if (err) {
-                    decryptedSecrets = {};
-                }
-
-                decryptedSecrets[userId] = secret;
-                writeSecrets(appName, decryptedSecrets, callback);
-            })
-        })
+        await lock.unlock();
+        return res;
     }
 
-    this.getSecret = (appName, userId, callback) => {
-        getDecryptedSecrets(appName, (err, decryptedSecrets) => {
-            if (err) {
-                return callback(err);
-            }
+    this.getSecretSync = (secretsContainerName, userId) => {
+        if (readonlyMode) {
+            throw createError(555, `Secrets Service is in readonly mode`);
+        }
+        if (!containers[secretsContainerName]) {
+            containers[secretsContainerName] = {};
+            console.info("Initializing secrets container", secretsContainerName);
+        }
+        const secret = containers[secretsContainerName][userId];
+        if (!secret) {
+            throw createError(404, `Secret for user ${userId} not found`);
+        }
 
-            const secret = decryptedSecrets[userId];
-            if (typeof secret === "undefined") {
-                return callback(createError(404, `Secret for user ${userId} not found`));
-            }
-
-            callback(undefined, JSON.stringify({secret}));
-        })
+        return secret;
     }
 
-    this.deleteSecret = (appName, userId, callback) => {
-        getDecryptedSecrets(appName, (err, decryptedSecrets) => {
-            if (err) {
-                return callback(err);
+    this.deleteSecretAsync = async (secretsContainerName, userId) => {
+        await lock.lock();
+        let res;
+        try {
+            await loadContainerAsync(secretsContainerName);
+            if (!containers[secretsContainerName]) {
+                containers[secretsContainerName] = {};
+                console.info("Initializing secrets container", secretsContainerName)
             }
+            if (!containers[secretsContainerName][userId]) {
+                throw createError(404, `Secret for user ${userId} not found`);
+            }
+            delete containers[secretsContainerName][userId];
+            await writeSecretsAsync(secretsContainerName);
+        } catch (e) {
+            await lock.unlock();
+            throw e;
+        }
+        await lock.unlock();
+        return res;
+    }
 
-            delete decryptedSecrets[userId];
-            writeSecrets(appName, decryptedSecrets, callback);
-        })
+    this.rotateKeyAsync = async () => {
+        let writeKey = encryptionKeys[0].trim();
+        let readKey = encryptionKeys.length === 2 ? encryptionKeys[1].trim() : writeKey;
+
+        if (readonlyMode) {
+            if(encryptionKeys.length !== 2){
+                logger.info(0x501, `Rotation not possible`);
+                return;
+            }
+            logger.info(0x501, "Secrets Encryption Key rotation detected");
+            readonlyMode = false;
+            latestEncryptionKey = readKey;
+            await this.loadContainersAsync();
+            if (readonlyMode) {
+                logger.info(0x501, `Rotation not possible because wrong decryption key was provided. The old key should be the second one in the list`);
+                return;
+            }
+            latestEncryptionKey = writeKey;
+            await this.forceWriteSecretsAsync();
+            logger.info(0x501, `Re-encrypting Recovery Passphrases on disk completed`)
+        }
     }
 }
 
-module.exports = SecretsService;
+const getSecretsServiceInstanceAsync = async (serverRootFolder) => {
+    const secretsService = new SecretsService(serverRootFolder);
+    await secretsService.loadContainersAsync();
+    return secretsService;
+}
 
-},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","fs":false,"opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js":[function(require,module,exports){
-const httpUtils = require("../../libs/http-wrapper/src/httpUtils");
+module.exports = {
+    getSecretsServiceInstanceAsync
+};
+
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils/ExpiringFileLock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/ExpiringFileLock.js","fs":false,"opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js":[function(require,module,exports){
+const SecretsService = require("./SecretsService");
 
 function secrets(server) {
     const logger = $$.getLogger("secrets", "apihub/secrets");
     const httpUtils = require("../../libs/http-wrapper/src/httpUtils");
     const SecretsService = require("./SecretsService");
-    const secretsService = new SecretsService(server.rootFolder);
+    let secretsService;
+    setTimeout(async ()=>{
+      secretsService =  await SecretsService.getSecretsServiceInstanceAsync(server.rootFolder);
+    })
 
     const getSSOSecret = (request, response) => {
         let userId = request.headers["user-id"];
         let appName = request.params.appName;
-        secretsService.getSecret(appName, userId, (err, secret)=>{
-            if (err) {
-                response.statusCode = err.code;
-                response.end(err.message);
-                return;
-            }
+        let secret;
+        try {
+            secret = secretsService.getSecretSync(appName, userId);
+        } catch (e) {
+            response.statusCode = e.code;
+            response.end(e.message);
+            return;
+        }
 
-            response.statusCode = 200;
-            response.end(secret);
-        })
+        response.statusCode = 200;
+        response.end(secret);
     }
 
-    const putSSOSecret = (request, response) => {
+    const putSSOSecret = async (request, response) => {
         let userId = request.headers["user-id"];
         let appName = request.params.appName;
         let secret;
@@ -4338,43 +4410,34 @@ function secrets(server) {
             return;
         }
 
-        secretsService.putSecret(appName, userId, secret, err => {
-            if (err) {
-                response.statusCode = err.code;
-                response.end(err.message);
-                return;
-            }
+        try {
+            await secretsService.putSecretAsync(appName, userId, secret);
+        } catch (e) {
+            response.statusCode = e.code;
+            response.end(e.message);
+            return;
+        }
 
-            response.statusCode = 200;
-            response.end();
-        });
+        response.statusCode = 200;
+        response.end();
     };
 
-    const getUserIdFromDID = (did, appName) => {
-        const crypto = require("opendsu").loadAPI("crypto");
-        const decodedDID = crypto.decodeBase58(did);
-        const splitDecodedDID = decodedDID.toString().split(":");
-        let name = splitDecodedDID.slice(4).join(":");
-        let userId = name.slice(appName.length + 1);
-        return userId;
-    }
-
-    const deleteSSOSecret = (request, response) => {
+    const deleteSSOSecret = async (request, response) => {
         let appName = request.params.appName;
         let userId = request.headers["user-id"];
 
-        secretsService.deleteSecret(appName, userId, err => {
-            if (err) {
-                response.statusCode = err.code;
-                response.end(err.message);
-                return;
-            }
+        try {
+            await secretsService.deleteSecretAsync(appName, userId);
+        } catch (e) {
+            response.statusCode = e.code;
+            response.end(e.message);
+            return;
+        }
 
-            response.statusCode = 200;
-            response.end();
-        });
+        response.statusCode = 200;
+        response.end();
     }
-    
+
     const logEncryptionTest = () => {
         const key = "presetEncryptionKeyForInitialLog";
         const text = "TheQuickBrownFoxJumpedOverTheLazyDog";
@@ -4395,48 +4458,46 @@ function secrets(server) {
         });
     }
 
-    function putDIDSecret(req, res){
+    async function putDIDSecret(req, res) {
         let {did, name} = req.params;
         let secret = req.body;
-        secretsService.putSecret(name, did, secret, err => {
-            if (err) {
-                res.statusCode = err.code;
-                res.end(err.message);
-                return;
-            }
-
-            res.statusCode = 200;
-            res.end();
-        });
+        try {
+            await secretsService.putSecretAsync(name, did, secret);
+        } catch (e) {
+            res.statusCode = e.code;
+            res.end(e.message);
+            return;
+        }
+        res.statusCode = 200;
+        res.end();
     }
 
-    function getDIDSecret(req, res){
+    function getDIDSecret(req, res) {
         let {did, name} = req.params;
-        secretsService.getSecret(name, did, (err, secret)=>{
-            if (err) {
-                res.statusCode = err.code;
-                res.end(err.message);
-                return;
-            }
-
+        let secret;
+        try {
+            secret = secretsService.getSecretSync(name, did);
             res.statusCode = 200;
-            let parsedSecret = JSON.parse(secret);
-            res.end(parsedSecret.secret);
-        });
+        } catch (err) {
+            res.statusCode = err.code;
+            res.end(err.message);
+            return;
+        }
+        res.end(secret);
     }
 
-    function deleteDIDSecret(req, res){
+    async function deleteDIDSecret(req, res) {
         let {did, name} = req.params;
-        secretsService.deleteSecret(name, did, err => {
-            if (err) {
-                res.statusCode = err.code;
-                res.end(err.message);
-                return;
-            }
-
+        try {
+            await secretsService.deleteSecretAsync(name, did)
             res.statusCode = 200;
-            res.end();
-        });
+        } catch (err) {
+            res.statusCode = err.code;
+            res.end(err.message);
+            return;
+        }
+
+        res.end();
     }
 
     logEncryptionTest();
@@ -9072,6 +9133,50 @@ module.exports = Throttler;
 },{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../libs/TokenBucket":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/TokenBucket.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/moduleConstants.js":[function(require,module,exports){
 module.exports = {
 	LOG_IDENTIFIER: "[API-HUB]"
+};
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/ExpiringFileLock.js":[function(require,module,exports){
+function ExpiringFileLock(folderLock, timeout) {
+    const fsPromisesName = 'node:fs/promises';
+    const fsPromises = require(fsPromisesName);
+
+    function asyncSleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    this.lock = async () => {
+        while (true) {
+            try {
+                const stat = await fsPromises.stat(folderLock);
+                if (stat.ctime.getTime() < Date.now() - timeout) {
+                    await fsPromises.rmdir(folderLock);
+                    console.log("Removed expired lock", folderLock);
+                }
+            } catch (e) {
+                // No such file or directory
+            }
+
+            try {
+                await fsPromises.mkdir(folderLock);
+                return;
+            } catch (e) {
+                await asyncSleep(100);
+            }
+        }
+    }
+
+    this.unlock = async () => {
+        try {
+            await fsPromises.rmdir(folderLock);
+        }catch (e) {
+            // Nothing to do
+        }
+    }
+}
+
+module.exports = {
+    getLock: (folderLock, timeout) => {
+        return new ExpiringFileLock(folderLock, timeout);
+    }
 };
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/cookie-utils.js":[function(require,module,exports){
 const COOKIE_REGEX = /([^;=\s]*)=([^;]*)/g;
@@ -70272,9 +70377,11 @@ module.exports.getDomainConfig = function (domain, ...configKeys) {
 	return config.getDomainConfig(domain, ...configKeys);
 };
 
+module.exports.getSecretsServiceInstanceAsync = require("./components/secrets/SecretsService").getSecretsServiceInstanceAsync;
+
 module.exports.anchoringStrategies = require("./components/anchoring/strategies");
 
-},{"./components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./components/anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/index.js","./components/anchoring/strategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./components/bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bdns/index.js","./components/bricking":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/index.js","./components/cloudWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/cloudWallet/index.js","./components/config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/config/index.js","./components/debugLogger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/debugLogger/index.js","./components/installation-details":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/installation-details/index.js","./components/keySsiNotifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/keySsiNotifications/index.js","./components/lightDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/lightDBEnclave/index.js","./components/mainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mainDSU/index.js","./components/mqHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/index.js","./components/requestForwarder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/requestForwarder/index.js","./components/secrets":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js","./components/staticServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js","./components/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/index.js","./components/versionlessDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/versionlessDSU/index.js","./config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./libs/http-wrapper":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/index.js","./middlewares/SimpleLock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/SimpleLock/index.js","./middlewares/authorisation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/authorisation/index.js","./middlewares/fixedUrls":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/fixedUrls/index.js","./middlewares/genericErrorMiddleware":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js","./middlewares/logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/logger/index.js","./middlewares/oauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/index.js","./middlewares/readOnly":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/readOnly/index.js","./middlewares/requestEnhancements":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js","./middlewares/responseHeader":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/responseHeader/index.js","./middlewares/throttler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/throttler/index.js","swarmutils":"swarmutils"}],"bar-fs-adapter":[function(require,module,exports){
+},{"./components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./components/anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/index.js","./components/anchoring/strategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./components/bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bdns/index.js","./components/bricking":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/index.js","./components/cloudWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/cloudWallet/index.js","./components/config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/config/index.js","./components/debugLogger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/debugLogger/index.js","./components/installation-details":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/installation-details/index.js","./components/keySsiNotifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/keySsiNotifications/index.js","./components/lightDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/lightDBEnclave/index.js","./components/mainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mainDSU/index.js","./components/mqHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/index.js","./components/requestForwarder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/requestForwarder/index.js","./components/secrets":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js","./components/secrets/SecretsService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js","./components/staticServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js","./components/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/index.js","./components/versionlessDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/versionlessDSU/index.js","./config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./libs/http-wrapper":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/index.js","./middlewares/SimpleLock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/SimpleLock/index.js","./middlewares/authorisation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/authorisation/index.js","./middlewares/fixedUrls":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/fixedUrls/index.js","./middlewares/genericErrorMiddleware":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js","./middlewares/logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/logger/index.js","./middlewares/oauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/index.js","./middlewares/readOnly":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/readOnly/index.js","./middlewares/requestEnhancements":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js","./middlewares/responseHeader":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/responseHeader/index.js","./middlewares/throttler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/throttler/index.js","swarmutils":"swarmutils"}],"bar-fs-adapter":[function(require,module,exports){
 module.exports.createFsAdapter = () => {
     const FsAdapter = require("./lib/FsAdapter");
     return new FsAdapter();
