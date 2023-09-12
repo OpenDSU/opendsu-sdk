@@ -44,8 +44,8 @@ jobs:
       - name: Run tests
         run: npm run tests
         env:
-          DOUBLE_CHECK_POOL_SIZE: 2
-          DOUBLE_CHECK_TIMEOUT_FACTOR: 10
+          DOUBLE_CHECK_POOL_SIZE: 10
+          DOUBLE_CHECK_TIMEOUT_FACTOR: 5
       # Pushing results to test_reports branch
       - name: Publishing bundles to master branch
         if: ${{ github.event.inputs.ignoreTests == 'true' || success() }} 
