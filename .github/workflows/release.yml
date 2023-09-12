@@ -42,10 +42,14 @@ jobs:
 
       # run tests
       - name: Run tests
+        if: ${{ github.event.inputs.ignoreTests == 'false' }}
         run: npm run tests
         env:
           DOUBLE_CHECK_POOL_SIZE: 10
           DOUBLE_CHECK_TIMEOUT_FACTOR: 5
+      - name: Run build
+        if: ${{ github.event.inputs.ignoreTests == 'true' }}
+        run: npm run build        
       # Pushing results to test_reports branch
       - name: Publishing bundles to master branch
         if: ${{ github.event.inputs.ignoreTests == 'true' || success() }} 
