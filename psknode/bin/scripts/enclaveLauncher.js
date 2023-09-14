@@ -3,7 +3,7 @@ const TAG = "CLOUD-ENCLAVE-SERVER";
 let path = require("path");
 
 process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve(path.join(__dirname, "../../../"));
-require(path.join(__dirname, '../../bundles/pskWebServer.js'));
+require(path.join(__dirname, '../../../builds/output/pskWebServer.js'));
 
 const CloudEnclave = require('cloud-enclave');
 path = require("swarmutils").path;
