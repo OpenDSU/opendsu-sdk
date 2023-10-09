@@ -1267,7 +1267,7 @@ function Archive(archiveConfigurator) {
     /**
      * @param {string} folderBarPath
      * @param {object} options
-     * @param {callback} callback
+     * @param {function} callback
      */
     const _listFiles = (folderBarPath, options, callback) => {
         if (typeof options === "function") {
@@ -8005,10 +8005,19 @@ function Manifest(archive, options, callback) {
     manifestHandler.getMountedDossiers = function (path, callback) {
         let mountedDossiers = [];
         for (let mountPoint in manifest.mounts) {
-            if (pskPath.isSubpath(mountPoint, path)) {
-                let mountPath = mountPoint.substring(path.length);
-                if (mountPath[0] === "/") {
-                    mountPath = mountPath.substring(1);
+            if (path === "/" || pskPath.isSubpath(mountPoint, path)) {
+                let mountPath;
+                if (path === "/") {
+                    if (mountPoint[0] === "/") {
+                        mountPath = mountPoint.substring(1);
+                    } else {
+                        mountPath = mountPoint;
+                    }
+                } else {
+                    mountPath = mountPoint.substring(path.length);
+                    if (mountPath[0] === "/") {
+                        mountPath = mountPath.substring(1);
+                    }
                 }
                 mountedDossiers.push({
                     path: mountPath,
@@ -13747,6 +13756,7 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
 
     this.startOrAttachBatch = (callback) => {
         $$.debug.logDSUEvent(this, "startOrAttachBatch called");
+        console.debug("startOrAttachBatch called");
         if (!this.batchInProgress && dsuInstancesRegistry.batchInProgress(this.getAnchorIdSync())) {
             return callback(Error("Another instance of the LegacyDSU is currently in batch."));
         }
@@ -13781,6 +13791,7 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
         const batchId = generateBatchId(false);
         inProgressBatches.add(batchId);
         $$.debug.logDSUEvent(this, "Real batch started", batchId);
+        console.debug(`Real batch started ${batchId}`);
         return batchId;
     }
 
@@ -13812,7 +13823,7 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
         }
 
         if(inProgressBatches.size === 0){
-            console.warn(Error("Unable to cancel a batch that seems to don't be in batch mode"));            
+            console.warn(Error("Unable to cancel a batch that seems to not be in batch mode"));
             return callback(undefined, undefined);
         }
 
@@ -13939,7 +13950,7 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
         if(inProgressBatches.size){
             console.trace("Status of in progress batches", inProgressBatches.size);
         }
-
+        console.debug(`Closing batch ${batchId}`);
         bar.commitBatch(onConflict, err => {
             if (err) {
                 return dsuInstancesRegistry.notifyBatchCommitted(dsuAnchorId, (error)=>{
@@ -13953,11 +13964,6 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
                 });
             }
 
-            //if recovery mode is active for the current bar, and we have a success we mark it
-            let {
-                unmarkAnchorForRecovery
-            } = require("opendsu").loadApi("anchoring").getAnchoringX();
-            unmarkAnchorForRecovery(dsuAnchorId);
             dsuInstancesRegistry.notifyBatchCommitted(dsuAnchorId, (...args)=>{
                 dsuInstancesRegistry.unlockAnchorId(anchorId);
                 $$.debug.logDSUEvent(this, "unlockAnchorId in commitBatch", batchId);
@@ -14055,6 +14061,8 @@ const DSU_ENTRY_TYPES = {
     FOLDER: "FOLDER",
 };
 
+let DSUSIntaceNo = 0;
+let BatchInstacesNo = 0;
 function VersionlessDSU(config) {
     const { keySSI } = config;
 
@@ -14087,6 +14095,15 @@ function VersionlessDSU(config) {
         }
         return path;
     };
+
+    function generateBatchId(isVirtual){
+        BatchInstacesNo++;
+        if(isVirtual){
+            return `VB:${BatchInstacesNo}`
+        } else {
+            return `RB:${BatchInstacesNo}`
+        }
+    }
 
     /**
      * This function waits for an existing "refresh" operation to finish
@@ -14988,6 +15005,7 @@ function VersionlessDSU(config) {
         }
 
         versionlessDSUController.beginBatch();
+        return generateBatchId(false);
     };
 
     /**
@@ -16720,8 +16738,6 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
             anchorValueSSIKeySSI = keySSISpace.parse(anchorValueSSI);
         }
 
-
-
         anchorIdKeySSI.getAnchorId((err, _anchorId) => {
             if (err) {
                 return callback(err);
@@ -16729,6 +16745,7 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
 
             let fakeLastVersionForAnchorId = fakeLastVersion[_anchorId];
             if(fakeLastVersionForAnchorId){
+                unmarkAnchorForRecovery(_anchorId);
                 return callback(undefined);
             }
 
@@ -16800,7 +16817,10 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
                         }
                     }
 
-                    persistenceStrategy.appendAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), callback);
+                    persistenceStrategy.appendAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), (err, res)=>{
+                        unmarkAnchorForRecovery(_anchorId);
+                        callback(err, res);
+                    });
                 }
 
                 let fakeHistoryAvailable = fakeHistory[_anchorId];
@@ -16935,9 +16955,11 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
         fakeLastVersion[anchorId] = anchorFakeLastVersion;
     }
 
-    self.unmarkAnchorForRecovery = function(anchorId){
+    let unmarkAnchorForRecovery = function(anchorId){
         fakeHistory[anchorId] = undefined;
+        delete fakeHistory[anchorId];
         fakeLastVersion[anchorId] = undefined;
+        delete fakeLastVersion[anchorId];
     }
 
     self.testIfRecoveryActiveFor = function(anchorId){
@@ -27211,8 +27233,8 @@ function Enclave_Mixin(target, did, keySSI) {
 
         resolverAPI.loadDSU(keySSI, options, (err, dsu) => {
             if (err) {
-                target.getReadForKeySSI(undefined, keySSI.getIdentifier(), (err, sReadSSI) => {
-                    if (err) {
+                target.getReadForKeySSI(undefined, keySSI.getIdentifier(), (e, sReadSSI) => {
+                    if (e) {
                         return callback(err);
                     }
                     resolverAPI.loadDSU(sReadSSI, options, callback);
@@ -30499,7 +30521,11 @@ registry.defineApi("recoverDSU", function (ssi, recoveryFnc, callback) {
             return callback(err);
         }
 
-        return callback(undefined, await registerDSU(this, dsu));
+        let registeredDSU = await registerDSU(this, dsu);
+        setTimeout(()=>{
+            callback(undefined, registeredDSU);
+        }, 3000);
+        return;
     });
 });
 
@@ -32804,17 +32830,10 @@ let tryToRunRecoveryContentFnc = (keySSI, recoveredInstance, options, anchorFake
                     throw createOpenDSUErrorWrapper(`Surprise error!`, err);
                 }
                 let {
-                    markAnchorForRecovery,
-                    unmarkAnchorForRecovery
+                    markAnchorForRecovery
                 } = require("opendsu").loadApi("anchoring").getAnchoringX();
                 markAnchorForRecovery(anchorId, anchorFakeHistory, anchorFakeLastVersion);
-                options.contentRecoveryFnc(recoveredInstance, (err, dsu) => {
-                    if (!err) {
-                        //we clean the fake history after the successful recovery in order to let
-                        unmarkAnchorForRecovery(anchorId);
-                    }
-                    cb(err, dsu);
-                });
+                options.contentRecoveryFnc(recoveredInstance, cb);
             });
 
         } catch (err) {
@@ -32845,7 +32864,7 @@ const loadFallbackDSU = (keySSI, options, callback) => {
             return callback(createOpenDSUErrorWrapper(`Failed to get anchorId for keySSI ${keySSI.getIdentifier()}`, err));
         }
 
-        anchoringX.getAllVersions(anchorId, (err, versions) => {
+        anchoringX.getAllVersions(anchorId, {realHistory:true}, (err, versions) => {
             if (err) {
                 return callback(createOpenDSUErrorWrapper(`Failed to get versions for anchorId ${anchorId}`, err));
             }
@@ -38169,8 +38188,8 @@ function enableForEnvironment(envType){
        }
 
        this.log = function(...args){
-           if(!debugEnabled) return;
            console.debug(...args);
+           if(!debugEnabled) return;
            debugEvents.push(`Log #${debugEvents.length}` +[...args].join(" "));
            eventsStack.push(getStackTrace());
        }
@@ -73072,11 +73091,14 @@ module.exports = function hasSymbols() {
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has/src/index.js":[function(require,module,exports){
 'use strict';
 
-var bind = require('function-bind');
+var hasOwnProperty = {}.hasOwnProperty;
+var call = Function.prototype.call;
 
-module.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
+module.exports = call.bind ? call.bind(hasOwnProperty) : function (O, P) {
+  return call.call(hasOwnProperty, O, P);
+};
 
-},{"function-bind":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/function-bind/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/index.js":[function(require,module,exports){
 'use strict'
 var Buffer = require('safe-buffer').Buffer
 var Transform = require('readable-stream').Transform
@@ -94158,7 +94180,6 @@ Url.prototype.format = function () {
   if (this.query && typeof this.query === 'object' && Object.keys(this.query).length) {
     query = querystring.stringify(this.query, {
       arrayFormat: 'repeat',
-      encodeValuesOnly: true,
       addQueryPrefix: false
     });
   }

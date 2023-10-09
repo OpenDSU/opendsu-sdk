@@ -722,7 +722,7 @@ const logger = $$.getLogger("apihub", "anchoring");
 const getStrategy = async (request) => {
     let receivedDomain;
     let domainConfig;
-    if (request.params.anchorId && request.params.domain) {
+    if (request.params.anchorId) {
         try {
             receivedDomain = utils.getDomainFromKeySSI(request.params.anchorId);
         } catch (e) {
@@ -737,9 +737,16 @@ const getStrategy = async (request) => {
         if (!domainConfig) {
             throw Error(`[Anchoring] Domain '${receivedDomain}' not found`);
         }
-    } else {
-        throw Error(`[Anchoring] AnchorId or domain is missing from request.params`);
     }
+
+    if (request.params.domain) {
+        domainConfig = await utils.getAnchoringDomainConfig(request.params.domain);
+    }
+
+    if (!domainConfig) {
+        throw Error(`[Anchoring] Unable to identify domain. Check configuration or api call required params.`);
+    }
+
 
     const StrategyClass = anchoringStrategies[domainConfig.type];
     if (!StrategyClass) {
@@ -865,7 +872,7 @@ module.exports = {
 };
 
 },{"../strategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/index.js":[function(require,module,exports){
-const {getAllVersions, getLastVersion} = require("./controllers");
+const {getAllVersions, getLastVersion, totalNumberOfAnchors} = require("./controllers");
 
 function Anchoring(server) {
     function requestServerMiddleware(request, response, next) {
@@ -906,6 +913,9 @@ function Anchoring(server) {
 
     server.get(`/anchor/:domain/get-last-version/:anchorId`, getLastVersion);
     server.head(`/anchor/:domain/get-last-version/:anchorId`, server.getHeadHandler(getLastVersion));
+
+    server.get(`/anchor/:domain/get-total-numbers-of-anchors`, totalNumberOfAnchors);
+    server.head(`/anchor/:domain/get-total-numbers-of-anchors`, server.getHeadHandler(totalNumberOfAnchors));
 }
 
 module.exports = Anchoring;
@@ -1031,6 +1041,8 @@ function ETH(server, domainConfig, anchorId, newAnchorValue, jsonData) {
 
 module.exports = ETH;
 },{"../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/filePersistence.js":[function(require,module,exports){
+const {totalNumberOfAnchors} = require("../../controllers");
+
 function FilePersistenceStrategy(rootFolder, configuredPath) {
     const self = this;
     const fileOperations = new FileOperations();
@@ -1051,6 +1063,10 @@ function FilePersistenceStrategy(rootFolder, configuredPath) {
 
             callback();
         });
+    }
+
+    self.totalNumberOfAnchors = function (callback) {
+        fileOperations.totalNumberOfAnchors(callback);
     }
 
     self.getLastVersion = function (anchorId, callback) {
@@ -1189,6 +1205,21 @@ function FileOperations() {
         });
     }
 
+    self.totalNumberOfAnchors = function (callback) {
+        fs.readdir(anchoringFolder, {withFileTypes: true}, (err, items) => {
+            if (err) {
+                return callback(err);
+            }
+            let numberOfFiles = 0;
+            items.forEach(item => {
+                if (item.isFile()) {
+                    numberOfFiles++;
+                }
+            })
+            return callback(undefined, numberOfFiles);
+        })
+    }
+
     self.getlastVersion = function (anchorId, callback) {
         self.getAllVersions(anchorId, (err, allVersions) => {
             if (err) {
@@ -1231,7 +1262,7 @@ module.exports = {
     FilePersistenceStrategy
 }
 
-},{"../utils/AnchorPathResolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/AnchorPathResolver.js","../utils/FSLock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/FSLock.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/index.js":[function(require,module,exports){
+},{"../../controllers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/controllers/index.js","../utils/AnchorPathResolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/AnchorPathResolver.js","../utils/FSLock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/FSLock.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/index.js":[function(require,module,exports){
 
 const openDSU = require("opendsu");
 
@@ -1253,6 +1284,10 @@ class FS{
 
     appendAnchor(callback){
         this.anchoringBehaviour.appendAnchor(this.commandData.anchorId, this.commandData.anchorValue, callback);
+    }
+
+    totalNumberOfAnchors(callback){
+        this.fps.totalNumberOfAnchors(callback);
     }
 
     getAllVersions(callback){
@@ -4147,13 +4182,13 @@ function SecretsService(serverRootFolder) {
     }
 
     const lockPath = path.join(getStorageFolderPath(), "secret.lock");
-    const lock = require("../../utils/ExpiringFileLock").getLock(lockPath, 60000);
+    const lock = require("../../utils/ExpiringFileLock").getLock(lockPath, 10000);
     console.log("Secrets Service initialized");
     const logger = $$.getLogger("secrets", "apihub/secrets");
     const openDSU = require("opendsu");
     const crypto = openDSU.loadAPI("crypto");
-    const encryptionKeys = process.env.SSO_SECRETS_ENCRYPTION_KEY.split(",");
-    let latestEncryptionKey = encryptionKeys[0].trim();
+    const encryptionKeys = process.env.SSO_SECRETS_ENCRYPTION_KEY ? process.env.SSO_SECRETS_ENCRYPTION_KEY.split(",") : undefined;
+    let latestEncryptionKey = encryptionKeys ? encryptionKeys[0].trim() : undefined;
     let successfulEncryptionKeyIndex = 0;
     const containers = {};
     let readonlyMode = false;
@@ -4208,7 +4243,10 @@ function SecretsService(serverRootFolder) {
     }
 
     const encryptSecret = (secret) => {
-        const encryptionKeys = process.env.SSO_SECRETS_ENCRYPTION_KEY.split(",");
+        const encryptionKeys = process.env.SSO_SECRETS_ENCRYPTION_KEY ? process.env.SSO_SECRETS_ENCRYPTION_KEY.split(",") : undefined;
+        if(!encryptionKeys) {
+            throw Error("process.env.SSO_SECRETS_ENCRYPTION_KEY is empty")
+        }
         let latestEncryptionKey = encryptionKeys[0];
         if (!$$.Buffer.isBuffer(latestEncryptionKey)) {
             latestEncryptionKey = $$.Buffer.from(latestEncryptionKey, "base64");
@@ -5115,7 +5153,7 @@ async function handleGetVersionlessDSURequest(request, response) {
     const fs = require("fs");
     try {
         let resolvedFilePath = path.resolve(filePath);
-        if(resolvedFilePath.indexOf(versionlessDSUFolderPath) !== -1){
+        if(resolvedFilePath.indexOf(versionlessDSUFolderPath) === -1){
             throw Error("Trying to read outside of VersionLess storage folder");
         }
         const fileContent = await $$.promisify(fs.readFile)(filePath);
@@ -5148,7 +5186,7 @@ async function handlePutVersionlessDSURequest(request, response) {
         await $$.promisify(fs.mkdir)(path.dirname(filePath), { recursive: true });
         logger.debug(`[VersionlessDSU] Writing versionlessDSU to ${filePath}`);
         let resolvedFilePath = path.resolve(filePath);
-        if(resolvedFilePath.indexOf(versionlessDSUFolderPath) !== -1){
+        if(resolvedFilePath.indexOf(versionlessDSUFolderPath) === -1){
             throw Error("Trying to write outside of VersionLess storage folder");
         }
         await $$.promisify(fs.writeFile)(filePath, dsu);
@@ -7978,15 +8016,28 @@ function AccessTokenValidator(server) {
 
 module.exports = AccessTokenValidator;
 },{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./util":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/OauthMiddleware.js":[function(require,module,exports){
-const {sendUnauthorizedResponse} = require("../../../utils/middlewares");
+
+
 const util = require("./util");
 const urlModule = require("url");
 
 function OAuthMiddleware(server) {
     const logger = $$.getLogger("OAuthMiddleware", "apihub/oauth");
+
+    function sendUnauthorizedResponse(req, res, reason, error) {
+        logger.error(`[${req.method}] ${req.url} blocked: ${reason}`, error);
+        res.statusCode = 403;
+        const loginUrl = oauthConfig.client.postLogoutRedirectUrl;
+        const returnHtml ="<html>" +
+          `<body>We apologize for the inconvenience. The automated login attempt was unsuccessful. 
+                    You can either <a href=\"${loginUrl}\">retry the login</a> or if the issue persists, please restart your browser.
+                    <script>sessionStorage.setItem('initialURL', window.location.href);</script>
+                </body>` +
+          "</html>";
+        res.end(returnHtml);
+    }
+
     const LOADER_PATH = "/loader";
-    let cookies = [];
-    let lastUrls;
     logger.debug(`Registering OAuthMiddleware`);
     const config = require("../../../config");
     const oauthConfig = config.getConfig("oauthConfig");
@@ -8003,6 +8054,11 @@ function OAuthMiddleware(server) {
     //we let KeyManager to boot and prepare ...
     util.initializeKeyManager(ENCRYPTION_KEYS_LOCATION, oauthConfig.keyTTL);
 
+    function redirectToLogin(req, res) {
+        res.statusCode = 200;
+        res.write(`<html><body><script>sessionStorage.setItem('initialURL', window.location.href); window.location.href = "/login";</script></body></html>`);
+        res.end();
+    }
     function startAuthFlow(req, res) {
         util.printDebugLog("Starting authentication flow");
         const loginContext = webClient.getLoginInfo(oauthConfig);
@@ -8011,7 +8067,7 @@ function OAuthMiddleware(server) {
             if (err) {
                 return sendUnauthorizedResponse(req, res, "Unable to encrypt login info");
             }
-            cookies = [`lastUrls=${lastUrls}; Path=/`, `loginContextCookie=${encryptedContext}; Path=/`];
+            let cookies = [`loginContextCookie=${encryptedContext}; Path=/`];
             logger.info("SSO redirect (http 301) triggered for:", req.url);
             res.writeHead(301, {
                 Location: loginContext.redirect,
@@ -8026,7 +8082,7 @@ function OAuthMiddleware(server) {
         util.printDebugLog("Entered login callback");
         let cbUrl = req.url;
         let query = urlModule.parse(cbUrl, true).query;
-        const {loginContextCookie, lastUrls} = util.parseCookies(req.headers.cookie);
+        const {loginContextCookie} = util.parseCookies(req.headers.cookie);
         if (!loginContextCookie) {
             util.printDebugLog("Logout because loginContextCookie is missing.")
             return logout(req, res);
@@ -8072,10 +8128,9 @@ function OAuthMiddleware(server) {
                         }
 
                         util.printDebugLog("SSODetectedId", SSODetectedId);
-                        util.printDebugLog("LastURLs", lastUrls);
                         res.writeHead(301, {
-                            Location: lastUrls || "/",
-                            "Set-Cookie": [`lastUrls=${lastUrls}; Path=/`, `accessTokenCookie=${encryptedTokenSet.encryptedAccessToken}`, "isActiveSession=true", `refreshTokenCookie=${encryptedTokenSet.encryptedRefreshToken}`, `SSOUserId = ${SSOUserId}`, `SSODetectedId = ${SSODetectedId}`, `loginContextCookie=; Max-Age=0; Path=/`],
+                            Location: "/redirect.html",
+                            "Set-Cookie": [`logout=false; Path=/`, `accessTokenCookie=${encryptedTokenSet.encryptedAccessToken}; Max-age=86400`, "isActiveSession=true; Max-age=86400", `refreshTokenCookie=${encryptedTokenSet.encryptedRefreshToken}; Max-age=86400`, `SSOUserId=${SSOUserId}; Max-age=86400`, `SSODetectedId=${SSODetectedId}; Max-age=86400`, `loginContextCookie=; Max-Age=0; Path=/`],
                             "Cache-Control": "no-store, no-cache, must-revalidate, post-check=0, pre-check=0"
                         });
                         res.end();
@@ -8092,9 +8147,13 @@ function OAuthMiddleware(server) {
         logoutUrl.query = {
             post_logout_redirect_uri: oauthConfig.client.postLogoutRedirectUrl, client_id: oauthConfig.client.clientId,
         };
+
+        let cookies = ["logout=true; Path=/;", "accessTokenCookie=; Max-Age=0", "isActiveSession=; Max-Age=0", "refreshTokenCookie=; Max-Age=0", "loginContextCookie=; Path=/; Max-Age=0"];
         logger.info("SSO redirect (http 301) triggered for:", req.url);
         res.writeHead(301, {
-            Location: urlModule.format(logoutUrl)
+            Location: urlModule.format(logoutUrl),
+            "Set-Cookie": cookies,
+            "Cache-Control": "no-store, no-cache, must-revalidate, post-check=0, pre-check=0"
         });
         res.end();
     }
@@ -8115,8 +8174,7 @@ function OAuthMiddleware(server) {
         }
 
         function startLogoutPhase(res) {
-            lastUrls=undefined;
-            cookies = ["lastUrls=; Path=/; Max-Age=0", "accessTokenCookie=; Max-Age=0", "isActiveSession=; Max-Age=0", "refreshTokenCookie=; Max-Age=0", "loginContextCookie=; Path=/; Max-Age=0"];
+            let cookies = ["accessTokenCookie=; Max-Age=0", "isActiveSession=; Max-Age=0", "refreshTokenCookie=; Max-Age=0", "loginContextCookie=; Path=/; Max-Age=0"];
             logger.info("SSO redirect (http 301) triggered for:", req.url);
             res.writeHead(301, {
                 Location: "/logout",
@@ -8128,6 +8186,10 @@ function OAuthMiddleware(server) {
 
         function isLogoutPhaseActive() {
             return url === "/logout";
+        }
+
+        function isLoginPhaseActive() {
+            return url === "/login";
         }
 
         const canSkipOAuth = urlsToSkip.some((urlToSkip) => url.indexOf(urlToSkip) === 0);
@@ -8168,24 +8230,36 @@ function OAuthMiddleware(server) {
             return logout(req, res);
         }
 
-        if (isPostLogoutPhaseActive()) {
+        if(isLoginPhaseActive()){
             return startAuthFlow(req, res);
         }
 
         const parsedCookies = util.parseCookies(req.headers.cookie);
         let {accessTokenCookie, refreshTokenCookie, isActiveSession} = parsedCookies;
-        lastUrls = parsedCookies.lastUrls;
-        if (url.endsWith(LOADER_PATH) || url.endsWith(`${LOADER_PATH}/`) || url === "/" || url === "") {
-            lastUrls = url;
+        let logoutCookie = parsedCookies.logout;
+        let cookies = [];
+
+        if (isPostLogoutPhaseActive()) {
+            return startAuthFlow(req, res);
         }
-        if (lastUrls) {
-            cookies = [`lastUrls=${lastUrls}; Path=/`];
+
+        if(logoutCookie === "true"){
+            res.statusCode = 403;
+            const loginUrl = oauthConfig.client.postLogoutRedirectUrl;
+            const returnHtml ="<html>" +
+              `<body>We apologize for the inconvenience. The automated login attempt was unsuccessful. 
+                    You can either <a href=\"${loginUrl}\">retry the login</a> or if the issue persists, please restart your browser.
+                    <script>sessionStorage.setItem('initialURL', window.location.href);</script>
+                </body>` +
+              "</html>";
+
+            return res.end(returnHtml);
         }
 
         if (!accessTokenCookie) {
             if (!isActiveSession) {
-                util.printDebugLog("Redirect to start authentication flow because accessTokenCookie and isActiveSession are missing.")
-                return startAuthFlow(req, res);
+                util.printDebugLog("Redirect to login because accessTokenCookie and isActiveSession are missing.")
+                return redirectToLogin(req, res);
             } else {
                 util.printDebugLog("Logout because accessTokenCookie is missing and isActiveSession is present.")
                 return startLogoutPhase(res);
@@ -8209,7 +8283,7 @@ function OAuthMiddleware(server) {
                         return sendUnauthorizedResponse(req, res, "Unable to refresh token");
                     }
 
-                    cookies = cookies.concat([`accessTokenCookie=${tokenSet.encryptedAccessToken}`, `refreshTokenCookie=${tokenSet.encryptedRefreshToken}`]);
+                    cookies = cookies.concat([`accessTokenCookie=${tokenSet.encryptedAccessToken}; Max-age=86400`, `refreshTokenCookie=${tokenSet.encryptedRefreshToken}`]);
                     logger.info("SSO redirect (http 301) triggered for:", req.url);
                     res.writeHead(301, {Location: "/", "Set-Cookie": cookies});
                     res.end();
@@ -8234,7 +8308,7 @@ function OAuthMiddleware(server) {
                     }
 
                     const sessionExpiryTime = Date.now() + oauthConfig.sessionTimeout;
-                    cookies = cookies.concat([`sessionExpiryTime=${sessionExpiryTime}; Path=/`, `accessTokenCookie=${encryptedAccessToken}; Path=/`]);
+                    cookies = cookies.concat([`sessionExpiryTime=${sessionExpiryTime}; Path=/`, `accessTokenCookie=${encryptedAccessToken}; Path=/; Max-age=86400`]);
                     res.setHeader("Set-Cookie", cookies);
                     next();
                 })
@@ -8245,7 +8319,7 @@ function OAuthMiddleware(server) {
 
 module.exports = OAuthMiddleware;
 
-},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../../utils/middlewares":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/middlewares/index.js","./WebClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js","./errorMessages":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","./util":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","path":false,"url":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js":[function(require,module,exports){
+},{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./WebClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js","./errorMessages":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/errorMessages.js","./util":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","path":false,"url":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/WebClient.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const url = require('url');
 const util = require("./util");
@@ -8280,10 +8354,11 @@ function WebClient(oauthConfig) {
 
 
     this.loginCallback = (context, callback) => {
-        //fingerprint virification
+        //fingerprint verification
+        /* disabled because was triggered by multiple tabs login...
         if (context.clientState !== context.queryState) {
             return callback(new Error('Invalid state'));
-        }
+        }*/
 
         let body = {
             'grant_type': 'authorization_code',
@@ -9155,7 +9230,9 @@ function ExpiringFileLock(folderLock, timeout) {
         while (true) {
             try {
                 const stat = await fsPromises.stat(folderLock);
-                if (stat.ctime.getTime() < Date.now() - timeout) {
+                const currentTime = Date.now();
+                // console.log("checking if lock is expired", folderLock, stat.ctime.getTime(), currentTime - timeout, stat.ctime.getTime() < currentTime - timeout);
+                if (stat.ctime.getTime() < currentTime - timeout) {
                     await fsPromises.rmdir(folderLock);
                     console.log("Removed expired lock", folderLock);
                 }
@@ -9164,9 +9241,10 @@ function ExpiringFileLock(folderLock, timeout) {
             }
 
             try {
-                await fsPromises.mkdir(folderLock);
+                await fsPromises.mkdir(folderLock, {recursive: true});
                 return;
             } catch (e) {
+                console.log("Retrying to acquire lock", folderLock, "after 100ms");
                 await asyncSleep(100);
             }
         }
@@ -10996,7 +11074,7 @@ function Archive(archiveConfigurator) {
     /**
      * @param {string} folderBarPath
      * @param {object} options
-     * @param {callback} callback
+     * @param {function} callback
      */
     const _listFiles = (folderBarPath, options, callback) => {
         if (typeof options === "function") {
@@ -17734,10 +17812,19 @@ function Manifest(archive, options, callback) {
     manifestHandler.getMountedDossiers = function (path, callback) {
         let mountedDossiers = [];
         for (let mountPoint in manifest.mounts) {
-            if (pskPath.isSubpath(mountPoint, path)) {
-                let mountPath = mountPoint.substring(path.length);
-                if (mountPath[0] === "/") {
-                    mountPath = mountPath.substring(1);
+            if (path === "/" || pskPath.isSubpath(mountPoint, path)) {
+                let mountPath;
+                if (path === "/") {
+                    if (mountPoint[0] === "/") {
+                        mountPath = mountPoint.substring(1);
+                    } else {
+                        mountPath = mountPoint;
+                    }
+                } else {
+                    mountPath = mountPoint.substring(path.length);
+                    if (mountPath[0] === "/") {
+                        mountPath = mountPath.substring(1);
+                    }
                 }
                 mountedDossiers.push({
                     path: mountPath,
@@ -23783,6 +23870,7 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
 
     this.startOrAttachBatch = (callback) => {
         $$.debug.logDSUEvent(this, "startOrAttachBatch called");
+        console.debug("startOrAttachBatch called");
         if (!this.batchInProgress && dsuInstancesRegistry.batchInProgress(this.getAnchorIdSync())) {
             return callback(Error("Another instance of the LegacyDSU is currently in batch."));
         }
@@ -23817,6 +23905,7 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
         const batchId = generateBatchId(false);
         inProgressBatches.add(batchId);
         $$.debug.logDSUEvent(this, "Real batch started", batchId);
+        console.debug(`Real batch started ${batchId}`);
         return batchId;
     }
 
@@ -23848,7 +23937,7 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
         }
 
         if(inProgressBatches.size === 0){
-            console.warn(Error("Unable to cancel a batch that seems to don't be in batch mode"));            
+            console.warn(Error("Unable to cancel a batch that seems to not be in batch mode"));
             return callback(undefined, undefined);
         }
 
@@ -23975,7 +24064,7 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
         if(inProgressBatches.size){
             console.trace("Status of in progress batches", inProgressBatches.size);
         }
-
+        console.debug(`Closing batch ${batchId}`);
         bar.commitBatch(onConflict, err => {
             if (err) {
                 return dsuInstancesRegistry.notifyBatchCommitted(dsuAnchorId, (error)=>{
@@ -23989,11 +24078,6 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
                 });
             }
 
-            //if recovery mode is active for the current bar, and we have a success we mark it
-            let {
-                unmarkAnchorForRecovery
-            } = require("opendsu").loadApi("anchoring").getAnchoringX();
-            unmarkAnchorForRecovery(dsuAnchorId);
             dsuInstancesRegistry.notifyBatchCommitted(dsuAnchorId, (...args)=>{
                 dsuInstancesRegistry.unlockAnchorId(anchorId);
                 $$.debug.logDSUEvent(this, "unlockAnchorId in commitBatch", batchId);
@@ -24091,6 +24175,8 @@ const DSU_ENTRY_TYPES = {
     FOLDER: "FOLDER",
 };
 
+let DSUSIntaceNo = 0;
+let BatchInstacesNo = 0;
 function VersionlessDSU(config) {
     const { keySSI } = config;
 
@@ -24123,6 +24209,15 @@ function VersionlessDSU(config) {
         }
         return path;
     };
+
+    function generateBatchId(isVirtual){
+        BatchInstacesNo++;
+        if(isVirtual){
+            return `VB:${BatchInstacesNo}`
+        } else {
+            return `RB:${BatchInstacesNo}`
+        }
+    }
 
     /**
      * This function waits for an existing "refresh" operation to finish
@@ -25024,6 +25119,7 @@ function VersionlessDSU(config) {
         }
 
         versionlessDSUController.beginBatch();
+        return generateBatchId(false);
     };
 
     /**
@@ -26888,7 +26984,16 @@ function LokiEnclaveFacade(rootFolder, autosaveInterval, adaptorConstructorFunct
 
     this.insertRecord = (forDID, tableName, pk, record, callback) => {
         let table = db.getCollection(tableName) || db.addCollection(tableName);
-        const foundRecord = table.findOne({'pk': pk});
+        if (record.meta) {
+            delete record.meta;
+        }
+
+        if (record.$loki) {
+            delete record.$loki;
+        }
+
+        let foundRecord = table.findObject({'pk': pk});
+
         if (foundRecord) {
             let error = `A record with pk ${pk} already exists in ${tableName}`
             console.log(error);
@@ -36505,8 +36610,6 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
             anchorValueSSIKeySSI = keySSISpace.parse(anchorValueSSI);
         }
 
-
-
         anchorIdKeySSI.getAnchorId((err, _anchorId) => {
             if (err) {
                 return callback(err);
@@ -36514,6 +36617,7 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
 
             let fakeLastVersionForAnchorId = fakeLastVersion[_anchorId];
             if(fakeLastVersionForAnchorId){
+                unmarkAnchorForRecovery(_anchorId);
                 return callback(undefined);
             }
 
@@ -36585,7 +36689,10 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
                         }
                     }
 
-                    persistenceStrategy.appendAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), callback);
+                    persistenceStrategy.appendAnchor(_anchorId, anchorValueSSIKeySSI.getIdentifier(), (err, res)=>{
+                        unmarkAnchorForRecovery(_anchorId);
+                        callback(err, res);
+                    });
                 }
 
                 let fakeHistoryAvailable = fakeHistory[_anchorId];
@@ -36720,9 +36827,11 @@ function AnchoringAbstractBehaviour(persistenceStrategy) {
         fakeLastVersion[anchorId] = anchorFakeLastVersion;
     }
 
-    self.unmarkAnchorForRecovery = function(anchorId){
+    let unmarkAnchorForRecovery = function(anchorId){
         fakeHistory[anchorId] = undefined;
+        delete fakeHistory[anchorId];
         fakeLastVersion[anchorId] = undefined;
+        delete fakeLastVersion[anchorId];
     }
 
     self.testIfRecoveryActiveFor = function(anchorId){
@@ -46959,8 +47068,8 @@ function Enclave_Mixin(target, did, keySSI) {
 
         resolverAPI.loadDSU(keySSI, options, (err, dsu) => {
             if (err) {
-                target.getReadForKeySSI(undefined, keySSI.getIdentifier(), (err, sReadSSI) => {
-                    if (err) {
+                target.getReadForKeySSI(undefined, keySSI.getIdentifier(), (e, sReadSSI) => {
+                    if (e) {
                         return callback(err);
                     }
                     resolverAPI.loadDSU(sReadSSI, options, callback);
@@ -50241,7 +50350,11 @@ registry.defineApi("recoverDSU", function (ssi, recoveryFnc, callback) {
             return callback(err);
         }
 
-        return callback(undefined, await registerDSU(this, dsu));
+        let registeredDSU = await registerDSU(this, dsu);
+        setTimeout(()=>{
+            callback(undefined, registeredDSU);
+        }, 3000);
+        return;
     });
 });
 
@@ -52546,17 +52659,10 @@ let tryToRunRecoveryContentFnc = (keySSI, recoveredInstance, options, anchorFake
                     throw createOpenDSUErrorWrapper(`Surprise error!`, err);
                 }
                 let {
-                    markAnchorForRecovery,
-                    unmarkAnchorForRecovery
+                    markAnchorForRecovery
                 } = require("opendsu").loadApi("anchoring").getAnchoringX();
                 markAnchorForRecovery(anchorId, anchorFakeHistory, anchorFakeLastVersion);
-                options.contentRecoveryFnc(recoveredInstance, (err, dsu) => {
-                    if (!err) {
-                        //we clean the fake history after the successful recovery in order to let
-                        unmarkAnchorForRecovery(anchorId);
-                    }
-                    cb(err, dsu);
-                });
+                options.contentRecoveryFnc(recoveredInstance, cb);
             });
 
         } catch (err) {
@@ -52587,7 +52693,7 @@ const loadFallbackDSU = (keySSI, options, callback) => {
             return callback(createOpenDSUErrorWrapper(`Failed to get anchorId for keySSI ${keySSI.getIdentifier()}`, err));
         }
 
-        anchoringX.getAllVersions(anchorId, (err, versions) => {
+        anchoringX.getAllVersions(anchorId, {realHistory:true}, (err, versions) => {
             if (err) {
                 return callback(createOpenDSUErrorWrapper(`Failed to get versions for anchorId ${anchorId}`, err));
             }
@@ -70686,8 +70792,8 @@ function enableForEnvironment(envType){
        }
 
        this.log = function(...args){
-           if(!debugEnabled) return;
            console.debug(...args);
+           if(!debugEnabled) return;
            debugEvents.push(`Log #${debugEvents.length}` +[...args].join(" "));
            eventsStack.push(getStackTrace());
        }
