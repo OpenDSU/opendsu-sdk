@@ -44,7 +44,7 @@ function ApiHubTestNodeLauncher(options) {
     options = getCompleteOptions(options, clone(defaultOptions));
     logger.info("Using the following options for launcher", options);
 
-    let { maxTries, rootFolder, storageFolder, port, serverConfig, domains } = options;
+    let { maxTries, rootFolder, storageFolder, port, serverConfig, domains, lightDBStorage, lightDBPort } = options;
 
     this.launch = (callback) => {
         callback = $$.makeSaneCallback(callback);
@@ -152,7 +152,13 @@ function ApiHubTestNodeLauncher(options) {
                     await onBeforeResult;
                 }
             }
+            const lightDBServerOptions = {
+                lightDBDynamicPort: lightDBPort || 8081,
+                lightDBStorage: lightDBStorage || require("path").join(rootFolder, "lightDBStorage"),
+            }
 
+            const createLightDBServerInstance = require("loki-enclave-facade").createLightDBServerInstance;
+            const lightDBServerInstance = await $$.promisify(createLightDBServerInstance)(lightDBServerOptions);
             const apiHubNode = useWorker
                 ? await createApiHubInstanceWorkerAsync({ port: apiHubPort, rootFolder })
                 : await createApiHubInstanceAsync(apiHubPort, rootFolder);
