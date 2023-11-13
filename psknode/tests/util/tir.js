@@ -10,12 +10,11 @@ require(path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "builds/
 
 const os = require("os");
 const fs = require("fs");
-const pskPath = require("swarmutils").path;
 const removeDirSync = require("swarmutils").removeDirSync;
 
 const {createKey, buildConstitution, getRandomAvailablePortAsync} = require("./tir-utils");
 const ApiHubTestNodeLauncher = require("./ApiHubTestNodeLauncher");
-const RemoteEnclaveTestNodeLauncher = require("./RemoteEnclaveTestNodeLauncher");
+const CloudEnclaveTestNodeLauncher = require("./CloudEnclaveTestNodeLauncher");
 const LightDBEnclaveTestNodeLauncher = require("./LightDBEnclaveTestNodeLauncher");
 const Tir = function () {
     const domainConfigs = {};
@@ -146,22 +145,21 @@ const Tir = function () {
         return rest;
     };
 
-    this.launchRemoteEnclaveAsync = async (rootFolder) => {
-        return await this.launchConfigurableRemoteEnclaveTestNodeAsync({rootFolder});
+    this.launchCloudEnclaveAsync = async (rootFolder) => {
+        return await this.launchConfigurableCloudEnclaveTestNodeAsync({rootFolder});
     }
 
-    this.launchConfigurableRemoteEnclaveTestNodeAsync = async (config) => {
+    this.launchConfigurableCloudEnclaveTestNodeAsync = async (config) => {
         if (config && typeof config !== "object") {
             throw new Error("Invalid config specified");
         }
         config = config || {};
 
-        const remoteEnclaveTestNodeLauncher = new RemoteEnclaveTestNodeLauncher(config);
+        const remoteEnclaveTestNodeLauncher = new CloudEnclaveTestNodeLauncher(config);
         const did = await remoteEnclaveTestNodeLauncher.launchAsync();
         return did;
     }
 
-    this.launchConfigurableCloudEnclaveTestNodeAsync = this.launchConfigurableRemoteEnclaveTestNodeAsync;
 
     this.getRandomAvailablePortAsync = getRandomAvailablePortAsync;
 

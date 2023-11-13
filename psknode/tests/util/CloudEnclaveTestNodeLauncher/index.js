@@ -1,28 +1,28 @@
 const Logger = require("../Logger");
 const logger = new Logger("[CloudEnclaveTestNodeLauncherWorkerBoot]");
 
-async function createRemoteEnclaveInstanceAsync(options) {
+async function createCloudEnclaveInstanceAsync(options) {
     process.env.CLOUD_ENCLAVE_SECRET = options.secret;
     const cloudEnclave = require("cloud-enclave");
-    logger.info("Starting Remote Enclave instance...", options);
-    const remoteEnclaveInstance = cloudEnclave.createInstance(options);
-    remoteEnclaveInstance.start();
+    logger.info("Starting Cloud Enclave instance...", options);
+    const cloudEnclaveInstance = cloudEnclave.createInstance(options);
+    cloudEnclaveInstance.start();
     return new Promise((resolve, reject) => {
-        remoteEnclaveInstance.on("initialised", (result) => {
+        cloudEnclaveInstance.on("initialised", (result) => {
             resolve(result);
         });
     });
 }
 
-async function createRemoteEnclaveInstanceWorkerAsync(options) {
-    logger.info("Starting remote enclave worker instance...", options);
+async function createCloudEnclaveInstanceWorkerAsync(options) {
+    logger.info("Starting cloud enclave worker instance...", options);
     const { spawn } = require('node:child_process');
 
     return new Promise((resolve, reject) => {
         process.env.CLOUD_ENCLAVE_SECRET = options.secret;
         process.env.CLOUD_ENCLAVE_CONFIG = JSON.stringify(options);
 
-        const newProcess = spawn("node", ["./opendsu-sdk/psknode/tests/util/RemoteEnclaveTestNodeLauncher/RemoteEnclaveTestNodeLauncherWorkerBoot.js"], {
+        const newProcess = spawn("node", ["./opendsu-sdk/psknode/tests/util/CloudEnclaveTestNodeLauncher/CloudEnclaveTestNodeLauncherWorkerBoot.js"], {
             env: process.env,
         });
         newProcess.stdout.on("data", (data) => {
@@ -36,13 +36,13 @@ async function createRemoteEnclaveInstanceWorkerAsync(options) {
 
         });
         newProcess.on("error", (err) => {
-            logger.error("The remote enclave worker has encountered an error", err);
+            logger.error("The cloud enclave worker has encountered an error", err);
             reject(err);
         });
     });
 }
 
-function RemoteEnclaveTestNodeLauncher(config) {
+function CloudEnclaveTestNodeLauncher(config) {
     this.launch = (callback) => {
         callback = $$.makeSaneCallback(callback);
         this.launchAsync()
@@ -52,12 +52,12 @@ function RemoteEnclaveTestNodeLauncher(config) {
 
     this.launchAsync = async () => {
         process.env.CLOUD_ENCLAVE_DOMAIN = config.domain;
-        const remoteEnclaveNodeDID = config.useWorker
-            ? await createRemoteEnclaveInstanceWorkerAsync(config)
-            : await createRemoteEnclaveInstanceAsync(config);
+        const cloudEnclaveNodeDID = config.useWorker
+            ? await createCloudEnclaveInstanceWorkerAsync(config)
+            : await createCloudEnclaveInstanceAsync(config);
 
-        return remoteEnclaveNodeDID;
+        return cloudEnclaveNodeDID;
     };
 }
 
-module.exports = RemoteEnclaveTestNodeLauncher;
+module.exports = CloudEnclaveTestNodeLauncher;
