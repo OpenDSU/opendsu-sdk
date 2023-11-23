@@ -1,44 +1,35 @@
-const TAG = "CLOUD-ENCLAVE-SERVER";
+const TAG = "CLOUD-ENCLAVE";
 
 let path = require("path");
-
+const process = require("process");
 process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve(path.join(__dirname, "../../../"));
 require(path.join(__dirname, '../../../builds/output/pskWebServer.js'));
 
 const CloudEnclave = require('cloud-enclave');
-path = require("swarmutils").path;
-const fs = require('fs');
 
-if (!process.env.CLOUD_ENCLAVE_CONFIG_LOCATION) {
-    process.env.CLOUD_ENCLAVE_CONFIG_LOCATION = "./";
+path = require("swarmutils").path;
+const API_HUB = require('apihub');
+
+if (!process.env.PSK_ROOT_INSTALATION_FOLDER) {
+    process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve("." + __dirname + "/../..");
 }
+
+if (!process.env.PSK_CONFIG_LOCATION) {
+    process.env.PSK_CONFIG_LOCATION = "./conf";
+}
+let config = API_HUB.getServerConfig();
 
 function startServer() {
     const args = process.argv;
-    let options;
-    let config;
     if (args.length <= 2) {
         console.log(`[${TAG}] No config file found, CloudEnclave will start using default config`);
     }
-    try {
-        let fileContent;
-        try {
-            fileContent = fs.readFileSync(args[2]);
-        }
-        catch (err) {
-            console.log(`[${TAG}] Could not read configuration file: ${args[2]}`);
-        }
 
-        options = JSON.parse(fileContent);
-        process.env.CLOUD_ENCLAVE_DOMAIN = options.domain;
-        process.env.CLOUD_ENCLAVE_SECRET = options.config.secret;
-        config = options.config;
-        console.log(`[${TAG}] Working directory for Remote Enclave process:  ${process.cwd()}`);
-    } catch (err) {
-        console.log(`[${TAG}] Config file invalid, CloudEnclave will start using default config, err: ${err}`);
-    }
-
-    const remoteEnclaveServer = CloudEnclave.createInstance(config);
+    path = require("path");
+    let conf = {};
+    conf.configLocation = path.join(process.env.PSK_CONFIG_LOCATION, "cloud-enclaves");
+    conf.rootFolder = path.join(config.storage, "external-volume", "cloud-enclaves");
+    const remoteEnclaveServer = CloudEnclave.createInstance(conf);
     remoteEnclaveServer.on("initialised", (did) => {
         console.log(`[${TAG}] CloudEnclave initialised with DID: ${did}`);
     });
