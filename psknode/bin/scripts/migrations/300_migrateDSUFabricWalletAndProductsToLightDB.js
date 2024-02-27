@@ -17,7 +17,7 @@ const copySlotToSecrets = async (slot, domain, subdomain) => {
 }
 
 // Generalized migration function
-const migrateDataToLightDB = async (epiEnclave, lightDBEnclave, sourceTableName, targetTableName, transformRecord = record => record) => {
+const migrateDataToLightDB = async (epiEnclave, lightDBEnclave, sourceTableName, targetTableName, transformRecord = record => record, generatePK = record => record.pk) => {
     let records;
     try {
         records = await $$.promisify(epiEnclave.getAllRecords)(undefined, sourceTableName);
@@ -29,13 +29,13 @@ const migrateDataToLightDB = async (epiEnclave, lightDBEnclave, sourceTableName,
     for (let record of records) {
         const transformedRecord = transformRecord(record);
         try {
-            await $$.promisify(lightDBEnclave.insertRecord)($$.SYSTEM_IDENTIFIER, targetTableName, record.pk, transformedRecord);
+            await $$.promisify(lightDBEnclave.insertRecord)($$.SYSTEM_IDENTIFIER, targetTableName, generatePK(record), transformedRecord);
         } catch (e) {
             console.error("Failed to insert record", transformedRecord, "in table", targetTableName, e);
             throw e;
         }
     }
-}
+};
 
 const getEpiEnclave = async () => {
     const enclaveAPI = openDSU.loadAPI("enclave");
@@ -44,6 +44,7 @@ const getEpiEnclave = async () => {
     const _enclaves = await $$.promisify(walletDBEnclave.filter)(undefined, "group_databases_table", "enclaveName == epiEnclave");
     const epiEnclave = enclaveAPI.initialiseWalletDBEnclave(_enclaves[0].enclaveKeySSI);
     await $$.promisify(epiEnclave.on)("initialised");
+    console.log($$.promisify(epiEnclave.getAllTableNames)(undefined));
     return epiEnclave;
 }
 
@@ -84,15 +85,35 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
     await copySlotToSecrets(slot, process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN);
 
     // Define transformations for specific tables
-    const transformProduct = record => ({ ...record, additionalField: "example" });
-    const transformBatch = record => ({ ...record, modifiedField: record.originalField + "_modified" });
+    const transformProduct = record => {
+        delete record.pk;
+        record.productCode = record.gtin;
+        record.inventedName= record.name;
+        record.nameMedicinalProduct = record.description;
+        return record;
+    };
+
+    const generateProductPk = record => record.gtin;
+    const transformBatch = record => {
+        delete record.pk;
+        record.inventedName = record.productName;
+        record.nameMedicinalProduct = record.productDescription;
+        record.productCode = record.gtin;
+        record.expiryDate = record.expiry;
+        return record;
+    }
+
+    const generateBatchPk = record => {
+        return `${record.gtin}_${record.batchNumber}`;
+    }
     const noTransform = record => record;
 
     // Use the generalized migration function for different tables with appropriate transformations
-    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "products", "products_lightdb", transformProduct);
-    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "batches", "batches_lightdb", transformBatch);
-    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "logs", "logs_lightdb", noTransform);
-    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "access_logs", "access_logs_lightdb", noTransform);
+    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "products", "products", transformProduct, generateProductPk);
+    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "batches", "batches", transformBatch, generateBatchPk);
+    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "logs", "audit", noTransform);
+    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "login_logs", "user-actions", noTransform);
+    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "path-keyssi-private-keys", "path-keyssi-private-keys", noTransform);
 
     server.close();
 }
