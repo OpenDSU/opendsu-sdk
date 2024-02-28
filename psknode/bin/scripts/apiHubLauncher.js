@@ -30,8 +30,9 @@ async function testAndExecuteMigrations(){
     }
 
     try{
-        let migrationsFolder = path.join(dirname,"migrations");
+        let migrationsFolder = path.join(dirname, process.env.MIGRATION_FOLDER_PATH || "migrations");
         logger.info(`Preparing to test if there are any migrations scripts to be executed before starting.`);
+        logger.debug(`Reading the ${migrationsFolder} for any migrations that may be needed`);
         let migrationsFolderContent = fs.readdirSync(migrationsFolder, {withFileTypes: true});
         if(!migrationsFolderContent.length){
             logger.info(`No migrations scripts found.`);
