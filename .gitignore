@@ -4,7 +4,7 @@ modules
 node_modules
 .idea
 builds/tmp/*_intermediar.js
-builds/output
+builds/output/
 psknode/bundles
 !psknode/bin/scripts/migrations/
 node_modules
