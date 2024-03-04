@@ -4988,6 +4988,9 @@ const BrickMapMixin = {
      */
     dirname: function (path) {
         const segments = path.split('/');
+        if (segments.length === 2 && segments[0] === "") {
+            return '/';
+        }
         return segments.slice(0, -1).join('/');
     },
 
@@ -8049,6 +8052,7 @@ function Manifest(archive, options, callback) {
             if (err) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load DSU from keySSI ${seed}`, err));
             }
+
             callback(undefined, dossier);
         })
     }
@@ -11730,6 +11734,22 @@ function keySSIMixin(target, enclave) {
         return cryptoRegistry.getHashFunction(target)(data);
     }
 
+    target.encode = (data) => {
+        return cryptoRegistry.getEncodingFunction(target)(data);
+    }
+
+    target.decode = (data) => {
+        return cryptoRegistry.getDecodingFunction(target)(data);
+    }
+
+    target.base64Encode = (data) => {
+        return cryptoRegistry.getBase64EncodingFunction(target)(data);
+    }
+
+    target.base64Decode = (data) => {
+        return cryptoRegistry.getBase64DecodingFunction(target)(data);
+    }
+
     target.toJSON = function () {
         return target.getIdentifier();
     }
@@ -11771,7 +11791,10 @@ function keySSIMixin(target, enclave) {
             }
 
             let previousIdentifier = '';
-            const timestamp = Date.now();
+            let timestamp = Date.now();
+            if (previousAnchorValue && typeof previousAnchorValue.getTimestamp === "function" && timestamp < previousAnchorValue.getTimestamp()) {
+                timestamp = previousAnchorValue.getTimestamp() + 10000;
+            }
             if (previousAnchorValue) {
                 previousIdentifier = previousAnchorValue.getIdentifier(true);
             }
@@ -13258,18 +13281,14 @@ let DSUSIntaceNo = 0;
 let BatchInstacesNo = 0;
 
 function LegacyDSU(bar, dsuInstancesRegistry) {
-    const BarFactory = require("../DSUFactoryRegistry/factories/BarFactory");
-    const barFactoryInstance = new BarFactory();
     let opendsu = require("opendsu");
-    let crypto = opendsu.loadApi("crypto");
-    let keySSI = opendsu.loadApi("keyssi");
-
-    const constants = opendsu.constants;
+    let keySSISpace = opendsu.loadAPI("keyssi");
+    const resolver = opendsu.loadAPI("resolver");
     let instanceUid = "DSU NOT Ready";
-    let dsuAnchorId = keySSI.parse(bar.getAnchorIdSync()).getIdentifier(true);
+    let dsuAnchorId = keySSISpace.parse(bar.getAnchorIdSync()).getIdentifier(true);
 
     this.getInstanceUID = () => {
-        if(instanceUid == "DSU NOT Ready"){
+        if (instanceUid == "DSU NOT Ready") {
             DSUSIntaceNo++
             instanceUid = `DSU${DSUSIntaceNo}`;
         }
@@ -13689,19 +13708,20 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
     }
 
     let _beginBatch = (isVirtual, callback) => {
-        let batchId, error;
-
         let initBatch = (isVirtualBeginBatch)=>{
             try{
                 if(!isVirtualBeginBatch) {
-                    batchId = this.beginBatch();
+                    this.beginBatchAsync().then((batchId) => {
+                        return callback(undefined, batchId);
+                    }).catch((err) => {
+                        return callback(err);
+                    });
                 } else {
                     return startVirtualBatch(callback);
                 }
             }catch(err){
-                error = err;
+                return callback(err);
             }
-            return callback(error, batchId);
         }
 
         let anchorId = dsuAnchorId;
@@ -13720,6 +13740,36 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
         return callback(undefined, attachedBatchId);
     }
 
+    const atLeastOneMountedDSUIsInBatchMode = async () => {
+        const keySSISpace = require("opendsu").loadAPI("keyssi");
+        const mountedDSUs = await $$.promisify(this.listMountedDSUs)("/");
+        for (const mountedDSU of mountedDSUs) {
+            const anchorId = await $$.promisify(keySSISpace.parse(mountedDSU.identifier).getAnchorId)(true);
+            if (dsuInstancesRegistry.batchInProgress(anchorId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const parentDSUIsInBatchMode = async () => {
+        const anchorId = this.getAnchorIdSync();
+        const instances = dsuInstancesRegistry.getAllInstances();
+        for (let dsuInstance of instances) {
+            if (dsuInstance.batchInProgress()) {
+                const mountedDSUs = await $$.promisify(dsuInstance.listMountedDSUs)("/");
+                for (const mountedDSU of mountedDSUs) {
+                    const mountedDSUAnchorId = await $$.promisify(keySSISpace.parse(mountedDSU.identifier).getAnchorId)(true);
+                    if (mountedDSUAnchorId === anchorId) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     this.safeBeginBatch = (wait, callback) => {
         $$.debug.logDSUEvent(this, "safeBeginBatch called", wait);
         if (typeof wait === "function") {
@@ -13728,7 +13778,7 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
         }
         if (bar.batchInProgress()) {
             console.warn(Error("This DSU instance is already in batch mode when called safeBeginBatch!"));
-            return startVirtualBatch(callback);                        
+            return startVirtualBatch(callback);
         }
 
         let _safeBeginBatch = (isVirtual) => {
@@ -13758,7 +13808,6 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
 
         _safeBeginBatch();
     }
-
     this.safeBeginBatchAsync = async (...args) => {
         return $$.promisify(this.safeBeginBatch, this)(...args);
     }
@@ -13769,6 +13818,33 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
         if (!this.batchInProgress && dsuInstancesRegistry.batchInProgress(this.getAnchorIdSync())) {
             return callback(Error("Another instance of the LegacyDSU is currently in batch."));
         }
+        this.getKeySSIAsObject((err, keySSI) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (keySSI.getFamilyName() === opendsu.constants.KEY_SSI_FAMILIES.CONST_SSI) {
+                return resolver.dsuExists(keySSI, (err, exists) => {
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    if (exists) {
+                        return callback(Error("An anchored ConstDSU cannot be put in batch mode."));
+                    }
+
+                    if (!this.batchInProgress()) {
+                        return this.beginBatch(callback);
+                    }
+
+                    if (dsuInstancesRegistry.batchInProgress(this.getAnchorIdSync())) {
+                        return callback(Error("Another instance of the LegacyDSU is currently in batch."));
+                    }
+
+                    return _beginBatch(false, callback);
+                })
+            }
+        });
 
         if(this.batchInProgress()){
             return startVirtualBatch(callback);
@@ -13791,10 +13867,33 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
     }
 
     this.beginBatch = () => {
+        console.info("Synchronous version of beginBatch will be removed in the future (2025). Please use safeBeginBatch or safeBeginBatchAsync instead");
         let anchorId = dsuAnchorId;
         if(dsuInstancesRegistry.isLocked(anchorId)){
             console.trace("anchor is Locked");
             throw Error(`AnchorId is locked`);
+        }
+        bar.beginBatch();
+        const batchId = generateBatchId(false);
+        inProgressBatches.add(batchId);
+        $$.debug.logDSUEvent(this, "Real batch started", batchId);
+        console.debug(`Real batch started ${batchId}`);
+        return batchId;
+    }
+
+    this.beginBatchAsync = async () => {
+        let anchorId = dsuAnchorId;
+        if(dsuInstancesRegistry.isLocked(anchorId)){
+            console.trace("anchor is Locked");
+            throw Error(`AnchorId is locked`);
+        }
+        const isMountedDSUInBatchMode = await atLeastOneMountedDSUIsInBatchMode();
+        if (isMountedDSUInBatchMode) {
+            throw Error("At least one mounted DSU is in batch mode");
+        }
+
+        if (await parentDSUIsInBatchMode()) {
+            throw Error("Parent DSU is in batch mode");
         }
         bar.beginBatch();
         const batchId = generateBatchId(false);
@@ -14063,7 +14162,7 @@ function LegacyDSU(bar, dsuInstancesRegistry) {
 }
 
 module.exports = LegacyDSU;
-},{"../DSUFactoryRegistry/factories/BarFactory":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/DSUFactoryRegistry/factories/BarFactory.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSU.js":[function(require,module,exports){
+},{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSU.js":[function(require,module,exports){
 const VersionlessDSUController = require("./VersionlessDSUController");
 const DSU_ENTRY_TYPES = {
     FILE: "FILE",
@@ -15022,13 +15121,24 @@ function VersionlessDSU(config) {
      * This will force the persist changes when the
      * batch is commited
      */
-    this.startOrAttachBatch = (wait, callback) => {
+    this.startOrAttachBatch = (callback) => {
         if (this.batchInProgress()) {
             throw new Error("Another anchoring transaction is already in progress. Cancel the previous batch and try again.");
         }
-        versionlessDSUController.beginBatch();
+        let batchId;
+        try {
+            batchId = this.beginBatch();
+        }catch (e) {
+            return callback(e);
+        }
+
+        callback(undefined, batchId);
     };
 
+
+    this.startOrAttachBatchAsync = async () => {
+        return $$.promisify(this.startOrAttachBatch, this)();
+    }
 
     this.batchInProgress = () => {
         return versionlessDSUController.isBatchInProgress();
@@ -15071,6 +15181,10 @@ function VersionlessDSU(config) {
         versionlessDSUController.commitBatch(callback);
     };
 
+    this.commitBatchAsync = async (...args) => {
+        return $$.promisify(this.commitBatch, this)( ...args);
+    }
+
     /**
      * Cancel the current persisting batch
      */
@@ -15082,6 +15196,10 @@ function VersionlessDSU(config) {
 
         versionlessDSUController.cancelBatch(callback);
     };
+
+    this.cancelBatchAsync = async () => {
+        return $$.promisify(this.cancelBatch, this)();
+    }
 
     /**
      * Execute a batch of operations
@@ -15351,6 +15469,11 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
             if (err) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load DSU from keySSI ${seed}`, err));
             }
+
+            if(typeof dsu.getBarInstance === "function"){
+                return callback(undefined, dsu.getBarInstance());
+            }
+
             callback(undefined, dsu);
         });
     };
@@ -15520,7 +15643,7 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
         try {
             sourceFolderPath = processPath(sourceFolderPath);
             if (!isFolderPresent(sourceFolderPath)) {
-                throw new Error(`Source path <${sourceFolderPath}> not found.`);
+                return callback(new Error(`Source path <${sourceFolderPath}> not found.`));
             }
 
             const sourceFolders = this.getFolders(sourceFolderPath, true);
@@ -16233,6 +16356,15 @@ function RaceConditionPreventer() {
         return instances;
     }
 
+    self.getAllInstances = () => {
+        const instances = [];
+        const keys = Object.keys(instancesRegistry);
+        for (let key of keys) {
+            instances.push(...getDerefedInstances(key));
+        }
+        return instances;
+    }
+
     self.beginBatch = (key, _instance) => {
         for (let instance of getDerefedInstances(key)) {
             if (instance && instance === _instance) {
@@ -16553,7 +16685,7 @@ function RemotePersistence() {
 
                 smartUrl.doGet((err, data) => {
                     if (err) {
-                        if(err.rootCause === require("./../moduleConstants").ERROR_ROOT_CAUSE.MISSING_DATA){
+                        if(err.rootCause === require("./../moduleConstants").ERROR_ROOT_CAUSE.MISSING_DATA_ERROR){
                             return resolve();
                         }
                         return reject(err);
@@ -17819,7 +17951,8 @@ const getBrick = (hashLinkSSI, authToken, callback) => {
                 smartUrl = smartUrl.concatWith(`/bricking/${dlDomain}/get-brick/${brickHash}`);
 
                 return smartUrl.fetch().then(async (response) => {
-                    const brickData = await response.arrayBuffer();
+                    let brickData = await response.arrayBuffer();
+                    brickData = $$.Buffer.from(brickData);
                     if (isValidBrickHash(hashLinkSSI, brickData)) {
                         if (typeof cache !== "undefined") {
                             cache.put(brickHash, brickData);
@@ -22162,7 +22295,7 @@ module.exports = {
 let util = require("./impl/DSUDBUtil")
 const {SingleDSUStorageStrategy} = require("./storageStrategies/SingleDSUStorageStrategy");
 const {TimestampMergingStrategy: ConflictStrategy} = require("./conflictSolvingStrategies/timestampMergingStrategy");
-
+const logger = $$.getLogger("opendsu", "db");
 function getBasicDB(storageStrategy, conflictSolvingStrategy, options) {
     let BasicDB = require("./impl/BasicDB");
     return new BasicDB(storageStrategy, conflictSolvingStrategy, options);
@@ -22201,7 +22334,8 @@ let getSimpleWalletDB = (dbName, options) => {
 
     util.initialiseWalletDB(dbName, options.keySSI, (err, _storageDSU, keySSI) => {
         if (err) {
-            console.error("Failed to initialise WalletDB_DSU " + dbName, err);
+            const code = 0x401;
+            logger.error(code, "Failed to initialise WalletDB_DSU " + dbName, err);
             return db.dispatchEvent("error", createOpenDSUErrorWrapper("Failed to initialise WalletDB_DSU " + dbName, err));
         }
 
@@ -22387,7 +22521,18 @@ function MemoryStorageStrategy() {
 
     this.getAllRecords = (tableName, callback) => {
         const table = getTable(tableName);
-        callback(undefined, Object.values(table));
+        let values = Object.values(table);
+        if(values.length === 0){
+            return callback(undefined, []);
+        }
+
+        values = values.filter((record) => {
+            if (!record.__deleted) {
+                return record;
+            }
+        });
+
+        callback(undefined, values);
     }
     /*
       Insert a record, return error if already exists
@@ -22807,13 +22952,7 @@ function SingleDSUStorageStrategy(recordStorageStrategy) {
     }
 
     this.getAllRecords = (tableName, callback) => {
-        readTheWholeTable(tableName, (err, tbl) => {
-            if (err) {
-                return callback(err);
-            }
-
-            return callback(undefined, Object.values(tbl));
-        })
+        this.filter(tableName, "__timestamp > 0", callback);
     }
 
     function readTheWholeTable(tableName, callback) {
@@ -26229,6 +26368,7 @@ class WithCommand extends Command {
 
 module.exports = WithCommand;
 },{"./Command":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Command.js","./Registry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/Registry.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/index.js":[function(require,module,exports){
+(function (process){(function (){
 /**
  * @module dt
  */
@@ -26246,7 +26386,21 @@ module.exports = WithCommand;
  * @param callback
  * @return {DossierBuilder}
  */
+
 const getDossierBuilder = (sourceDSU) => {
+    const openDSU = require("opendsu");
+    const http = openDSU.loadAPI("http");
+    const crypto = openDSU.loadAPI("crypto");
+    const interceptor = (data, callback) => {
+        let {url, headers} = data;
+        if(!headers){
+            headers = {};
+        }
+        headers["x-api-key"] = crypto.sha256JOSE(process.env.SSO_SECRETS_ENCRYPTION_KEY, "base64");
+        callback(undefined, {url, headers});
+    }
+
+    http.registerInterceptor(interceptor);
     return new (require("./DossierBuilder"))(sourceDSU);
 }
 
@@ -26262,17 +26416,477 @@ module.exports = {
     AppBuilderService: require('./AppBuilderService')
 }
 
-},{"./AppBuilderService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js","./BuildWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/BuildWallet.js","./DossierBuilder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./commands":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/CloudEnclaveClient.js":[function(require,module,exports){
-const { createCommandObject } = require("./lib/createCommandObject");
+}).call(this)}).call(this,require('_process'))
+
+},{"./AppBuilderService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/AppBuilderService.js","./BuildWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/BuildWallet.js","./DossierBuilder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/DossierBuilder.js","./commands":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/dt/commands/index.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/PathKeySSIMapping/PathKeyMapping.js":[function(require,module,exports){
+function PathKeyMapping(enclaveHandler) {
+    const utils = require("../../utils/utils");
+    const openDSU = require("opendsu");
+    const utilsAPI = openDSU.loadAPI("utils");
+    utilsAPI.ObservableMixin(this);
+    const keySSISpace = openDSU.loadAPI("keyssi");
+    let pathKeysMapping = {};
+    let initialised = false;
+    const init = async () => {
+        let paths = await $$.promisify(enclaveHandler.loadPaths)();
+        pathKeysMapping = await $$.promisify(utils.getKeySSIsMappingFromPathKeys)(paths);
+
+        this.finishInitialisation();
+        this.dispatchEvent("initialised");
+    };
+
+    this.isInitialised = () => {
+        return initialised;
+    };
+
+    this.storePathKeySSI = (pathKeySSI, callback) => {
+        if (typeof pathKeySSI === "string") {
+            try {
+                pathKeySSI = keySSISpace.parse(pathKeySSI);
+            } catch (e) {
+                return callback(e);
+            }
+        }
+        pathKeySSI = pathKeySSI.getIdentifier();
+
+        const storePathKeySSI = () => {
+            enclaveHandler.storePathKeySSI(pathKeySSI, async err => {
+                if (err) {
+                    return callback(err);
+                }
+                try {
+                    const derivedKeySSIs = await $$.promisify(utils.getKeySSIMapping)(pathKeySSI);
+                    pathKeysMapping = utils.mergeMappings(pathKeysMapping, derivedKeySSIs);
+                    callback();
+                } catch (e) {
+                    callback(e);
+                }
+            });
+        }
+        storePathKeySSI();
+    };
+
+    this.getCapableOfSigningKeySSI = (keySSI, callback) => {
+        if (typeof keySSI === "string") {
+            try {
+                keySSI = keySSISpace.parse(keySSI);
+            } catch (e) {
+                return callback(e);
+            }
+        }
+        keySSI = keySSI.getIdentifier();
+        let capableOfSigningKeySSI
+        try {
+            capableOfSigningKeySSI = pathKeysMapping[openDSU.constants.KEY_SSIS.SEED_SSI][keySSI];
+        } catch (e) {
+            return callback(e);
+        }
+
+        if (typeof capableOfSigningKeySSI === "undefined") {
+            return callback(Error("The provided key SSI does not have write privileges."));
+        }
+
+        try {
+            capableOfSigningKeySSI = keySSISpace.parse(capableOfSigningKeySSI);
+        } catch (e) {
+            return callback(e);
+        }
+        callback(undefined, capableOfSigningKeySSI);
+    };
+
+    this.getReadForKeySSI = (keySSI, callback) => {
+        if (typeof keySSI === "string") {
+            try {
+                keySSI = keySSISpace.parse(keySSI);
+            } catch (e) {
+                return callback(e);
+            }
+        }
+        keySSI = keySSI.getIdentifier();
+        let readKeySSI
+        try {
+            readKeySSI = pathKeysMapping[openDSU.constants.KEY_SSIS.SREAD_SSI][keySSI];
+        } catch (e) {
+            return callback(e);
+        }
+
+        if (typeof readKeySSI === "undefined") {
+            return callback(Error("The provided key SSI does not have read privileges."));
+        }
+
+        try {
+            readKeySSI = keySSISpace.parse(readKeySSI);
+        } catch (e) {
+            return callback(e);
+        }
+
+        callback(undefined, readKeySSI);
+    }
+
+    this._getMapping = (callback) => {
+        callback(undefined, pathKeysMapping);
+    };
+
+    utilsAPI.bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent"]);
+    init();
+}
+
+module.exports = PathKeyMapping;
+},{"../../utils/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/utils/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/PathKeySSIMapping/WalletDBEnclaveHandler.js":[function(require,module,exports){
+const pathModule = require("path");
+const constants = require("../../constants/constants");
+
+function WalletDBEnclaveHandler(walletDBEnclaveDSU, config) {
+    const defaultConfig = {
+        maxNoScatteredKeys: 5000
+    }
+    Object.assign(defaultConfig, config);
+    config = defaultConfig;
+    const openDSU = require("opendsu");
+    const utilsAPI = openDSU.loadAPI("utils");
+    const keySSISpace = openDSU.loadAPI("keyssi");
+    utilsAPI.ObservableMixin(this);
+    let initialised = false;
+
+    this.isInitialised = () => {
+        return initialised;
+    };
+
+    this.storePathKeySSI = (pathKeySSI, callback) => {
+        if (typeof pathKeySSI === "string") {
+            try {
+                pathKeySSI = keySSISpace.parse(pathKeySSI);
+            } catch (e) {
+                return callback(e);
+            }
+        }
+        const __storePathKeySSI = () => {
+            const filePath = pathModule.join(constants.PATHS.SCATTERED_PATH_KEYS, pathKeySSI.getSpecificString(), pathKeySSI.getIdentifier());
+            walletDBEnclaveDSU.startOrAttachBatch((err, batchId) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                walletDBEnclaveDSU.writeFile(filePath, async err => {
+                    if (err) {
+                        const writeFileError = createOpenDSUErrorWrapper(`Failed to store path key SSI <${pathKeySSI.getIdentifier()}>`, err);
+                        try {
+                            await walletDBEnclaveDSU.cancelBatchAsync(batchId);
+                        } catch (e) {
+                            return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, e, writeFileError));
+                        }
+                        return callback(writeFileError);
+                    }
+
+                    try {
+                        const files = await $$.promisify(walletDBEnclaveDSU.listFiles)(constants.PATHS.SCATTERED_PATH_KEYS);
+                        if (files.length === config.maxNoScatteredKeys) {
+                            try {
+                                await compactPathKeys();
+                            } catch (e) {
+                                const compactPathKeysError = createOpenDSUErrorWrapper(`Failed to compact path keys`, e);
+                                try {
+                                    await walletDBEnclaveDSU.cancelBatchAsync();
+                                } catch (error) {
+                                    return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, error, compactPathKeysError));
+                                }
+                                return callback(compactPathKeysError);
+                            }
+                        }
+                    } catch (e) {
+                        const listFilesError = createOpenDSUErrorWrapper(`Failed to list files`, e);
+                        try {
+                            await walletDBEnclaveDSU.cancelBatchAsync(batchId);
+                        } catch (error) {
+                            return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, error, listFilesError));
+                        }
+                        return callback(listFilesError);
+                    }
+
+                    walletDBEnclaveDSU.commitBatch(batchId, callback);
+                })
+            })
+        };
+
+        __storePathKeySSI();
+    };
+
+    const compactPathKeys = async () => {
+        let compactedContent = "";
+        const crypto = require("opendsu").loadAPI("crypto");
+        const files = await $$.promisify(walletDBEnclaveDSU.listFiles)(constants.PATHS.SCATTERED_PATH_KEYS);
+
+        for (let i = 0; i < files.length; i++) {
+            const {key, value} = getKeyValueFromPath(files[i]);
+            compactedContent = `${compactedContent}${key} ${value}\n`;
+        }
+
+        compactedContent = compactedContent.slice(0, compactedContent.length - 1);
+        const fileName = crypto.encodeBase58(crypto.generateRandom(16));
+        await $$.promisify(walletDBEnclaveDSU.writeFile)(pathModule.join(constants.PATHS.COMPACTED_PATH_KEYS, fileName), compactedContent);
+
+        for (let i = 0; i < files.length; i++) {
+            const filePath = pathModule.join(constants.PATHS.SCATTERED_PATH_KEYS, files[i]);
+            await $$.promisify(walletDBEnclaveDSU.delete)(filePath);
+        }
+    }
+
+    const getKeyValueFromPath = (pth) => {
+        const lastSegmentIndex = pth.lastIndexOf("/");
+        const key = pth.slice(0, lastSegmentIndex);
+        const value = pth.slice(lastSegmentIndex + 1);
+        return {
+            key, value
+        }
+    }
+
+    this.loadPaths = (callback) => {
+        const __loadPaths = () => {
+            loadCompactedPathKeys((err, compactedKeys) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                loadScatteredPathKeys(async (err, scatteredKeys) => {
+                    if (err) {
+                        return callback(err);
+                    }
+
+
+                    callback(undefined, {...compactedKeys, ...scatteredKeys});
+                })
+            });
+        }
+        __loadPaths();
+    }
+
+    const loadScatteredPathKeys = (callback) => {
+        const pathKeyMap = {};
+        walletDBEnclaveDSU.listFiles(constants.PATHS.SCATTERED_PATH_KEYS, async (err, files) => {
+            if (err) {
+                return callback(err);
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                const {key, value} = getKeyValueFromPath(files[i]);
+                pathKeyMap[key] = value;
+            }
+
+            callback(undefined, pathKeyMap);
+        });
+    }
+
+    const loadCompactedPathKeys = (callback) => {
+        let pathKeyMap = {};
+        const compactedValuesLocation = constants.PATHS.COMPACTED_PATH_KEYS;
+        walletDBEnclaveDSU.listFiles(compactedValuesLocation, async (err, files) => {
+            if (err) {
+                return callback(err);
+            }
+
+            try {
+                for (let i = 0; i < files.length; i++) {
+                    const filePath = pathModule.join(compactedValuesLocation, files[i]);
+                    let compactedFileContent = await $$.promisify(walletDBEnclaveDSU.readFile)(filePath);
+                    compactedFileContent = compactedFileContent.toString();
+                    const partialKeyMap = mapFileContent(compactedFileContent);
+                    pathKeyMap = {...pathKeyMap, ...partialKeyMap};
+                }
+            } catch (e) {
+                return callback(e);
+            }
+
+
+            callback(undefined, pathKeyMap);
+        });
+    }
+
+    const mapFileContent = (fileContent) => {
+        const pathKeyMap = {};
+        const fileLines = fileContent.split("\n");
+        for (let i = 0; i < fileLines.length; i++) {
+            const splitLine = fileLines[i].split(" ");
+            pathKeyMap[splitLine[0]] = splitLine[1];
+        }
+
+        return pathKeyMap;
+    }
+}
+
+module.exports = WalletDBEnclaveHandler;
+},{"../../constants/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/constants.js","opendsu":"opendsu","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/SeedSSIMapping/LightDBStorageStrategy.js":[function(require,module,exports){
+function LightDBStorageStrategy(lightDBEnclave) {
+    this.insertRecord = (table, pk, record, callback) => {
+        lightDBEnclave.insertRecord($$.SYSTEM_IDENTIFIER, table, pk, record, callback);
+    }
+
+    this.updateRecord = (table, pk, plainRecord, encryptedRecord, callback) => {
+        lightDBEnclave.updateRecord($$.SYSTEM_IDENTIFIER, table, pk, plainRecord, encryptedRecord, callback);
+    }
+
+    this.getRecord = (table, pk, callback) => {
+        lightDBEnclave.getRecord($$.SYSTEM_IDENTIFIER, table, pk, callback);
+    }
+}
+
+module.exports = LightDBStorageStrategy;
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/SeedSSIMapping/SeedSSIMapping.js":[function(require,module,exports){
+function SeedSSIMapping(storageStrategy) {
+    const utils = require("../../utils/utils");
+    const openDSU = require("opendsu");
+    const keySSISpace = openDSU.loadAPI("keyssi");
+    this.storeKeySSI = (keySSI, callback) => {
+        if (typeof keySSI === "string") {
+            try {
+                keySSI = keySSISpace.parse(keySSI);
+            } catch (e) {
+                return callback(e);
+            }
+        }
+        utils.getKeySSIMapping(keySSI, async (err, keySSIMapping) => {
+            if (err) {
+                return callback(err);
+            }
+
+            for (let keySSIType in keySSIMapping) {
+                for (let ssi in keySSIMapping[keySSIType]) {
+                    let record;
+                    try {
+                        record = await $$.promisify(storageStrategy.getRecord)(keySSIType, ssi);
+                    } catch (e) {
+                        // ignore error
+                    }
+
+                    if (!record) {
+                        try {
+                            await $$.promisify(storageStrategy.insertRecord)(keySSIType, ssi, {keySSI: keySSIMapping[keySSIType][ssi]});
+                        } catch (e) {
+                            return callback(e);
+                        }
+                    }
+                }
+            }
+            callback();
+        });
+    }
+
+    this.getReadKeySSI = (keySSI, callback) => {
+        if (typeof keySSI === "string") {
+            try {
+                keySSI = keySSISpace.parse(keySSI);
+            } catch (e) {
+                return callback(e);
+            }
+        }
+        storageStrategy.getRecord(openDSU.constants.KEY_SSIS.SREAD_SSI, keySSI.getIdentifier(), (err, sReadSSIRecord) => {
+            if (err) {
+                return callback(err);
+            }
+            if (!sReadSSIRecord) {
+                return callback(Error(`No read key SSI found for keySSI <${keySSI.getIdentifier()}>`));
+            }
+
+            callback(undefined, sReadSSIRecord.keySSI);
+        })
+    }
+
+    this.getWriteKeySSI = (keySSI, callback) => {
+        if (typeof keySSI === "string") {
+            try {
+                keySSI = keySSISpace.parse(keySSI);
+            } catch (e) {
+                return callback(e);
+            }
+        }
+        storageStrategy.getRecord(openDSU.constants.KEY_SSIS.SEED_SSI, keySSI.getIdentifier(), (err, sWriteSSIRecord) => {
+            if (err) {
+                return callback(err);
+            }
+            if (!sWriteSSIRecord) {
+                return callback(Error(`No write key SSI found for keySSI <${keySSI.getIdentifier()}>`));
+            }
+
+            callback(undefined, sWriteSSIRecord.keySSI);
+        });
+    }
+}
+
+const getSeedSSIMapping = (storageStrategy) => {
+    return new SeedSSIMapping(storageStrategy);
+}
+
+module.exports = {
+    getSeedSSIMapping
+};
+},{"../../utils/utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/utils/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/commandsNames.js":[function(require,module,exports){
+module.exports = {
+    GRANT_WRITE_ACCESS: "grantWriteAccess",
+    GRANT_READ_ACCESS: "grantReadAccess",
+    GRANT_ADMIN_ACCESS: "grantAdminAccess",
+    REVOKE_WRITE_ACCESS: "revokeWriteAccess",
+    REVOKE_READ_ACCESS: "revokeReadAccess",
+    REVOKE_ADMIN_ACCESS: "revokeAdminAccess",
+    HAS_WRITE_ACCESS: "hasWriteAccess",
+    HAS_READ_ACCESS: "hasReadAccess",
+    HAS_ADMIN_ACCESS: "hasAdminAccess",
+    INSERT_RECORD: "insertRecord",
+    UPDATE_RECORD: "updateRecord",
+    GET_RECORD: "getRecord",
+    DELETE_RECORD: "deleteRecord",
+    FILTER_RECORDS: "filter",
+    GET_ALL_RECORDS: "getAllRecords",
+    BEGIN_BATCH: "beginBatch",
+    COMMIT_BATCH: "commitBatch",
+    CANCEL_BATCH: "cancelBatch",
+    READ_KEY: "readKey",
+    WRITE_KEY: "writeKey",
+    ADD_IN_QUEUE: "addInQueue",
+    QUEUE_SIZE: "queueSize",
+    LIST_QUEUE: "listQueue",
+    GET_OBJECT_FROM_QUEUE: "getObjectFromQueue",
+    DELETE_OBJECT_FROM_QUEUE: "deleteObjectFromQueue",
+    STORE_SEED_SSI: "storeSeedSSI",
+    SIGN_FOR_KEY_SSI: "signForKeySSI",
+    STORE_DID: "storeDID",
+    ADD_PRIVATE_KEY_FOR_DID: "addPrivateKeyForDID",
+    SIGN_FOR_DID: "signForDID",
+    VERIFY_FOR_DID: "verifyForDID",
+    ENCRYPT_MESSAGE: "encryptMessage",
+    DECRYPT_MESSAGE: "decryptMessage",
+    GET_PRIVATE_INFO_FOR_DID:"getPrivateInfoForDID",
+    GET_COLLECTIONS: "getCollections"
+}
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/constants.js":[function(require,module,exports){
+module.exports = {
+    TABLE_NAMES: {
+        KEY_SSIS: "keyssis",
+        SREAD_SSIS: "sreadssis",
+        SEED_SSIS: "seedssis",
+        DIDS_PRIVATE_KEYS: "dids_private",
+        PATH_KEY_SSI_PRIVATE_KEYS: "path-keyssi-private-keys",
+        PRIVATE_KEYS: "private-keys",
+        SECRET_KEYS: "secret-keys"
+    },
+    PATHS: {
+        SCATTERED_PATH_KEYS: "/paths/scatteredPathKeys",
+        COMPACTED_PATH_KEYS: "/paths/compactedPathKeys"
+    },
+    DB_NAMES: {
+        WALLET_DB_ENCLAVE: "walletdb_enclave"
+    }
+};
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/CloudEnclaveClient.js":[function(require,module,exports){
+const {createCommandObject} = require("../utils/createCommandObject");
+const commandNames = require("../constants/commandsNames");
 
 function CloudEnclaveClient(clientDID, remoteDID, requestTimeout) {
     let initialised = false;
-    const DEFAULT_TIMEOUT = 30000;
+    const DEFAULT_TIMEOUT = 10000;
 
     this.commandsMap = new Map();
-    this.requestTimeout = requestTimeout ?? DEFAULT_TIMEOUT;
+    requestTimeout = requestTimeout ?? DEFAULT_TIMEOUT;
 
-    const ProxyMixin = require("./ProxyMixin");
+    const ProxyMixin = require("../mixins/ProxyMixin");
     ProxyMixin(this);
 
     const init = async () => {
@@ -26280,8 +26894,7 @@ function CloudEnclaveClient(clientDID, remoteDID, requestTimeout) {
             const w3cDID = require("opendsu").loadAPI("w3cdid");
             this.clientDIDDocument = await $$.promisify(w3cDID.resolveDID)(clientDID);
             this.remoteDIDDocument = await $$.promisify(w3cDID.resolveDID)(remoteDID);
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err);
         }
         this.initialised = true;
@@ -26298,7 +26911,22 @@ function CloudEnclaveClient(clientDID, remoteDID, requestTimeout) {
         callback(undefined, did);
     }
 
+    this.grantReadAccess = (forDID, resource, callback) => {
+        this.__putCommandObject(commandNames.GRANT_READ_ACCESS, forDID, resource, callback);
+    }
+
+    this.grantWriteAccess = (forDID, resource, callback) => {
+        this.__putCommandObject(commandNames.GRANT_WRITE_ACCESS, forDID, resource, callback);
+    }
+
+    this.grantAdminAccess = (forDID, resource, callback) => {
+        this.__putCommandObject(commandNames.GRANT_ADMIN_ACCESS, forDID, resource, callback);
+    }
+
     this.callLambda = (lambdaName, ...args) => {
+        if (typeof args[args.length - 1] !== "function") {
+            throw new Error("Last argument must be a callback function");
+        }
         this.__putCommandObject(lambdaName, ...args);
     }
 
@@ -26308,15 +26936,25 @@ function CloudEnclaveClient(clientDID, remoteDID, requestTimeout) {
 
         const command = JSON.stringify(createCommandObject(commandName, ...args));
         const commandID = JSON.parse(command).commandID;
-        this.commandsMap.set(commandID, { "callback": callback, "time": Date.now() });
+        this.commandsMap.set(commandID, {"callback": callback, "time": Date.now()});
+
+        const timeout = setTimeout(() => {
+            if (this.commandsMap.has(commandID)) {
+                this.commandsMap.get(commandID).callback(new Error(`Response for command ${commandID} not received within ${requestTimeout}ms`));
+                this.commandsMap.delete(commandID);
+            }
+        }, requestTimeout);
+
+        this.commandsMap.get(commandID).timeout = timeout;
 
         this.clientDIDDocument.sendMessage(command, this.remoteDIDDocument, (err, res) => {
-            console.log("Sent command with id " + commandID)
+            console.log("Sent command with id " + commandID);
             if (err) {
                 console.log(err);
+                clearTimeout(timeout);
             }
         });
-    }
+    };
 
     const subscribe = () => {
         this.clientDIDDocument.subscribe((err, res) => {
@@ -26327,20 +26965,26 @@ function CloudEnclaveClient(clientDID, remoteDID, requestTimeout) {
 
             try {
                 const resObj = JSON.parse(res);
-                const commandResult = resObj.commandResult;
                 const commandID = resObj.commandID;
 
-                if (!this.commandsMap.get(commandID)) return;
+                if (this.commandsMap.has(commandID)) {
+                    clearTimeout(this.commandsMap.get(commandID).timeout);
+                    const callback = this.commandsMap.get(commandID).callback;
+                    this.commandsMap.delete(commandID);
+                    console.log("Deleted resolved command with id " + commandID);
 
-                const callback = this.commandsMap.get(commandID).callback;
-                this.commandsMap.delete(commandID)
-                console.log("Deleted resolved command with id " + commandID)
-                callback(err, commandResult);
+                    if (resObj.error) {
+                        callback(Error(resObj.commandResult.debug_message));
+                    } else {
+                        callback(undefined, resObj.commandResult);
+                    }
+                }
             } catch (err) {
                 console.log(err);
             }
-        })
-    }
+        });
+    };
+
     const bindAutoPendingFunctions = require("../../utils/BindAutoPendingFunctions").bindAutoPendingFunctions;
     bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent", "beginBatch", "isInitialised", "getEnclaveType"]);
 
@@ -26349,8 +26993,797 @@ function CloudEnclaveClient(clientDID, remoteDID, requestTimeout) {
 
 module.exports = CloudEnclaveClient;
 
-},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js":[function(require,module,exports){
-const constants = require("./constants");
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../constants/commandsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/commandsNames.js","../mixins/ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/ProxyMixin.js","../utils/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/utils/createCommandObject.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/LightDBEnclave.js":[function(require,module,exports){
+(function (process){(function (){
+function LightDBEnclave(dbName, slots) {
+    const {createCommandObject} = require("../utils/createCommandObject");
+    const openDSU = require("opendsu");
+    const http = openDSU.loadAPI("http");
+    const system = openDSU.loadAPI("system");
+    let serverAddress = process.env.LIGHT_DB_SERVER_ADDRESS || `${system.getBaseURL()}/lightDB`;
+    let initialised = false;
+    const ProxyMixin = require("../mixins/ProxyMixin");
+    ProxyMixin(this);
+
+    this.isInitialised = () => {
+        return initialised;
+    }
+
+    this.getName = () => {
+        return dbName;
+    }
+
+    this.__putCommandObject = (commandName, ...args) => {
+        const callback = args.pop();
+        const url = `${serverAddress}/executeCommand/${dbName}`;
+        let command = createCommandObject(commandName, ...args);
+        let didDocument = args[0];
+        if (didDocument === $$.SYSTEM_IDENTIFIER) {
+            didDocument = $$.SYSTEM_DID_DOCUMENT;
+        }
+
+        command = JSON.stringify(command);
+        didDocument.sign(command, (err, signature) => {
+            if (err) {
+                return callback(err);
+            }
+
+            let signedCommand = {};
+            signedCommand.command = command;
+            signedCommand.signature = signature.toString("base64");
+            http.doPut(url, JSON.stringify(signedCommand), (err, response) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                try {
+                    response = JSON.parse(response);
+                } catch (e) {
+                    return callback(e);
+                }
+
+                callback(undefined, response);
+            });
+        })
+    }
+
+    this.createDatabase = (dbName, callback) => {
+        const url = `${serverAddress}/createDatabase/${dbName}`;
+        http.doPut(url, "", callback);
+    }
+
+    const originalInsert = this.insertRecord;
+    this.insertRecord = (forDID, table, pk, encryptedRecord, callback) => {
+        this.hasWriteAccess(forDID, (err, hasAccess) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (!hasAccess) {
+                return callback(Error("No write access"));
+            }
+
+            originalInsert(forDID, table, pk, encryptedRecord, callback);
+        });
+    }
+
+    const originalUpdate = this.updateRecord;
+    this.updateRecord = (forDID, table, pk, plainRecord, encryptedRecord, callback) => {
+        this.hasWriteAccess(forDID, (err, hasAccess) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (!hasAccess) {
+                return callback(Error("No write access"));
+            }
+
+            originalUpdate(forDID, table, pk, plainRecord, encryptedRecord, callback);
+        });
+    }
+
+    const originalDelete = this.deleteRecord;
+    this.deleteRecord = (forDID, table, pk, callback) => {
+        this.hasWriteAccess(forDID, (err, hasAccess) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (!hasAccess) {
+                return callback(Error("No write access"));
+            }
+
+            originalDelete(forDID, table, pk, callback);
+        });
+    }
+
+    const originalGet = this.getRecord;
+    this.getRecord = (forDID, table, pk, callback) => {
+        this.hasReadAccess(forDID, (err, hasAccess) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (!hasAccess) {
+                return callback(Error("No read access"));
+            }
+
+            originalGet(forDID, table, pk, callback);
+        });
+    }
+
+    const originalAddInQueue = this.addInQueue;
+    this.addInQueue = (forDID, queueName, encryptedObject, ensureUniqueness, callback) => {
+        this.hasWriteAccess(forDID, (err, hasAccess) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (!hasAccess) {
+                return callback(Error("No write access"));
+            }
+
+            originalAddInQueue(forDID, queueName, encryptedObject, ensureUniqueness, callback);
+        });
+    }
+
+    const originalGetObjectFromQueue = this.getObjectFromQueue;
+    this.getObjectFromQueue = (forDID, queueName, hash, callback) => {
+        this.hasReadAccess(forDID, (err, hasAccess) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (!hasAccess) {
+                return callback(Error("No read access"));
+            }
+
+            originalGetObjectFromQueue(forDID, queueName, hash, callback);
+        });
+    }
+
+    const originalDeleteObjectFromQueue = this.deleteObjectFromQueue;
+    this.deleteObjectFromQueue = (forDID, queueName, hash, callback) => {
+        this.hasWriteAccess(forDID, (err, hasAccess) => {
+            if (err) {
+                return callback(err);
+            }
+
+            if (!hasAccess) {
+                return callback(Error("No write access"));
+            }
+
+            originalDeleteObjectFromQueue(forDID, queueName, hash, callback);
+        });
+    }
+
+
+    const LightDBStorageStrategy = require("../KeySSIMappings/SeedSSIMapping/LightDBStorageStrategy");
+    const lightDBStorageStrategy = new LightDBStorageStrategy(this);
+    const SeedSSIMapping = require("../KeySSIMappings/SeedSSIMapping/SeedSSIMapping");
+    const seedSSIMapping = SeedSSIMapping.getSeedSSIMapping(lightDBStorageStrategy);
+    const resolverAPI = openDSU.loadAPI("resolver");
+    const keySSISpace = openDSU.loadAPI("keyssi");
+
+    this.storeKeySSI = (keySSI, callback) => {
+        keySSI = parseKeySSI(keySSI, callback);
+        if (!keySSI) {
+            return;
+        }
+        if (isConstSSIFamily(keySSI)) {
+            return callback();
+        }
+        seedSSIMapping.storeKeySSI(keySSI, callback);
+    }
+
+    this.getReadKeySSI = (keySSI, callback) => {
+        keySSI = parseKeySSI(keySSI, callback);
+        if (!keySSI) {
+            return;
+        }
+        if (isConstSSIFamily(keySSI)) {
+            return callback(undefined, keySSI);
+        }
+        seedSSIMapping.getReadKeySSI(keySSI, callback);
+    }
+
+    this.getWriteKeySSI = (keySSI, callback) => {
+        keySSI = parseKeySSI(keySSI, callback);
+        if (!keySSI) {
+            return;
+        }
+        if (isConstSSIFamily(keySSI)) {
+            return callback(undefined, keySSI);
+        }
+        seedSSIMapping.getWriteKeySSI(keySSI, callback);
+    }
+
+    function parseKeySSI(keySSI, callback) {
+        if (typeof keySSI === "string") {
+            try {
+                return keySSISpace.parse(keySSI);
+            } catch (e) {
+                callback(e);
+            }
+        }
+        return keySSI;
+    }
+
+    function isConstSSIFamily(keySSI) {
+        return keySSI.getFamilyName() === openDSU.constants.KEY_SSI_FAMILIES.CONST_SSI_FAMILY;
+    }
+
+    this.getPrivateKeyForSlot = (forDID, slot, callback) => {
+        if (typeof slot === "function") {
+            callback = slot;
+            slot = forDID;
+            forDID = undefined;
+        }
+        if (typeof slot === "string") {
+            slot = parseInt(slot);
+        }
+        return callback(undefined, $$.Buffer.from(slots[slot], "base64"));
+    }
+
+    this.derivePathSSI = (forDID, pathSSI, callback) => {
+        const specificString = pathSSI.getSpecificString();
+        const index = specificString.indexOf("/");
+        const slot = specificString.slice(0, index);
+        const path = specificString.slice(index + 1);
+        let privateKey = slots[slot];
+        privateKey = pathSSI.hash(`${path}${privateKey}`);
+        privateKey = pathSSI.decode(privateKey);
+        const seedSpecificString = pathSSI.encodeBase64(privateKey);
+        const seedSSI = this.createSeedSSI(pathSSI.getDLDomain(), seedSpecificString, pathSSI.getVn(), pathSSI.getHint());
+        callback(undefined, seedSSI);
+    }
+
+    this.createDSU = (forDID, keySSI, options, callback) => {
+        // if (typeof forDID === "string") {
+        //     try {
+        //         forDID = keySSISpace.parse(forDID);
+        //         options = keySSI;
+        //         keySSI = forDID;
+        //     } catch (e) {
+        //         //do nothing
+        //     }
+        // }
+
+        if (typeof keySSI === "string") {
+            try {
+                keySSI = keySSISpace.parse(keySSI);
+            } catch (e) {
+                return callback(e);
+            }
+        }
+
+        if (typeof options === "function") {
+            callback = options;
+            options = undefined;
+        }
+
+        if (keySSI.withoutCryptoData()) {
+            this.createSeedSSI(undefined, keySSI.getDLDomain(), (err, seedSSI) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                resolverAPI.createDSUForExistingSSI(seedSSI, callback);
+            })
+        } else {
+            this.storeKeySSI(undefined, keySSI, (err) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                resolverAPI.createDSU(keySSI, options, callback);
+            })
+        }
+    }
+
+    this.createDSUForExistingSSI = (forDID, keySSI, options, callback) => {
+        if (typeof keySSI === "function") {
+            callback = keySSI;
+            keySSI = forDID;
+            options = {};
+            forDID = $$.SYSTEM_IDENTIFIER
+        }
+        if (typeof options === "function") {
+            callback = options;
+            options = {};
+        }
+        if (!options) {
+            options = {};
+        }
+        options.useSSIAsIdentifier = true;
+        resolverAPI.createDSUForExistingSSI(keySSI, options, callback);
+    }
+
+    this.loadDSU = (forDID, keySSI, options, callback) => {
+        if (typeof options === "function") {
+            callback = options;
+            options = undefined;
+        }
+        if (typeof keySSI === "string") {
+            try {
+                keySSI = keySSISpace.parse(keySSI);
+            } catch (e) {
+                return callback(e);
+            }
+        }
+
+        resolverAPI.loadDSU(keySSI, options, (err, dsu) => {
+            if (err) {
+                this.getReadKeySSI(keySSI.getIdentifier(), (e, sReadSSI) => {
+                    if (e) {
+                        return callback(err);
+                    }
+                    resolverAPI.loadDSU(sReadSSI, options, callback);
+                });
+
+                return;
+            }
+
+            callback(undefined, dsu);
+        })
+    }
+
+    this.loadDSURecoveryMode = (forDID, ssi, contentRecoveryFnc, callback) => {
+        const defaultOptions = {recoveryMode: true};
+        let options = {contentRecoveryFnc, recoveryMode: true};
+        if (typeof contentRecoveryFnc === "object") {
+            options = contentRecoveryFnc;
+        }
+
+        options = Object.assign(defaultOptions, options);
+        this.loadDSU(forDID, ssi, options, callback);
+    }
+}
+
+module.exports = LightDBEnclave;
+}).call(this)}).call(this,require('_process'))
+
+},{"../KeySSIMappings/SeedSSIMapping/LightDBStorageStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/SeedSSIMapping/LightDBStorageStrategy.js","../KeySSIMappings/SeedSSIMapping/SeedSSIMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/SeedSSIMapping/SeedSSIMapping.js","../mixins/ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/ProxyMixin.js","../utils/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/utils/createCommandObject.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js":[function(require,module,exports){
+function MemoryEnclave() {
+    const EnclaveMixin = require("../mixins/Enclave_Mixin");
+    EnclaveMixin(this);
+    const openDSU = require("opendsu");
+    const db = openDSU.loadAPI("db");
+    let initialised = false;
+    const init = () => {
+        this.storageDB = db.getInMemoryDB();
+        setTimeout(async () => {
+            initialised = true;
+            this.dispatchEvent("initialised");
+        })
+    }
+
+    this.getEnclaveType = () => {
+        return openDSU.constants.ENCLAVE_TYPES.MEMORY_ENCLAVE;
+    };
+
+    this.getKeySSI = (callback) => {
+        callback(undefined, "ssi::::")
+    }
+    this.isInitialised = () => {
+        return initialised
+    }
+
+    init();
+}
+
+module.exports = MemoryEnclave;
+},{"../mixins/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/VersionlessDSUEnclave.js":[function(require,module,exports){
+function VersionlessDSUEnclave(keySSI, did) {
+    const openDSU = require("opendsu");
+    const constants = require("../constants/constants");
+    const db = openDSU.loadAPI("db");
+    const resolver = openDSU.loadAPI("resolver");
+    const config = openDSU.loadAPI("config");
+    const keySSISpace = openDSU.loadAPI("keyssi");
+    const DB_NAME = constants.DB_NAMES.WALLET_DB_ENCLAVE;
+    const EnclaveMixin = require("../mixins/Enclave_Mixin");
+
+    EnclaveMixin(this, did, keySSI);
+
+    let versionlessDSU;
+    let initialised = false;
+    const init = async () => {
+        if (!keySSI) {
+            try {
+                versionlessDSU = await $$.promisify(resolver.createVersionlessDSU)();
+            } catch (e) {
+                throw createOpenDSUErrorWrapper(`Failed to create versionless DSU`, e);
+            }
+
+            try {
+                keySSI = await $$.promisify(versionlessDSU.getKeySSIAsString)();
+            } catch (e) {
+                throw createOpenDSUErrorWrapper(`Failed to get enclave DSU KeySSI`, e);
+            }
+        }
+
+        await $$.promisify(resolver.invalidateDSUCache)(keySSI);
+
+        this.storageDB = db.getVersionlessDB(DB_NAME, {keySSI});
+        this.storageDB.on("error", (err) => {
+            this.dispatchEvent("error", err);
+        });
+        this.storageDB.on("initialised", async () => {
+            if (typeof keySSI === "string") {
+                keySSI = keySSISpace.parse(keySSI);
+            }
+            let privateKey;
+            try {
+                privateKey = await $$.promisify(this.storageDB.getRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0);
+            } catch (e) {
+            }
+            if (!privateKey) {
+                await $$.promisify(this.storageDB.insertRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0, {
+                    privateKey: keySSI.getEncryptionKey(),
+                });
+            }
+
+            initialised = true;
+            this.finishInitialisation();
+            this.dispatchEvent("initialised");
+        });
+    };
+
+    this.getKeySSI = (forDID, callback) => {
+        if (typeof forDID === "function") {
+            callback = forDID;
+            forDID = undefined;
+        }
+        callback(undefined, keySSI);
+    };
+
+    this.getEnclaveType = () => {
+        return openDSU.constants.ENCLAVE_TYPES.VERSIONLESS_DSU_ENCLAVE;
+    };
+
+    this.isInitialised = () => {
+        return initialised;
+    };
+
+    const bindAutoPendingFunctions = require("../../utils/BindAutoPendingFunctions").bindAutoPendingFunctions;
+    bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent", "beginBatch", "isInitialised", "getEnclaveType"]);
+
+    init();
+}
+
+module.exports = VersionlessDSUEnclave;
+
+},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../constants/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/constants.js","../mixins/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js":[function(require,module,exports){
+const {createOpenDSUErrorWrapper} = require("../../error");
+
+function WalletDBEnclave(keySSI, did) {
+    const openDSU = require("opendsu");
+    const constants = require("../constants/constants");
+    const db = openDSU.loadAPI("db")
+    const scAPI = openDSU.loadAPI("sc");
+    const resolver = openDSU.loadAPI("resolver");
+    const config = openDSU.loadAPI("config");
+    const keySSISpace = openDSU.loadAPI("keyssi");
+    const DB_NAME = constants.DB_NAMES.WALLET_DB_ENCLAVE;
+    const EnclaveMixin = require("../mixins/Enclave_Mixin");
+    EnclaveMixin(this, did, keySSI);
+    let enclaveDSU;
+    let initialised = false;
+    const init = async () => {
+        if (!keySSI) {
+            try {
+                keySSI = await $$.promisify(config.getEnv)(openDSU.constants.MAIN_ENCLAVE.KEY_SSI);
+            } catch (e) {
+                console.log("Not able to retrieve the keyssi of the enclave. A new one will be created.");
+            }
+
+            if (!keySSI) {
+                let vaultDomain;
+                try {
+                    vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
+                } catch (e) {
+                    throw createOpenDSUErrorWrapper(`Failed to get vault domain`, e);
+                }
+
+                try {
+                    enclaveDSU = await $$.promisify(resolver.createSeedDSU)(vaultDomain);
+                } catch (e) {
+                    throw createOpenDSUErrorWrapper(`Failed to create Seed DSU`, e);
+                }
+
+                try {
+                    keySSI = await $$.promisify(enclaveDSU.getKeySSIAsString)();
+                } catch (e) {
+                    throw createOpenDSUErrorWrapper(`Failed to get enclave DSU KeySSI`, e);
+                }
+                try {
+                    await $$.promisify(config.setEnv)(openDSU.constants.MAIN_ENCLAVE.KEY_SSI, keySSI);
+                } catch (e) {
+                    throw createOpenDSUErrorWrapper(`Failed to store enclave DSU KeySSI`, e);
+                }
+            }
+        }
+
+        try {
+            await $$.promisify(resolver.invalidateDSUCache)(keySSI);
+            this.storageDB = db.getSimpleWalletDB(DB_NAME, {keySSI});
+        } catch (e) {
+            this.dispatchEvent("error", e)
+        }
+        this.storageDB.on("error", err => {
+            this.dispatchEvent("error", err)
+        });
+        this.storageDB.on("initialised", async () => {
+            if (typeof keySSI === "string") {
+                keySSI = keySSISpace.parse(keySSI);
+            }
+            enclaveDSU = this.storageDB.getStorageDSU();
+            let privateKey;
+            try {
+                privateKey = await $$.promisify(this.storageDB.getRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0);
+            } catch (e) {
+            }
+            if (!privateKey) {
+                let batchId;
+                try{
+                    batchId = await this.storageDB.startOrAttachBatchAsync();
+                } catch (e) {
+                    this.dispatchEvent("error", e);
+                }
+
+                try {
+                    await $$.promisify(this.storageDB.insertRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0, {privateKey: keySSI.getPrivateKey()});
+                    await this.storageDB.commitBatchAsync(batchId);
+                } catch (e) {
+                    const insertError = createOpenDSUErrorWrapper(`Failed to insert private key`, e);
+                    try {
+                        await this.storageDB.cancelBatchAsync(batchId);
+                    } catch (error) {
+                        //not relevant...
+                        console.log(error);
+                    }
+                    this.dispatchEvent("error", insertError);
+                    return
+                }
+            }
+
+            initialised = true;
+            this.finishInitialisation();
+            this.dispatchEvent("initialised");
+        })
+    };
+
+    this.getKeySSI = (forDID, callback) => {
+        if (typeof forDID === "function") {
+            callback = forDID;
+            forDID = undefined;
+        }
+        callback(undefined, keySSI);
+    }
+
+    this.getDSU = (forDID, callback) => {
+        if (typeof forDID === "function") {
+            callback = forDID;
+            forDID = undefined;
+        }
+        callback(undefined, enclaveDSU);
+    }
+
+    this.getUniqueIdAsync = async () => {
+        let keySSI = await $$.promisify(this.getKeySSI)();
+        return await keySSI.getAnchorIdAsync();
+    }
+
+    this.getEnclaveType = () => {
+        return openDSU.constants.ENCLAVE_TYPES.WALLET_DB_ENCLAVE;
+    };
+
+    this.isInitialised = () => {
+        return initialised;
+    };
+
+    this.onCommitBatch = (forDID, callback, once)=>{
+        this.storageDB.onCommitBatch(callback, once);
+    }
+
+    const bindAutoPendingFunctions = require("../../utils/BindAutoPendingFunctions").bindAutoPendingFunctions;
+    bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent", "beginBatch", "isInitialised", "getEnclaveType", "getDID", "getUniqueIdAsync"]);
+
+    init();
+}
+
+module.exports = WalletDBEnclave;
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../constants/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/constants.js","../mixins/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
+const constants = require("../moduleConstants");
+
+function initialiseWalletDBEnclave(keySSI, did) {
+    const WalletDBEnclave = require("./impl/WalletDBEnclave");
+    return new WalletDBEnclave(keySSI);
+}
+
+function initialiseMemoryEnclave() {
+    const MemoryEnclave = require("./impl/MemoryEnclave");
+    return new MemoryEnclave();
+}
+
+function initialiseLightDBEnclave(dbName, slots) {
+    const LightDBEnclave = require("./impl/LightDBEnclave");
+    return new LightDBEnclave(dbName, slots);
+}
+
+function initialiseRemoteEnclave(clientDID, remoteDID) {
+    console.warn("initialiseRemoteEnclave is deprecated. Use initialiseCloudEnclaveClient instead");
+    const CloudEnclave = require("./impl/CloudEnclaveClient");
+    return new CloudEnclave(clientDID, remoteDID);
+}
+
+function initialiseCloudEnclaveClient(clientDID, remoteDID) {
+    const CloudEnclave = require("./impl/CloudEnclaveClient");
+    return new CloudEnclave(clientDID, remoteDID);
+}
+
+function initialiseVersionlessDSUEnclave(versionlessSSI) {
+    const VersionlessDSUEnclave = require("./impl/VersionlessDSUEnclave");
+    return new VersionlessDSUEnclave(versionlessSSI);
+}
+
+function connectEnclave(forDID, enclaveDID, ...args) {
+    throw Error("Not implemented");
+}
+
+const enclaveConstructors = {};
+
+function createEnclave(enclaveType, ...args) {
+    if (typeof enclaveConstructors[enclaveType] !== "function") {
+        throw Error(`No constructor function registered for enclave type ${enclaveType}`);
+    }
+
+    return enclaveConstructors[enclaveType](...args);
+}
+
+function registerEnclave(enclaveType, enclaveConstructor) {
+    if (typeof enclaveConstructors[enclaveType] !== "undefined") {
+        throw Error(`A constructor function already registered for enclave type ${enclaveType}`);
+    }
+    enclaveConstructors[enclaveType] = enclaveConstructor;
+}
+
+function convertWalletDBEnclaveToVersionlessEnclave(walletDBEnclave, callback) {
+    const openDSU = require("opendsu");
+    const resolver = openDSU.loadAPI("resolver");
+    walletDBEnclave.getAllTableNames(undefined, async (err, tableNames) => {
+        if (err) {
+            return callback(err);
+        }
+
+        let error;
+        let versionlessDSU;
+        [error, versionlessDSU] = await $$.call(resolver.createVersionlessDSU);
+        if (error) {
+            return callback(error);
+        }
+
+        let versionlessSSI;
+        [error, versionlessSSI] = await $$.call(versionlessDSU.getKeySSIAsObject);
+        if (error) {
+            return callback(error);
+        }
+
+        let versionlessEnclave = initialiseVersionlessDSUEnclave(versionlessSSI);
+
+        versionlessEnclave.on("initialised", async () => {
+            for (let i = 0; i < tableNames.length; i++) {
+                [error, records] = await $$.call(walletDBEnclave.getAllRecords, undefined, tableNames[i]);
+                if (error) {
+                    return callback(error);
+                }
+
+                for (let j = 0; j < records.length; j++) {
+                    [error, res] = await $$.call(versionlessEnclave.insertRecord, undefined, tableNames[i], records[j].pk, records[j]);
+                    if (error) {
+                        [error, res] = await $$.call(versionlessEnclave.updateRecord, undefined, tableNames[i], records[j].pk, records[j], records[j]);
+                        if (error) {
+                            return callback(error);
+                        }
+                    }
+                }
+
+            }
+            callback(undefined, versionlessEnclave);
+        })
+    })
+}
+
+function convertWalletDBEnclaveToCloudEnclave(walletDBEnclave, cloudEnclaveServerDIO, callback) {
+    const openDSU = require("opendsu");
+    const resolver = openDSU.loadAPI("resolver");
+    const w3cDidAPI = openDSU.loadAPI("w3cdid");
+    const keySSIApi = openDSU.loadAPI("keyssi");
+    walletDBEnclave.getAllTableNames(undefined, async (err, tableNames) => {
+        if (err) {
+            return callback(err);
+        }
+
+        let error;
+        let keySSI;
+
+        [error, keySSI] = await $$.call(walletDBEnclave.getKeySSI);
+        if (err) {
+            return callback(error);
+        }
+
+        if (typeof keySSI === "string") {
+            try {
+                keySSI = keySSIApi.parse(keySSI);
+            } catch (err) {
+                return callback(err);
+            }
+        }
+
+        const domain = keySSI.getDLDomain();
+
+        const CLOUD_ENCLAVE_NAME = "cloudEnclave";
+        let cloudEnclaveDIDDocument;
+        [error, cloudEnclaveDIDDocument] = await $$.call(w3cDidAPI.createIdentity, "ssi:name", domain, CLOUD_ENCLAVE_NAME);
+        if (error) {
+            return callback(error);
+        }
+        const cloudEnclaveDID = cloudEnclaveDIDDocument.getIdentifier();
+        let cloudEnclave = initialiseCloudEnclaveClient(cloudEnclaveDID, cloudEnclaveServerDIO);
+
+        cloudEnclave.on("initialised", async () => {
+            for (let i = 0; i < tableNames.length; i++) {
+                [error, records] = await $$.call(walletDBEnclave.getAllRecords, undefined, tableNames[i]);
+                if (error) {
+                    return callback(error);
+                }
+
+                [error, res] = await $$.call(cloudEnclave.grantWriteAccess, cloudEnclaveDID, tableNames[i]);
+                if (error) {
+                    return callback(error);
+                }
+
+                for (let j = 0; j < records.length; j++) {
+                    [error, res] = await $$.call(cloudEnclave.insertRecord, cloudEnclaveDID, tableNames[i], records[j].pk, records[j]);
+                    if (error) {
+                        [error, res] = await $$.call(cloudEnclave.updateRecord, cloudEnclaveDID, tableNames[i], records[j].pk, records[j], records[j]);
+                        if (error) {
+                            return callback(error);
+                        }
+                    }
+                }
+
+            }
+            callback(undefined, cloudEnclave);
+        })
+    })
+}
+
+registerEnclave(constants.ENCLAVE_TYPES.MEMORY_ENCLAVE, initialiseMemoryEnclave);
+registerEnclave(constants.ENCLAVE_TYPES.WALLET_DB_ENCLAVE, initialiseWalletDBEnclave);
+registerEnclave(constants.ENCLAVE_TYPES.LIGHT_DB_ENCLAVE, initialiseLightDBEnclave);
+registerEnclave(constants.ENCLAVE_TYPES.CLOUD_ENCLAVE, initialiseCloudEnclaveClient)
+registerEnclave(constants.ENCLAVE_TYPES.VERSIONLESS_DSU_ENCLAVE, initialiseVersionlessDSUEnclave);
+
+module.exports = {
+    initialiseWalletDBEnclave,
+    initialiseMemoryEnclave,
+    initialiseLightDBEnclave,
+    initialiseRemoteEnclave,
+    initialiseCloudEnclaveClient,
+    initialiseVersionlessDSUEnclave,
+    connectEnclave,
+    createEnclave,
+    registerEnclave,
+    EnclaveMixin: require("./mixins/Enclave_Mixin"),
+    ProxyMixin: require("./mixins/ProxyMixin"),
+    convertWalletDBEnclaveToVersionlessEnclave,
+    convertWalletDBEnclaveToCloudEnclave
+}
+
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./impl/CloudEnclaveClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/CloudEnclaveClient.js","./impl/LightDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/LightDBEnclave.js","./impl/MemoryEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js","./impl/VersionlessDSUEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/VersionlessDSUEnclave.js","./impl/WalletDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js","./mixins/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js","./mixins/ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/ProxyMixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js":[function(require,module,exports){
+const constants = require("../constants/constants");
 
 function Enclave_Mixin(target, did, keySSI) {
     const openDSU = require("opendsu");
@@ -26415,8 +27848,8 @@ function Enclave_Mixin(target, did, keySSI) {
             return callback(undefined, pathKeyMapping);
         }
 
-        const EnclaveHandler = require("./WalletDBEnclaveHandler");
-        const PathKeyMapping = require("../impl/PathKeyMapping");
+        const EnclaveHandler = require("../KeySSIMappings/PathKeySSIMapping/WalletDBEnclaveHandler");
+        const PathKeyMapping = require("../KeySSIMappings/PathKeySSIMapping/PathKeyMapping");
 
         try {
             target.getDSU((err, dsuInstance) => {
@@ -26502,7 +27935,23 @@ function Enclave_Mixin(target, did, keySSI) {
         target.storageDB.insertRecord(table, pk, encryptedRecord, callback);
     }
 
+    target._insertRecord = (table, pk, plainRecord, encryptedRecord, callback) => {
+        if (typeof encryptedRecord === "function") {
+            callback = encryptedRecord;
+            encryptedRecord = plainRecord;
+        }
+        target.storageDB.insertRecord(table, pk, encryptedRecord, callback);
+    }
+
     target.updateRecord = (forDID, table, pk, plainRecord, encryptedRecord, callback) => {
+        if (typeof encryptedRecord === "function") {
+            callback = encryptedRecord;
+            encryptedRecord = plainRecord;
+        }
+        target.storageDB.updateRecord(table, pk, encryptedRecord, callback);
+    }
+
+    target._updateRecord = (table, pk, plainRecord, encryptedRecord, callback) => {
         if (typeof encryptedRecord === "function") {
             callback = encryptedRecord;
             encryptedRecord = plainRecord;
@@ -26514,6 +27963,10 @@ function Enclave_Mixin(target, did, keySSI) {
         target.storageDB.getRecord(table, pk, callback);
     };
 
+    target._getRecord = (table, pk, callback) => {
+        target.storageDB.getRecord(table, pk, callback);
+    }
+
     target.getAllTableNames = (forDID, callback) => {
         target.storageDB.getAllTableNames(callback);
     }
@@ -26522,7 +27975,15 @@ function Enclave_Mixin(target, did, keySSI) {
         target.storageDB.filter(table, filter, sort, limit, callback);
     }
 
+    target._filter = (table, filter, sort, limit, callback) => {
+        target.storageDB.filter(table, filter, sort, limit, callback);
+    }
+
     target.deleteRecord = (forDID, table, pk, callback) => {
+        target.storageDB.deleteRecord(table, pk, callback);
+    }
+
+    target._deleteRecord = (table, pk, callback) => {
         target.storageDB.deleteRecord(table, pk, callback);
     }
 
@@ -26575,6 +28036,10 @@ function Enclave_Mixin(target, did, keySSI) {
     }
 
     target.getAllRecords = (forDID, tableName, callback) => {
+        target.storageDB.getAllRecords(tableName, callback);
+    }
+
+    target._getAllRecords = (tableName, callback) => {
         target.storageDB.getAllRecords(tableName, callback);
     }
 
@@ -27125,12 +28590,12 @@ function Enclave_Mixin(target, did, keySSI) {
             target[trimmedFnName] = (...args) => {
                 args.shift();
                 args.unshift(target);
-                keySSISpace[fnName](...args);
+                return keySSISpace[fnName](...args);
             }
         } else if (fnName.startsWith("createTemplate")) {
             target[fnName] = (...args) => {
                 args.shift();
-                keySSISpace[fnName](...args);
+                return keySSISpace[fnName](...args);
             }
         }
     })
@@ -27245,323 +28710,16 @@ function Enclave_Mixin(target, did, keySSI) {
 
 module.exports = Enclave_Mixin;
 
-},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../impl/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js","./WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/LightDBEnclaveClient.js":[function(require,module,exports){
-(function (process){(function (){
-const {createCommandObject} = require("./lib/createCommandObject");
-
-function LightDBEnclaveClient(dbName, serverAddress) {
-    const openDSU = require("opendsu");
-    const http = openDSU.loadAPI("http");
-    const system = openDSU.loadAPI("system");
-    serverAddress = serverAddress || process.env.LIGHT_DB_SERVER_ADDRESS || `${system.getBaseURL()}/lightDB`;
-    let initialised = false;
-    const ProxyMixin = require("./ProxyMixin");
-    ProxyMixin(this);
-
-    this.isInitialised = () => {
-        return initialised;
-    }
-
-    this.__putCommandObject = (commandName, ...args) => {
-        const callback = args.pop();
-        const url = `${serverAddress}/executeCommand/${dbName}`;
-        let command = createCommandObject(commandName, ...args);
-        let didDocument = args[0];
-        if (didDocument === $$.SYSTEM_IDENTIFIER) {
-            didDocument = $$.SYSTEM_DID_DOCUMENT;
-        }
-
-        command = JSON.stringify(command);
-        didDocument.sign(command, (err, signature) => {
-            if (err) {
-                return callback(err);
-            }
-
-            let signedCommand = {};
-            signedCommand.command = command;
-            signedCommand.signature = signature.toString("base64");
-            http.doPut(url, JSON.stringify(signedCommand), (err, response) => {
-                if (err) {
-                    return callback(err);
-                }
-
-                try {
-                    response = JSON.parse(response);
-                } catch (e) {
-                    return callback(e);
-                }
-
-                callback(undefined, response);
-            });
-        })
-    }
-
-    this.createDatabase = (dbName, callback) => {
-        const url = `${serverAddress}/createDatabase/${dbName}`;
-        http.doPut(url, "", callback);
-    }
-
-    const originalInsert = this.insertRecord;
-    this.insertRecord = (forDID, table, pk, encryptedRecord, callback) => {
-        this.hasWriteAccess(forDID, (err, hasAccess) => {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!hasAccess) {
-                return callback(Error("No write access"));
-            }
-
-            originalInsert(forDID, table, pk, encryptedRecord, callback);
-        });
-    }
-
-    const originalUpdate = this.updateRecord;
-    this.updateRecord = (forDID, table, pk, plainRecord, encryptedRecord, callback) => {
-        this.hasWriteAccess(forDID, (err, hasAccess) => {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!hasAccess) {
-                return callback(Error("No write access"));
-            }
-
-            originalUpdate(forDID, table, pk, plainRecord, encryptedRecord, callback);
-        });
-    }
-
-    const originalDelete = this.deleteRecord;
-    this.deleteRecord = (forDID, table, pk, callback) => {
-        this.hasWriteAccess(forDID, (err, hasAccess) => {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!hasAccess) {
-                return callback(Error("No write access"));
-            }
-
-            originalDelete(forDID, table, pk, callback);
-        });
-    }
-
-    const originalGet = this.getRecord;
-    this.getRecord = (forDID, table, pk, callback) => {
-        this.hasReadAccess(forDID, (err, hasAccess) => {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!hasAccess) {
-                return callback(Error("No read access"));
-            }
-
-            originalGet(forDID, table, pk, callback);
-        });
-    }
-
-    const originalAddInQueue = this.addInQueue;
-    this.addInQueue = (forDID, queueName, encryptedObject, ensureUniqueness, callback) => {
-        this.hasWriteAccess(forDID, (err, hasAccess) => {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!hasAccess) {
-                return callback(Error("No write access"));
-            }
-
-            originalAddInQueue(forDID, queueName, encryptedObject, ensureUniqueness, callback);
-        });
-    }
-
-    const originalGetObjectFromQueue = this.getObjectFromQueue;
-    this.getObjectFromQueue = (forDID, queueName, hash, callback) => {
-        this.hasReadAccess(forDID, (err, hasAccess) => {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!hasAccess) {
-                return callback(Error("No read access"));
-            }
-
-            originalGetObjectFromQueue(forDID, queueName, hash, callback);
-        });
-    }
-
-    const originalDeleteObjectFromQueue = this.deleteObjectFromQueue;
-    this.deleteObjectFromQueue = (forDID, queueName, hash, callback) => {
-        this.hasWriteAccess(forDID, (err, hasAccess) => {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!hasAccess) {
-                return callback(Error("No write access"));
-            }
-
-            originalDeleteObjectFromQueue(forDID, queueName, hash, callback);
-        });
-    }
-}
-
-module.exports = LightDBEnclaveClient;
-}).call(this)}).call(this,require('_process'))
-
-},{"./ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./lib/createCommandObject":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js":[function(require,module,exports){
-function MemoryEnclave() {
-    const EnclaveMixin = require("./Enclave_Mixin");
-    EnclaveMixin(this);
-    const openDSU = require("opendsu");
-    const db = openDSU.loadAPI("db");
-    let initialised = false;
-    const init = () => {
-        this.storageDB = db.getInMemoryDB();
-        setTimeout(async () => {
-            initialised = true;
-            this.dispatchEvent("initialised");
-        })
-    }
-
-    this.getEnclaveType = () => {
-        return openDSU.constants.ENCLAVE_TYPES.MEMORY_ENCLAVE;
-    };
-
-    this.getKeySSI = (callback) => {
-        callback(undefined, "ssi::::")
-    }
-    this.isInitialised = () => {
-        return initialised
-    }
-
-    init();
-}
-
-module.exports = MemoryEnclave;
-},{"./Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/PathKeyMapping.js":[function(require,module,exports){
-function PathKeyMapping(enclaveHandler) {
-    const utils = require("./utils");
-    const openDSU = require("opendsu");
-    const utilsAPI = openDSU.loadAPI("utils");
-    utilsAPI.ObservableMixin(this);
-    const keySSISpace = openDSU.loadAPI("keyssi");
-    let pathKeysMapping = {};
-    let initialised = false;
-    const init = async () => {
-        let paths = await $$.promisify(enclaveHandler.loadPaths)();
-        pathKeysMapping = await $$.promisify(utils.getKeySSIsMappingFromPathKeys)(paths);
-
-        this.finishInitialisation();
-        this.dispatchEvent("initialised");
-    };
-
-    this.isInitialised = () => {
-        return initialised;
-    };
-
-    this.storePathKeySSI = (pathKeySSI, callback) => {
-        if (typeof pathKeySSI === "string") {
-            try {
-                pathKeySSI = keySSISpace.parse(pathKeySSI);
-            } catch (e) {
-                return callback(e);
-            }
-        }
-        pathKeySSI = pathKeySSI.getIdentifier();
-
-        const storePathKeySSI = () => {
-            enclaveHandler.storePathKeySSI(pathKeySSI, async err => {
-                if (err) {
-                    return callback(err);
-                }
-                try {
-                    const derivedKeySSIs = await $$.promisify(utils.getKeySSIMapping)(pathKeySSI);
-                    pathKeysMapping = utils.mergeMappings(pathKeysMapping, derivedKeySSIs);
-                    callback();
-                } catch (e) {
-                    callback(e);
-                }
-            });
-        }
-        storePathKeySSI();
-    };
-
-    this.getCapableOfSigningKeySSI = (keySSI, callback) => {
-        if (typeof keySSI === "string") {
-            try {
-                keySSI = keySSISpace.parse(keySSI);
-            } catch (e) {
-                return callback(e);
-            }
-        }
-        keySSI = keySSI.getIdentifier();
-        let capableOfSigningKeySSI
-        try {
-            capableOfSigningKeySSI = pathKeysMapping[openDSU.constants.KEY_SSIS.SEED_SSI][keySSI];
-        } catch (e) {
-            return callback(e);
-        }
-
-        if (typeof capableOfSigningKeySSI === "undefined") {
-            return callback(Error("The provided key SSI does not have write privileges."));
-        }
-
-        try {
-            capableOfSigningKeySSI = keySSISpace.parse(capableOfSigningKeySSI);
-        } catch (e) {
-            return callback(e);
-        }
-        callback(undefined, capableOfSigningKeySSI);
-    };
-
-    this.getReadForKeySSI = (keySSI, callback) => {
-        if (typeof keySSI === "string") {
-            try {
-                keySSI = keySSISpace.parse(keySSI);
-            } catch (e) {
-                return callback(e);
-            }
-        }
-        keySSI = keySSI.getIdentifier();
-        let readKeySSI
-        try {
-            readKeySSI = pathKeysMapping[openDSU.constants.KEY_SSIS.SREAD_SSI][keySSI];
-        } catch (e) {
-            return callback(e);
-        }
-
-        if (typeof readKeySSI === "undefined") {
-            return callback(Error("The provided key SSI does not have read privileges."));
-        }
-
-        try {
-            readKeySSI = keySSISpace.parse(readKeySSI);
-        } catch (e) {
-            return callback(e);
-        }
-
-        callback(undefined, readKeySSI);
-    }
-
-    this._getMapping = (callback) => {
-        callback(undefined, pathKeysMapping);
-    };
-
-    utilsAPI.bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent"]);
-    init();
-}
-
-module.exports = PathKeyMapping;
-},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/utils.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js":[function(require,module,exports){
+},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../KeySSIMappings/PathKeySSIMapping/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/PathKeySSIMapping/PathKeyMapping.js","../KeySSIMappings/PathKeySSIMapping/WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/PathKeySSIMapping/WalletDBEnclaveHandler.js","../constants/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/constants.js","opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/ProxyMixin.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createOpenDSUErrorWrapper} = require("../../error");
 
 function ProxyMixin(target) {
-    const commandNames = require("./lib/commandsNames");
+    const commandNames = require("../constants/commandsNames");
     const ObservableMixin = require("../../utils/ObservableMixin");
     ObservableMixin(target);
+    const EnclaveMixin = require("./Enclave_Mixin");
+    EnclaveMixin(target);
 
     target.grantWriteAccess = (forDID, callback) => {
         target.__putCommandObject(commandNames.GRANT_WRITE_ACCESS, forDID, callback);
@@ -27571,12 +28729,12 @@ function ProxyMixin(target) {
         target.__putCommandObject(commandNames.GRANT_READ_ACCESS, forDID, callback);
     }
 
-    target.revokeWriteAccess = (forDID, callback) => {
-        target.__putCommandObject(commandNames.REVOKE_WRITE_ACCESS, forDID, callback);
-    }
-
     target.revokeReadAccess = (forDID, callback) => {
         target.__putCommandObject(commandNames.REVOKE_READ_ACCESS, forDID, callback);
+    }
+
+    target.revokeExecutionAccess = (forDID, callback) => {
+        target.__putCommandObject(commandNames.REVOKE_EXECUTION_ACCESS, forDID, callback);
     }
 
     target.hasWriteAccess = (forDID, callback) => {
@@ -27585,6 +28743,10 @@ function ProxyMixin(target) {
 
     target.hasReadAccess = (forDID, callback) => {
         target.__putCommandObject(commandNames.HAS_READ_ACCESS, forDID, callback);
+    }
+
+    target.hasExecutionAccess = (forDID, callback) => {
+        target.__putCommandObject(commandNames.HAS_EXECUTION_ACCESS, forDID, callback);
     }
 
     target.getCollections = (callback) => {
@@ -27791,469 +28953,7 @@ function ProxyMixin(target) {
 module.exports = ProxyMixin;
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./lib/commandsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/VersionlessDSUEnclave.js":[function(require,module,exports){
-function VersionlessDSUEnclave(keySSI, did) {
-    const openDSU = require("opendsu");
-    const constants = require("./constants");
-    const db = openDSU.loadAPI("db");
-    const resolver = openDSU.loadAPI("resolver");
-    const config = openDSU.loadAPI("config");
-    const keySSISpace = openDSU.loadAPI("keyssi");
-    const DB_NAME = constants.DB_NAMES.WALLET_DB_ENCLAVE;
-    const EnclaveMixin = require("./Enclave_Mixin");
-
-    EnclaveMixin(this, did, keySSI);
-
-    let versionlessDSU;
-    let initialised = false;
-    const init = async () => {
-        if (!keySSI) {
-            try {
-                versionlessDSU = await $$.promisify(resolver.createVersionlessDSU)();
-            } catch (e) {
-                throw createOpenDSUErrorWrapper(`Failed to create versionless DSU`, e);
-            }
-
-            try {
-                keySSI = await $$.promisify(versionlessDSU.getKeySSIAsString)();
-            } catch (e) {
-                throw createOpenDSUErrorWrapper(`Failed to get enclave DSU KeySSI`, e);
-            }
-            try {
-                await $$.promisify(config.setEnv)(openDSU.constants.MAIN_ENCLAVE.KEY_SSI, keySSI);
-            } catch (e) {
-                throw createOpenDSUErrorWrapper(`Failed to store enclave DSU KeySSI`, e);
-            }
-        }
-
-        await $$.promisify(resolver.invalidateDSUCache)(keySSI);
-
-        this.storageDB = db.getVersionlessDB(DB_NAME, {keySSI});
-        this.storageDB.on("error", (err) => {
-            this.dispatchEvent("error", err);
-        });
-        this.storageDB.on("initialised", async () => {
-            if (typeof keySSI === "string") {
-                keySSI = keySSISpace.parse(keySSI);
-            }
-            let privateKey;
-            try {
-                privateKey = await $$.promisify(this.storageDB.getRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0);
-            } catch (e) {
-            }
-            if (!privateKey) {
-                await $$.promisify(this.storageDB.insertRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0, {
-                    privateKey: keySSI.getEncryptionKey(),
-                });
-            }
-
-            initialised = true;
-            this.finishInitialisation();
-            this.dispatchEvent("initialised");
-        });
-    };
-
-    this.getKeySSI = (forDID, callback) => {
-        if (typeof forDID === "function") {
-            callback = forDID;
-            forDID = undefined;
-        }
-        callback(undefined, keySSI);
-    };
-
-    this.getEnclaveType = () => {
-        return openDSU.constants.ENCLAVE_TYPES.VERSIONLESS_DSU_ENCLAVE;
-    };
-
-    this.isInitialised = () => {
-        return initialised;
-    };
-
-    const bindAutoPendingFunctions = require("../../utils/BindAutoPendingFunctions").bindAutoPendingFunctions;
-    bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent", "beginBatch", "isInitialised", "getEnclaveType"]);
-
-    init();
-}
-
-module.exports = VersionlessDSUEnclave;
-
-},{"../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js":[function(require,module,exports){
-const {createOpenDSUErrorWrapper} = require("../../error");
-
-function WalletDBEnclave(keySSI, did) {
-    const openDSU = require("opendsu");
-    const constants = require("./constants");
-    const db = openDSU.loadAPI("db")
-    const scAPI = openDSU.loadAPI("sc");
-    const resolver = openDSU.loadAPI("resolver");
-    const config = openDSU.loadAPI("config");
-    const keySSISpace = openDSU.loadAPI("keyssi");
-    const DB_NAME = constants.DB_NAMES.WALLET_DB_ENCLAVE;
-    const EnclaveMixin = require("./Enclave_Mixin");
-    EnclaveMixin(this, did, keySSI);
-    let enclaveDSU;
-    let initialised = false;
-    const init = async () => {
-        if (!keySSI) {
-            try {
-                keySSI = await $$.promisify(config.getEnv)(openDSU.constants.MAIN_ENCLAVE.KEY_SSI);
-            } catch (e) {
-                console.log("Not able to retrieve the keyssi of the enclave. A new one will be created.");
-            }
-
-            if (!keySSI) {
-                let vaultDomain;
-                try {
-                    vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
-                } catch (e) {
-                    throw createOpenDSUErrorWrapper(`Failed to get vault domain`, e);
-                }
-
-                try {
-                    enclaveDSU = await $$.promisify(resolver.createSeedDSU)(vaultDomain);
-                } catch (e) {
-                    throw createOpenDSUErrorWrapper(`Failed to create Seed DSU`, e);
-                }
-
-                try {
-                    keySSI = await $$.promisify(enclaveDSU.getKeySSIAsString)();
-                } catch (e) {
-                    throw createOpenDSUErrorWrapper(`Failed to get enclave DSU KeySSI`, e);
-                }
-                try {
-                    await $$.promisify(config.setEnv)(openDSU.constants.MAIN_ENCLAVE.KEY_SSI, keySSI);
-                } catch (e) {
-                    throw createOpenDSUErrorWrapper(`Failed to store enclave DSU KeySSI`, e);
-                }
-            }
-        }
-
-        try {
-            await $$.promisify(resolver.invalidateDSUCache)(keySSI);
-            this.storageDB = db.getSimpleWalletDB(DB_NAME, {keySSI});
-        } catch (e) {
-            this.dispatchEvent("error", e)
-        }
-        this.storageDB.on("error", err => {
-            this.dispatchEvent("error", err)
-        });
-        this.storageDB.on("initialised", async () => {
-            if (typeof keySSI === "string") {
-                keySSI = keySSISpace.parse(keySSI);
-            }
-            enclaveDSU = this.storageDB.getStorageDSU();
-            let privateKey;
-            try {
-                privateKey = await $$.promisify(this.storageDB.getRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0);
-            } catch (e) {
-            }
-            if (!privateKey) {
-                let batchId;
-                try{
-                    batchId = await this.storageDB.startOrAttachBatchAsync();
-                } catch (e) {
-                    this.dispatchEvent("error", e);
-                }
-
-                try {
-                    await $$.promisify(this.storageDB.insertRecord)(constants.TABLE_NAMES.PATH_KEY_SSI_PRIVATE_KEYS, 0, {privateKey: keySSI.getPrivateKey()});
-                    await this.storageDB.commitBatchAsync(batchId);
-                } catch (e) {
-                    const insertError = createOpenDSUErrorWrapper(`Failed to insert private key`, e);
-                    try {
-                        await this.storageDB.cancelBatchAsync(batchId);
-                    } catch (error) {
-                        //not relevant...
-                        console.log(error);
-                    }
-                    this.dispatchEvent("error", insertError);
-                    return
-                }
-            }
-
-            initialised = true;
-            this.finishInitialisation();
-            this.dispatchEvent("initialised");
-        })
-    };
-
-    this.getKeySSI = (forDID, callback) => {
-        if (typeof forDID === "function") {
-            callback = forDID;
-            forDID = undefined;
-        }
-        callback(undefined, keySSI);
-    }
-
-    this.getDSU = (forDID, callback) => {
-        if (typeof forDID === "function") {
-            callback = forDID;
-            forDID = undefined;
-        }
-        callback(undefined, enclaveDSU);
-    }
-
-    this.getUniqueIdAsync = async () => {
-        let keySSI = await $$.promisify(this.getKeySSI)();
-        return await keySSI.getAnchorIdAsync();
-    }
-
-    this.getEnclaveType = () => {
-        return openDSU.constants.ENCLAVE_TYPES.WALLET_DB_ENCLAVE;
-    };
-
-    this.isInitialised = () => {
-        return initialised;
-    };
-
-    this.onCommitBatch = (forDID, callback, once)=>{
-        this.storageDB.onCommitBatch(callback, once);
-    }
-
-    const bindAutoPendingFunctions = require("../../utils/BindAutoPendingFunctions").bindAutoPendingFunctions;
-    bindAutoPendingFunctions(this, ["on", "off", "dispatchEvent", "beginBatch", "isInitialised", "getEnclaveType", "getDID", "getUniqueIdAsync"]);
-
-    init();
-}
-
-module.exports = WalletDBEnclave;
-},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","./Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclaveHandler.js":[function(require,module,exports){
-const pathModule = require("path");
-const constants = require("./constants");
-
-function WalletDBEnclaveHandler(walletDBEnclaveDSU, config) {
-    const defaultConfig = {
-        maxNoScatteredKeys: 5000
-    }
-    Object.assign(defaultConfig, config);
-    config = defaultConfig;
-    const openDSU = require("opendsu");
-    const utilsAPI = openDSU.loadAPI("utils");
-    const keySSISpace = openDSU.loadAPI("keyssi");
-    utilsAPI.ObservableMixin(this);
-    let initialised = false;
-
-    this.isInitialised = () => {
-        return initialised;
-    };
-
-    this.storePathKeySSI = (pathKeySSI, callback) => {
-        if (typeof pathKeySSI === "string") {
-            try {
-                pathKeySSI = keySSISpace.parse(pathKeySSI);
-            } catch (e) {
-                return callback(e);
-            }
-        }
-        const __storePathKeySSI = () => {
-            const filePath = pathModule.join(constants.PATHS.SCATTERED_PATH_KEYS, pathKeySSI.getSpecificString(), pathKeySSI.getIdentifier());
-            walletDBEnclaveDSU.startOrAttachBatch((err, batchId) => {
-                if (err) {
-                    return callback(err);
-                }
-
-                walletDBEnclaveDSU.writeFile(filePath, async err => {
-                    if (err) {
-                        const writeFileError = createOpenDSUErrorWrapper(`Failed to store path key SSI <${pathKeySSI.getIdentifier()}>`, err);
-                        try {
-                            await walletDBEnclaveDSU.cancelBatchAsync(batchId);
-                        } catch (e) {
-                            return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, e, writeFileError));
-                        }
-                        return callback(writeFileError);
-                    }
-
-                    try {
-                        const files = await $$.promisify(walletDBEnclaveDSU.listFiles)(constants.PATHS.SCATTERED_PATH_KEYS);
-                        if (files.length === config.maxNoScatteredKeys) {
-                            try {
-                                await compactPathKeys();
-                            } catch (e) {
-                                const compactPathKeysError = createOpenDSUErrorWrapper(`Failed to compact path keys`, e);
-                                try {
-                                    await walletDBEnclaveDSU.cancelBatchAsync();
-                                } catch (error) {
-                                    return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, error, compactPathKeysError));
-                                }
-                                return callback(compactPathKeysError);
-                            }
-                        }
-                    } catch (e) {
-                        const listFilesError = createOpenDSUErrorWrapper(`Failed to list files`, e);
-                        try {
-                            await walletDBEnclaveDSU.cancelBatchAsync(batchId);
-                        } catch (error) {
-                            return callback(createOpenDSUErrorWrapper(`Failed to cancel batch`, error, listFilesError));
-                        }
-                        return callback(listFilesError);
-                    }
-
-                    walletDBEnclaveDSU.commitBatch(batchId, callback);
-                })
-            })
-        };
-
-        __storePathKeySSI();
-    };
-
-    const compactPathKeys = async () => {
-        let compactedContent = "";
-        const crypto = require("opendsu").loadAPI("crypto");
-        const files = await $$.promisify(walletDBEnclaveDSU.listFiles)(constants.PATHS.SCATTERED_PATH_KEYS);
-
-        for (let i = 0; i < files.length; i++) {
-            const {key, value} = getKeyValueFromPath(files[i]);
-            compactedContent = `${compactedContent}${key} ${value}\n`;
-        }
-
-        compactedContent = compactedContent.slice(0, compactedContent.length - 1);
-        const fileName = crypto.encodeBase58(crypto.generateRandom(16));
-        await $$.promisify(walletDBEnclaveDSU.writeFile)(pathModule.join(constants.PATHS.COMPACTED_PATH_KEYS, fileName), compactedContent);
-
-        for (let i = 0; i < files.length; i++) {
-            const filePath = pathModule.join(constants.PATHS.SCATTERED_PATH_KEYS, files[i]);
-            await $$.promisify(walletDBEnclaveDSU.delete)(filePath);
-        }
-    }
-
-    const getKeyValueFromPath = (pth) => {
-        const lastSegmentIndex = pth.lastIndexOf("/");
-        const key = pth.slice(0, lastSegmentIndex);
-        const value = pth.slice(lastSegmentIndex + 1);
-        return {
-            key, value
-        }
-    }
-
-    this.loadPaths = (callback) => {
-        const __loadPaths = () => {
-            loadCompactedPathKeys((err, compactedKeys) => {
-                if (err) {
-                    return callback(err);
-                }
-
-                loadScatteredPathKeys(async (err, scatteredKeys) => {
-                    if (err) {
-                        return callback(err);
-                    }
-
-
-                    callback(undefined, {...compactedKeys, ...scatteredKeys});
-                })
-            });
-        }
-        __loadPaths();
-    }
-
-    const loadScatteredPathKeys = (callback) => {
-        const pathKeyMap = {};
-        walletDBEnclaveDSU.listFiles(constants.PATHS.SCATTERED_PATH_KEYS, async (err, files) => {
-            if (err) {
-                return callback(err);
-            }
-
-            for (let i = 0; i < files.length; i++) {
-                const {key, value} = getKeyValueFromPath(files[i]);
-                pathKeyMap[key] = value;
-            }
-
-            callback(undefined, pathKeyMap);
-        });
-    }
-
-    const loadCompactedPathKeys = (callback) => {
-        let pathKeyMap = {};
-        const compactedValuesLocation = constants.PATHS.COMPACTED_PATH_KEYS;
-        walletDBEnclaveDSU.listFiles(compactedValuesLocation, async (err, files) => {
-            if (err) {
-                return callback(err);
-            }
-
-            try {
-                for (let i = 0; i < files.length; i++) {
-                    const filePath = pathModule.join(compactedValuesLocation, files[i]);
-                    let compactedFileContent = await $$.promisify(walletDBEnclaveDSU.readFile)(filePath);
-                    compactedFileContent = compactedFileContent.toString();
-                    const partialKeyMap = mapFileContent(compactedFileContent);
-                    pathKeyMap = {...pathKeyMap, ...partialKeyMap};
-                }
-            } catch (e) {
-                return callback(e);
-            }
-
-
-            callback(undefined, pathKeyMap);
-        });
-    }
-
-    const mapFileContent = (fileContent) => {
-        const pathKeyMap = {};
-        const fileLines = fileContent.split("\n");
-        for (let i = 0; i < fileLines.length; i++) {
-            const splitLine = fileLines[i].split(" ");
-            pathKeyMap[splitLine[0]] = splitLine[1];
-        }
-
-        return pathKeyMap;
-    }
-}
-
-module.exports = WalletDBEnclaveHandler;
-},{"./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js","opendsu":"opendsu","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/constants.js":[function(require,module,exports){
-module.exports = {
-    TABLE_NAMES: {
-        KEY_SSIS: "keyssis",
-        SREAD_SSIS: "sreadssis",
-        SEED_SSIS: "seedssis",
-        DIDS_PRIVATE_KEYS: "dids_private",
-        PATH_KEY_SSI_PRIVATE_KEYS: "path-keyssi-private-keys",
-        PRIVATE_KEYS: "private-keys",
-        SECRET_KEYS: "secret-keys"
-    },
-    PATHS: {
-        SCATTERED_PATH_KEYS: "/paths/scatteredPathKeys",
-        COMPACTED_PATH_KEYS: "/paths/compactedPathKeys"
-    },
-    DB_NAMES: {
-        WALLET_DB_ENCLAVE: "walletdb_enclave"
-    }
-};
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/commandsNames.js":[function(require,module,exports){
-module.exports = {
-    GRANT_WRITE_ACCESS: "grantWriteAccess",
-    GRANT_READ_ACCESS: "grantReadAccess",
-    REVOKE_WRITE_ACCESS: "revokeWriteAccess",
-    REVOKE_READ_ACCESS: "revokeReadAccess",
-    HAS_WRITE_ACCESS: "hasWriteAccess",
-    HAS_READ_ACCESS: "hasReadAccess",
-    INSERT_RECORD: "insertRecord",
-    UPDATE_RECORD: "updateRecord",
-    GET_RECORD: "getRecord",
-    DELETE_RECORD: "deleteRecord",
-    FILTER_RECORDS: "filter",
-    GET_ALL_RECORDS: "getAllRecords",
-    BEGIN_BATCH: "beginBatch",
-    COMMIT_BATCH: "commitBatch",
-    CANCEL_BATCH: "cancelBatch",
-    READ_KEY: "readKey",
-    WRITE_KEY: "writeKey",
-    ADD_IN_QUEUE: "addInQueue",
-    QUEUE_SIZE: "queueSize",
-    LIST_QUEUE: "listQueue",
-    GET_OBJECT_FROM_QUEUE: "getObjectFromQueue",
-    DELETE_OBJECT_FROM_QUEUE: "deleteObjectFromQueue",
-    STORE_SEED_SSI: "storeSeedSSI",
-    SIGN_FOR_KEY_SSI: "signForKeySSI",
-    STORE_DID: "storeDID",
-    ADD_PRIVATE_KEY_FOR_DID: "addPrivateKeyForDID",
-    SIGN_FOR_DID: "signForDID",
-    VERIFY_FOR_DID: "verifyForDID",
-    ENCRYPT_MESSAGE: "encryptMessage",
-    DECRYPT_MESSAGE: "decryptMessage",
-    GET_PRIVATE_INFO_FOR_DID:"getPrivateInfoForDID",
-    GET_COLLECTIONS: "getCollections"
-}
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/lib/createCommandObject.js":[function(require,module,exports){
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../constants/commandsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/commandsNames.js","./Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/utils/createCommandObject.js":[function(require,module,exports){
 const createCommandObject = (commandName, ...args) => {
     const commandID = require('crypto').randomBytes(32).toString("base64")
 
@@ -28269,7 +28969,7 @@ const createCommandObject = (commandName, ...args) => {
 module.exports = {
     createCommandObject
 }
-},{"crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/crypto-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/utils.js":[function(require,module,exports){
+},{"crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/crypto-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/utils/utils.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const keySSISpace = openDSU.loadAPI("keyssi");
 
@@ -28316,6 +29016,34 @@ const getKeySSIsMappingFromPathKeys = (pathKeyMap, callback) => {
     })
 }
 
+const getDerivedKeySSIs = (keySSI, callback) => {
+    if (typeof keySSI === "string") {
+        try {
+            keySSI = keySSISpace.parse(keySSI);
+        } catch (e) {
+            return callback(e);
+        }
+    }
+
+    const derivedKeySSIs = {};
+    const __getDerivedKeySSIsRecursively = (currentKeySSI, callback) => {
+        derivedKeySSIs[currentKeySSI.getTypeName()] = currentKeySSI.getIdentifier();
+        try {
+            currentKeySSI.derive((err, derivedKeySSI) => {
+                if (err) {
+                    return callback(err);
+                }
+
+                currentKeySSI = derivedKeySSI;
+                __getDerivedKeySSIsRecursively(currentKeySSI, callback);
+            });
+        } catch (e) {
+            return callback(undefined, derivedKeySSIs);
+        }
+    }
+
+    __getDerivedKeySSIsRecursively(keySSI, callback);
+}
 const getKeySSIMapping = (keySSI, callback) => {
     if (typeof keySSI === "string") {
         try {
@@ -28326,23 +29054,7 @@ const getKeySSIMapping = (keySSI, callback) => {
     }
     const keySSIsMap = {};
 
-    const __getDerivedKeySSIsRecursively = (currentKeySSI, derivedKeySSIsObj, callback) => {
-        derivedKeySSIsObj[currentKeySSI.getTypeName()] = currentKeySSI.getIdentifier();
-        try {
-            currentKeySSI.derive((err, derivedKeySSI) => {
-                if (err) {
-                    return callback(err);
-                }
-
-                currentKeySSI = derivedKeySSI;
-                __getDerivedKeySSIsRecursively(currentKeySSI, derivedKeySSIsObj, callback);
-            });
-        } catch (e) {
-            return callback(undefined, derivedKeySSIsObj);
-        }
-    }
-
-    __getDerivedKeySSIsRecursively(keySSI, {}, (err, _derivedKeySSIsObj)=>{
+    getDerivedKeySSIs(keySSI, (err, _derivedKeySSIsObj)=>{
         if (err) {
             return callback(err);
         }
@@ -28362,190 +29074,10 @@ const getKeySSIMapping = (keySSI, callback) => {
 module.exports = {
     getKeySSIsMappingFromPathKeys,
     getKeySSIMapping,
+    getDerivedKeySSIs,
     mergeMappings
 }
-},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
-const constants = require("../moduleConstants");
-
-function initialiseWalletDBEnclave(keySSI, did) {
-    const WalletDBEnclave = require("./impl/WalletDBEnclave");
-    return new WalletDBEnclave(keySSI);
-}
-
-function initialiseMemoryEnclave() {
-    const MemoryEnclave = require("./impl/MemoryEnclave");
-    return new MemoryEnclave();
-}
-
-function initialiseLightDBEnclaveClient(dbName) {
-    const LightDBEnclaveClient = require("./impl/LightDBEnclaveClient");
-    return new LightDBEnclaveClient(dbName);
-}
-
-function initialiseRemoteEnclave(clientDID, remoteDID) {
-    console.warn("initialiseRemoteEnclave is deprecated. Use initialiseCloudEnclaveClient instead");
-    const CloudEnclave = require("./impl/CloudEnclaveClient");
-    return new CloudEnclave(clientDID, remoteDID);
-}
-
-function initialiseCloudEnclaveClient(clientDID, remoteDID) {
-    const CloudEnclave = require("./impl/CloudEnclaveClient");
-    return new CloudEnclave(clientDID, remoteDID);
-}
-function initialiseVersionlessDSUEnclave(versionlessSSI) {
-    const VersionlessDSUEnclave = require("./impl/VersionlessDSUEnclave");
-    return new VersionlessDSUEnclave(versionlessSSI);
-}
-
-function connectEnclave(forDID, enclaveDID, ...args) {
-    throw Error("Not implemented");
-}
-
-const enclaveConstructors = {};
-
-function createEnclave(enclaveType, ...args) {
-    if (typeof enclaveConstructors[enclaveType] !== "function") {
-        throw Error(`No constructor function registered for enclave type ${enclaveType}`);
-    }
-
-    return enclaveConstructors[enclaveType](...args);
-}
-
-function registerEnclave(enclaveType, enclaveConstructor) {
-    if (typeof enclaveConstructors[enclaveType] !== "undefined") {
-        throw Error(`A constructor function already registered for enclave type ${enclaveType}`);
-    }
-    enclaveConstructors[enclaveType] = enclaveConstructor;
-}
-
-function convertWalletDBEnclaveToVersionlessEnclave(walletDBEnclave, callback) {
-    const openDSU = require("opendsu");
-    const resolver = openDSU.loadAPI("resolver");
-    walletDBEnclave.getAllTableNames(undefined, async (err, tableNames) => {
-        if (err) {
-            return callback(err);
-        }
-
-        let error;
-        let versionlessDSU;
-        [error, versionlessDSU] = await $$.call(resolver.createVersionlessDSU);
-        if (error) {
-            return callback(error);
-        }
-
-        let versionlessSSI;
-        [error, versionlessSSI] = await $$.call(versionlessDSU.getKeySSIAsObject);
-        if (error) {
-            return callback(error);
-        }
-
-        let versionlessEnclave = initialiseVersionlessDSUEnclave(versionlessSSI);
-
-        versionlessEnclave.on("initialised", async () => {
-            for (let i = 0; i < tableNames.length; i++) {
-                [error, records] = await $$.call(walletDBEnclave.getAllRecords, undefined, tableNames[i]);
-                if (error) {
-                    return callback(error);
-                }
-
-                for (let j = 0; j < records.length; j++) {
-                    [error, res] = await $$.call(versionlessEnclave.insertRecord, undefined, tableNames[i], records[j].pk, records[j]);
-                    if (error) {
-                        [error, res] = await $$.call(versionlessEnclave.updateRecord, undefined, tableNames[i], records[j].pk, records[j], records[j]);
-                        if (error) {
-                            return callback(error);
-                        }
-                    }
-                }
-
-            }
-            callback(undefined, versionlessEnclave);
-        })
-    })
-}
-
-function convertWalletDBEnclaveToCloudEnclave(walletDBEnclave, cloudEnclaveServerDIO, callback) {
-    const openDSU = require("opendsu");
-    const resolver = openDSU.loadAPI("resolver");
-    const w3cDidAPI = openDSU.loadAPI("w3cdid");
-    const keySSIApi = openDSU.loadAPI("keyssi");
-    walletDBEnclave.getAllTableNames(undefined, async (err, tableNames) => {
-        if (err) {
-            return callback(err);
-        }
-
-        let error;
-        let keySSI;
-
-        [error, keySSI] = await $$.call(walletDBEnclave.getKeySSI);
-        if (err) {
-            return callback(error);
-        }
-
-        if(typeof keySSI === "string"){
-            try{
-                keySSI = keySSIApi.parse(keySSI);
-            } catch(err){
-                return callback(err);
-            }
-        }
-
-        const domain = keySSI.getDLDomain();
-
-        const CLOUD_ENCLAVE_NAME = "cloudEnclave";
-        let cloudEnclaveDIDDocument;
-        [error, cloudEnclaveDIDDocument] = await $$.call(w3cDidAPI.createIdentity, "ssi:name", domain, CLOUD_ENCLAVE_NAME);
-        if (error) {
-            return callback(error);
-        }
-        let cloudEnclave = initialiseRemoteEnclave(cloudEnclaveDIDDocument.getIdentifier(), cloudEnclaveServerDIO);
-
-        cloudEnclave.on("initialised", async () => {
-            for (let i = 0; i < tableNames.length; i++) {
-                [error, records] = await $$.call(walletDBEnclave.getAllRecords, undefined, tableNames[i]);
-                if (error) {
-                    return callback(error);
-                }
-
-                for (let j = 0; j < records.length; j++) {
-                    [error, res] = await $$.call(cloudEnclave.insertRecord, undefined, tableNames[i], records[j].pk, records[j]);
-                    if (error) {
-                        [error, res] = await $$.call(cloudEnclave.updateRecord, undefined, tableNames[i], records[j].pk, records[j], records[j]);
-                        if (error) {
-                            return callback(error);
-                        }
-                    }
-                }
-
-            }
-            callback(undefined, cloudEnclave);
-        })
-    })
-}
-
-registerEnclave(constants.ENCLAVE_TYPES.MEMORY_ENCLAVE, initialiseMemoryEnclave);
-registerEnclave(constants.ENCLAVE_TYPES.WALLET_DB_ENCLAVE, initialiseWalletDBEnclave);
-registerEnclave(constants.ENCLAVE_TYPES.LIGHT_DB_ENCLAVE, initialiseLightDBEnclaveClient);
-registerEnclave(constants.ENCLAVE_TYPES.CLOUD_ENCLAVE, initialiseCloudEnclaveClient)
-registerEnclave(constants.ENCLAVE_TYPES.VERSIONLESS_DSU_ENCLAVE, initialiseVersionlessDSUEnclave);
-
-module.exports = {
-    initialiseWalletDBEnclave,
-    initialiseMemoryEnclave,
-    initialiseLightDBEnclaveClient,
-    initialiseRemoteEnclave,
-    initialiseCloudEnclaveClient,
-    initialiseVersionlessDSUEnclave,
-    connectEnclave,
-    createEnclave,
-    registerEnclave,
-    EnclaveMixin: require("./impl/Enclave_Mixin"),
-    ProxyMixin: require("./impl/ProxyMixin"),
-    convertWalletDBEnclaveToVersionlessEnclave,
-    convertWalletDBEnclaveToCloudEnclave
-}
-
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./impl/CloudEnclaveClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/CloudEnclaveClient.js","./impl/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/Enclave_Mixin.js","./impl/LightDBEnclaveClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/LightDBEnclaveClient.js","./impl/MemoryEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js","./impl/ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/ProxyMixin.js","./impl/VersionlessDSUEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/VersionlessDSUEnclave.js","./impl/WalletDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
 function detectRootCauseType(arr, priorityList){
@@ -28574,7 +29106,7 @@ function ErrorWrapper(message, err, otherErrors, rootCause) {
 
     if (!rootCause && otherErrors) {
         const errorTypes = constants.ERROR_ROOT_CAUSE;
-        rootCause = detectRootCauseType(otherErrors, [errorTypes.DATA_INPUT, errorTypes.MISSING_DATA, errorTypes.BUSINESS_ERROR, errorTypes.THROTTLER_ERROR, errorTypes.NETWORK_ERROR]);
+        rootCause = detectRootCauseType(otherErrors, [errorTypes.DATA_INPUT_ERROR, errorTypes.MISSING_DATA_ERROR, errorTypes.BUSINESS_ERROR, errorTypes.THROTTLER_ERROR, errorTypes.NETWORK_ERROR]);
     }
 
     if (err.message || otherErrors) {
@@ -28815,7 +29347,7 @@ function httpToRootCauseErrorCode(httpRes) {
     }
 
     if (httpRes.statusCode === 404) {
-        return constants.ERROR_ROOT_CAUSE.MISSING_DATA;
+        return constants.ERROR_ROOT_CAUSE.MISSING_DATA_ERROR;
     }
 
     if (httpRes.statusCode < 500) {
@@ -28843,6 +29375,8 @@ module.exports = {
 }
 
 },{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./../utils/observable":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/observable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/browser/index.js":[function(require,module,exports){
+const {createOpenDSUErrorWrapper, httpToRootCauseErrorCode} = require("../../error");
+
 function callGlobalHandler(res){
 	if($$.httpUnknownResponseGlobalHandler){
 		$$.httpUnknownResponseGlobalHandler(res);
@@ -28919,12 +29453,21 @@ function customFetch(...args){
 		if(res.status >= 300 && res.status < 400){
 			callGlobalHandler(res);
 		}
+		if(res.status === 404){
+			let error = new Error(`Request Failed.\n Status Code: ${res.status}\n`);
+			error.statusCode = res.status;
+			error = createOpenDSUErrorWrapper("HTTP request failed", error, httpToRootCauseErrorCode(error));
+			throw error;
+		}
 		return res;
 	}).catch(err=>{
 		const constants = require("../../moduleConstants");
-		let error = createOpenDSUErrorWrapper(err.message, err, constants.ERROR_ROOT_CAUSE.NETWORK_ERROR);
-		callGlobalHandler({err:error});
-		throw error;
+		if(err.rootCause) {
+			throw err;
+		}
+        err = createOpenDSUErrorWrapper(err.message, err, constants.ERROR_ROOT_CAUSE.NETWORK_ERROR);
+		callGlobalHandler({err});
+		throw err;
 	});
 }
 
@@ -28954,7 +29497,7 @@ module.exports = {
 	doPut: generateMethodForRequestWithData('PUT'),
 	doGet
 }
-},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js":[function(require,module,exports){
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/index.js":[function(require,module,exports){
 /**
  * http API space
  */
@@ -29082,241 +29625,7 @@ module.exports = {
 }
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/fetch.js":[function(require,module,exports){
-const http = require("http");
-const https = require("https");
-const URL = require("url");
-
-function getProtocol(url, options) {
-	let protocol;
-
-	// const urlObject = new URL(url).catch((err) => { throw new Error(err) });
-	// return urlObject.protocol === 'http:' ? http : https
-
-	if (typeof options !== "undefined") {
-		if (options.protocol === 'http') {
-			protocol = http;
-		} else if (options.protocol === 'https') {
-			protocol = https;
-		} else {
-			if (url.startsWith("https:")) {
-				protocol = https;
-			} else if (url.startsWith("http:")) {
-				protocol = http;
-			}
-		}
-	} else {
-		if (url.startsWith("https:")) {
-			protocol = https;
-		} else if (url.startsWith("http:")) {
-			protocol = http;
-		}
-	}
-
-	if (typeof protocol === "undefined") {
-		throw new Error(`Unable to determine the protocol`);
-	}
-
-	return protocol;
-}
-
-function decipherUrl(url, options) {
-	const innerUrl = URL.parse(url);
-
-	options.hostname = innerUrl.hostname;
-	options.path = innerUrl.pathname + (innerUrl.search || '');
-	options.port = parseInt(innerUrl.port);
-}
-
-function getMethod(options) {
-	let method = 'get';
-	if (typeof options !== "undefined") {
-		method = options.method;
-	}
-	return method;
-}
-
-function convertOptions(options = {}) {
-	//convert from fetch options into xhr options
-
-	if (typeof options.method === "undefined") {
-		options.method = 'GET';
-	}
-
-	return options;
-}
-
-function fetch(url, options = {}) {
-	const protocol = getProtocol(url, options);
-
-	let promise = new Promise((resolve, reject) => {
-		decipherUrl(url, options);
-
-		let request = protocol.request(url, options, (response) => {
-			resolve(new Response(request, response));
-		});
-
-		if (options.body) {
-			let body = options.body;
-			if (typeof body.pipe === 'function') {
-				body.pipe(request);
-			} else {
-				if (typeof body !== 'string' && !$$.Buffer.isBuffer(body) && !ArrayBuffer.isView(body)) {
-					body = JSON.stringify(body);
-				}
-
-				request.write(body);
-			}
-		}
-
-		request.on("error", (error) => {
-			reject(error);
-		});
-
-		request.end();
-	});
-
-	return promise;
-}
-
-function Response(httpRequest, httpResponse) {
-	let handlers = {};
-
-	let readingInProgress = false;
-	function readResponse(callback) {
-		if (readingInProgress) {
-			throw new Error("Response reading in progress");
-		}
-
-		readingInProgress = true;
-
-		//data collecting
-		let rawData;
-		const contentType = httpResponse.headers['content-type'];
-        const isPartialContent = httpResponse.statusCode === 206;
-
-		if (contentType === "application/octet-stream" || isPartialContent) {
-			rawData = [];
-		} else {
-			rawData = '';
-		}
-
-		httpResponse.on('data', (chunk) => {
-			if (Array.isArray(rawData)) {
-				rawData.push(...chunk);
-			} else {
-				rawData += chunk;
-			}
-		});
-
-		httpResponse.on('end', () => {
-			try {
-				if (Array.isArray(rawData)) {
-					rawData = $$.Buffer.from(rawData);
-				}
-				callback(undefined, rawData);
-			} catch (err) {
-				OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to process raw data`, err));
-			} finally {
-				//trying to prevent getting ECONNRESET error after getting our response
-				httpRequest.abort();
-			}
-		});
-	}
-
-	this.ok = httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 ? true : false;
-	this.status = httpResponse.statusCode;
-	this.statusMessage = httpResponse.statusMessage;
-
-	function Headers(headers) {
-		headers = headers || {};
-
-		this.get = (headerKey)=>{
-			return headers[headerKey];
-		}
-	}
-
-	this.headers = new Headers(httpResponse.headers);
-
-	this.arrayBuffer = function () {
-		let promise = new Promise((resolve, reject) => {
-			readResponse((err, responseBody) => {
-				if (err) {
-					return reject(err);
-				}
-				//endure responseBody has the wright type of ArrayBuffer
-				resolve(responseBody);
-			});
-		});
-		return promise;
-	}
-
-	this.blob = function () {
-		let promise = new Promise((resolve, reject) => {
-			readResponse((err, responseBody) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(responseBody);
-			});
-		});
-		return promise;
-	}
-
-	this.text = function () {
-		let promise = new Promise((resolve, reject) => {
-			readResponse((err, responseBody) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(responseBody);
-			});
-		});
-		return promise;
-	}
-
-	this.formData = function () {
-		let promise = new Promise((resolve, reject) => {
-			readResponse((err, responseBody) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(responseBody);
-			});
-		});
-		return promise;
-	}
-
-	this.json = function () {
-		let promise = new Promise((resolve, reject) => {
-			readResponse((err, responseBody) => {
-				if (err) {
-					return reject(err);
-				}
-				let jsonContent;
-				try {
-					//do we really need this if ?!
-					if ($$.Buffer.isBuffer(responseBody)) {
-						responseBody = responseBody.toString();
-					}
-					jsonContent = responseBody ? JSON.parse(responseBody) : responseBody;
-				} catch (e) {
-					return reject(e);
-				}
-				resolve(jsonContent);
-			});
-		});
-		return promise;
-	}
-
-	return this;
-}
-
-module.exports = {
-	fetch
-}
-
-},{"http":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/index.js","https":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/https-browserify/index.js","url":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/url/url.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/index.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/index.js":[function(require,module,exports){
 
 const {setContentTypeByData,buildOptions,getNetworkForOptions} = require("./common.js");
 const {httpToRootCauseErrorCode, createOpenDSUErrorWrapper} = require("../../error");
@@ -29388,13 +29697,13 @@ function doGet(url, options, callback) {
 	return fnc(url, undefined, options, callback);
 }
 module.exports = {
-	fetch: require("./fetch").fetch,
+	fetch,
 	doGet,
 	doPost: generateMethodForRequestWithData('POST'),
 	doPut: generateMethodForRequestWithData('PUT')
 }
 
-},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","./common.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/common.js","./fetch":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/fetch.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js":[function(require,module,exports){
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","./common.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/node/common.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/http/serviceWorker/index.js":[function(require,module,exports){
 function generateMethodForRequestWithData(httpMethod) {
 	return function (url, data, options, callback) {
 		if(typeof options === "function"){
@@ -29667,7 +29976,10 @@ function registerInterceptor(interceptor){
     if(typeof interceptor !== "function"){
         throw new Error('interceptor argument should be a function');
     }
-    interceptors.push(interceptor);
+    //check if the interceptor is already registered
+    if(interceptors.indexOf(interceptor) === -1) {
+        interceptors.push(interceptor);
+    }
 }
 
 function unregisterInterceptor(interceptor){
@@ -30133,7 +30445,7 @@ function handlePromise(promise, message) {
                 rootCause = constants.NETWORK_ERROR;
                 break;
             case 404 :
-                rootCause = constants.MISSING_DATA;
+                rootCause = constants.MISSING_DATA_ERROR;
                 break;
             case 400 :
                 rootCause = constants.BUSINESS_ERROR;
@@ -30194,6 +30506,7 @@ function getApis(){
 module.exports = {defineApi, getApis}
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js":[function(require,module,exports){
 const registry = require("../apisRegistry");
+const {dsuExists} = require("../../resolver");
 
 /*
 * based on jsonIndications Object {attributeName1: "DSU_file_path", attributeName2: "DSU_file_path"}
@@ -30286,8 +30599,24 @@ async function registerDSU(mappingInstance, dsu) {
         $$.debug.logDSUEvent(dsu, `Already in batch mode in active mapping execution`);
         return promisifyDSUAPIs(dsu);
     }
-
-    let batchId = await dsu.startOrAttachBatchAsync();
+    let batchId;
+    const keySSI = await dsu.getKeySSIAsObjectAsync();
+    const openDSU = require("opendsu");
+    const SSITypes = openDSU.constants.KEY_SSI_FAMILIES;
+    const resolver = openDSU.loadAPI("resolver");
+    if(keySSI.getFamilyName() === SSITypes.CONST_SSI_FAMILY){
+        $$.debug.logDSUEvent(dsu, `Const DSU in active mapping execution`);
+        const dsuExists = await $$.promisify(resolver.dsuExists)(keySSI);
+        if(dsuExists){
+            $$.debug.logDSUEvent(dsu, `Const DSU already exists in active mapping execution`);
+            return promisifyDSUAPIs(dsu);
+        }
+        batchId = await dsu.startOrAttachBatchAsync();
+        dsu.secretBatchId = batchId;
+        mappingInstance.registeredDSUs.push(dsu);
+        return promisifyDSUAPIs(dsu);
+    }
+    batchId = await dsu.startOrAttachBatchAsync();
     dsu.secretBatchId = batchId;
     mappingInstance.registeredDSUs.push(dsu);
     return promisifyDSUAPIs(dsu);
@@ -30514,7 +30843,7 @@ registry.defineApi("recoverDSU", function (ssi, recoveryFnc, callback) {
 });
 
 
-},{"../apisRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js":[function(require,module,exports){
+},{"../../resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js","../apisRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js":[function(require,module,exports){
 const mappingRegistry = require("./../mappingRegistry.js");
 
 async function validateMessage(message){
@@ -31155,7 +31484,7 @@ module.exports = function (maxGroupSize, maxQueuingTime, groupingFunction) {
 
 }
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js":[function(require,module,exports){
-const ENVIRONMENT_TYPES = require("../overwrite-require/moduleConstants");
+const ENVIRONMENT_TYPES = require("../overwrite-require/src/moduleConstants");
 
 let cachedKeySSIResolver = undefined;
 
@@ -31233,9 +31562,11 @@ module.exports = {
         NETWORK_ERROR: "network",
         THROTTLER_ERROR: "throttler",
         BUSINESS_ERROR: "business",
-        DATA_INPUT: "dataInput",
-        MISSING_DATA: "missingData",
-        DSU_INVALID_OPERATION: "dsuInvalidOperation"
+        DATA_INPUT_ERROR: "dataInput",
+        MISSING_DATA_ERROR: "missingData",
+        DSU_INVALID_OPERATION: "dsuInvalidOperation",
+        SECURITY_ERROR: "security",
+        RESOURCE_ERROR: "resource"
     },
     get KEY_SSIS() {
         if (cachedKeySSIResolver === undefined) {
@@ -31266,7 +31597,7 @@ module.exports = {
 
 
 
-},{"../overwrite-require/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","key-ssi-resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/mq/mqClient.js":[function(require,module,exports){
+},{"../overwrite-require/src/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","key-ssi-resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/mq/mqClient.js":[function(require,module,exports){
 /*
 Message Queues API space
 */
@@ -31449,7 +31780,7 @@ function MQHandler(didDocument, domain, pollingTimeout) {
                     return callback(err);
                 }
 
-                http.doPut(url, message, { headers: { "Authorization": token } }, callback);
+                http.doPut(url, message, { headers: { "x-mq-authorization": token } }, callback);
             });
         })
 
@@ -31481,7 +31812,7 @@ function MQHandler(didDocument, domain, pollingTimeout) {
                     let originalCb = callback;
                     //callback = $$.makeSaneCallback(callback);
 
-                    let options = { headers: { Authorization: token } };
+                    let options = { headers: { "x-mq-authorization": token } };
 
                     function makeRequest() {
                         let request = http.poll(url, options, connectionTimeout, timeout);
@@ -31599,7 +31930,7 @@ function MQHandler(didDocument, domain, pollingTimeout) {
 
                     http.fetch(url, {
                         method: "DELETE",
-                        headers: { "Authorization": token }
+                        headers: { "x-mq-authorization": token }
                     })
                         .then(response => callback())
                         .catch(e => callback(e));
@@ -33150,7 +33481,7 @@ function dsuExists(keySSI, callback) {
         try {
             keySSI = keySSISpace.parse(keySSI);
         } catch (e) {
-            return callback(createOpenDSUErrorWrapper(`Failed to parse KeySSI <${keySSI}>`, e, constants.ERROR_ROOT_CAUSE.DATA_INPUT));
+            return callback(createOpenDSUErrorWrapper(`Failed to parse KeySSI <${keySSI}>`, e, constants.ERROR_ROOT_CAUSE.DATA_INPUT_ERROR));
         }
     }
     keySSI.getAnchorId((err, anchorId) => {
@@ -33160,7 +33491,7 @@ function dsuExists(keySSI, callback) {
 
         anchoringX.getLastVersion(anchorId, (err, anchorVersion) => {
             if (err) {
-                if (err.rootCause === constants.ERROR_ROOT_CAUSE.MISSING_DATA) {
+                if (err.rootCause === constants.ERROR_ROOT_CAUSE.MISSING_DATA_ERROR) {
                     return callback(undefined, false);
                 }
 
@@ -33195,7 +33526,7 @@ module.exports = {
 }).call(this)}).call(this,require("buffer").Buffer)
 
 },{"../cache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./resolver-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","key-ssi-resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/index.js","opendsu":"opendsu","syndicate":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/resolver-utils.js":[function(require,module,exports){
-(function (global){(function (){
+(function (global,__dirname){(function (){
 function getWebWorkerBootScript(dsuKeySSI) {
     const scriptLocation = document.currentScript
         ? document.currentScript
@@ -33217,7 +33548,8 @@ function getWebWorkerBootScript(dsuKeySSI) {
 }
 
 function getNodeWorkerBootScript(dsuKeySSI) {
-    const openDSUScriptPath = global.bundlePaths.openDSU.replace(/\\/g, "\\\\").replace(".js", "");
+    const pathAPI = require("path");
+    const openDSUScriptPath = pathAPI.join(__dirname, "../../../", global.bundlePaths.openDSU);
     const script = `require("${openDSUScriptPath}");require('opendsu').loadApi('boot')('${dsuKeySSI}')`;
     return script;
 }
@@ -33227,9 +33559,9 @@ module.exports = {
     getNodeWorkerBootScript,
 };
 
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},"/modules/opendsu/resolver")
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/index.js":[function(require,module,exports){
+},{"path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/index.js":[function(require,module,exports){
 /*
     Security Context related functionalities
 
@@ -33502,9 +33834,10 @@ module.exports = {
     setMainDID,
     getMainDID,
     setMainDIDAsync,
-    getMainDIDAsync
+    getMainDIDAsync,
+    getMainDSUForNode:MainDSU.getMainDSUForNode
 };
-    
+
 },{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./lib/MainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/MainDSU.js","./lib/SecurityContext":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js":[function(require,module,exports){
 (function (Buffer){(function (){
 function InMemoryMainDSU() {
@@ -33703,7 +34036,8 @@ function getMainDSUForIframe(callback) {
 
 module.exports = {
     getMainDSU,
-    setMainDSU
+    setMainDSU,
+    getMainDSUForNode
 }
 
 }).call(this)}).call(this,require('_process'))
@@ -37313,7 +37647,7 @@ module.exports = {
     runSyncFunctionOnlyFromWorker
 }
 },{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/index.js":[function(require,module,exports){
-(function (global){(function (){
+(function (global,__dirname){(function (){
 function getWebWorkerBootScript() {
     const scriptLocation = document.currentScript
         ? document.currentScript
@@ -37334,7 +37668,7 @@ function getWebWorkerBootScript() {
 }
 
 function getNodeWorkerBootScript() {
-    const openDSUScriptPath = global.bundlePaths.openDSU.replace(/\\/g, "\\\\").replace(".js", "");
+    const openDSUScriptPath = require("path").join(__dirname, "../../../", global.bundlePaths.openDSU);
     return `
         require("${openDSUScriptPath}");
         (${require("./bootScript/node").toString()})();
@@ -37489,14 +37823,531 @@ module.exports = {
     createPool,
     getFunctionsRegistry
 }
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},"/modules/opendsu/workers")
 
-},{"../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./bootScript/node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/node.js","./bootScript/web":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/web.js","./functions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/functions.js","opendsu":"opendsu","syndicate":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
+},{"../moduleConstants.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./bootScript/node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/node.js","./bootScript/web":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/bootScript/web.js","./functions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/workers/functions.js","opendsu":"opendsu","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js","syndicate":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/syndicate/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/index.js":[function(require,module,exports){
+(function (process,global){(function (){
+/*
+ require and $$.require are overwriting the node.js defaults in loading modules for increasing security, speed and making it work to the privatesky runtime build with browserify.
+ The privatesky code for domains should work in node and browsers.
+ */
+function enableForEnvironment(envType) {
+
+    const moduleConstants = require("./src/moduleConstants");
+
+    /**
+     * Used to provide autocomplete for $$ variables
+     * @classdesc Interface for $$ object
+     *
+     * @name $$
+     * @class
+     *
+     */
+
+    switch (envType) {
+        case moduleConstants.BROWSER_ENVIRONMENT_TYPE :
+            global = window;
+            break;
+        case moduleConstants.WEB_WORKER_ENVIRONMENT_TYPE:
+        case moduleConstants.SERVICE_WORKER_ENVIRONMENT_TYPE:
+            global = self;
+            break;
+        default:
+            Error.stackTraceLimit = Infinity;
+    }
+
+    if (typeof (global.$$) == "undefined") {
+        /**
+         * Used to provide autocomplete for $$ variables
+         * @type {$$}
+         */
+        global.$$ = {};
+    }
+
+    if (typeof ($$.__global) == "undefined") {
+        $$.__global = {};
+    }
+
+    if (typeof global.wprint === "undefined") {
+        global.wprint = console.warn;
+    }
+    Object.defineProperty($$, "environmentType", {
+        get: function () {
+            return envType;
+        },
+        set: function (value) {
+            throw Error(`Trying to set env value: ${value}. Environment type already set!`);
+        }
+    });
+
+
+    if (typeof ($$.__global.requireLibrariesNames) == "undefined") {
+        $$.__global.currentLibraryName = null;
+        $$.__global.requireLibrariesNames = {};
+    }
+
+
+    if (typeof ($$.__runtimeModules) == "undefined") {
+        $$.__runtimeModules = {};
+    }
+
+
+    if (typeof (global.functionUndefined) == "undefined") {
+        global.functionUndefined = function () {
+            console.log("Called of an undefined function!!!!");
+            throw new Error("Called of an undefined function");
+        };
+    }
+
+    const pastRequests = {};
+
+    function preventRecursiveRequire(request) {
+        if (pastRequests[request]) {
+            const err = new Error("Preventing recursive require for " + request);
+            err.type = "PSKIgnorableError";
+            throw err;
+        }
+
+    }
+
+    function disableRequire(request) {
+        pastRequests[request] = true;
+    }
+
+    function enableRequire(request) {
+        pastRequests[request] = false;
+    }
+
+    function requireFromCache(request) {
+        return $$.__runtimeModules[request];
+    }
+
+    $$.__registerModule = function (name, module) {
+        $$.__runtimeModules[name] = module;
+    }
+
+    function wrapStep(callbackName) {
+        const callback = global[callbackName];
+
+        if (callback === undefined) {
+            return null;
+        }
+
+        if (callback === global.functionUndefined) {
+            return null;
+        }
+
+        return function (request) {
+            const result = callback(request);
+            $$.__runtimeModules[request] = result;
+            return result;
+        }
+    }
+
+
+    function tryRequireSequence(originalRequire, request) {
+        let arr;
+        if (originalRequire) {
+            arr = $$.__requireFunctionsChain.slice();
+            arr.push(originalRequire);
+        } else {
+            arr = $$.__requireFunctionsChain;
+        }
+
+        preventRecursiveRequire(request);
+        disableRequire(request);
+        let result;
+        const previousRequire = $$.__global.currentLibraryName;
+        let previousRequireChanged = false;
+
+        if (!previousRequire) {
+            // console.log("Loading library for require", request);
+            $$.__global.currentLibraryName = request;
+
+            if (typeof $$.__global.requireLibrariesNames[request] == "undefined") {
+                $$.__global.requireLibrariesNames[request] = {};
+                //$$.__global.requireLibrariesDescriptions[request]   = {};
+            }
+            previousRequireChanged = true;
+        }
+        for (let i = 0; i < arr.length; i++) {
+            const func = arr[i];
+            try {
+
+                if (func === global.functionUndefined) continue;
+                result = func(request);
+
+                if (result) {
+                    break;
+                }
+
+            } catch (err) {
+                if (err.type !== "PSKIgnorableError") {
+                    if (err instanceof SyntaxError) {
+                        console.error(err);
+                    } else {
+                        if (request === 'zeromq') {
+                            console.warn("Failed to load module ", request, " with error:", err.message);
+                        } else {
+                            console.error("Failed to load module ", request, " with error:", err);
+                        }
+                    }
+                    //$$.err("Require encountered an error while loading ", request, "\nCause:\n", err.stack);
+                }
+            }
+        }
+
+        if (!result) {
+            throw Error(`Failed to load module ${request}`);
+        }
+
+        enableRequire(request);
+        if (previousRequireChanged) {
+            //console.log("End loading library for require", request, $$.__global.requireLibrariesNames[request]);
+            $$.__global.currentLibraryName = null;
+        }
+        return result;
+    }
+
+    function makeBrowserRequire() {
+        console.log("Defining global require in browser");
+
+
+        global.require = function (request) {
+
+            ///*[requireFromCache, wrapStep(webshimsRequire), , wrapStep(pskruntimeRequire), wrapStep(domainRequire)*]
+            return tryRequireSequence(null, request);
+        }
+    }
+
+    function makeIsolateRequire() {
+        // require should be provided when code is loaded in browserify
+        //const bundleRequire = require;
+
+        $$.requireBundle('sandboxBase');
+        // this should be set up by sandbox prior to
+        const sandboxRequire = global.require;
+        const cryptoModuleName = 'crypto';
+        global.crypto = require(cryptoModuleName);
+
+        function newLoader(request) {
+            // console.log("newLoader:", request);
+            //preventRecursiveRequire(request);
+            const self = this;
+
+            // console.log('trying to load ', request);
+
+            function tryBundleRequire(...args) {
+                //return $$.__originalRequire.apply(self,args);
+                //return Module._load.apply(self,args)
+                let res;
+                try {
+                    res = sandboxRequire.apply(self, args);
+                } catch (err) {
+                    if (err.code === "MODULE_NOT_FOUND") {
+                        const p = path.join(process.cwd(), request);
+                        res = sandboxRequire.apply(self, [p]);
+                        request = p;
+                    } else {
+                        throw err;
+                    }
+                }
+                return res;
+            }
+
+            let res;
+
+
+            res = tryRequireSequence(tryBundleRequire, request);
+
+
+            return res;
+        }
+
+        global.require = newLoader;
+    }
+
+    function makeNodeJSRequire() {
+        const pathModuleName = 'path';
+        const path = require(pathModuleName);
+        const cryptoModuleName = 'crypto';
+        const utilModuleName = 'util';
+        $$.__runtimeModules["crypto"] = require(cryptoModuleName);
+        $$.__runtimeModules["util"] = require(utilModuleName);
+
+        const moduleModuleName = 'module';
+        const Module = require(moduleModuleName);
+        $$.__runtimeModules["module"] = Module;
+
+        console.log("Redefining require for node");
+
+        $$.__originalRequire = Module._load;
+        const moduleOriginalRequire = Module.prototype.require;
+
+        function newLoader(request) {
+            // console.log("newLoader:", request);
+            //preventRecursiveRequire(request);
+            const self = this;
+
+            function originalRequire(...args) {
+                //return $$.__originalRequire.apply(self,args);
+                //return Module._load.apply(self,args)
+                let res;
+                try {
+                    res = moduleOriginalRequire.apply(self, args);
+                } catch (err) {
+                    if (err.code === "MODULE_NOT_FOUND") {
+                        let pathOrName = request;
+                        if (pathOrName.startsWith('/') || pathOrName.startsWith('./') || pathOrName.startsWith('../')) {
+                            pathOrName = path.join(process.cwd(), request);
+                        }
+                        res = moduleOriginalRequire.call(self, pathOrName);
+                        request = pathOrName;
+                    } else {
+                        throw err;
+                    }
+                }
+                return res;
+            }
+
+            //[requireFromCache, wrapStep(pskruntimeRequire), wrapStep(domainRequire), originalRequire]
+            return tryRequireSequence(originalRequire, request);
+        }
+
+        Module.prototype.require = newLoader;
+        return newLoader;
+    }
+
+    require("./src/standardGlobalSymbols.js");
+
+    if (typeof ($$.require) == "undefined") {
+
+        $$.__requireList = ["webshimsRequire"];
+        $$.__requireFunctionsChain = [];
+
+        $$.requireBundle = function (name) {
+            name += "Require";
+            $$.__requireList.push(name);
+            const arr = [requireFromCache];
+            $$.__requireList.forEach(function (item) {
+                const callback = wrapStep(item);
+                if (callback) {
+                    arr.push(callback);
+                }
+            });
+
+            $$.__requireFunctionsChain = arr;
+        };
+
+        $$.requireBundle("init");
+
+        switch ($$.environmentType) {
+            case moduleConstants.BROWSER_ENVIRONMENT_TYPE:
+                makeBrowserRequire();
+                $$.require = require;
+                let possibleRedirects = [301, 302];
+                $$.httpUnknownResponseGlobalHandler = function (res) {
+                    console.log("Global handler for unknown http errors was called", res.status, res);
+                    if (res.status && possibleRedirects.indexOf(res.status) !== -1) {
+                        window.location = "/";
+                        return;
+                    }
+                };
+                break;
+            case moduleConstants.WEB_WORKER_ENVIRONMENT_TYPE:
+                makeBrowserRequire();
+                $$.require = require;
+                break;
+            case moduleConstants.SERVICE_WORKER_ENVIRONMENT_TYPE:
+                makeBrowserRequire();
+                $$.require = require;
+                break;
+            case moduleConstants.ISOLATE_ENVIRONMENT_TYPE:
+                makeIsolateRequire();
+                $$.require = require;
+                break;
+            default:
+                $$.require = makeNodeJSRequire();
+        }
+
+    }
+
+    $$.promisify = function promisify(fn, instance) {
+        const promisifiedFn = function (...args) {
+            return new Promise((resolve, reject) => {
+                if (instance) {
+                    fn = fn.bind(instance);
+                }
+                fn(...args, (err, ...res) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(...res);
+                    }
+                });
+            });
+        };
+        if (promisifiedFn.toString() === fn.toString()) {
+            console.log("Function already promisified");
+            return fn;
+        }
+        return promisifiedFn;
+    };
+
+    $$.callAsync = async function (func, ...args) {
+        let error, result;
+        try {
+            result = await func(...args);
+        } catch (err) {
+            error = err
+        }
+        return [error, result];
+    }
+
+    $$.call = async function (func, ...args) {
+        let asyncFunc = $$.promisify(func);
+        return $$.callAsync(asyncFunc, ...args);
+    }
+
+    $$.makeSaneCallback = function makeSaneCallback(fn) {
+        let alreadyCalled = false;
+        let prevErr;
+        if (fn.alreadyWrapped) {
+            return fn;
+        }
+
+        const newFn = (err, res, ...args) => {
+            if (alreadyCalled) {
+                if (err) {
+                    console.log('Sane callback error:', err);
+                }
+
+                throw new Error(`Callback called 2 times! Second call was stopped. Function code:\n${fn.toString()}\n` + (prevErr ? `Previous error stack ${prevErr.toString()}` : ''));
+            }
+            alreadyCalled = true;
+            if (err) {
+                prevErr = err;
+            }
+            return fn(err, res, ...args);
+        };
+
+        newFn.alreadyWrapped = true;
+        return newFn;
+    };
+
+    function DebugHelper() {
+        let debugEnabled = false;
+        let debugEvents = [];
+        let eventsStack = [];
+
+        function getStackTrace() {
+            return new Error().stack;
+        }
+
+        this.start = function () {
+            debugEnabled = true;
+        }
+
+        this.resume = this.start;
+
+        this.reset = function () {
+            debugEnabled = true;
+            let debugEvents = [];
+            let eventsStack = [];
+        }
+
+        this.stop = function () {
+            debugEnabled = false;
+        }
+
+        this.logDSUEvent = function (dsu, ...args) {
+            if (!debugEnabled) return;
+
+            let anchorID, dsuInstanceUID;
+            try {
+                anchorID = dsu.getAnchorIdSync();
+                anchorID = anchorID.substring(4, 27) + "...";
+            } catch (err) {
+                anchorID = "N/A";
+            }
+
+            try {
+                dsuInstanceUID = dsu.getInstanceUID();
+            } catch (err) {
+                dsuInstanceUID = "N/A";
+            }
+            this.log(`[${anchorID}][${dsuInstanceUID}]`, ...args);
+        }
+
+        this.log = function (...args) {
+            console.debug(...args);
+            if (!debugEnabled) return;
+            debugEvents.push(`Log #${debugEvents.length}` + [...args].join(" "));
+            eventsStack.push(getStackTrace());
+        }
+
+        this.logs = function () {
+            console.log(`${debugEvents.length} events logged`);
+            console.log(debugEvents.join("\n"));
+        }
+
+        this.context = function (eventNumber) {
+            let realNumber = eventNumber;
+            if (typeof eventNumber == "string") {
+                eventNumber = eventNumber.slice(1);
+                realNumber = parseInt(eventNumber);
+            }
+            return console.log(`Event ${debugEvents[eventNumber]}:\n`, eventsStack[realNumber], "\n");
+        }
+
+        const errorCodesForStdout = new Set();
+
+        this.useStdoutOnceForErrorWithCode = function (code) {
+            errorCodesForStdout.add(code);
+        }
+
+        this.useStderrForErrorWithCode = function (code) {
+            if (errorCodesForStdout.has(code)) {
+                errorCodesForStdout.delete(code);
+            }
+        }
+
+        this.errorWithCodeShouldBeRedirectedToStdout = function (code) {
+            if (errorCodesForStdout.has(code)) {
+                return true;
+            }
+
+            return false;
+        }
+
+        let verbosityLevel;
+        this.verbosity = function (level) {
+            verbosityLevel = level;
+        }
+
+        this.getVerbosityLevel = function () {
+            return verbosityLevel;
+        }
+    }
+
+    $$.debug = new DebugHelper();
+    $$.getLogger = require("./src/Logger").getLogger;
+}
+
+
+module.exports = {
+    enableForEnvironment,
+    constants: require("./src/moduleConstants")
+};
+
+}).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./src/Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js","./src/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","./src/standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js":[function(require,module,exports){
 (function (process){(function (){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
-
+const errorTypes = require("./errorTypes");
 if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined") {
     process.env.OPENDSU_ENABLE_DEBUG = IS_DEV_MODE.toString();
 }
@@ -37526,8 +38377,23 @@ function MemoryFileMock() {
     }
 }
 
+
 function Logger(className, moduleName, logFile) {
     const MAX_STRING_LENGTH = 11;
+    const verbosityLevels = {
+        "trace": 0,
+        "debug": 1,
+        "info": 2,
+        "log": 3,
+        "warn": 3,
+        "error": 4,
+        "critical": 5,
+        "audit": 6
+    }
+
+    let verbosity;
+
+
     const getPaddingForArg = (arg, maxLen = MAX_STRING_LENGTH) => {
         let noSpaces = Math.abs(maxLen - arg.length);
         let spaces = String(" ").repeat(noSpaces);
@@ -37569,6 +38435,7 @@ function Logger(className, moduleName, logFile) {
         }
         return msg;
     }
+
     const createLogObject = (functionName, code = 0, ...args) => {
         let message = "";
         for (let i = 0; i < args.length; i++) {
@@ -37634,6 +38501,7 @@ function Logger(className, moduleName, logFile) {
         }
     }
 
+    const functions = errorTypes;
     const getConsoleFunction = (functionName) => {
         if (functionName === functions.CRITICAL) {
             functionName = functions.ERROR;
@@ -37647,6 +38515,15 @@ function Logger(className, moduleName, logFile) {
     }
 
     const executeFunctionFromConsole = (functionName, ...args) => {
+        if (typeof $$.debug !== "undefined" && typeof $$.debug.getVerbosityLevel === "function") {
+            verbosity = verbosityLevels[$$.debug.getVerbosityLevel()];
+        } else {
+            verbosity = verbosityLevels["trace"];
+        }
+
+        if (verbosity > verbosityLevels[functionName]) {
+            return;
+        }
         if ($$.memoryLogger) {
             originalConsole[getConsoleFunction(functionName)](...args);
         } else {
@@ -37681,17 +38558,6 @@ function Logger(className, moduleName, logFile) {
         writeToFile(functionName, ...args);
     }
 
-    const functions = {
-        LOG: "log",
-        INFO: "info",
-        WARN: "warn",
-        TRACE: "trace",
-        DEBUG: "debug",
-        ERROR: "error",
-        CRITICAL: "critical",
-        AUDIT: "audit"
-    }
-
     for (let fnName in functions) {
         this[functions[fnName]] = (...args) => {
             printToConsoleAndFile(functions[fnName], ...args);
@@ -37703,6 +38569,37 @@ function Logger(className, moduleName, logFile) {
     if (!DEBUG_LOG_ENABLED) {
         this[functions.TRACE] = this[functions.DEBUG] = () => {
         };
+    }
+
+    const originalWarn = this.warn;
+    const originalError = this.error;
+    const originalTrace = this.trace;
+
+    if ($$.debug && typeof $$.debug.errorWithCodeShouldBeRedirectedToStdout === "function") {
+        const __generateFunction = (functionName) => {
+            return (...args) => {
+                const res = stripCodeFromArgs(...args);
+                if ($$.debug.errorWithCodeShouldBeRedirectedToStdout(res.code)) {
+                    executeFunctionFromConsole(functions.DEBUG, ...args);
+                    $$.debug.useStderrForErrorWithCode(res.code);
+                    this.warn = originalWarn;
+                    this.error = originalError;
+                    this.trace = originalTrace;
+                    console.error = this.error;
+                    console.warn = this.warn;
+                    console.trace = this.trace;
+                } else {
+                    printToConsoleAndFile(functionName, ...args);
+                }
+            }
+        }
+        this.error = __generateFunction(functions.ERROR);
+        this.warn = __generateFunction(functions.WARN);
+        this.trace = __generateFunction(functions.TRACE);
+
+        console.error = this.error;
+        console.warn = this.warn;
+        console.trace = this.trace;
     }
 }
 
@@ -37716,498 +38613,18 @@ module.exports = {
 
 }).call(this)}).call(this,require('_process'))
 
-},{"./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js","os":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/os-browserify/browser.js","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/index.js":[function(require,module,exports){
-(function (process,global){(function (){
-/*
- require and $$.require are overwriting the node.js defaults in loading modules for increasing security, speed and making it work to the privatesky runtime build with browserify.
- The privatesky code for domains should work in node and browsers.
- */
-function enableForEnvironment(envType){
-
-    const moduleConstants = require("./moduleConstants");
-
-    /**
-     * Used to provide autocomplete for $$ variables
-     * @classdesc Interface for $$ object
-     *
-     * @name $$
-     * @class
-     *
-     */
-
-    switch (envType) {
-        case moduleConstants.BROWSER_ENVIRONMENT_TYPE :
-            global = window;
-            break;
-        case moduleConstants.WEB_WORKER_ENVIRONMENT_TYPE:
-        case moduleConstants.SERVICE_WORKER_ENVIRONMENT_TYPE:
-            global = self;
-            break;
-        default:
-            Error.stackTraceLimit = Infinity;
-    }
-
-    if (typeof(global.$$) == "undefined") {
-        /**
-         * Used to provide autocomplete for $$ variables
-         * @type {$$}
-         */
-        global.$$ = {};
-    }
-
-    if (typeof($$.__global) == "undefined") {
-        $$.__global = {};
-    }
-
-    if (typeof global.wprint === "undefined") {
-        global.wprint = console.warn;
-    }
-    Object.defineProperty($$, "environmentType", {
-        get: function(){
-            return envType;
-        },
-        set: function (value) {
-            throw Error(`Trying to set env value: ${value}. Environment type already set!`);
-        }
-    });
-
-
-    if (typeof($$.__global.requireLibrariesNames) == "undefined") {
-        $$.__global.currentLibraryName = null;
-        $$.__global.requireLibrariesNames = {};
-    }
-
-
-    if (typeof($$.__runtimeModules) == "undefined") {
-        $$.__runtimeModules = {};
-    }
-
-
-    if (typeof(global.functionUndefined) == "undefined") {
-        global.functionUndefined = function () {
-            console.log("Called of an undefined function!!!!");
-            throw new Error("Called of an undefined function");
-        };
-    }
-
-    const pastRequests = {};
-
-    function preventRecursiveRequire(request) {
-        if (pastRequests[request]) {
-            const err = new Error("Preventing recursive require for " + request);
-            err.type = "PSKIgnorableError";
-            throw err;
-        }
-
-    }
-
-    function disableRequire(request) {
-        pastRequests[request] = true;
-    }
-
-    function enableRequire(request) {
-        pastRequests[request] = false;
-    }
-
-    function requireFromCache(request) {
-        return $$.__runtimeModules[request];
-    }
-
-    $$.__registerModule = function (name, module) {
-        $$.__runtimeModules[name] = module;
-    }
-
-    $$.getLogger = require("./Logger").getLogger;
-
-    function wrapStep(callbackName) {
-        const callback = global[callbackName];
-
-        if (callback === undefined) {
-            return null;
-        }
-
-        if (callback === global.functionUndefined) {
-            return null;
-        }
-
-        return function (request) {
-            const result = callback(request);
-            $$.__runtimeModules[request] = result;
-            return result;
-        }
-    }
-
-
-    function tryRequireSequence(originalRequire, request) {
-        let arr;
-        if (originalRequire) {
-            arr = $$.__requireFunctionsChain.slice();
-            arr.push(originalRequire);
-        } else {
-            arr = $$.__requireFunctionsChain;
-        }
-
-        preventRecursiveRequire(request);
-        disableRequire(request);
-        let result;
-        const previousRequire = $$.__global.currentLibraryName;
-        let previousRequireChanged = false;
-
-        if (!previousRequire) {
-            // console.log("Loading library for require", request);
-            $$.__global.currentLibraryName = request;
-
-            if (typeof $$.__global.requireLibrariesNames[request] == "undefined") {
-                $$.__global.requireLibrariesNames[request] = {};
-                //$$.__global.requireLibrariesDescriptions[request]   = {};
-            }
-            previousRequireChanged = true;
-        }
-        for (let i = 0; i < arr.length; i++) {
-            const func = arr[i];
-            try {
-
-                if (func === global.functionUndefined) continue;
-                result = func(request);
-
-                if (result) {
-                    break;
-                }
-
-            } catch (err) {
-                if (err.type !== "PSKIgnorableError") {
-                    if(err instanceof SyntaxError){
-                        console.error(err);
-                    } else{
-                        if(request === 'zeromq'){
-                            console.warn("Failed to load module ", request," with error:", err.message);
-                        }else{
-                            console.error("Failed to load module ", request," with error:", err);
-                        }
-                    }
-                    //$$.err("Require encountered an error while loading ", request, "\nCause:\n", err.stack);
-                }
-            }
-        }
-
-        if (!result) {
-            throw Error(`Failed to load module ${request}`);
-        }
-
-        enableRequire(request);
-        if (previousRequireChanged) {
-            //console.log("End loading library for require", request, $$.__global.requireLibrariesNames[request]);
-            $$.__global.currentLibraryName = null;
-        }
-        return result;
-    }
-
-    function makeBrowserRequire(){
-        console.log("Defining global require in browser");
-
-
-        global.require = function (request) {
-
-            ///*[requireFromCache, wrapStep(webshimsRequire), , wrapStep(pskruntimeRequire), wrapStep(domainRequire)*]
-            return tryRequireSequence(null, request);
-        }
-    }
-
-    function makeIsolateRequire(){
-        // require should be provided when code is loaded in browserify
-        //const bundleRequire = require;
-
-        $$.requireBundle('sandboxBase');
-        // this should be set up by sandbox prior to
-        const sandboxRequire = global.require;
-        const cryptoModuleName = 'crypto';
-        global.crypto = require(cryptoModuleName);
-
-        function newLoader(request) {
-            // console.log("newLoader:", request);
-            //preventRecursiveRequire(request);
-            const self = this;
-
-            // console.log('trying to load ', request);
-
-            function tryBundleRequire(...args) {
-                //return $$.__originalRequire.apply(self,args);
-                //return Module._load.apply(self,args)
-                let res;
-                try {
-                    res = sandboxRequire.apply(self, args);
-                } catch (err) {
-                    if (err.code === "MODULE_NOT_FOUND") {
-                        const p = path.join(process.cwd(), request);
-                        res = sandboxRequire.apply(self, [p]);
-                        request = p;
-                    } else {
-                        throw err;
-                    }
-                }
-                return res;
-            }
-
-            let res;
-
-
-            res = tryRequireSequence(tryBundleRequire, request);
-
-
-            return res;
-        }
-
-        global.require = newLoader;
-    }
-
-    function makeNodeJSRequire(){
-        const pathModuleName = 'path';
-        const path = require(pathModuleName);
-        const cryptoModuleName = 'crypto';
-        const utilModuleName = 'util';
-        $$.__runtimeModules["crypto"] = require(cryptoModuleName);
-        $$.__runtimeModules["util"] = require(utilModuleName);
-
-        const moduleModuleName = 'module';
-        const Module = require(moduleModuleName);
-        $$.__runtimeModules["module"] = Module;
-
-        console.log("Redefining require for node");
-
-        $$.__originalRequire = Module._load;
-        const moduleOriginalRequire = Module.prototype.require;
-
-        function newLoader(request) {
-            // console.log("newLoader:", request);
-            //preventRecursiveRequire(request);
-            const self = this;
-
-            function originalRequire(...args) {
-                //return $$.__originalRequire.apply(self,args);
-                //return Module._load.apply(self,args)
-                let res;
-                try {
-                    res = moduleOriginalRequire.apply(self, args);
-                } catch (err) {
-                    if (err.code === "MODULE_NOT_FOUND") {
-                        let pathOrName = request;
-                        if(pathOrName.startsWith('/') || pathOrName.startsWith('./') || pathOrName.startsWith('../')){
-                            pathOrName = path.join(process.cwd(), request);
-                        }
-                        res = moduleOriginalRequire.call(self, pathOrName);
-                        request = pathOrName;
-                    } else {
-                        throw err;
-                    }
-                }
-                return res;
-            }
-
-            //[requireFromCache, wrapStep(pskruntimeRequire), wrapStep(domainRequire), originalRequire]
-            return tryRequireSequence(originalRequire, request);
-        }
-
-        Module.prototype.require = newLoader;
-        return newLoader;
-    }
-
-    require("./standardGlobalSymbols.js");
-
-    if (typeof($$.require) == "undefined") {
-
-        $$.__requireList = ["webshimsRequire"];
-        $$.__requireFunctionsChain = [];
-
-        $$.requireBundle = function (name) {
-            name += "Require";
-            $$.__requireList.push(name);
-            const arr = [requireFromCache];
-            $$.__requireList.forEach(function (item) {
-                const callback = wrapStep(item);
-                if (callback) {
-                    arr.push(callback);
-                }
-            });
-
-            $$.__requireFunctionsChain = arr;
-        };
-
-        $$.requireBundle("init");
-
-        switch ($$.environmentType) {
-            case moduleConstants.BROWSER_ENVIRONMENT_TYPE:
-                makeBrowserRequire();
-                $$.require = require;
-                let possibleRedirects = [301, 302];
-                $$.httpUnknownResponseGlobalHandler = function(res){
-                    console.log("Global handler for unknown http errors was called", res.status, res);
-                    if(res.status && possibleRedirects.indexOf(res.status)!==-1){
-                        window.location = "/";
-                        return;
-                    }
-                };
-                break;
-            case moduleConstants.WEB_WORKER_ENVIRONMENT_TYPE:
-                makeBrowserRequire();
-                $$.require = require;
-                break;
-            case moduleConstants.SERVICE_WORKER_ENVIRONMENT_TYPE:
-                makeBrowserRequire();
-                $$.require = require;
-                break;
-            case moduleConstants.ISOLATE_ENVIRONMENT_TYPE:
-                makeIsolateRequire();
-                $$.require = require;
-                break;
-            default:
-               $$.require = makeNodeJSRequire();
-        }
-
-    }
-
-    $$.promisify = function promisify(fn, instance) {
-        const promisifiedFn = function (...args) {
-            return new Promise((resolve, reject) => {
-                if (instance) {
-                    fn = fn.bind(instance);
-                }
-                fn(...args, (err, ...res) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(...res);
-                    }
-                });
-            });
-        };
-        if (promisifiedFn.toString() === fn.toString()) {
-            console.log("Function already promisified");
-            return fn;
-        }
-        return promisifiedFn;
-    };
-
-   $$.callAsync = async function (func, ...args) {
-        let error, result;
-        try {
-            result =  await func(...args);
-        } catch(err) {
-            error = err
-        }
-        return [error, result];
-    }
-
-    $$.call = async function (func, ...args) {
-        let asyncFunc = $$.promisify(func);
-        return $$.callAsync(asyncFunc, ...args);
-    }
- 
-    $$.makeSaneCallback = function makeSaneCallback(fn) {
-        let alreadyCalled = false;
-        let prevErr;
-        if(fn.alreadyWrapped){
-            return fn;
-        }
-
-        const newFn = (err, res, ...args) => {
-            if (alreadyCalled) {
-                if (err) {
-                    console.log('Sane callback error:', err);
-                }
-
-                throw new Error(`Callback called 2 times! Second call was stopped. Function code:\n${fn.toString()}\n` + (prevErr ? `Previous error stack ${prevErr.toString()}` : ''));
-            }
-            alreadyCalled = true;
-            if(err){
-                prevErr = err;
-            }
-            return fn(err, res, ...args);
-        };
-
-        newFn.alreadyWrapped = true;
-        return newFn;
-    };
-
-   function DebugHelper(){
-       let debugEnabled = false;
-       let debugEvents = [];
-       let eventsStack = [];
-
-       function getStackTrace(){
-              return new Error().stack;
-       }
-       this.start = function(){
-           debugEnabled = true;
-       }
-
-       this.resume = this.start;
-
-       this.reset =function(){
-           debugEnabled = true;
-           let debugEvents = [];
-           let eventsStack = [];
-       }
-
-       this.stop = function(){
-           debugEnabled = false;
-       }
-
-       this.logDSUEvent = function(dsu, ...args){
-            if(!debugEnabled) return;
-
-            let anchorID, dsuInstanceUID;
-            try{
-                anchorID = dsu.getAnchorIdSync();
-                anchorID = anchorID.substring(4, 27)+"...";
-            } catch(err){
-                anchorID = "N/A";
-            }
-
-           try{
-               dsuInstanceUID = dsu.getInstanceUID();
-           } catch(err){
-               dsuInstanceUID = "N/A";
-           }
-            this.log(`[${anchorID}][${dsuInstanceUID}]`, ...args);
-       }
-
-       this.log = function(...args){
-           console.debug(...args);
-           if(!debugEnabled) return;
-           debugEvents.push(`Log #${debugEvents.length}` +[...args].join(" "));
-           eventsStack.push(getStackTrace());
-       }
-
-       this.logs = function(){
-            console.log(`${debugEvents.length} events logged`);
-            console.log(debugEvents.join("\n"));
-       }
-
-       this.context = function(eventNumber){
-           let realNumber = eventNumber;
-           if(typeof eventNumber == "string"){
-               eventNumber = eventNumber.slice(1);
-               realNumber = parseInt(eventNumber);
-           }
-           return console.log(`Event ${debugEvents[eventNumber]}:\n`, eventsStack[realNumber],"\n");
-       }
-
-   }
-
-   $$.debug = new DebugHelper()
-
-}
-
-
-
+},{"./errorTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","fs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify/lib/_empty.js","os":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/os-browserify/browser.js","path":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js":[function(require,module,exports){
 module.exports = {
-    enableForEnvironment,
-    constants: require("./moduleConstants")
-};
-
-}).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"./Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
+    LOG: "log",
+    ERROR: "error",
+    WARN: "warn",
+    INFO: "info",
+    DEBUG: "debug",
+    TRACE: "trace",
+    CRITICAL: "critical",
+    AUDIT: "audit"
+}
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js":[function(require,module,exports){
 module.exports = {
   BROWSER_ENVIRONMENT_TYPE: 'browser',
   MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
@@ -38218,7 +38635,7 @@ module.exports = {
   NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js":[function(require,module,exports){
 (function (process,global){(function (){
 let logger = console;
 
@@ -54969,7 +55386,652 @@ var objectKeys = Object.keys || function (obj) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"object.assign/polyfill":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/object.assign/polyfill.js","util/":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/util.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/base64-js/index.js":[function(require,module,exports){
+},{"object.assign/polyfill":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/object.assign/polyfill.js","util/":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/assert/node_modules/util/util.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/assert/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/assert/node_modules/util/support/isBufferBrowser.js":[function(require,module,exports){
+module.exports = function isBuffer(arg) {
+  return arg && typeof arg === 'object'
+    && typeof arg.copy === 'function'
+    && typeof arg.fill === 'function'
+    && typeof arg.readUInt8 === 'function';
+}
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/assert/node_modules/util/util.js":[function(require,module,exports){
+(function (process,global){(function (){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var formatRegExp = /%[sdj%]/g;
+exports.format = function(f) {
+  if (!isString(f)) {
+    var objects = [];
+    for (var i = 0; i < arguments.length; i++) {
+      objects.push(inspect(arguments[i]));
+    }
+    return objects.join(' ');
+  }
+
+  var i = 1;
+  var args = arguments;
+  var len = args.length;
+  var str = String(f).replace(formatRegExp, function(x) {
+    if (x === '%%') return '%';
+    if (i >= len) return x;
+    switch (x) {
+      case '%s': return String(args[i++]);
+      case '%d': return Number(args[i++]);
+      case '%j':
+        try {
+          return JSON.stringify(args[i++]);
+        } catch (_) {
+          return '[Circular]';
+        }
+      default:
+        return x;
+    }
+  });
+  for (var x = args[i]; i < len; x = args[++i]) {
+    if (isNull(x) || !isObject(x)) {
+      str += ' ' + x;
+    } else {
+      str += ' ' + inspect(x);
+    }
+  }
+  return str;
+};
+
+
+// Mark that a method should not be used.
+// Returns a modified function which warns once by default.
+// If --no-deprecation is set, then it is a no-op.
+exports.deprecate = function(fn, msg) {
+  // Allow for deprecating things in the process of starting up.
+  if (isUndefined(global.process)) {
+    return function() {
+      return exports.deprecate(fn, msg).apply(this, arguments);
+    };
+  }
+
+  if (process.noDeprecation === true) {
+    return fn;
+  }
+
+  var warned = false;
+  function deprecated() {
+    if (!warned) {
+      if (process.throwDeprecation) {
+        throw new Error(msg);
+      } else if (process.traceDeprecation) {
+        console.trace(msg);
+      } else {
+        console.error(msg);
+      }
+      warned = true;
+    }
+    return fn.apply(this, arguments);
+  }
+
+  return deprecated;
+};
+
+
+var debugs = {};
+var debugEnviron;
+exports.debuglog = function(set) {
+  if (isUndefined(debugEnviron))
+    debugEnviron = process.env.NODE_DEBUG || '';
+  set = set.toUpperCase();
+  if (!debugs[set]) {
+    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+      var pid = process.pid;
+      debugs[set] = function() {
+        var msg = exports.format.apply(exports, arguments);
+        console.error('%s %d: %s', set, pid, msg);
+      };
+    } else {
+      debugs[set] = function() {};
+    }
+  }
+  return debugs[set];
+};
+
+
+/**
+ * Echos the value of a value. Trys to print the value out
+ * in the best way possible given the different types.
+ *
+ * @param {Object} obj The object to print out.
+ * @param {Object} opts Optional options object that alters the output.
+ */
+/* legacy: obj, showHidden, depth, colors*/
+function inspect(obj, opts) {
+  // default options
+  var ctx = {
+    seen: [],
+    stylize: stylizeNoColor
+  };
+  // legacy...
+  if (arguments.length >= 3) ctx.depth = arguments[2];
+  if (arguments.length >= 4) ctx.colors = arguments[3];
+  if (isBoolean(opts)) {
+    // legacy...
+    ctx.showHidden = opts;
+  } else if (opts) {
+    // got an "options" object
+    exports._extend(ctx, opts);
+  }
+  // set default options
+  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+  if (isUndefined(ctx.depth)) ctx.depth = 2;
+  if (isUndefined(ctx.colors)) ctx.colors = false;
+  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+  if (ctx.colors) ctx.stylize = stylizeWithColor;
+  return formatValue(ctx, obj, ctx.depth);
+}
+exports.inspect = inspect;
+
+
+// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+inspect.colors = {
+  'bold' : [1, 22],
+  'italic' : [3, 23],
+  'underline' : [4, 24],
+  'inverse' : [7, 27],
+  'white' : [37, 39],
+  'grey' : [90, 39],
+  'black' : [30, 39],
+  'blue' : [34, 39],
+  'cyan' : [36, 39],
+  'green' : [32, 39],
+  'magenta' : [35, 39],
+  'red' : [31, 39],
+  'yellow' : [33, 39]
+};
+
+// Don't use 'blue' not visible on cmd.exe
+inspect.styles = {
+  'special': 'cyan',
+  'number': 'yellow',
+  'boolean': 'yellow',
+  'undefined': 'grey',
+  'null': 'bold',
+  'string': 'green',
+  'date': 'magenta',
+  // "name": intentionally not styling
+  'regexp': 'red'
+};
+
+
+function stylizeWithColor(str, styleType) {
+  var style = inspect.styles[styleType];
+
+  if (style) {
+    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
+           '\u001b[' + inspect.colors[style][1] + 'm';
+  } else {
+    return str;
+  }
+}
+
+
+function stylizeNoColor(str, styleType) {
+  return str;
+}
+
+
+function arrayToHash(array) {
+  var hash = {};
+
+  array.forEach(function(val, idx) {
+    hash[val] = true;
+  });
+
+  return hash;
+}
+
+
+function formatValue(ctx, value, recurseTimes) {
+  // Provide a hook for user-specified inspect functions.
+  // Check that value is an object with an inspect function on it
+  if (ctx.customInspect &&
+      value &&
+      isFunction(value.inspect) &&
+      // Filter out the util module, it's inspect function is special
+      value.inspect !== exports.inspect &&
+      // Also filter out any prototype objects using the circular check.
+      !(value.constructor && value.constructor.prototype === value)) {
+    var ret = value.inspect(recurseTimes, ctx);
+    if (!isString(ret)) {
+      ret = formatValue(ctx, ret, recurseTimes);
+    }
+    return ret;
+  }
+
+  // Primitive types cannot have properties
+  var primitive = formatPrimitive(ctx, value);
+  if (primitive) {
+    return primitive;
+  }
+
+  // Look up the keys of the object.
+  var keys = Object.keys(value);
+  var visibleKeys = arrayToHash(keys);
+
+  if (ctx.showHidden) {
+    keys = Object.getOwnPropertyNames(value);
+  }
+
+  // IE doesn't make error fields non-enumerable
+  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+  if (isError(value)
+      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+    return formatError(value);
+  }
+
+  // Some type of object without properties can be shortcutted.
+  if (keys.length === 0) {
+    if (isFunction(value)) {
+      var name = value.name ? ': ' + value.name : '';
+      return ctx.stylize('[Function' + name + ']', 'special');
+    }
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    }
+    if (isDate(value)) {
+      return ctx.stylize(Date.prototype.toString.call(value), 'date');
+    }
+    if (isError(value)) {
+      return formatError(value);
+    }
+  }
+
+  var base = '', array = false, braces = ['{', '}'];
+
+  // Make Array say that they are Array
+  if (isArray(value)) {
+    array = true;
+    braces = ['[', ']'];
+  }
+
+  // Make functions say that they are functions
+  if (isFunction(value)) {
+    var n = value.name ? ': ' + value.name : '';
+    base = ' [Function' + n + ']';
+  }
+
+  // Make RegExps say that they are RegExps
+  if (isRegExp(value)) {
+    base = ' ' + RegExp.prototype.toString.call(value);
+  }
+
+  // Make dates with properties first say the date
+  if (isDate(value)) {
+    base = ' ' + Date.prototype.toUTCString.call(value);
+  }
+
+  // Make error with message first say the error
+  if (isError(value)) {
+    base = ' ' + formatError(value);
+  }
+
+  if (keys.length === 0 && (!array || value.length == 0)) {
+    return braces[0] + base + braces[1];
+  }
+
+  if (recurseTimes < 0) {
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    } else {
+      return ctx.stylize('[Object]', 'special');
+    }
+  }
+
+  ctx.seen.push(value);
+
+  var output;
+  if (array) {
+    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+  } else {
+    output = keys.map(function(key) {
+      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+    });
+  }
+
+  ctx.seen.pop();
+
+  return reduceToSingleString(output, base, braces);
+}
+
+
+function formatPrimitive(ctx, value) {
+  if (isUndefined(value))
+    return ctx.stylize('undefined', 'undefined');
+  if (isString(value)) {
+    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
+                                             .replace(/'/g, "\\'")
+                                             .replace(/\\"/g, '"') + '\'';
+    return ctx.stylize(simple, 'string');
+  }
+  if (isNumber(value))
+    return ctx.stylize('' + value, 'number');
+  if (isBoolean(value))
+    return ctx.stylize('' + value, 'boolean');
+  // For some reason typeof null is "object", so special case here.
+  if (isNull(value))
+    return ctx.stylize('null', 'null');
+}
+
+
+function formatError(value) {
+  return '[' + Error.prototype.toString.call(value) + ']';
+}
+
+
+function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+  var output = [];
+  for (var i = 0, l = value.length; i < l; ++i) {
+    if (hasOwnProperty(value, String(i))) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          String(i), true));
+    } else {
+      output.push('');
+    }
+  }
+  keys.forEach(function(key) {
+    if (!key.match(/^\d+$/)) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          key, true));
+    }
+  });
+  return output;
+}
+
+
+function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+  var name, str, desc;
+  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+  if (desc.get) {
+    if (desc.set) {
+      str = ctx.stylize('[Getter/Setter]', 'special');
+    } else {
+      str = ctx.stylize('[Getter]', 'special');
+    }
+  } else {
+    if (desc.set) {
+      str = ctx.stylize('[Setter]', 'special');
+    }
+  }
+  if (!hasOwnProperty(visibleKeys, key)) {
+    name = '[' + key + ']';
+  }
+  if (!str) {
+    if (ctx.seen.indexOf(desc.value) < 0) {
+      if (isNull(recurseTimes)) {
+        str = formatValue(ctx, desc.value, null);
+      } else {
+        str = formatValue(ctx, desc.value, recurseTimes - 1);
+      }
+      if (str.indexOf('\n') > -1) {
+        if (array) {
+          str = str.split('\n').map(function(line) {
+            return '  ' + line;
+          }).join('\n').substr(2);
+        } else {
+          str = '\n' + str.split('\n').map(function(line) {
+            return '   ' + line;
+          }).join('\n');
+        }
+      }
+    } else {
+      str = ctx.stylize('[Circular]', 'special');
+    }
+  }
+  if (isUndefined(name)) {
+    if (array && key.match(/^\d+$/)) {
+      return str;
+    }
+    name = JSON.stringify('' + key);
+    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+      name = name.substr(1, name.length - 2);
+      name = ctx.stylize(name, 'name');
+    } else {
+      name = name.replace(/'/g, "\\'")
+                 .replace(/\\"/g, '"')
+                 .replace(/(^"|"$)/g, "'");
+      name = ctx.stylize(name, 'string');
+    }
+  }
+
+  return name + ': ' + str;
+}
+
+
+function reduceToSingleString(output, base, braces) {
+  var numLinesEst = 0;
+  var length = output.reduce(function(prev, cur) {
+    numLinesEst++;
+    if (cur.indexOf('\n') >= 0) numLinesEst++;
+    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+  }, 0);
+
+  if (length > 60) {
+    return braces[0] +
+           (base === '' ? '' : base + '\n ') +
+           ' ' +
+           output.join(',\n  ') +
+           ' ' +
+           braces[1];
+  }
+
+  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+}
+
+
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+function isArray(ar) {
+  return Array.isArray(ar);
+}
+exports.isArray = isArray;
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+exports.isBoolean = isBoolean;
+
+function isNull(arg) {
+  return arg === null;
+}
+exports.isNull = isNull;
+
+function isNullOrUndefined(arg) {
+  return arg == null;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+exports.isNumber = isNumber;
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+exports.isString = isString;
+
+function isSymbol(arg) {
+  return typeof arg === 'symbol';
+}
+exports.isSymbol = isSymbol;
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+exports.isUndefined = isUndefined;
+
+function isRegExp(re) {
+  return isObject(re) && objectToString(re) === '[object RegExp]';
+}
+exports.isRegExp = isRegExp;
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+exports.isObject = isObject;
+
+function isDate(d) {
+  return isObject(d) && objectToString(d) === '[object Date]';
+}
+exports.isDate = isDate;
+
+function isError(e) {
+  return isObject(e) &&
+      (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+exports.isError = isError;
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+exports.isFunction = isFunction;
+
+function isPrimitive(arg) {
+  return arg === null ||
+         typeof arg === 'boolean' ||
+         typeof arg === 'number' ||
+         typeof arg === 'string' ||
+         typeof arg === 'symbol' ||  // ES6 symbol
+         typeof arg === 'undefined';
+}
+exports.isPrimitive = isPrimitive;
+
+exports.isBuffer = require('./support/isBuffer');
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+
+
+function pad(n) {
+  return n < 10 ? '0' + n.toString(10) : n.toString(10);
+}
+
+
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+              'Oct', 'Nov', 'Dec'];
+
+// 26 Feb 16:19:34
+function timestamp() {
+  var d = new Date();
+  var time = [pad(d.getHours()),
+              pad(d.getMinutes()),
+              pad(d.getSeconds())].join(':');
+  return [d.getDate(), months[d.getMonth()], time].join(' ');
+}
+
+
+// log is just a thin wrapper to console.log that prepends a timestamp
+exports.log = function() {
+  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
+};
+
+
+/**
+ * Inherit the prototype methods from one constructor into another.
+ *
+ * The Function.prototype.inherits from lang.js rewritten as a standalone
+ * function (not on Function.prototype). NOTE: If this file is to be loaded
+ * during bootstrapping this function needs to be rewritten using some native
+ * functions as prototype setup using normal JavaScript does not work as
+ * expected during bootstrapping (see mirror.js in r114903).
+ *
+ * @param {function} ctor Constructor function which needs to inherit the
+ *     prototype.
+ * @param {function} superCtor Constructor function to inherit prototype from.
+ */
+exports.inherits = require('inherits');
+
+exports._extend = function(origin, add) {
+  // Don't do anything if add isn't an object
+  if (!add || !isObject(add)) return origin;
+
+  var keys = Object.keys(add);
+  var i = keys.length;
+  while (i--) {
+    origin[keys[i]] = add[keys[i]];
+  }
+  return origin;
+};
+
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+}).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./support/isBuffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/assert/node_modules/util/support/isBufferBrowser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/assert/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/available-typed-arrays/index.js":[function(require,module,exports){
+(function (global){(function (){
+'use strict';
+
+var possibleNames = require('possible-typed-array-names');
+
+var g = typeof globalThis === 'undefined' ? global : globalThis;
+
+/** @type {import('.')} */
+module.exports = function availableTypedArrays() {
+	var /** @type {ReturnType<typeof availableTypedArrays>} */ out = [];
+	for (var i = 0; i < possibleNames.length; i++) {
+		if (typeof g[possibleNames[i]] === 'function') {
+			// @ts-expect-error
+			out[out.length] = possibleNames[i];
+		}
+	}
+	return out;
+};
+
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"possible-typed-array-names":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/possible-typed-array-names/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/base64-js/index.js":[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -60070,7 +61132,9 @@ module.exports = crt
 }).call(this)}).call(this,require("buffer").Buffer)
 
 },{"bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/bn.js/lib/bn.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/algos.js":[function(require,module,exports){
-module.exports = require('./browser/algorithms.json')
+'use strict';
+
+module.exports = require('./browser/algorithms.json');
 
 },{"./browser/algorithms.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/algorithms.json"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/algorithms.json":[function(require,module,exports){
 module.exports={
@@ -60237,90 +61301,90 @@ module.exports={
 }
 
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/index.js":[function(require,module,exports){
-var Buffer = require('safe-buffer').Buffer
-var createHash = require('create-hash')
-var stream = require('readable-stream')
-var inherits = require('inherits')
-var sign = require('./sign')
-var verify = require('./verify')
+'use strict';
 
-var algorithms = require('./algorithms.json')
+var Buffer = require('safe-buffer').Buffer;
+var createHash = require('create-hash');
+var stream = require('readable-stream');
+var inherits = require('inherits');
+var sign = require('./sign');
+var verify = require('./verify');
+
+var algorithms = require('./algorithms.json');
 Object.keys(algorithms).forEach(function (key) {
-  algorithms[key].id = Buffer.from(algorithms[key].id, 'hex')
-  algorithms[key.toLowerCase()] = algorithms[key]
-})
+  algorithms[key].id = Buffer.from(algorithms[key].id, 'hex');
+  algorithms[key.toLowerCase()] = algorithms[key];
+});
 
-function Sign (algorithm) {
-  stream.Writable.call(this)
+function Sign(algorithm) {
+  stream.Writable.call(this);
 
-  var data = algorithms[algorithm]
-  if (!data) throw new Error('Unknown message digest')
+  var data = algorithms[algorithm];
+  if (!data) { throw new Error('Unknown message digest'); }
 
-  this._hashType = data.hash
-  this._hash = createHash(data.hash)
-  this._tag = data.id
-  this._signType = data.sign
+  this._hashType = data.hash;
+  this._hash = createHash(data.hash);
+  this._tag = data.id;
+  this._signType = data.sign;
 }
-inherits(Sign, stream.Writable)
+inherits(Sign, stream.Writable);
 
-Sign.prototype._write = function _write (data, _, done) {
-  this._hash.update(data)
-  done()
+Sign.prototype._write = function _write(data, _, done) {
+  this._hash.update(data);
+  done();
+};
+
+Sign.prototype.update = function update(data, enc) {
+  this._hash.update(typeof data === 'string' ? Buffer.from(data, enc) : data);
+
+  return this;
+};
+
+Sign.prototype.sign = function signMethod(key, enc) {
+  this.end();
+  var hash = this._hash.digest();
+  var sig = sign(hash, key, this._hashType, this._signType, this._tag);
+
+  return enc ? sig.toString(enc) : sig;
+};
+
+function Verify(algorithm) {
+  stream.Writable.call(this);
+
+  var data = algorithms[algorithm];
+  if (!data) { throw new Error('Unknown message digest'); }
+
+  this._hash = createHash(data.hash);
+  this._tag = data.id;
+  this._signType = data.sign;
 }
+inherits(Verify, stream.Writable);
 
-Sign.prototype.update = function update (data, enc) {
-  if (typeof data === 'string') data = Buffer.from(data, enc)
+Verify.prototype._write = function _write(data, _, done) {
+  this._hash.update(data);
+  done();
+};
 
-  this._hash.update(data)
-  return this
-}
+Verify.prototype.update = function update(data, enc) {
+  this._hash.update(typeof data === 'string' ? Buffer.from(data, enc) : data);
 
-Sign.prototype.sign = function signMethod (key, enc) {
-  this.end()
-  var hash = this._hash.digest()
-  var sig = sign(hash, key, this._hashType, this._signType, this._tag)
+  return this;
+};
 
-  return enc ? sig.toString(enc) : sig
-}
+Verify.prototype.verify = function verifyMethod(key, sig, enc) {
+  var sigBuffer = typeof sig === 'string' ? Buffer.from(sig, enc) : sig;
 
-function Verify (algorithm) {
-  stream.Writable.call(this)
+  this.end();
+  var hash = this._hash.digest();
+  return verify(sigBuffer, hash, key, this._signType, this._tag);
+};
 
-  var data = algorithms[algorithm]
-  if (!data) throw new Error('Unknown message digest')
-
-  this._hash = createHash(data.hash)
-  this._tag = data.id
-  this._signType = data.sign
-}
-inherits(Verify, stream.Writable)
-
-Verify.prototype._write = function _write (data, _, done) {
-  this._hash.update(data)
-  done()
-}
-
-Verify.prototype.update = function update (data, enc) {
-  if (typeof data === 'string') data = Buffer.from(data, enc)
-
-  this._hash.update(data)
-  return this
-}
-
-Verify.prototype.verify = function verifyMethod (key, sig, enc) {
-  if (typeof sig === 'string') sig = Buffer.from(sig, enc)
-
-  this.end()
-  var hash = this._hash.digest()
-  return verify(sig, hash, key, this._signType, this._tag)
-}
-
-function createSign (algorithm) {
-  return new Sign(algorithm)
+function createSign(algorithm) {
+  return new Sign(algorithm);
 }
 
-function createVerify (algorithm) {
-  return new Verify(algorithm)
+function createVerify(algorithm) {
+  return new Verify(algorithm);
 }
 
 module.exports = {
@@ -60328,238 +61392,247 @@ module.exports = {
   Verify: createVerify,
   createSign: createSign,
   createVerify: createVerify
-}
+};
 
 },{"./algorithms.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/algorithms.json","./sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/sign.js","./verify":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/verify.js","create-hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/browser.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/readable-browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/sign.js":[function(require,module,exports){
-// much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var Buffer = require('safe-buffer').Buffer
-var createHmac = require('create-hmac')
-var crt = require('browserify-rsa')
-var EC = require('elliptic').ec
-var BN = require('bn.js')
-var parseKeys = require('parse-asn1')
-var curves = require('./curves.json')
+'use strict';
 
-function sign (hash, key, hashType, signType, tag) {
-  var priv = parseKeys(key)
+// much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
+var Buffer = require('safe-buffer').Buffer;
+var createHmac = require('create-hmac');
+var crt = require('browserify-rsa');
+var EC = require('elliptic').ec;
+var BN = require('bn.js');
+var parseKeys = require('parse-asn1');
+var curves = require('./curves.json');
+
+var RSA_PKCS1_PADDING = 1;
+
+function sign(hash, key, hashType, signType, tag) {
+  var priv = parseKeys(key);
   if (priv.curve) {
     // rsa keys can be interpreted as ecdsa ones in openssl
-    if (signType !== 'ecdsa' && signType !== 'ecdsa/rsa') throw new Error('wrong private key type')
-    return ecSign(hash, priv)
+    if (signType !== 'ecdsa' && signType !== 'ecdsa/rsa') { throw new Error('wrong private key type'); }
+    return ecSign(hash, priv);
   } else if (priv.type === 'dsa') {
-    if (signType !== 'dsa') throw new Error('wrong private key type')
-    return dsaSign(hash, priv, hashType)
-  } else {
-    if (signType !== 'rsa' && signType !== 'ecdsa/rsa') throw new Error('wrong private key type')
+    if (signType !== 'dsa') { throw new Error('wrong private key type'); }
+    return dsaSign(hash, priv, hashType);
   }
-  hash = Buffer.concat([tag, hash])
-  var len = priv.modulus.byteLength()
-  var pad = [0, 1]
-  while (hash.length + pad.length + 1 < len) pad.push(0xff)
-  pad.push(0x00)
-  var i = -1
-  while (++i < hash.length) pad.push(hash[i])
+  if (signType !== 'rsa' && signType !== 'ecdsa/rsa') { throw new Error('wrong private key type'); }
+  if (key.padding !== undefined && key.padding !== RSA_PKCS1_PADDING) { throw new Error('illegal or unsupported padding mode'); }
 
-  var out = crt(pad, priv)
-  return out
+  hash = Buffer.concat([tag, hash]);
+  var len = priv.modulus.byteLength();
+  var pad = [0, 1];
+  while (hash.length + pad.length + 1 < len) { pad.push(0xff); }
+  pad.push(0x00);
+  var i = -1;
+  while (++i < hash.length) { pad.push(hash[i]); }
+
+  var out = crt(pad, priv);
+  return out;
 }
 
-function ecSign (hash, priv) {
-  var curveId = curves[priv.curve.join('.')]
-  if (!curveId) throw new Error('unknown curve ' + priv.curve.join('.'))
+function ecSign(hash, priv) {
+  var curveId = curves[priv.curve.join('.')];
+  if (!curveId) { throw new Error('unknown curve ' + priv.curve.join('.')); }
 
-  var curve = new EC(curveId)
-  var key = curve.keyFromPrivate(priv.privateKey)
-  var out = key.sign(hash)
+  var curve = new EC(curveId);
+  var key = curve.keyFromPrivate(priv.privateKey);
+  var out = key.sign(hash);
 
-  return Buffer.from(out.toDER())
+  return Buffer.from(out.toDER());
 }
 
-function dsaSign (hash, priv, algo) {
-  var x = priv.params.priv_key
-  var p = priv.params.p
-  var q = priv.params.q
-  var g = priv.params.g
-  var r = new BN(0)
-  var k
-  var H = bits2int(hash, q).mod(q)
-  var s = false
-  var kv = getKey(x, q, hash, algo)
+function dsaSign(hash, priv, algo) {
+  var x = priv.params.priv_key;
+  var p = priv.params.p;
+  var q = priv.params.q;
+  var g = priv.params.g;
+  var r = new BN(0);
+  var k;
+  var H = bits2int(hash, q).mod(q);
+  var s = false;
+  var kv = getKey(x, q, hash, algo);
   while (s === false) {
-    k = makeKey(q, kv, algo)
-    r = makeR(g, k, p, q)
-    s = k.invm(q).imul(H.add(x.mul(r))).mod(q)
+    k = makeKey(q, kv, algo);
+    r = makeR(g, k, p, q);
+    s = k.invm(q).imul(H.add(x.mul(r))).mod(q);
     if (s.cmpn(0) === 0) {
-      s = false
-      r = new BN(0)
+      s = false;
+      r = new BN(0);
     }
   }
-  return toDER(r, s)
+  return toDER(r, s);
 }
 
-function toDER (r, s) {
-  r = r.toArray()
-  s = s.toArray()
+function toDER(r, s) {
+  r = r.toArray();
+  s = s.toArray();
 
   // Pad values
-  if (r[0] & 0x80) r = [0].concat(r)
-  if (s[0] & 0x80) s = [0].concat(s)
+  if (r[0] & 0x80) { r = [0].concat(r); }
+  if (s[0] & 0x80) { s = [0].concat(s); }
 
-  var total = r.length + s.length + 4
-  var res = [0x30, total, 0x02, r.length]
-  res = res.concat(r, [0x02, s.length], s)
-  return Buffer.from(res)
+  var total = r.length + s.length + 4;
+  var res = [
+    0x30, total, 0x02, r.length
+  ];
+  res = res.concat(r, [0x02, s.length], s);
+  return Buffer.from(res);
 }
 
-function getKey (x, q, hash, algo) {
-  x = Buffer.from(x.toArray())
+function getKey(x, q, hash, algo) {
+  x = Buffer.from(x.toArray());
   if (x.length < q.byteLength()) {
-    var zeros = Buffer.alloc(q.byteLength() - x.length)
-    x = Buffer.concat([zeros, x])
+    var zeros = Buffer.alloc(q.byteLength() - x.length);
+    x = Buffer.concat([zeros, x]);
   }
-  var hlen = hash.length
-  var hbits = bits2octets(hash, q)
-  var v = Buffer.alloc(hlen)
-  v.fill(1)
-  var k = Buffer.alloc(hlen)
-  k = createHmac(algo, k).update(v).update(Buffer.from([0])).update(x).update(hbits).digest()
-  v = createHmac(algo, k).update(v).digest()
-  k = createHmac(algo, k).update(v).update(Buffer.from([1])).update(x).update(hbits).digest()
-  v = createHmac(algo, k).update(v).digest()
-  return { k: k, v: v }
+  var hlen = hash.length;
+  var hbits = bits2octets(hash, q);
+  var v = Buffer.alloc(hlen);
+  v.fill(1);
+  var k = Buffer.alloc(hlen);
+  k = createHmac(algo, k).update(v).update(Buffer.from([0])).update(x).update(hbits).digest();
+  v = createHmac(algo, k).update(v).digest();
+  k = createHmac(algo, k).update(v).update(Buffer.from([1])).update(x).update(hbits).digest();
+  v = createHmac(algo, k).update(v).digest();
+  return { k: k, v: v };
 }
 
-function bits2int (obits, q) {
-  var bits = new BN(obits)
-  var shift = (obits.length << 3) - q.bitLength()
-  if (shift > 0) bits.ishrn(shift)
-  return bits
+function bits2int(obits, q) {
+  var bits = new BN(obits);
+  var shift = (obits.length << 3) - q.bitLength();
+  if (shift > 0) { bits.ishrn(shift); }
+  return bits;
 }
 
-function bits2octets (bits, q) {
-  bits = bits2int(bits, q)
-  bits = bits.mod(q)
-  var out = Buffer.from(bits.toArray())
+function bits2octets(bits, q) {
+  bits = bits2int(bits, q);
+  bits = bits.mod(q);
+  var out = Buffer.from(bits.toArray());
   if (out.length < q.byteLength()) {
-    var zeros = Buffer.alloc(q.byteLength() - out.length)
-    out = Buffer.concat([zeros, out])
+    var zeros = Buffer.alloc(q.byteLength() - out.length);
+    out = Buffer.concat([zeros, out]);
   }
-  return out
+  return out;
 }
 
-function makeKey (q, kv, algo) {
-  var t
-  var k
+function makeKey(q, kv, algo) {
+  var t;
+  var k;
 
   do {
-    t = Buffer.alloc(0)
+    t = Buffer.alloc(0);
 
     while (t.length * 8 < q.bitLength()) {
-      kv.v = createHmac(algo, kv.k).update(kv.v).digest()
-      t = Buffer.concat([t, kv.v])
+      kv.v = createHmac(algo, kv.k).update(kv.v).digest();
+      t = Buffer.concat([t, kv.v]);
     }
 
-    k = bits2int(t, q)
-    kv.k = createHmac(algo, kv.k).update(kv.v).update(Buffer.from([0])).digest()
-    kv.v = createHmac(algo, kv.k).update(kv.v).digest()
-  } while (k.cmp(q) !== -1)
+    k = bits2int(t, q);
+    kv.k = createHmac(algo, kv.k).update(kv.v).update(Buffer.from([0])).digest();
+    kv.v = createHmac(algo, kv.k).update(kv.v).digest();
+  } while (k.cmp(q) !== -1);
 
-  return k
+  return k;
 }
 
-function makeR (g, k, p, q) {
-  return g.toRed(BN.mont(p)).redPow(k).fromRed().mod(q)
+function makeR(g, k, p, q) {
+  return g.toRed(BN.mont(p)).redPow(k).fromRed().mod(q);
 }
 
-module.exports = sign
-module.exports.getKey = getKey
-module.exports.makeKey = makeKey
+module.exports = sign;
+module.exports.getKey = getKey;
+module.exports.makeKey = makeKey;
 
 },{"./curves.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/curves.json","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/bn.js/lib/bn.js","browserify-rsa":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-rsa/index.js","create-hmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hmac/browser.js","elliptic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic.js","parse-asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/verify.js":[function(require,module,exports){
-// much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var Buffer = require('safe-buffer').Buffer
-var BN = require('bn.js')
-var EC = require('elliptic').ec
-var parseKeys = require('parse-asn1')
-var curves = require('./curves.json')
+'use strict';
 
-function verify (sig, hash, key, signType, tag) {
-  var pub = parseKeys(key)
+// much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
+var Buffer = require('safe-buffer').Buffer;
+var BN = require('bn.js');
+var EC = require('elliptic').ec;
+var parseKeys = require('parse-asn1');
+var curves = require('./curves.json');
+
+function verify(sig, hash, key, signType, tag) {
+  var pub = parseKeys(key);
   if (pub.type === 'ec') {
     // rsa keys can be interpreted as ecdsa ones in openssl
-    if (signType !== 'ecdsa' && signType !== 'ecdsa/rsa') throw new Error('wrong public key type')
-    return ecVerify(sig, hash, pub)
+    if (signType !== 'ecdsa' && signType !== 'ecdsa/rsa') { throw new Error('wrong public key type'); }
+    return ecVerify(sig, hash, pub);
   } else if (pub.type === 'dsa') {
-    if (signType !== 'dsa') throw new Error('wrong public key type')
-    return dsaVerify(sig, hash, pub)
-  } else {
-    if (signType !== 'rsa' && signType !== 'ecdsa/rsa') throw new Error('wrong public key type')
+    if (signType !== 'dsa') { throw new Error('wrong public key type'); }
+    return dsaVerify(sig, hash, pub);
   }
-  hash = Buffer.concat([tag, hash])
-  var len = pub.modulus.byteLength()
-  var pad = [1]
-  var padNum = 0
+  if (signType !== 'rsa' && signType !== 'ecdsa/rsa') { throw new Error('wrong public key type'); }
+
+  hash = Buffer.concat([tag, hash]);
+  var len = pub.modulus.byteLength();
+  var pad = [1];
+  var padNum = 0;
   while (hash.length + pad.length + 2 < len) {
-    pad.push(0xff)
-    padNum++
+    pad.push(0xff);
+    padNum += 1;
   }
-  pad.push(0x00)
-  var i = -1
+  pad.push(0x00);
+  var i = -1;
   while (++i < hash.length) {
-    pad.push(hash[i])
+    pad.push(hash[i]);
   }
-  pad = Buffer.from(pad)
-  var red = BN.mont(pub.modulus)
-  sig = new BN(sig).toRed(red)
+  pad = Buffer.from(pad);
+  var red = BN.mont(pub.modulus);
+  sig = new BN(sig).toRed(red);
 
-  sig = sig.redPow(new BN(pub.publicExponent))
-  sig = Buffer.from(sig.fromRed().toArray())
-  var out = padNum < 8 ? 1 : 0
-  len = Math.min(sig.length, pad.length)
-  if (sig.length !== pad.length) out = 1
+  sig = sig.redPow(new BN(pub.publicExponent));
+  sig = Buffer.from(sig.fromRed().toArray());
+  var out = padNum < 8 ? 1 : 0;
+  len = Math.min(sig.length, pad.length);
+  if (sig.length !== pad.length) { out = 1; }
 
-  i = -1
-  while (++i < len) out |= sig[i] ^ pad[i]
-  return out === 0
+  i = -1;
+  while (++i < len) { out |= sig[i] ^ pad[i]; }
+  return out === 0;
 }
 
-function ecVerify (sig, hash, pub) {
-  var curveId = curves[pub.data.algorithm.curve.join('.')]
-  if (!curveId) throw new Error('unknown curve ' + pub.data.algorithm.curve.join('.'))
+function ecVerify(sig, hash, pub) {
+  var curveId = curves[pub.data.algorithm.curve.join('.')];
+  if (!curveId) { throw new Error('unknown curve ' + pub.data.algorithm.curve.join('.')); }
 
-  var curve = new EC(curveId)
-  var pubkey = pub.data.subjectPrivateKey.data
+  var curve = new EC(curveId);
+  var pubkey = pub.data.subjectPrivateKey.data;
 
-  return curve.verify(hash, sig, pubkey)
+  return curve.verify(hash, sig, pubkey);
 }
 
-function dsaVerify (sig, hash, pub) {
-  var p = pub.data.p
-  var q = pub.data.q
-  var g = pub.data.g
-  var y = pub.data.pub_key
-  var unpacked = parseKeys.signature.decode(sig, 'der')
-  var s = unpacked.s
-  var r = unpacked.r
-  checkValue(s, q)
-  checkValue(r, q)
-  var montp = BN.mont(p)
-  var w = s.invm(q)
+function dsaVerify(sig, hash, pub) {
+  var p = pub.data.p;
+  var q = pub.data.q;
+  var g = pub.data.g;
+  var y = pub.data.pub_key;
+  var unpacked = parseKeys.signature.decode(sig, 'der');
+  var s = unpacked.s;
+  var r = unpacked.r;
+  checkValue(s, q);
+  checkValue(r, q);
+  var montp = BN.mont(p);
+  var w = s.invm(q);
   var v = g.toRed(montp)
     .redPow(new BN(hash).mul(w).mod(q))
     .fromRed()
     .mul(y.toRed(montp).redPow(r.mul(w).mod(q)).fromRed())
     .mod(p)
-    .mod(q)
-  return v.cmp(r) === 0
+    .mod(q);
+  return v.cmp(r) === 0;
 }
 
-function checkValue (b, q) {
-  if (b.cmpn(0) <= 0) throw new Error('invalid sig')
-  if (b.cmp(q) >= q) throw new Error('invalid sig')
+function checkValue(b, q) {
+  if (b.cmpn(0) <= 0) { throw new Error('invalid sig'); }
+  if (b.cmp(q) >= 0) { throw new Error('invalid sig'); }
 }
 
-module.exports = verify
+module.exports = verify;
 
 },{"./curves.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/curves.json","bn.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/bn.js/lib/bn.js","elliptic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/elliptic/lib/elliptic.js","parse-asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js":[function(require,module,exports){
 'use strict';
@@ -66234,73 +67307,7 @@ function numberIsNaN (obj) {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 
-},{"base64-js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/base64-js/index.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","ieee754":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ieee754/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/builtin-status-codes/browser.js":[function(require,module,exports){
-module.exports = {
-  "100": "Continue",
-  "101": "Switching Protocols",
-  "102": "Processing",
-  "200": "OK",
-  "201": "Created",
-  "202": "Accepted",
-  "203": "Non-Authoritative Information",
-  "204": "No Content",
-  "205": "Reset Content",
-  "206": "Partial Content",
-  "207": "Multi-Status",
-  "208": "Already Reported",
-  "226": "IM Used",
-  "300": "Multiple Choices",
-  "301": "Moved Permanently",
-  "302": "Found",
-  "303": "See Other",
-  "304": "Not Modified",
-  "305": "Use Proxy",
-  "307": "Temporary Redirect",
-  "308": "Permanent Redirect",
-  "400": "Bad Request",
-  "401": "Unauthorized",
-  "402": "Payment Required",
-  "403": "Forbidden",
-  "404": "Not Found",
-  "405": "Method Not Allowed",
-  "406": "Not Acceptable",
-  "407": "Proxy Authentication Required",
-  "408": "Request Timeout",
-  "409": "Conflict",
-  "410": "Gone",
-  "411": "Length Required",
-  "412": "Precondition Failed",
-  "413": "Payload Too Large",
-  "414": "URI Too Long",
-  "415": "Unsupported Media Type",
-  "416": "Range Not Satisfiable",
-  "417": "Expectation Failed",
-  "418": "I'm a teapot",
-  "421": "Misdirected Request",
-  "422": "Unprocessable Entity",
-  "423": "Locked",
-  "424": "Failed Dependency",
-  "425": "Unordered Collection",
-  "426": "Upgrade Required",
-  "428": "Precondition Required",
-  "429": "Too Many Requests",
-  "431": "Request Header Fields Too Large",
-  "451": "Unavailable For Legal Reasons",
-  "500": "Internal Server Error",
-  "501": "Not Implemented",
-  "502": "Bad Gateway",
-  "503": "Service Unavailable",
-  "504": "Gateway Timeout",
-  "505": "HTTP Version Not Supported",
-  "506": "Variant Also Negotiates",
-  "507": "Insufficient Storage",
-  "508": "Loop Detected",
-  "509": "Bandwidth Limit Exceeded",
-  "510": "Not Extended",
-  "511": "Network Authentication Required"
-}
-
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/call-bind/callBound.js":[function(require,module,exports){
+},{"base64-js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/base64-js/index.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","ieee754":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ieee754/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/call-bind/callBound.js":[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('get-intrinsic');
@@ -66322,38 +67329,26 @@ module.exports = function callBoundIntrinsic(name, allowMissing) {
 
 var bind = require('function-bind');
 var GetIntrinsic = require('get-intrinsic');
+var setFunctionLength = require('set-function-length');
 
+var $TypeError = require('es-errors/type');
 var $apply = GetIntrinsic('%Function.prototype.apply%');
 var $call = GetIntrinsic('%Function.prototype.call%');
 var $reflectApply = GetIntrinsic('%Reflect.apply%', true) || bind.call($call, $apply);
 
-var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
-var $defineProperty = GetIntrinsic('%Object.defineProperty%', true);
+var $defineProperty = require('es-define-property');
 var $max = GetIntrinsic('%Math.max%');
 
-if ($defineProperty) {
-	try {
-		$defineProperty({}, 'a', { value: 1 });
-	} catch (e) {
-		// IE 8 has a broken defineProperty
-		$defineProperty = null;
-	}
-}
-
 module.exports = function callBind(originalFunction) {
-	var func = $reflectApply(bind, $call, arguments);
-	if ($gOPD && $defineProperty) {
-		var desc = $gOPD(func, 'length');
-		if (desc.configurable) {
-			// original length, plus the receiver, minus any additional arguments (after the receiver)
-			$defineProperty(
-				func,
-				'length',
-				{ value: 1 + $max(0, originalFunction.length - (arguments.length - 1)) }
-			);
-		}
+	if (typeof originalFunction !== 'function') {
+		throw new $TypeError('a function is required');
 	}
-	return func;
+	var func = $reflectApply(bind, $call, arguments);
+	return setFunctionLength(
+		func,
+		1 + $max(0, originalFunction.length - (arguments.length - 1)),
+		true
+	);
 };
 
 var applyBind = function applyBind() {
@@ -66366,7 +67361,7 @@ if ($defineProperty) {
 	module.exports.apply = applyBind;
 }
 
-},{"function-bind":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/function-bind/index.js","get-intrinsic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/get-intrinsic/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js":[function(require,module,exports){
+},{"es-define-property":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-define-property/index.js","es-errors/type":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/type.js","function-bind":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/function-bind/index.js","get-intrinsic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/get-intrinsic/index.js","set-function-length":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/set-function-length/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/cipher-base/index.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 var Transform = require('stream').Transform
 var StringDecoder = require('string_decoder').StringDecoder
@@ -66467,116 +67462,7 @@ CipherBase.prototype._toString = function (value, enc, fin) {
 
 module.exports = CipherBase
 
-},{"inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js","stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js","string_decoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js":[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// NOTE: These type checking functions intentionally don't use `instanceof`
-// because it is fragile and can be easily faked with `Object.create()`.
-
-function isArray(arg) {
-  if (Array.isArray) {
-    return Array.isArray(arg);
-  }
-  return objectToString(arg) === '[object Array]';
-}
-exports.isArray = isArray;
-
-function isBoolean(arg) {
-  return typeof arg === 'boolean';
-}
-exports.isBoolean = isBoolean;
-
-function isNull(arg) {
-  return arg === null;
-}
-exports.isNull = isNull;
-
-function isNullOrUndefined(arg) {
-  return arg == null;
-}
-exports.isNullOrUndefined = isNullOrUndefined;
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-exports.isNumber = isNumber;
-
-function isString(arg) {
-  return typeof arg === 'string';
-}
-exports.isString = isString;
-
-function isSymbol(arg) {
-  return typeof arg === 'symbol';
-}
-exports.isSymbol = isSymbol;
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-exports.isUndefined = isUndefined;
-
-function isRegExp(re) {
-  return objectToString(re) === '[object RegExp]';
-}
-exports.isRegExp = isRegExp;
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-exports.isObject = isObject;
-
-function isDate(d) {
-  return objectToString(d) === '[object Date]';
-}
-exports.isDate = isDate;
-
-function isError(e) {
-  return (objectToString(e) === '[object Error]' || e instanceof Error);
-}
-exports.isError = isError;
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-exports.isFunction = isFunction;
-
-function isPrimitive(arg) {
-  return arg === null ||
-         typeof arg === 'boolean' ||
-         typeof arg === 'number' ||
-         typeof arg === 'string' ||
-         typeof arg === 'symbol' ||  // ES6 symbol
-         typeof arg === 'undefined';
-}
-exports.isPrimitive = isPrimitive;
-
-exports.isBuffer = require('buffer').Buffer.isBuffer;
-
-function objectToString(o) {
-  return Object.prototype.toString.call(o);
-}
-
-},{"buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-ecdh/browser.js":[function(require,module,exports){
+},{"inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js","stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js","string_decoder":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-ecdh/browser.js":[function(require,module,exports){
 (function (Buffer){(function (){
 var elliptic = require('elliptic')
 var BN = require('bn.js')
@@ -66957,7 +67843,65 @@ exports.constants = {
   'POINT_CONVERSION_HYBRID': 6
 }
 
-},{"browserify-cipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-cipher/browser.js","browserify-sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/index.js","browserify-sign/algos":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/algos.js","create-ecdh":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-ecdh/browser.js","create-hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/browser.js","create-hmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hmac/browser.js","diffie-hellman":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/browser.js","pbkdf2":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/browser.js","public-encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/browser.js","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js","randomfill":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randomfill/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des.js":[function(require,module,exports){
+},{"browserify-cipher":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-cipher/browser.js","browserify-sign":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/browser/index.js","browserify-sign/algos":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/algos.js","create-ecdh":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-ecdh/browser.js","create-hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hash/browser.js","create-hmac":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/create-hmac/browser.js","diffie-hellman":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/diffie-hellman/browser.js","pbkdf2":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/browser.js","public-encrypt":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/public-encrypt/browser.js","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js","randomfill":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randomfill/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/define-data-property/index.js":[function(require,module,exports){
+'use strict';
+
+var $defineProperty = require('es-define-property');
+
+var $SyntaxError = require('es-errors/syntax');
+var $TypeError = require('es-errors/type');
+
+var gopd = require('gopd');
+
+/** @type {import('.')} */
+module.exports = function defineDataProperty(
+	obj,
+	property,
+	value
+) {
+	if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
+		throw new $TypeError('`obj` must be an object or a function`');
+	}
+	if (typeof property !== 'string' && typeof property !== 'symbol') {
+		throw new $TypeError('`property` must be a string or a symbol`');
+	}
+	if (arguments.length > 3 && typeof arguments[3] !== 'boolean' && arguments[3] !== null) {
+		throw new $TypeError('`nonEnumerable`, if provided, must be a boolean or null');
+	}
+	if (arguments.length > 4 && typeof arguments[4] !== 'boolean' && arguments[4] !== null) {
+		throw new $TypeError('`nonWritable`, if provided, must be a boolean or null');
+	}
+	if (arguments.length > 5 && typeof arguments[5] !== 'boolean' && arguments[5] !== null) {
+		throw new $TypeError('`nonConfigurable`, if provided, must be a boolean or null');
+	}
+	if (arguments.length > 6 && typeof arguments[6] !== 'boolean') {
+		throw new $TypeError('`loose`, if provided, must be a boolean');
+	}
+
+	var nonEnumerable = arguments.length > 3 ? arguments[3] : null;
+	var nonWritable = arguments.length > 4 ? arguments[4] : null;
+	var nonConfigurable = arguments.length > 5 ? arguments[5] : null;
+	var loose = arguments.length > 6 ? arguments[6] : false;
+
+	/* @type {false | TypedPropertyDescriptor<unknown>} */
+	var desc = !!gopd && gopd(obj, property);
+
+	if ($defineProperty) {
+		$defineProperty(obj, property, {
+			configurable: nonConfigurable === null && desc ? desc.configurable : !nonConfigurable,
+			enumerable: nonEnumerable === null && desc ? desc.enumerable : !nonEnumerable,
+			value: value,
+			writable: nonWritable === null && desc ? desc.writable : !nonWritable
+		});
+	} else if (loose || (!nonEnumerable && !nonWritable && !nonConfigurable)) {
+		// must fall back to [[Set]], and was not explicitly asked to make non-enumerable, non-writable, or non-configurable
+		obj[property] = value; // eslint-disable-line no-param-reassign
+	} else {
+		throw new $SyntaxError('This environment does not support defining a property as non-configurable, non-writable, or non-enumerable.');
+	}
+};
+
+},{"es-define-property":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-define-property/index.js","es-errors/syntax":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/syntax.js","es-errors/type":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/type.js","gopd":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/gopd/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/des.js/lib/des.js":[function(require,module,exports){
 'use strict';
 
 exports.utils = require('./des/utils');
@@ -71959,6 +72903,66 @@ module.exports={
   }
 }
 
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-define-property/index.js":[function(require,module,exports){
+'use strict';
+
+var GetIntrinsic = require('get-intrinsic');
+
+/** @type {import('.')} */
+var $defineProperty = GetIntrinsic('%Object.defineProperty%', true) || false;
+if ($defineProperty) {
+	try {
+		$defineProperty({}, 'a', { value: 1 });
+	} catch (e) {
+		// IE 8 has a broken defineProperty
+		$defineProperty = false;
+	}
+}
+
+module.exports = $defineProperty;
+
+},{"get-intrinsic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/get-intrinsic/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/eval.js":[function(require,module,exports){
+'use strict';
+
+/** @type {import('./eval')} */
+module.exports = EvalError;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/index.js":[function(require,module,exports){
+'use strict';
+
+/** @type {import('.')} */
+module.exports = Error;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/range.js":[function(require,module,exports){
+'use strict';
+
+/** @type {import('./range')} */
+module.exports = RangeError;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/ref.js":[function(require,module,exports){
+'use strict';
+
+/** @type {import('./ref')} */
+module.exports = ReferenceError;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/syntax.js":[function(require,module,exports){
+'use strict';
+
+/** @type {import('./syntax')} */
+module.exports = SyntaxError;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/type.js":[function(require,module,exports){
+'use strict';
+
+/** @type {import('./type')} */
+module.exports = TypeError;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/uri.js":[function(require,module,exports){
+'use strict';
+
+/** @type {import('./uri')} */
+module.exports = URIError;
+
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -71981,182 +72985,143 @@ module.exports={
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var objectCreate = Object.create || objectCreatePolyfill
-var objectKeys = Object.keys || objectKeysPolyfill
-var bind = Function.prototype.bind || functionBindPolyfill
+'use strict';
 
-function EventEmitter() {
-  if (!this._events || !Object.prototype.hasOwnProperty.call(this, '_events')) {
-    this._events = objectCreate(null);
-    this._eventsCount = 0;
+var R = typeof Reflect === 'object' ? Reflect : null
+var ReflectApply = R && typeof R.apply === 'function'
+  ? R.apply
+  : function ReflectApply(target, receiver, args) {
+    return Function.prototype.apply.call(target, receiver, args);
   }
 
-  this._maxListeners = this._maxListeners || undefined;
+var ReflectOwnKeys
+if (R && typeof R.ownKeys === 'function') {
+  ReflectOwnKeys = R.ownKeys
+} else if (Object.getOwnPropertySymbols) {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target)
+      .concat(Object.getOwnPropertySymbols(target));
+  };
+} else {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target);
+  };
+}
+
+function ProcessEmitWarning(warning) {
+  if (console && console.warn) console.warn(warning);
+}
+
+var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
+  return value !== value;
+}
+
+function EventEmitter() {
+  EventEmitter.init.call(this);
 }
 module.exports = EventEmitter;
+module.exports.once = once;
 
 // Backwards-compat with node 0.10.x
 EventEmitter.EventEmitter = EventEmitter;
 
 EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._eventsCount = 0;
 EventEmitter.prototype._maxListeners = undefined;
 
 // By default EventEmitters will print a warning if more than 10 listeners are
 // added to it. This is a useful default which helps finding memory leaks.
 var defaultMaxListeners = 10;
 
-var hasDefineProperty;
-try {
-  var o = {};
-  if (Object.defineProperty) Object.defineProperty(o, 'x', { value: 0 });
-  hasDefineProperty = o.x === 0;
-} catch (err) { hasDefineProperty = false }
-if (hasDefineProperty) {
-  Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
-    enumerable: true,
-    get: function() {
-      return defaultMaxListeners;
-    },
-    set: function(arg) {
-      // check whether the input is a positive number (whose value is zero or
-      // greater and not a NaN).
-      if (typeof arg !== 'number' || arg < 0 || arg !== arg)
-        throw new TypeError('"defaultMaxListeners" must be a positive number');
-      defaultMaxListeners = arg;
-    }
-  });
-} else {
-  EventEmitter.defaultMaxListeners = defaultMaxListeners;
+function checkListener(listener) {
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
 }
+
+Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
+  enumerable: true,
+  get: function() {
+    return defaultMaxListeners;
+  },
+  set: function(arg) {
+    if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
+      throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
+    }
+    defaultMaxListeners = arg;
+  }
+});
+
+EventEmitter.init = function() {
+
+  if (this._events === undefined ||
+      this._events === Object.getPrototypeOf(this)._events) {
+    this._events = Object.create(null);
+    this._eventsCount = 0;
+  }
+
+  this._maxListeners = this._maxListeners || undefined;
+};
 
 // Obviously not all Emitters should be limited to 10. This function allows
 // that to be increased. Set to zero for unlimited.
 EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
-  if (typeof n !== 'number' || n < 0 || isNaN(n))
-    throw new TypeError('"n" argument must be a positive number');
+  if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
+    throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
+  }
   this._maxListeners = n;
   return this;
 };
 
-function $getMaxListeners(that) {
+function _getMaxListeners(that) {
   if (that._maxListeners === undefined)
     return EventEmitter.defaultMaxListeners;
   return that._maxListeners;
 }
 
 EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
-  return $getMaxListeners(this);
+  return _getMaxListeners(this);
 };
 
-// These standalone emit* functions are used to optimize calling of event
-// handlers for fast cases because emit() itself often has a variable number of
-// arguments and can be deoptimized because of that. These functions always have
-// the same number of arguments and thus do not get deoptimized, so the code
-// inside them can execute faster.
-function emitNone(handler, isFn, self) {
-  if (isFn)
-    handler.call(self);
-  else {
-    var len = handler.length;
-    var listeners = arrayClone(handler, len);
-    for (var i = 0; i < len; ++i)
-      listeners[i].call(self);
-  }
-}
-function emitOne(handler, isFn, self, arg1) {
-  if (isFn)
-    handler.call(self, arg1);
-  else {
-    var len = handler.length;
-    var listeners = arrayClone(handler, len);
-    for (var i = 0; i < len; ++i)
-      listeners[i].call(self, arg1);
-  }
-}
-function emitTwo(handler, isFn, self, arg1, arg2) {
-  if (isFn)
-    handler.call(self, arg1, arg2);
-  else {
-    var len = handler.length;
-    var listeners = arrayClone(handler, len);
-    for (var i = 0; i < len; ++i)
-      listeners[i].call(self, arg1, arg2);
-  }
-}
-function emitThree(handler, isFn, self, arg1, arg2, arg3) {
-  if (isFn)
-    handler.call(self, arg1, arg2, arg3);
-  else {
-    var len = handler.length;
-    var listeners = arrayClone(handler, len);
-    for (var i = 0; i < len; ++i)
-      listeners[i].call(self, arg1, arg2, arg3);
-  }
-}
-
-function emitMany(handler, isFn, self, args) {
-  if (isFn)
-    handler.apply(self, args);
-  else {
-    var len = handler.length;
-    var listeners = arrayClone(handler, len);
-    for (var i = 0; i < len; ++i)
-      listeners[i].apply(self, args);
-  }
-}
-
 EventEmitter.prototype.emit = function emit(type) {
-  var er, handler, len, args, i, events;
+  var args = [];
+  for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
   var doError = (type === 'error');
 
-  events = this._events;
-  if (events)
-    doError = (doError && events.error == null);
+  var events = this._events;
+  if (events !== undefined)
+    doError = (doError && events.error === undefined);
   else if (!doError)
     return false;
 
   // If there is no 'error' event listener then throw.
   if (doError) {
-    if (arguments.length > 1)
-      er = arguments[1];
+    var er;
+    if (args.length > 0)
+      er = args[0];
     if (er instanceof Error) {
+      // Note: The comments on the `throw` lines are intentional, they show
+      // up in Node's output if this results in an unhandled exception.
       throw er; // Unhandled 'error' event
-    } else {
-      // At least give some kind of context to the user
-      var err = new Error('Unhandled "error" event. (' + er + ')');
-      err.context = er;
-      throw err;
     }
-    return false;
+    // At least give some kind of context to the user
+    var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
+    err.context = er;
+    throw err; // Unhandled 'error' event
   }
 
-  handler = events[type];
+  var handler = events[type];
 
-  if (!handler)
+  if (handler === undefined)
     return false;
 
-  var isFn = typeof handler === 'function';
-  len = arguments.length;
-  switch (len) {
-      // fast cases
-    case 1:
-      emitNone(handler, isFn, this);
-      break;
-    case 2:
-      emitOne(handler, isFn, this, arguments[1]);
-      break;
-    case 3:
-      emitTwo(handler, isFn, this, arguments[1], arguments[2]);
-      break;
-    case 4:
-      emitThree(handler, isFn, this, arguments[1], arguments[2], arguments[3]);
-      break;
-      // slower
-    default:
-      args = new Array(len - 1);
-      for (i = 1; i < len; i++)
-        args[i - 1] = arguments[i];
-      emitMany(handler, isFn, this, args);
+  if (typeof handler === 'function') {
+    ReflectApply(handler, this, args);
+  } else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      ReflectApply(listeners[i], this, args);
   }
 
   return true;
@@ -72167,19 +73132,18 @@ function _addListener(target, type, listener, prepend) {
   var events;
   var existing;
 
-  if (typeof listener !== 'function')
-    throw new TypeError('"listener" argument must be a function');
+  checkListener(listener);
 
   events = target._events;
-  if (!events) {
-    events = target._events = objectCreate(null);
+  if (events === undefined) {
+    events = target._events = Object.create(null);
     target._eventsCount = 0;
   } else {
     // To avoid recursion in the case that type === "newListener"! Before
     // adding it to the listeners, first emit "newListener".
-    if (events.newListener) {
+    if (events.newListener !== undefined) {
       target.emit('newListener', type,
-          listener.listener ? listener.listener : listener);
+                  listener.listener ? listener.listener : listener);
 
       // Re-assign `events` because a newListener handler could have caused the
       // this._events to be assigned to a new object
@@ -72188,7 +73152,7 @@ function _addListener(target, type, listener, prepend) {
     existing = events[type];
   }
 
-  if (!existing) {
+  if (existing === undefined) {
     // Optimize the case of one listener. Don't need the extra array object.
     existing = events[type] = listener;
     ++target._eventsCount;
@@ -72196,33 +73160,29 @@ function _addListener(target, type, listener, prepend) {
     if (typeof existing === 'function') {
       // Adding the second element, need to change to array.
       existing = events[type] =
-          prepend ? [listener, existing] : [existing, listener];
-    } else {
+        prepend ? [listener, existing] : [existing, listener];
       // If we've already got an array, just append.
-      if (prepend) {
-        existing.unshift(listener);
-      } else {
-        existing.push(listener);
-      }
+    } else if (prepend) {
+      existing.unshift(listener);
+    } else {
+      existing.push(listener);
     }
 
     // Check for listener leak
-    if (!existing.warned) {
-      m = $getMaxListeners(target);
-      if (m && m > 0 && existing.length > m) {
-        existing.warned = true;
-        var w = new Error('Possible EventEmitter memory leak detected. ' +
-            existing.length + ' "' + String(type) + '" listeners ' +
-            'added. Use emitter.setMaxListeners() to ' +
-            'increase limit.');
-        w.name = 'MaxListenersExceededWarning';
-        w.emitter = target;
-        w.type = type;
-        w.count = existing.length;
-        if (typeof console === 'object' && console.warn) {
-          console.warn('%s: %s', w.name, w.message);
-        }
-      }
+    m = _getMaxListeners(target);
+    if (m > 0 && existing.length > m && !existing.warned) {
+      existing.warned = true;
+      // No error code for this since it is a Warning
+      // eslint-disable-next-line no-restricted-syntax
+      var w = new Error('Possible EventEmitter memory leak detected. ' +
+                          existing.length + ' ' + String(type) + ' listeners ' +
+                          'added. Use emitter.setMaxListeners() to ' +
+                          'increase limit');
+      w.name = 'MaxListenersExceededWarning';
+      w.emitter = target;
+      w.type = type;
+      w.count = existing.length;
+      ProcessEmitWarning(w);
     }
   }
 
@@ -72244,44 +73204,29 @@ function onceWrapper() {
   if (!this.fired) {
     this.target.removeListener(this.type, this.wrapFn);
     this.fired = true;
-    switch (arguments.length) {
-      case 0:
-        return this.listener.call(this.target);
-      case 1:
-        return this.listener.call(this.target, arguments[0]);
-      case 2:
-        return this.listener.call(this.target, arguments[0], arguments[1]);
-      case 3:
-        return this.listener.call(this.target, arguments[0], arguments[1],
-            arguments[2]);
-      default:
-        var args = new Array(arguments.length);
-        for (var i = 0; i < args.length; ++i)
-          args[i] = arguments[i];
-        this.listener.apply(this.target, args);
-    }
+    if (arguments.length === 0)
+      return this.listener.call(this.target);
+    return this.listener.apply(this.target, arguments);
   }
 }
 
 function _onceWrap(target, type, listener) {
   var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
-  var wrapped = bind.call(onceWrapper, state);
+  var wrapped = onceWrapper.bind(state);
   wrapped.listener = listener;
   state.wrapFn = wrapped;
   return wrapped;
 }
 
 EventEmitter.prototype.once = function once(type, listener) {
-  if (typeof listener !== 'function')
-    throw new TypeError('"listener" argument must be a function');
+  checkListener(listener);
   this.on(type, _onceWrap(this, type, listener));
   return this;
 };
 
 EventEmitter.prototype.prependOnceListener =
     function prependOnceListener(type, listener) {
-      if (typeof listener !== 'function')
-        throw new TypeError('"listener" argument must be a function');
+      checkListener(listener);
       this.prependListener(type, _onceWrap(this, type, listener));
       return this;
     };
@@ -72291,20 +73236,19 @@ EventEmitter.prototype.removeListener =
     function removeListener(type, listener) {
       var list, events, position, i, originalListener;
 
-      if (typeof listener !== 'function')
-        throw new TypeError('"listener" argument must be a function');
+      checkListener(listener);
 
       events = this._events;
-      if (!events)
+      if (events === undefined)
         return this;
 
       list = events[type];
-      if (!list)
+      if (list === undefined)
         return this;
 
       if (list === listener || list.listener === listener) {
         if (--this._eventsCount === 0)
-          this._events = objectCreate(null);
+          this._events = Object.create(null);
         else {
           delete events[type];
           if (events.removeListener)
@@ -72326,35 +73270,38 @@ EventEmitter.prototype.removeListener =
 
         if (position === 0)
           list.shift();
-        else
+        else {
           spliceOne(list, position);
+        }
 
         if (list.length === 1)
           events[type] = list[0];
 
-        if (events.removeListener)
+        if (events.removeListener !== undefined)
           this.emit('removeListener', type, originalListener || listener);
       }
 
       return this;
     };
 
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+
 EventEmitter.prototype.removeAllListeners =
     function removeAllListeners(type) {
       var listeners, events, i;
 
       events = this._events;
-      if (!events)
+      if (events === undefined)
         return this;
 
       // not listening for removeListener, no need to emit
-      if (!events.removeListener) {
+      if (events.removeListener === undefined) {
         if (arguments.length === 0) {
-          this._events = objectCreate(null);
+          this._events = Object.create(null);
           this._eventsCount = 0;
-        } else if (events[type]) {
+        } else if (events[type] !== undefined) {
           if (--this._eventsCount === 0)
-            this._events = objectCreate(null);
+            this._events = Object.create(null);
           else
             delete events[type];
         }
@@ -72363,7 +73310,7 @@ EventEmitter.prototype.removeAllListeners =
 
       // emit removeListener for all listeners on all events
       if (arguments.length === 0) {
-        var keys = objectKeys(events);
+        var keys = Object.keys(events);
         var key;
         for (i = 0; i < keys.length; ++i) {
           key = keys[i];
@@ -72371,7 +73318,7 @@ EventEmitter.prototype.removeAllListeners =
           this.removeAllListeners(key);
         }
         this.removeAllListeners('removeListener');
-        this._events = objectCreate(null);
+        this._events = Object.create(null);
         this._eventsCount = 0;
         return this;
       }
@@ -72380,7 +73327,7 @@ EventEmitter.prototype.removeAllListeners =
 
       if (typeof listeners === 'function') {
         this.removeListener(type, listeners);
-      } else if (listeners) {
+      } else if (listeners !== undefined) {
         // LIFO order
         for (i = listeners.length - 1; i >= 0; i--) {
           this.removeListener(type, listeners[i]);
@@ -72393,17 +73340,18 @@ EventEmitter.prototype.removeAllListeners =
 function _listeners(target, type, unwrap) {
   var events = target._events;
 
-  if (!events)
+  if (events === undefined)
     return [];
 
   var evlistener = events[type];
-  if (!evlistener)
+  if (evlistener === undefined)
     return [];
 
   if (typeof evlistener === 'function')
     return unwrap ? [evlistener.listener || evlistener] : [evlistener];
 
-  return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+  return unwrap ?
+    unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
 }
 
 EventEmitter.prototype.listeners = function listeners(type) {
@@ -72426,12 +73374,12 @@ EventEmitter.prototype.listenerCount = listenerCount;
 function listenerCount(type) {
   var events = this._events;
 
-  if (events) {
+  if (events !== undefined) {
     var evlistener = events[type];
 
     if (typeof evlistener === 'function') {
       return 1;
-    } else if (evlistener) {
+    } else if (evlistener !== undefined) {
       return evlistener.length;
     }
   }
@@ -72440,21 +73388,20 @@ function listenerCount(type) {
 }
 
 EventEmitter.prototype.eventNames = function eventNames() {
-  return this._eventsCount > 0 ? Reflect.ownKeys(this._events) : [];
+  return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
 };
-
-// About 1.5x faster than the two-arg version of Array#splice().
-function spliceOne(list, index) {
-  for (var i = index, k = i + 1, n = list.length; k < n; i += 1, k += 1)
-    list[i] = list[k];
-  list.pop();
-}
 
 function arrayClone(arr, n) {
   var copy = new Array(n);
   for (var i = 0; i < n; ++i)
     copy[i] = arr[i];
   return copy;
+}
+
+function spliceOne(list, index) {
+  for (; index + 1 < list.length; index++)
+    list[index] = list[index + 1];
+  list.pop();
 }
 
 function unwrapListeners(arr) {
@@ -72465,23 +73412,54 @@ function unwrapListeners(arr) {
   return ret;
 }
 
-function objectCreatePolyfill(proto) {
-  var F = function() {};
-  F.prototype = proto;
-  return new F;
+function once(emitter, name) {
+  return new Promise(function (resolve, reject) {
+    function errorListener(err) {
+      emitter.removeListener(name, resolver);
+      reject(err);
+    }
+
+    function resolver() {
+      if (typeof emitter.removeListener === 'function') {
+        emitter.removeListener('error', errorListener);
+      }
+      resolve([].slice.call(arguments));
+    };
+
+    eventTargetAgnosticAddListener(emitter, name, resolver, { once: true });
+    if (name !== 'error') {
+      addErrorHandlerIfEventEmitter(emitter, errorListener, { once: true });
+    }
+  });
 }
-function objectKeysPolyfill(obj) {
-  var keys = [];
-  for (var k in obj) if (Object.prototype.hasOwnProperty.call(obj, k)) {
-    keys.push(k);
+
+function addErrorHandlerIfEventEmitter(emitter, handler, flags) {
+  if (typeof emitter.on === 'function') {
+    eventTargetAgnosticAddListener(emitter, 'error', handler, flags);
   }
-  return k;
 }
-function functionBindPolyfill(context) {
-  var fn = this;
-  return function () {
-    return fn.apply(context, arguments);
-  };
+
+function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
+  if (typeof emitter.on === 'function') {
+    if (flags.once) {
+      emitter.once(name, listener);
+    } else {
+      emitter.on(name, listener);
+    }
+  } else if (typeof emitter.addEventListener === 'function') {
+    // EventTarget does not have `error` event semantics like Node
+    // EventEmitters, we do not listen for `error` events here.
+    emitter.addEventListener(name, function wrapListener(arg) {
+      // IE does not have builtin `{ once: true }` support so we
+      // have to do it manually.
+      if (flags.once) {
+        emitter.removeEventListener(name, wrapListener);
+      }
+      listener(arg);
+    });
+  } else {
+    throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type ' + typeof emitter);
+  }
 }
 
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/evp_bytestokey/index.js":[function(require,module,exports){
@@ -72531,49 +73509,145 @@ function EVP_BytesToKey (password, salt, keyBits, ivLen) {
 
 module.exports = EVP_BytesToKey
 
-},{"md5.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/md5.js/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/function-bind/implementation.js":[function(require,module,exports){
+},{"md5.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/md5.js/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/for-each/index.js":[function(require,module,exports){
+'use strict';
+
+var isCallable = require('is-callable');
+
+var toStr = Object.prototype.toString;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+var forEachArray = function forEachArray(array, iterator, receiver) {
+    for (var i = 0, len = array.length; i < len; i++) {
+        if (hasOwnProperty.call(array, i)) {
+            if (receiver == null) {
+                iterator(array[i], i, array);
+            } else {
+                iterator.call(receiver, array[i], i, array);
+            }
+        }
+    }
+};
+
+var forEachString = function forEachString(string, iterator, receiver) {
+    for (var i = 0, len = string.length; i < len; i++) {
+        // no such thing as a sparse string.
+        if (receiver == null) {
+            iterator(string.charAt(i), i, string);
+        } else {
+            iterator.call(receiver, string.charAt(i), i, string);
+        }
+    }
+};
+
+var forEachObject = function forEachObject(object, iterator, receiver) {
+    for (var k in object) {
+        if (hasOwnProperty.call(object, k)) {
+            if (receiver == null) {
+                iterator(object[k], k, object);
+            } else {
+                iterator.call(receiver, object[k], k, object);
+            }
+        }
+    }
+};
+
+var forEach = function forEach(list, iterator, thisArg) {
+    if (!isCallable(iterator)) {
+        throw new TypeError('iterator must be a function');
+    }
+
+    var receiver;
+    if (arguments.length >= 3) {
+        receiver = thisArg;
+    }
+
+    if (toStr.call(list) === '[object Array]') {
+        forEachArray(list, iterator, receiver);
+    } else if (typeof list === 'string') {
+        forEachString(list, iterator, receiver);
+    } else {
+        forEachObject(list, iterator, receiver);
+    }
+};
+
+module.exports = forEach;
+
+},{"is-callable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-callable/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/function-bind/implementation.js":[function(require,module,exports){
 'use strict';
 
 /* eslint no-invalid-this: 1 */
 
 var ERROR_MESSAGE = 'Function.prototype.bind called on incompatible ';
-var slice = Array.prototype.slice;
 var toStr = Object.prototype.toString;
+var max = Math.max;
 var funcType = '[object Function]';
+
+var concatty = function concatty(a, b) {
+    var arr = [];
+
+    for (var i = 0; i < a.length; i += 1) {
+        arr[i] = a[i];
+    }
+    for (var j = 0; j < b.length; j += 1) {
+        arr[j + a.length] = b[j];
+    }
+
+    return arr;
+};
+
+var slicy = function slicy(arrLike, offset) {
+    var arr = [];
+    for (var i = offset || 0, j = 0; i < arrLike.length; i += 1, j += 1) {
+        arr[j] = arrLike[i];
+    }
+    return arr;
+};
+
+var joiny = function (arr, joiner) {
+    var str = '';
+    for (var i = 0; i < arr.length; i += 1) {
+        str += arr[i];
+        if (i + 1 < arr.length) {
+            str += joiner;
+        }
+    }
+    return str;
+};
 
 module.exports = function bind(that) {
     var target = this;
-    if (typeof target !== 'function' || toStr.call(target) !== funcType) {
+    if (typeof target !== 'function' || toStr.apply(target) !== funcType) {
         throw new TypeError(ERROR_MESSAGE + target);
     }
-    var args = slice.call(arguments, 1);
+    var args = slicy(arguments, 1);
 
     var bound;
     var binder = function () {
         if (this instanceof bound) {
             var result = target.apply(
                 this,
-                args.concat(slice.call(arguments))
+                concatty(args, arguments)
             );
             if (Object(result) === result) {
                 return result;
             }
             return this;
-        } else {
-            return target.apply(
-                that,
-                args.concat(slice.call(arguments))
-            );
         }
+        return target.apply(
+            that,
+            concatty(args, arguments)
+        );
+
     };
 
-    var boundLength = Math.max(0, target.length - args.length);
+    var boundLength = max(0, target.length - args.length);
     var boundArgs = [];
     for (var i = 0; i < boundLength; i++) {
-        boundArgs.push('$' + i);
+        boundArgs[i] = '$' + i;
     }
 
-    bound = Function('binder', 'return function (' + boundArgs.join(',') + '){ return binder.apply(this,arguments); }')(binder);
+    bound = Function('binder', 'return function (' + joiny(boundArgs, ',') + '){ return binder.apply(this,arguments); }')(binder);
 
     if (target.prototype) {
         var Empty = function Empty() {};
@@ -72597,9 +73671,15 @@ module.exports = Function.prototype.bind || implementation;
 
 var undefined;
 
-var $SyntaxError = SyntaxError;
+var $Error = require('es-errors');
+var $EvalError = require('es-errors/eval');
+var $RangeError = require('es-errors/range');
+var $ReferenceError = require('es-errors/ref');
+var $SyntaxError = require('es-errors/syntax');
+var $TypeError = require('es-errors/type');
+var $URIError = require('es-errors/uri');
+
 var $Function = Function;
-var $TypeError = TypeError;
 
 // eslint-disable-next-line consistent-return
 var getEvalledConstructor = function (expressionSyntax) {
@@ -72651,6 +73731,7 @@ var needsEval = {};
 var TypedArray = typeof Uint8Array === 'undefined' || !getProto ? undefined : getProto(Uint8Array);
 
 var INTRINSICS = {
+	__proto__: null,
 	'%AggregateError%': typeof AggregateError === 'undefined' ? undefined : AggregateError,
 	'%Array%': Array,
 	'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined : ArrayBuffer,
@@ -72671,9 +73752,9 @@ var INTRINSICS = {
 	'%decodeURIComponent%': decodeURIComponent,
 	'%encodeURI%': encodeURI,
 	'%encodeURIComponent%': encodeURIComponent,
-	'%Error%': Error,
+	'%Error%': $Error,
 	'%eval%': eval, // eslint-disable-line no-eval
-	'%EvalError%': EvalError,
+	'%EvalError%': $EvalError,
 	'%Float32Array%': typeof Float32Array === 'undefined' ? undefined : Float32Array,
 	'%Float64Array%': typeof Float64Array === 'undefined' ? undefined : Float64Array,
 	'%FinalizationRegistry%': typeof FinalizationRegistry === 'undefined' ? undefined : FinalizationRegistry,
@@ -72695,8 +73776,8 @@ var INTRINSICS = {
 	'%parseInt%': parseInt,
 	'%Promise%': typeof Promise === 'undefined' ? undefined : Promise,
 	'%Proxy%': typeof Proxy === 'undefined' ? undefined : Proxy,
-	'%RangeError%': RangeError,
-	'%ReferenceError%': ReferenceError,
+	'%RangeError%': $RangeError,
+	'%ReferenceError%': $ReferenceError,
 	'%Reflect%': typeof Reflect === 'undefined' ? undefined : Reflect,
 	'%RegExp%': RegExp,
 	'%Set%': typeof Set === 'undefined' ? undefined : Set,
@@ -72713,7 +73794,7 @@ var INTRINSICS = {
 	'%Uint8ClampedArray%': typeof Uint8ClampedArray === 'undefined' ? undefined : Uint8ClampedArray,
 	'%Uint16Array%': typeof Uint16Array === 'undefined' ? undefined : Uint16Array,
 	'%Uint32Array%': typeof Uint32Array === 'undefined' ? undefined : Uint32Array,
-	'%URIError%': URIError,
+	'%URIError%': $URIError,
 	'%WeakMap%': typeof WeakMap === 'undefined' ? undefined : WeakMap,
 	'%WeakRef%': typeof WeakRef === 'undefined' ? undefined : WeakRef,
 	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined : WeakSet
@@ -72755,6 +73836,7 @@ var doEval = function doEval(name) {
 };
 
 var LEGACY_ALIASES = {
+	__proto__: null,
 	'%ArrayBufferPrototype%': ['ArrayBuffer', 'prototype'],
 	'%ArrayPrototype%': ['Array', 'prototype'],
 	'%ArrayProto_entries%': ['Array', 'prototype', 'entries'],
@@ -72809,7 +73891,7 @@ var LEGACY_ALIASES = {
 };
 
 var bind = require('function-bind');
-var hasOwn = require('has');
+var hasOwn = require('hasown');
 var $concat = bind.call(Function.call, Array.prototype.concat);
 var $spliceApply = bind.call(Function.apply, Array.prototype.splice);
 var $replace = bind.call(Function.call, String.prototype.replace);
@@ -72945,17 +74027,63 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 	return value;
 };
 
-},{"function-bind":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/function-bind/index.js","has":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has/src/index.js","has-proto":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-proto/index.js","has-symbols":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-symbols/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-proto/index.js":[function(require,module,exports){
+},{"es-errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/index.js","es-errors/eval":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/eval.js","es-errors/range":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/range.js","es-errors/ref":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/ref.js","es-errors/syntax":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/syntax.js","es-errors/type":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/type.js","es-errors/uri":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/uri.js","function-bind":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/function-bind/index.js","has-proto":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-proto/index.js","has-symbols":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-symbols/index.js","hasown":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hasown/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/gopd/index.js":[function(require,module,exports){
+'use strict';
+
+var GetIntrinsic = require('get-intrinsic');
+
+var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
+
+if ($gOPD) {
+	try {
+		$gOPD([], 'length');
+	} catch (e) {
+		// IE 8 has a broken gOPD
+		$gOPD = null;
+	}
+}
+
+module.exports = $gOPD;
+
+},{"get-intrinsic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/get-intrinsic/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-property-descriptors/index.js":[function(require,module,exports){
+'use strict';
+
+var $defineProperty = require('es-define-property');
+
+var hasPropertyDescriptors = function hasPropertyDescriptors() {
+	return !!$defineProperty;
+};
+
+hasPropertyDescriptors.hasArrayLengthDefineBug = function hasArrayLengthDefineBug() {
+	// node v0.6 has a bug where array lengths can be Set but not Defined
+	if (!$defineProperty) {
+		return null;
+	}
+	try {
+		return $defineProperty([], 'length', { value: 1 }).length !== 1;
+	} catch (e) {
+		// In Firefox 4-22, defining length on an array throws an exception.
+		return true;
+	}
+};
+
+module.exports = hasPropertyDescriptors;
+
+},{"es-define-property":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-define-property/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-proto/index.js":[function(require,module,exports){
 'use strict';
 
 var test = {
+	__proto__: null,
 	foo: {}
 };
 
 var $Object = Object;
 
+/** @type {import('.')} */
 module.exports = function hasProto() {
-	return { __proto__: test }.foo === test.foo && !({ __proto__: null } instanceof $Object);
+	// @ts-expect-error: TS errors on an inherited property for some reason
+	return { __proto__: test }.foo === test.foo
+		&& !(test instanceof $Object);
 };
 
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-symbols/index.js":[function(require,module,exports){
@@ -73017,17 +74145,17 @@ module.exports = function hasSymbols() {
 	return true;
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has/src/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-tostringtag/shams.js":[function(require,module,exports){
 'use strict';
 
-var hasOwnProperty = {}.hasOwnProperty;
-var call = Function.prototype.call;
+var hasSymbols = require('has-symbols/shams');
 
-module.exports = call.bind ? call.bind(hasOwnProperty) : function (O, P) {
-  return call.call(hasOwnProperty, O, P);
+/** @type {import('.')} */
+module.exports = function hasToStringTagShams() {
+	return hasSymbols() && !!Symbol.toStringTag;
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/index.js":[function(require,module,exports){
+},{"has-symbols/shams":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-symbols/shams.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash-base/index.js":[function(require,module,exports){
 'use strict'
 var Buffer = require('safe-buffer').Buffer
 var Transform = require('readable-stream').Transform
@@ -76466,7 +77594,17 @@ function shr64_lo(ah, al, num) {
 }
 exports.shr64_lo = shr64_lo;
 
-},{"inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hmac-drbg/lib/hmac-drbg.js":[function(require,module,exports){
+},{"inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hasown/index.js":[function(require,module,exports){
+'use strict';
+
+var call = Function.prototype.call;
+var $hasOwn = Object.prototype.hasOwnProperty;
+var bind = require('function-bind');
+
+/** @type {import('.')} */
+module.exports = bind.call(call, $hasOwn);
+
+},{"function-bind":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/function-bind/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hmac-drbg/lib/hmac-drbg.js":[function(require,module,exports){
 'use strict';
 
 var hash = require('hash.js');
@@ -76581,40 +77719,7 @@ HmacDRBG.prototype.generate = function generate(len, enc, add, addEnc) {
   return utils.encode(res, enc);
 };
 
-},{"hash.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js","minimalistic-crypto-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-crypto-utils/lib/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/https-browserify/index.js":[function(require,module,exports){
-var http = require('http')
-var url = require('url')
-
-var https = module.exports
-
-for (var key in http) {
-  if (http.hasOwnProperty(key)) https[key] = http[key]
-}
-
-https.request = function (params, cb) {
-  params = validateParams(params)
-  return http.request.call(this, params, cb)
-}
-
-https.get = function (params, cb) {
-  params = validateParams(params)
-  return http.get.call(this, params, cb)
-}
-
-function validateParams (params) {
-  if (typeof params === 'string') {
-    params = url.parse(params)
-  }
-  if (!params.protocol) {
-    params.protocol = 'https:'
-  }
-  if (params.protocol !== 'https:') {
-    throw new Error('Protocol "' + params.protocol + '" not supported. Expected "https:"')
-  }
-  return params
-}
-
-},{"http":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/index.js","url":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/url/url.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ieee754/index.js":[function(require,module,exports){
+},{"hash.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/hash.js/lib/hash.js","minimalistic-assert":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-assert/index.js","minimalistic-crypto-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/minimalistic-crypto-utils/lib/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ieee754/index.js":[function(require,module,exports){
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
@@ -76730,7 +77835,42 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-arguments/index.js":[function(require,module,exports){
+'use strict';
+
+var hasToStringTag = require('has-tostringtag/shams')();
+var callBound = require('call-bind/callBound');
+
+var $toString = callBound('Object.prototype.toString');
+
+var isStandardArguments = function isArguments(value) {
+	if (hasToStringTag && value && typeof value === 'object' && Symbol.toStringTag in value) {
+		return false;
+	}
+	return $toString(value) === '[object Arguments]';
+};
+
+var isLegacyArguments = function isArguments(value) {
+	if (isStandardArguments(value)) {
+		return true;
+	}
+	return value !== null &&
+		typeof value === 'object' &&
+		typeof value.length === 'number' &&
+		value.length >= 0 &&
+		$toString(value) !== '[object Array]' &&
+		$toString(value.callee) === '[object Function]';
+};
+
+var supportsStandardArguments = (function () {
+	return isStandardArguments(arguments);
+}());
+
+isStandardArguments.isLegacyArguments = isLegacyArguments; // for tests
+
+module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
+
+},{"call-bind/callBound":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/call-bind/callBound.js","has-tostringtag/shams":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-tostringtag/shams.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js":[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -76753,14 +77893,160 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/isarray/index.js":[function(require,module,exports){
-var toString = {}.toString;
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-callable/index.js":[function(require,module,exports){
+'use strict';
 
-module.exports = Array.isArray || function (arr) {
-  return toString.call(arr) == '[object Array]';
+var fnToStr = Function.prototype.toString;
+var reflectApply = typeof Reflect === 'object' && Reflect !== null && Reflect.apply;
+var badArrayLike;
+var isCallableMarker;
+if (typeof reflectApply === 'function' && typeof Object.defineProperty === 'function') {
+	try {
+		badArrayLike = Object.defineProperty({}, 'length', {
+			get: function () {
+				throw isCallableMarker;
+			}
+		});
+		isCallableMarker = {};
+		// eslint-disable-next-line no-throw-literal
+		reflectApply(function () { throw 42; }, null, badArrayLike);
+	} catch (_) {
+		if (_ !== isCallableMarker) {
+			reflectApply = null;
+		}
+	}
+} else {
+	reflectApply = null;
+}
+
+var constructorRegex = /^\s*class\b/;
+var isES6ClassFn = function isES6ClassFunction(value) {
+	try {
+		var fnStr = fnToStr.call(value);
+		return constructorRegex.test(fnStr);
+	} catch (e) {
+		return false; // not a function
+	}
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/md5.js/index.js":[function(require,module,exports){
+var tryFunctionObject = function tryFunctionToStr(value) {
+	try {
+		if (isES6ClassFn(value)) { return false; }
+		fnToStr.call(value);
+		return true;
+	} catch (e) {
+		return false;
+	}
+};
+var toStr = Object.prototype.toString;
+var objectClass = '[object Object]';
+var fnClass = '[object Function]';
+var genClass = '[object GeneratorFunction]';
+var ddaClass = '[object HTMLAllCollection]'; // IE 11
+var ddaClass2 = '[object HTML document.all class]';
+var ddaClass3 = '[object HTMLCollection]'; // IE 9-10
+var hasToStringTag = typeof Symbol === 'function' && !!Symbol.toStringTag; // better: use `has-tostringtag`
+
+var isIE68 = !(0 in [,]); // eslint-disable-line no-sparse-arrays, comma-spacing
+
+var isDDA = function isDocumentDotAll() { return false; };
+if (typeof document === 'object') {
+	// Firefox 3 canonicalizes DDA to undefined when it's not accessed directly
+	var all = document.all;
+	if (toStr.call(all) === toStr.call(document.all)) {
+		isDDA = function isDocumentDotAll(value) {
+			/* globals document: false */
+			// in IE 6-8, typeof document.all is "object" and it's truthy
+			if ((isIE68 || !value) && (typeof value === 'undefined' || typeof value === 'object')) {
+				try {
+					var str = toStr.call(value);
+					return (
+						str === ddaClass
+						|| str === ddaClass2
+						|| str === ddaClass3 // opera 12.16
+						|| str === objectClass // IE 6-8
+					) && value('') == null; // eslint-disable-line eqeqeq
+				} catch (e) { /**/ }
+			}
+			return false;
+		};
+	}
+}
+
+module.exports = reflectApply
+	? function isCallable(value) {
+		if (isDDA(value)) { return true; }
+		if (!value) { return false; }
+		if (typeof value !== 'function' && typeof value !== 'object') { return false; }
+		try {
+			reflectApply(value, null, badArrayLike);
+		} catch (e) {
+			if (e !== isCallableMarker) { return false; }
+		}
+		return !isES6ClassFn(value) && tryFunctionObject(value);
+	}
+	: function isCallable(value) {
+		if (isDDA(value)) { return true; }
+		if (!value) { return false; }
+		if (typeof value !== 'function' && typeof value !== 'object') { return false; }
+		if (hasToStringTag) { return tryFunctionObject(value); }
+		if (isES6ClassFn(value)) { return false; }
+		var strClass = toStr.call(value);
+		if (strClass !== fnClass && strClass !== genClass && !(/^\[object HTML/).test(strClass)) { return false; }
+		return tryFunctionObject(value);
+	};
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-generator-function/index.js":[function(require,module,exports){
+'use strict';
+
+var toStr = Object.prototype.toString;
+var fnToStr = Function.prototype.toString;
+var isFnRegex = /^\s*(?:function)?\*/;
+var hasToStringTag = require('has-tostringtag/shams')();
+var getProto = Object.getPrototypeOf;
+var getGeneratorFunc = function () { // eslint-disable-line consistent-return
+	if (!hasToStringTag) {
+		return false;
+	}
+	try {
+		return Function('return function*() {}')();
+	} catch (e) {
+	}
+};
+var GeneratorFunction;
+
+module.exports = function isGeneratorFunction(fn) {
+	if (typeof fn !== 'function') {
+		return false;
+	}
+	if (isFnRegex.test(fnToStr.call(fn))) {
+		return true;
+	}
+	if (!hasToStringTag) {
+		var str = toStr.call(fn);
+		return str === '[object GeneratorFunction]';
+	}
+	if (!getProto) {
+		return false;
+	}
+	if (typeof GeneratorFunction === 'undefined') {
+		var generatorFunc = getGeneratorFunc();
+		GeneratorFunction = generatorFunc ? getProto(generatorFunc) : false;
+	}
+	return getProto(fn) === GeneratorFunction;
+};
+
+},{"has-tostringtag/shams":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-tostringtag/shams.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-typed-array/index.js":[function(require,module,exports){
+'use strict';
+
+var whichTypedArray = require('which-typed-array');
+
+/** @type {import('.')} */
+module.exports = function isTypedArray(value) {
+	return !!whichTypedArray(value);
+};
+
+},{"which-typed-array":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/which-typed-array/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/md5.js/index.js":[function(require,module,exports){
 'use strict'
 var inherits = require('inherits')
 var HashBase = require('hash-base')
@@ -77100,525 +78386,7 @@ utils.encode = function encode(arr, enc) {
     return arr;
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/object-inspect/index.js":[function(require,module,exports){
-var hasMap = typeof Map === 'function' && Map.prototype;
-var mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
-var mapSize = hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
-var mapForEach = hasMap && Map.prototype.forEach;
-var hasSet = typeof Set === 'function' && Set.prototype;
-var setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
-var setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
-var setForEach = hasSet && Set.prototype.forEach;
-var hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
-var weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
-var hasWeakSet = typeof WeakSet === 'function' && WeakSet.prototype;
-var weakSetHas = hasWeakSet ? WeakSet.prototype.has : null;
-var hasWeakRef = typeof WeakRef === 'function' && WeakRef.prototype;
-var weakRefDeref = hasWeakRef ? WeakRef.prototype.deref : null;
-var booleanValueOf = Boolean.prototype.valueOf;
-var objectToString = Object.prototype.toString;
-var functionToString = Function.prototype.toString;
-var $match = String.prototype.match;
-var $slice = String.prototype.slice;
-var $replace = String.prototype.replace;
-var $toUpperCase = String.prototype.toUpperCase;
-var $toLowerCase = String.prototype.toLowerCase;
-var $test = RegExp.prototype.test;
-var $concat = Array.prototype.concat;
-var $join = Array.prototype.join;
-var $arrSlice = Array.prototype.slice;
-var $floor = Math.floor;
-var bigIntValueOf = typeof BigInt === 'function' ? BigInt.prototype.valueOf : null;
-var gOPS = Object.getOwnPropertySymbols;
-var symToString = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol' ? Symbol.prototype.toString : null;
-var hasShammedSymbols = typeof Symbol === 'function' && typeof Symbol.iterator === 'object';
-// ie, `has-tostringtag/shams
-var toStringTag = typeof Symbol === 'function' && Symbol.toStringTag && (typeof Symbol.toStringTag === hasShammedSymbols ? 'object' : 'symbol')
-    ? Symbol.toStringTag
-    : null;
-var isEnumerable = Object.prototype.propertyIsEnumerable;
-
-var gPO = (typeof Reflect === 'function' ? Reflect.getPrototypeOf : Object.getPrototypeOf) || (
-    [].__proto__ === Array.prototype // eslint-disable-line no-proto
-        ? function (O) {
-            return O.__proto__; // eslint-disable-line no-proto
-        }
-        : null
-);
-
-function addNumericSeparator(num, str) {
-    if (
-        num === Infinity
-        || num === -Infinity
-        || num !== num
-        || (num && num > -1000 && num < 1000)
-        || $test.call(/e/, str)
-    ) {
-        return str;
-    }
-    var sepRegex = /[0-9](?=(?:[0-9]{3})+(?![0-9]))/g;
-    if (typeof num === 'number') {
-        var int = num < 0 ? -$floor(-num) : $floor(num); // trunc(num)
-        if (int !== num) {
-            var intStr = String(int);
-            var dec = $slice.call(str, intStr.length + 1);
-            return $replace.call(intStr, sepRegex, '$&_') + '.' + $replace.call($replace.call(dec, /([0-9]{3})/g, '$&_'), /_$/, '');
-        }
-    }
-    return $replace.call(str, sepRegex, '$&_');
-}
-
-var utilInspect = require('./util.inspect');
-var inspectCustom = utilInspect.custom;
-var inspectSymbol = isSymbol(inspectCustom) ? inspectCustom : null;
-
-module.exports = function inspect_(obj, options, depth, seen) {
-    var opts = options || {};
-
-    if (has(opts, 'quoteStyle') && (opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double')) {
-        throw new TypeError('option "quoteStyle" must be "single" or "double"');
-    }
-    if (
-        has(opts, 'maxStringLength') && (typeof opts.maxStringLength === 'number'
-            ? opts.maxStringLength < 0 && opts.maxStringLength !== Infinity
-            : opts.maxStringLength !== null
-        )
-    ) {
-        throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
-    }
-    var customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
-    if (typeof customInspect !== 'boolean' && customInspect !== 'symbol') {
-        throw new TypeError('option "customInspect", if provided, must be `true`, `false`, or `\'symbol\'`');
-    }
-
-    if (
-        has(opts, 'indent')
-        && opts.indent !== null
-        && opts.indent !== '\t'
-        && !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)
-    ) {
-        throw new TypeError('option "indent" must be "\\t", an integer > 0, or `null`');
-    }
-    if (has(opts, 'numericSeparator') && typeof opts.numericSeparator !== 'boolean') {
-        throw new TypeError('option "numericSeparator", if provided, must be `true` or `false`');
-    }
-    var numericSeparator = opts.numericSeparator;
-
-    if (typeof obj === 'undefined') {
-        return 'undefined';
-    }
-    if (obj === null) {
-        return 'null';
-    }
-    if (typeof obj === 'boolean') {
-        return obj ? 'true' : 'false';
-    }
-
-    if (typeof obj === 'string') {
-        return inspectString(obj, opts);
-    }
-    if (typeof obj === 'number') {
-        if (obj === 0) {
-            return Infinity / obj > 0 ? '0' : '-0';
-        }
-        var str = String(obj);
-        return numericSeparator ? addNumericSeparator(obj, str) : str;
-    }
-    if (typeof obj === 'bigint') {
-        var bigIntStr = String(obj) + 'n';
-        return numericSeparator ? addNumericSeparator(obj, bigIntStr) : bigIntStr;
-    }
-
-    var maxDepth = typeof opts.depth === 'undefined' ? 5 : opts.depth;
-    if (typeof depth === 'undefined') { depth = 0; }
-    if (depth >= maxDepth && maxDepth > 0 && typeof obj === 'object') {
-        return isArray(obj) ? '[Array]' : '[Object]';
-    }
-
-    var indent = getIndent(opts, depth);
-
-    if (typeof seen === 'undefined') {
-        seen = [];
-    } else if (indexOf(seen, obj) >= 0) {
-        return '[Circular]';
-    }
-
-    function inspect(value, from, noIndent) {
-        if (from) {
-            seen = $arrSlice.call(seen);
-            seen.push(from);
-        }
-        if (noIndent) {
-            var newOpts = {
-                depth: opts.depth
-            };
-            if (has(opts, 'quoteStyle')) {
-                newOpts.quoteStyle = opts.quoteStyle;
-            }
-            return inspect_(value, newOpts, depth + 1, seen);
-        }
-        return inspect_(value, opts, depth + 1, seen);
-    }
-
-    if (typeof obj === 'function' && !isRegExp(obj)) { // in older engines, regexes are callable
-        var name = nameOf(obj);
-        var keys = arrObjKeys(obj, inspect);
-        return '[Function' + (name ? ': ' + name : ' (anonymous)') + ']' + (keys.length > 0 ? ' { ' + $join.call(keys, ', ') + ' }' : '');
-    }
-    if (isSymbol(obj)) {
-        var symString = hasShammedSymbols ? $replace.call(String(obj), /^(Symbol\(.*\))_[^)]*$/, '$1') : symToString.call(obj);
-        return typeof obj === 'object' && !hasShammedSymbols ? markBoxed(symString) : symString;
-    }
-    if (isElement(obj)) {
-        var s = '<' + $toLowerCase.call(String(obj.nodeName));
-        var attrs = obj.attributes || [];
-        for (var i = 0; i < attrs.length; i++) {
-            s += ' ' + attrs[i].name + '=' + wrapQuotes(quote(attrs[i].value), 'double', opts);
-        }
-        s += '>';
-        if (obj.childNodes && obj.childNodes.length) { s += '...'; }
-        s += '</' + $toLowerCase.call(String(obj.nodeName)) + '>';
-        return s;
-    }
-    if (isArray(obj)) {
-        if (obj.length === 0) { return '[]'; }
-        var xs = arrObjKeys(obj, inspect);
-        if (indent && !singleLineValues(xs)) {
-            return '[' + indentedJoin(xs, indent) + ']';
-        }
-        return '[ ' + $join.call(xs, ', ') + ' ]';
-    }
-    if (isError(obj)) {
-        var parts = arrObjKeys(obj, inspect);
-        if (!('cause' in Error.prototype) && 'cause' in obj && !isEnumerable.call(obj, 'cause')) {
-            return '{ [' + String(obj) + '] ' + $join.call($concat.call('[cause]: ' + inspect(obj.cause), parts), ', ') + ' }';
-        }
-        if (parts.length === 0) { return '[' + String(obj) + ']'; }
-        return '{ [' + String(obj) + '] ' + $join.call(parts, ', ') + ' }';
-    }
-    if (typeof obj === 'object' && customInspect) {
-        if (inspectSymbol && typeof obj[inspectSymbol] === 'function' && utilInspect) {
-            return utilInspect(obj, { depth: maxDepth - depth });
-        } else if (customInspect !== 'symbol' && typeof obj.inspect === 'function') {
-            return obj.inspect();
-        }
-    }
-    if (isMap(obj)) {
-        var mapParts = [];
-        if (mapForEach) {
-            mapForEach.call(obj, function (value, key) {
-                mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
-            });
-        }
-        return collectionOf('Map', mapSize.call(obj), mapParts, indent);
-    }
-    if (isSet(obj)) {
-        var setParts = [];
-        if (setForEach) {
-            setForEach.call(obj, function (value) {
-                setParts.push(inspect(value, obj));
-            });
-        }
-        return collectionOf('Set', setSize.call(obj), setParts, indent);
-    }
-    if (isWeakMap(obj)) {
-        return weakCollectionOf('WeakMap');
-    }
-    if (isWeakSet(obj)) {
-        return weakCollectionOf('WeakSet');
-    }
-    if (isWeakRef(obj)) {
-        return weakCollectionOf('WeakRef');
-    }
-    if (isNumber(obj)) {
-        return markBoxed(inspect(Number(obj)));
-    }
-    if (isBigInt(obj)) {
-        return markBoxed(inspect(bigIntValueOf.call(obj)));
-    }
-    if (isBoolean(obj)) {
-        return markBoxed(booleanValueOf.call(obj));
-    }
-    if (isString(obj)) {
-        return markBoxed(inspect(String(obj)));
-    }
-    if (!isDate(obj) && !isRegExp(obj)) {
-        var ys = arrObjKeys(obj, inspect);
-        var isPlainObject = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
-        var protoTag = obj instanceof Object ? '' : 'null prototype';
-        var stringTag = !isPlainObject && toStringTag && Object(obj) === obj && toStringTag in obj ? $slice.call(toStr(obj), 8, -1) : protoTag ? 'Object' : '';
-        var constructorTag = isPlainObject || typeof obj.constructor !== 'function' ? '' : obj.constructor.name ? obj.constructor.name + ' ' : '';
-        var tag = constructorTag + (stringTag || protoTag ? '[' + $join.call($concat.call([], stringTag || [], protoTag || []), ': ') + '] ' : '');
-        if (ys.length === 0) { return tag + '{}'; }
-        if (indent) {
-            return tag + '{' + indentedJoin(ys, indent) + '}';
-        }
-        return tag + '{ ' + $join.call(ys, ', ') + ' }';
-    }
-    return String(obj);
-};
-
-function wrapQuotes(s, defaultStyle, opts) {
-    var quoteChar = (opts.quoteStyle || defaultStyle) === 'double' ? '"' : "'";
-    return quoteChar + s + quoteChar;
-}
-
-function quote(s) {
-    return $replace.call(String(s), /"/g, '&quot;');
-}
-
-function isArray(obj) { return toStr(obj) === '[object Array]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-function isDate(obj) { return toStr(obj) === '[object Date]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-function isRegExp(obj) { return toStr(obj) === '[object RegExp]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-function isError(obj) { return toStr(obj) === '[object Error]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-function isString(obj) { return toStr(obj) === '[object String]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-function isNumber(obj) { return toStr(obj) === '[object Number]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-function isBoolean(obj) { return toStr(obj) === '[object Boolean]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-
-// Symbol and BigInt do have Symbol.toStringTag by spec, so that can't be used to eliminate false positives
-function isSymbol(obj) {
-    if (hasShammedSymbols) {
-        return obj && typeof obj === 'object' && obj instanceof Symbol;
-    }
-    if (typeof obj === 'symbol') {
-        return true;
-    }
-    if (!obj || typeof obj !== 'object' || !symToString) {
-        return false;
-    }
-    try {
-        symToString.call(obj);
-        return true;
-    } catch (e) {}
-    return false;
-}
-
-function isBigInt(obj) {
-    if (!obj || typeof obj !== 'object' || !bigIntValueOf) {
-        return false;
-    }
-    try {
-        bigIntValueOf.call(obj);
-        return true;
-    } catch (e) {}
-    return false;
-}
-
-var hasOwn = Object.prototype.hasOwnProperty || function (key) { return key in this; };
-function has(obj, key) {
-    return hasOwn.call(obj, key);
-}
-
-function toStr(obj) {
-    return objectToString.call(obj);
-}
-
-function nameOf(f) {
-    if (f.name) { return f.name; }
-    var m = $match.call(functionToString.call(f), /^function\s*([\w$]+)/);
-    if (m) { return m[1]; }
-    return null;
-}
-
-function indexOf(xs, x) {
-    if (xs.indexOf) { return xs.indexOf(x); }
-    for (var i = 0, l = xs.length; i < l; i++) {
-        if (xs[i] === x) { return i; }
-    }
-    return -1;
-}
-
-function isMap(x) {
-    if (!mapSize || !x || typeof x !== 'object') {
-        return false;
-    }
-    try {
-        mapSize.call(x);
-        try {
-            setSize.call(x);
-        } catch (s) {
-            return true;
-        }
-        return x instanceof Map; // core-js workaround, pre-v2.5.0
-    } catch (e) {}
-    return false;
-}
-
-function isWeakMap(x) {
-    if (!weakMapHas || !x || typeof x !== 'object') {
-        return false;
-    }
-    try {
-        weakMapHas.call(x, weakMapHas);
-        try {
-            weakSetHas.call(x, weakSetHas);
-        } catch (s) {
-            return true;
-        }
-        return x instanceof WeakMap; // core-js workaround, pre-v2.5.0
-    } catch (e) {}
-    return false;
-}
-
-function isWeakRef(x) {
-    if (!weakRefDeref || !x || typeof x !== 'object') {
-        return false;
-    }
-    try {
-        weakRefDeref.call(x);
-        return true;
-    } catch (e) {}
-    return false;
-}
-
-function isSet(x) {
-    if (!setSize || !x || typeof x !== 'object') {
-        return false;
-    }
-    try {
-        setSize.call(x);
-        try {
-            mapSize.call(x);
-        } catch (m) {
-            return true;
-        }
-        return x instanceof Set; // core-js workaround, pre-v2.5.0
-    } catch (e) {}
-    return false;
-}
-
-function isWeakSet(x) {
-    if (!weakSetHas || !x || typeof x !== 'object') {
-        return false;
-    }
-    try {
-        weakSetHas.call(x, weakSetHas);
-        try {
-            weakMapHas.call(x, weakMapHas);
-        } catch (s) {
-            return true;
-        }
-        return x instanceof WeakSet; // core-js workaround, pre-v2.5.0
-    } catch (e) {}
-    return false;
-}
-
-function isElement(x) {
-    if (!x || typeof x !== 'object') { return false; }
-    if (typeof HTMLElement !== 'undefined' && x instanceof HTMLElement) {
-        return true;
-    }
-    return typeof x.nodeName === 'string' && typeof x.getAttribute === 'function';
-}
-
-function inspectString(str, opts) {
-    if (str.length > opts.maxStringLength) {
-        var remaining = str.length - opts.maxStringLength;
-        var trailer = '... ' + remaining + ' more character' + (remaining > 1 ? 's' : '');
-        return inspectString($slice.call(str, 0, opts.maxStringLength), opts) + trailer;
-    }
-    // eslint-disable-next-line no-control-regex
-    var s = $replace.call($replace.call(str, /(['\\])/g, '\\$1'), /[\x00-\x1f]/g, lowbyte);
-    return wrapQuotes(s, 'single', opts);
-}
-
-function lowbyte(c) {
-    var n = c.charCodeAt(0);
-    var x = {
-        8: 'b',
-        9: 't',
-        10: 'n',
-        12: 'f',
-        13: 'r'
-    }[n];
-    if (x) { return '\\' + x; }
-    return '\\x' + (n < 0x10 ? '0' : '') + $toUpperCase.call(n.toString(16));
-}
-
-function markBoxed(str) {
-    return 'Object(' + str + ')';
-}
-
-function weakCollectionOf(type) {
-    return type + ' { ? }';
-}
-
-function collectionOf(type, size, entries, indent) {
-    var joinedEntries = indent ? indentedJoin(entries, indent) : $join.call(entries, ', ');
-    return type + ' (' + size + ') {' + joinedEntries + '}';
-}
-
-function singleLineValues(xs) {
-    for (var i = 0; i < xs.length; i++) {
-        if (indexOf(xs[i], '\n') >= 0) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function getIndent(opts, depth) {
-    var baseIndent;
-    if (opts.indent === '\t') {
-        baseIndent = '\t';
-    } else if (typeof opts.indent === 'number' && opts.indent > 0) {
-        baseIndent = $join.call(Array(opts.indent + 1), ' ');
-    } else {
-        return null;
-    }
-    return {
-        base: baseIndent,
-        prev: $join.call(Array(depth + 1), baseIndent)
-    };
-}
-
-function indentedJoin(xs, indent) {
-    if (xs.length === 0) { return ''; }
-    var lineJoiner = '\n' + indent.prev + indent.base;
-    return lineJoiner + $join.call(xs, ',' + lineJoiner) + '\n' + indent.prev;
-}
-
-function arrObjKeys(obj, inspect) {
-    var isArr = isArray(obj);
-    var xs = [];
-    if (isArr) {
-        xs.length = obj.length;
-        for (var i = 0; i < obj.length; i++) {
-            xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
-        }
-    }
-    var syms = typeof gOPS === 'function' ? gOPS(obj) : [];
-    var symMap;
-    if (hasShammedSymbols) {
-        symMap = {};
-        for (var k = 0; k < syms.length; k++) {
-            symMap['$' + syms[k]] = syms[k];
-        }
-    }
-
-    for (var key in obj) { // eslint-disable-line no-restricted-syntax
-        if (!has(obj, key)) { continue; } // eslint-disable-line no-restricted-syntax, no-continue
-        if (isArr && String(Number(key)) === key && key < obj.length) { continue; } // eslint-disable-line no-restricted-syntax, no-continue
-        if (hasShammedSymbols && symMap['$' + key] instanceof Symbol) {
-            // this is to prevent shammed Symbols, which are stored as strings, from being included in the string key section
-            continue; // eslint-disable-line no-restricted-syntax, no-continue
-        } else if ($test.call(/[^\w$]/, key)) {
-            xs.push(inspect(key, obj) + ': ' + inspect(obj[key], obj));
-        } else {
-            xs.push(key + ': ' + inspect(obj[key], obj));
-        }
-    }
-    if (typeof gOPS === 'function') {
-        for (var j = 0; j < syms.length; j++) {
-            if (isEnumerable.call(obj, syms[j])) {
-                xs.push('[' + inspect(syms[j]) + ']: ' + inspect(obj[syms[j]], obj));
-            }
-        }
-    }
-    return xs;
-}
-
-},{"./util.inspect":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browser-resolve/empty.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/object-keys/implementation.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/object-keys/implementation.js":[function(require,module,exports){
 'use strict';
 
 var keysShim;
@@ -84048,8 +84816,8 @@ function decrypt (data, password) {
 
 },{"./aesid.json":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/aesid.json","./asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/asn1.js","./fixProc":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/parse-asn1/fixProc.js","browserify-aes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-aes/browser.js","pbkdf2":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/pbkdf2/browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/path-browserify/index.js":[function(require,module,exports){
 (function (process){(function (){
-// .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
-// backported and transplited with Babel, with backwards-compat fixes
+// 'path' module extracted from Node.js v8.11.1 (only the posix part)
+// transplited with Babel
 
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -84072,284 +84840,511 @@ function decrypt (data, password) {
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// resolves . and .. elements in a path array with directory names there
-// must be no slashes, empty elements, or device names (c:\) in the array
-// (so also no leading and trailing slashes - it does not distinguish
-// relative and absolute paths)
-function normalizeArray(parts, allowAboveRoot) {
-  // if the path tries to go above the root, `up` ends up > 0
-  var up = 0;
-  for (var i = parts.length - 1; i >= 0; i--) {
-    var last = parts[i];
-    if (last === '.') {
-      parts.splice(i, 1);
-    } else if (last === '..') {
-      parts.splice(i, 1);
-      up++;
-    } else if (up) {
-      parts.splice(i, 1);
-      up--;
-    }
-  }
+'use strict';
 
-  // if the path is allowed to go above the root, restore leading ..s
-  if (allowAboveRoot) {
-    for (; up--; up) {
-      parts.unshift('..');
-    }
+function assertPath(path) {
+  if (typeof path !== 'string') {
+    throw new TypeError('Path must be a string. Received ' + JSON.stringify(path));
   }
-
-  return parts;
 }
 
-// path.resolve([from ...], to)
-// posix version
-exports.resolve = function() {
-  var resolvedPath = '',
-      resolvedAbsolute = false;
-
-  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-    var path = (i >= 0) ? arguments[i] : process.cwd();
-
-    // Skip empty and invalid entries
-    if (typeof path !== 'string') {
-      throw new TypeError('Arguments to path.resolve must be strings');
-    } else if (!path) {
-      continue;
-    }
-
-    resolvedPath = path + '/' + resolvedPath;
-    resolvedAbsolute = path.charAt(0) === '/';
-  }
-
-  // At this point the path should be resolved to a full absolute path, but
-  // handle relative paths to be safe (might happen when process.cwd() fails)
-
-  // Normalize the path
-  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
-    return !!p;
-  }), !resolvedAbsolute).join('/');
-
-  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
-};
-
-// path.normalize(path)
-// posix version
-exports.normalize = function(path) {
-  var isAbsolute = exports.isAbsolute(path),
-      trailingSlash = substr(path, -1) === '/';
-
-  // Normalize the path
-  path = normalizeArray(filter(path.split('/'), function(p) {
-    return !!p;
-  }), !isAbsolute).join('/');
-
-  if (!path && !isAbsolute) {
-    path = '.';
-  }
-  if (path && trailingSlash) {
-    path += '/';
-  }
-
-  return (isAbsolute ? '/' : '') + path;
-};
-
-// posix version
-exports.isAbsolute = function(path) {
-  return path.charAt(0) === '/';
-};
-
-// posix version
-exports.join = function() {
-  var paths = Array.prototype.slice.call(arguments, 0);
-  return exports.normalize(filter(paths, function(p, index) {
-    if (typeof p !== 'string') {
-      throw new TypeError('Arguments to path.join must be strings');
-    }
-    return p;
-  }).join('/'));
-};
-
-
-// path.relative(from, to)
-// posix version
-exports.relative = function(from, to) {
-  from = exports.resolve(from).substr(1);
-  to = exports.resolve(to).substr(1);
-
-  function trim(arr) {
-    var start = 0;
-    for (; start < arr.length; start++) {
-      if (arr[start] !== '') break;
-    }
-
-    var end = arr.length - 1;
-    for (; end >= 0; end--) {
-      if (arr[end] !== '') break;
-    }
-
-    if (start > end) return [];
-    return arr.slice(start, end - start + 1);
-  }
-
-  var fromParts = trim(from.split('/'));
-  var toParts = trim(to.split('/'));
-
-  var length = Math.min(fromParts.length, toParts.length);
-  var samePartsLength = length;
-  for (var i = 0; i < length; i++) {
-    if (fromParts[i] !== toParts[i]) {
-      samePartsLength = i;
+// Resolves . and .. elements in a path with directory names
+function normalizeStringPosix(path, allowAboveRoot) {
+  var res = '';
+  var lastSegmentLength = 0;
+  var lastSlash = -1;
+  var dots = 0;
+  var code;
+  for (var i = 0; i <= path.length; ++i) {
+    if (i < path.length)
+      code = path.charCodeAt(i);
+    else if (code === 47 /*/*/)
       break;
-    }
-  }
-
-  var outputParts = [];
-  for (var i = samePartsLength; i < fromParts.length; i++) {
-    outputParts.push('..');
-  }
-
-  outputParts = outputParts.concat(toParts.slice(samePartsLength));
-
-  return outputParts.join('/');
-};
-
-exports.sep = '/';
-exports.delimiter = ':';
-
-exports.dirname = function (path) {
-  if (typeof path !== 'string') path = path + '';
-  if (path.length === 0) return '.';
-  var code = path.charCodeAt(0);
-  var hasRoot = code === 47 /*/*/;
-  var end = -1;
-  var matchedSlash = true;
-  for (var i = path.length - 1; i >= 1; --i) {
-    code = path.charCodeAt(i);
+    else
+      code = 47 /*/*/;
     if (code === 47 /*/*/) {
-        if (!matchedSlash) {
-          end = i;
-          break;
+      if (lastSlash === i - 1 || dots === 1) {
+        // NOOP
+      } else if (lastSlash !== i - 1 && dots === 2) {
+        if (res.length < 2 || lastSegmentLength !== 2 || res.charCodeAt(res.length - 1) !== 46 /*.*/ || res.charCodeAt(res.length - 2) !== 46 /*.*/) {
+          if (res.length > 2) {
+            var lastSlashIndex = res.lastIndexOf('/');
+            if (lastSlashIndex !== res.length - 1) {
+              if (lastSlashIndex === -1) {
+                res = '';
+                lastSegmentLength = 0;
+              } else {
+                res = res.slice(0, lastSlashIndex);
+                lastSegmentLength = res.length - 1 - res.lastIndexOf('/');
+              }
+              lastSlash = i;
+              dots = 0;
+              continue;
+            }
+          } else if (res.length === 2 || res.length === 1) {
+            res = '';
+            lastSegmentLength = 0;
+            lastSlash = i;
+            dots = 0;
+            continue;
+          }
+        }
+        if (allowAboveRoot) {
+          if (res.length > 0)
+            res += '/..';
+          else
+            res = '..';
+          lastSegmentLength = 2;
         }
       } else {
-      // We saw the first non-path separator
-      matchedSlash = false;
+        if (res.length > 0)
+          res += '/' + path.slice(lastSlash + 1, i);
+        else
+          res = path.slice(lastSlash + 1, i);
+        lastSegmentLength = i - lastSlash - 1;
+      }
+      lastSlash = i;
+      dots = 0;
+    } else if (code === 46 /*.*/ && dots !== -1) {
+      ++dots;
+    } else {
+      dots = -1;
     }
   }
-
-  if (end === -1) return hasRoot ? '/' : '.';
-  if (hasRoot && end === 1) {
-    // return '//';
-    // Backwards-compat fix:
-    return '/';
-  }
-  return path.slice(0, end);
-};
-
-function basename(path) {
-  if (typeof path !== 'string') path = path + '';
-
-  var start = 0;
-  var end = -1;
-  var matchedSlash = true;
-  var i;
-
-  for (i = path.length - 1; i >= 0; --i) {
-    if (path.charCodeAt(i) === 47 /*/*/) {
-        // If we reached a path separator that was not part of a set of path
-        // separators at the end of the string, stop now
-        if (!matchedSlash) {
-          start = i + 1;
-          break;
-        }
-      } else if (end === -1) {
-      // We saw the first non-path separator, mark this as the end of our
-      // path component
-      matchedSlash = false;
-      end = i + 1;
-    }
-  }
-
-  if (end === -1) return '';
-  return path.slice(start, end);
+  return res;
 }
 
-// Uses a mixed approach for backwards-compatibility, as ext behavior changed
-// in new Node.js versions, so only basename() above is backported here
-exports.basename = function (path, ext) {
-  var f = basename(path);
-  if (ext && f.substr(-1 * ext.length) === ext) {
-    f = f.substr(0, f.length - ext.length);
+function _format(sep, pathObject) {
+  var dir = pathObject.dir || pathObject.root;
+  var base = pathObject.base || (pathObject.name || '') + (pathObject.ext || '');
+  if (!dir) {
+    return base;
   }
-  return f;
-};
+  if (dir === pathObject.root) {
+    return dir + base;
+  }
+  return dir + sep + base;
+}
 
-exports.extname = function (path) {
-  if (typeof path !== 'string') path = path + '';
-  var startDot = -1;
-  var startPart = 0;
-  var end = -1;
-  var matchedSlash = true;
-  // Track the state of characters (if any) we see before our first dot and
-  // after any path separator we find
-  var preDotState = 0;
-  for (var i = path.length - 1; i >= 0; --i) {
-    var code = path.charCodeAt(i);
-    if (code === 47 /*/*/) {
-        // If we reached a path separator that was not part of a set of path
-        // separators at the end of the string, stop now
-        if (!matchedSlash) {
-          startPart = i + 1;
-          break;
-        }
+var posix = {
+  // path.resolve([from ...], to)
+  resolve: function resolve() {
+    var resolvedPath = '';
+    var resolvedAbsolute = false;
+    var cwd;
+
+    for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+      var path;
+      if (i >= 0)
+        path = arguments[i];
+      else {
+        if (cwd === undefined)
+          cwd = process.cwd();
+        path = cwd;
+      }
+
+      assertPath(path);
+
+      // Skip empty entries
+      if (path.length === 0) {
         continue;
       }
-    if (end === -1) {
-      // We saw the first non-path separator, mark this as the end of our
-      // extension
-      matchedSlash = false;
-      end = i + 1;
-    }
-    if (code === 46 /*.*/) {
-        // If this is our first dot, mark it as the start of our extension
-        if (startDot === -1)
-          startDot = i;
-        else if (preDotState !== 1)
-          preDotState = 1;
-    } else if (startDot !== -1) {
-      // We saw a non-dot and non-path separator before our dot, so we should
-      // have a good chance at having a non-empty extension
-      preDotState = -1;
-    }
-  }
 
-  if (startDot === -1 || end === -1 ||
-      // We saw a non-dot character immediately before the dot
-      preDotState === 0 ||
-      // The (right-most) trimmed path component is exactly '..'
-      preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
-    return '';
-  }
-  return path.slice(startDot, end);
+      resolvedPath = path + '/' + resolvedPath;
+      resolvedAbsolute = path.charCodeAt(0) === 47 /*/*/;
+    }
+
+    // At this point the path should be resolved to a full absolute path, but
+    // handle relative paths to be safe (might happen when process.cwd() fails)
+
+    // Normalize the path
+    resolvedPath = normalizeStringPosix(resolvedPath, !resolvedAbsolute);
+
+    if (resolvedAbsolute) {
+      if (resolvedPath.length > 0)
+        return '/' + resolvedPath;
+      else
+        return '/';
+    } else if (resolvedPath.length > 0) {
+      return resolvedPath;
+    } else {
+      return '.';
+    }
+  },
+
+  normalize: function normalize(path) {
+    assertPath(path);
+
+    if (path.length === 0) return '.';
+
+    var isAbsolute = path.charCodeAt(0) === 47 /*/*/;
+    var trailingSeparator = path.charCodeAt(path.length - 1) === 47 /*/*/;
+
+    // Normalize the path
+    path = normalizeStringPosix(path, !isAbsolute);
+
+    if (path.length === 0 && !isAbsolute) path = '.';
+    if (path.length > 0 && trailingSeparator) path += '/';
+
+    if (isAbsolute) return '/' + path;
+    return path;
+  },
+
+  isAbsolute: function isAbsolute(path) {
+    assertPath(path);
+    return path.length > 0 && path.charCodeAt(0) === 47 /*/*/;
+  },
+
+  join: function join() {
+    if (arguments.length === 0)
+      return '.';
+    var joined;
+    for (var i = 0; i < arguments.length; ++i) {
+      var arg = arguments[i];
+      assertPath(arg);
+      if (arg.length > 0) {
+        if (joined === undefined)
+          joined = arg;
+        else
+          joined += '/' + arg;
+      }
+    }
+    if (joined === undefined)
+      return '.';
+    return posix.normalize(joined);
+  },
+
+  relative: function relative(from, to) {
+    assertPath(from);
+    assertPath(to);
+
+    if (from === to) return '';
+
+    from = posix.resolve(from);
+    to = posix.resolve(to);
+
+    if (from === to) return '';
+
+    // Trim any leading backslashes
+    var fromStart = 1;
+    for (; fromStart < from.length; ++fromStart) {
+      if (from.charCodeAt(fromStart) !== 47 /*/*/)
+        break;
+    }
+    var fromEnd = from.length;
+    var fromLen = fromEnd - fromStart;
+
+    // Trim any leading backslashes
+    var toStart = 1;
+    for (; toStart < to.length; ++toStart) {
+      if (to.charCodeAt(toStart) !== 47 /*/*/)
+        break;
+    }
+    var toEnd = to.length;
+    var toLen = toEnd - toStart;
+
+    // Compare paths to find the longest common path from root
+    var length = fromLen < toLen ? fromLen : toLen;
+    var lastCommonSep = -1;
+    var i = 0;
+    for (; i <= length; ++i) {
+      if (i === length) {
+        if (toLen > length) {
+          if (to.charCodeAt(toStart + i) === 47 /*/*/) {
+            // We get here if `from` is the exact base path for `to`.
+            // For example: from='/foo/bar'; to='/foo/bar/baz'
+            return to.slice(toStart + i + 1);
+          } else if (i === 0) {
+            // We get here if `from` is the root
+            // For example: from='/'; to='/foo'
+            return to.slice(toStart + i);
+          }
+        } else if (fromLen > length) {
+          if (from.charCodeAt(fromStart + i) === 47 /*/*/) {
+            // We get here if `to` is the exact base path for `from`.
+            // For example: from='/foo/bar/baz'; to='/foo/bar'
+            lastCommonSep = i;
+          } else if (i === 0) {
+            // We get here if `to` is the root.
+            // For example: from='/foo'; to='/'
+            lastCommonSep = 0;
+          }
+        }
+        break;
+      }
+      var fromCode = from.charCodeAt(fromStart + i);
+      var toCode = to.charCodeAt(toStart + i);
+      if (fromCode !== toCode)
+        break;
+      else if (fromCode === 47 /*/*/)
+        lastCommonSep = i;
+    }
+
+    var out = '';
+    // Generate the relative path based on the path difference between `to`
+    // and `from`
+    for (i = fromStart + lastCommonSep + 1; i <= fromEnd; ++i) {
+      if (i === fromEnd || from.charCodeAt(i) === 47 /*/*/) {
+        if (out.length === 0)
+          out += '..';
+        else
+          out += '/..';
+      }
+    }
+
+    // Lastly, append the rest of the destination (`to`) path that comes after
+    // the common path parts
+    if (out.length > 0)
+      return out + to.slice(toStart + lastCommonSep);
+    else {
+      toStart += lastCommonSep;
+      if (to.charCodeAt(toStart) === 47 /*/*/)
+        ++toStart;
+      return to.slice(toStart);
+    }
+  },
+
+  _makeLong: function _makeLong(path) {
+    return path;
+  },
+
+  dirname: function dirname(path) {
+    assertPath(path);
+    if (path.length === 0) return '.';
+    var code = path.charCodeAt(0);
+    var hasRoot = code === 47 /*/*/;
+    var end = -1;
+    var matchedSlash = true;
+    for (var i = path.length - 1; i >= 1; --i) {
+      code = path.charCodeAt(i);
+      if (code === 47 /*/*/) {
+          if (!matchedSlash) {
+            end = i;
+            break;
+          }
+        } else {
+        // We saw the first non-path separator
+        matchedSlash = false;
+      }
+    }
+
+    if (end === -1) return hasRoot ? '/' : '.';
+    if (hasRoot && end === 1) return '//';
+    return path.slice(0, end);
+  },
+
+  basename: function basename(path, ext) {
+    if (ext !== undefined && typeof ext !== 'string') throw new TypeError('"ext" argument must be a string');
+    assertPath(path);
+
+    var start = 0;
+    var end = -1;
+    var matchedSlash = true;
+    var i;
+
+    if (ext !== undefined && ext.length > 0 && ext.length <= path.length) {
+      if (ext.length === path.length && ext === path) return '';
+      var extIdx = ext.length - 1;
+      var firstNonSlashEnd = -1;
+      for (i = path.length - 1; i >= 0; --i) {
+        var code = path.charCodeAt(i);
+        if (code === 47 /*/*/) {
+            // If we reached a path separator that was not part of a set of path
+            // separators at the end of the string, stop now
+            if (!matchedSlash) {
+              start = i + 1;
+              break;
+            }
+          } else {
+          if (firstNonSlashEnd === -1) {
+            // We saw the first non-path separator, remember this index in case
+            // we need it if the extension ends up not matching
+            matchedSlash = false;
+            firstNonSlashEnd = i + 1;
+          }
+          if (extIdx >= 0) {
+            // Try to match the explicit extension
+            if (code === ext.charCodeAt(extIdx)) {
+              if (--extIdx === -1) {
+                // We matched the extension, so mark this as the end of our path
+                // component
+                end = i;
+              }
+            } else {
+              // Extension does not match, so our result is the entire path
+              // component
+              extIdx = -1;
+              end = firstNonSlashEnd;
+            }
+          }
+        }
+      }
+
+      if (start === end) end = firstNonSlashEnd;else if (end === -1) end = path.length;
+      return path.slice(start, end);
+    } else {
+      for (i = path.length - 1; i >= 0; --i) {
+        if (path.charCodeAt(i) === 47 /*/*/) {
+            // If we reached a path separator that was not part of a set of path
+            // separators at the end of the string, stop now
+            if (!matchedSlash) {
+              start = i + 1;
+              break;
+            }
+          } else if (end === -1) {
+          // We saw the first non-path separator, mark this as the end of our
+          // path component
+          matchedSlash = false;
+          end = i + 1;
+        }
+      }
+
+      if (end === -1) return '';
+      return path.slice(start, end);
+    }
+  },
+
+  extname: function extname(path) {
+    assertPath(path);
+    var startDot = -1;
+    var startPart = 0;
+    var end = -1;
+    var matchedSlash = true;
+    // Track the state of characters (if any) we see before our first dot and
+    // after any path separator we find
+    var preDotState = 0;
+    for (var i = path.length - 1; i >= 0; --i) {
+      var code = path.charCodeAt(i);
+      if (code === 47 /*/*/) {
+          // If we reached a path separator that was not part of a set of path
+          // separators at the end of the string, stop now
+          if (!matchedSlash) {
+            startPart = i + 1;
+            break;
+          }
+          continue;
+        }
+      if (end === -1) {
+        // We saw the first non-path separator, mark this as the end of our
+        // extension
+        matchedSlash = false;
+        end = i + 1;
+      }
+      if (code === 46 /*.*/) {
+          // If this is our first dot, mark it as the start of our extension
+          if (startDot === -1)
+            startDot = i;
+          else if (preDotState !== 1)
+            preDotState = 1;
+      } else if (startDot !== -1) {
+        // We saw a non-dot and non-path separator before our dot, so we should
+        // have a good chance at having a non-empty extension
+        preDotState = -1;
+      }
+    }
+
+    if (startDot === -1 || end === -1 ||
+        // We saw a non-dot character immediately before the dot
+        preDotState === 0 ||
+        // The (right-most) trimmed path component is exactly '..'
+        preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
+      return '';
+    }
+    return path.slice(startDot, end);
+  },
+
+  format: function format(pathObject) {
+    if (pathObject === null || typeof pathObject !== 'object') {
+      throw new TypeError('The "pathObject" argument must be of type Object. Received type ' + typeof pathObject);
+    }
+    return _format('/', pathObject);
+  },
+
+  parse: function parse(path) {
+    assertPath(path);
+
+    var ret = { root: '', dir: '', base: '', ext: '', name: '' };
+    if (path.length === 0) return ret;
+    var code = path.charCodeAt(0);
+    var isAbsolute = code === 47 /*/*/;
+    var start;
+    if (isAbsolute) {
+      ret.root = '/';
+      start = 1;
+    } else {
+      start = 0;
+    }
+    var startDot = -1;
+    var startPart = 0;
+    var end = -1;
+    var matchedSlash = true;
+    var i = path.length - 1;
+
+    // Track the state of characters (if any) we see before our first dot and
+    // after any path separator we find
+    var preDotState = 0;
+
+    // Get non-dir info
+    for (; i >= start; --i) {
+      code = path.charCodeAt(i);
+      if (code === 47 /*/*/) {
+          // If we reached a path separator that was not part of a set of path
+          // separators at the end of the string, stop now
+          if (!matchedSlash) {
+            startPart = i + 1;
+            break;
+          }
+          continue;
+        }
+      if (end === -1) {
+        // We saw the first non-path separator, mark this as the end of our
+        // extension
+        matchedSlash = false;
+        end = i + 1;
+      }
+      if (code === 46 /*.*/) {
+          // If this is our first dot, mark it as the start of our extension
+          if (startDot === -1) startDot = i;else if (preDotState !== 1) preDotState = 1;
+        } else if (startDot !== -1) {
+        // We saw a non-dot and non-path separator before our dot, so we should
+        // have a good chance at having a non-empty extension
+        preDotState = -1;
+      }
+    }
+
+    if (startDot === -1 || end === -1 ||
+    // We saw a non-dot character immediately before the dot
+    preDotState === 0 ||
+    // The (right-most) trimmed path component is exactly '..'
+    preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
+      if (end !== -1) {
+        if (startPart === 0 && isAbsolute) ret.base = ret.name = path.slice(1, end);else ret.base = ret.name = path.slice(startPart, end);
+      }
+    } else {
+      if (startPart === 0 && isAbsolute) {
+        ret.name = path.slice(1, startDot);
+        ret.base = path.slice(1, end);
+      } else {
+        ret.name = path.slice(startPart, startDot);
+        ret.base = path.slice(startPart, end);
+      }
+      ret.ext = path.slice(startDot, end);
+    }
+
+    if (startPart > 0) ret.dir = path.slice(0, startPart - 1);else if (isAbsolute) ret.dir = '/';
+
+    return ret;
+  },
+
+  sep: '/',
+  delimiter: ':',
+  win32: null,
+  posix: null
 };
 
-function filter (xs, f) {
-    if (xs.filter) return xs.filter(f);
-    var res = [];
-    for (var i = 0; i < xs.length; i++) {
-        if (f(xs[i], i, xs)) res.push(xs[i]);
-    }
-    return res;
-}
+posix.posix = posix;
 
-// String.prototype.substr - negative index don't work in IE8
-var substr = 'ab'.substr(-1) === 'b'
-    ? function (str, start, len) { return str.substr(start, len) }
-    : function (str, start, len) {
-        if (start < 0) start = str.length + start;
-        return str.substr(start, len);
-    }
-;
+module.exports = posix;
 
 }).call(this)}).call(this,require('_process'))
 
@@ -84640,57 +85635,25 @@ module.exports = function (thing, encoding, name) {
   }
 }
 
-},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process-nextick-args/index.js":[function(require,module,exports){
-(function (process){(function (){
+},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/possible-typed-array-names/index.js":[function(require,module,exports){
 'use strict';
 
-if (typeof process === 'undefined' ||
-    !process.version ||
-    process.version.indexOf('v0.') === 0 ||
-    process.version.indexOf('v1.') === 0 && process.version.indexOf('v1.8.') !== 0) {
-  module.exports = { nextTick: nextTick };
-} else {
-  module.exports = process
-}
+/** @type {import('.')} */
+module.exports = [
+	'Float32Array',
+	'Float64Array',
+	'Int8Array',
+	'Int16Array',
+	'Int32Array',
+	'Uint8Array',
+	'Uint8ClampedArray',
+	'Uint16Array',
+	'Uint32Array',
+	'BigInt64Array',
+	'BigUint64Array'
+];
 
-function nextTick(fn, arg1, arg2, arg3) {
-  if (typeof fn !== 'function') {
-    throw new TypeError('"callback" argument must be a function');
-  }
-  var len = arguments.length;
-  var args, i;
-  switch (len) {
-  case 0:
-  case 1:
-    return process.nextTick(fn);
-  case 2:
-    return process.nextTick(function afterTickOne() {
-      fn.call(null, arg1);
-    });
-  case 3:
-    return process.nextTick(function afterTickTwo() {
-      fn.call(null, arg1, arg2);
-    });
-  case 4:
-    return process.nextTick(function afterTickThree() {
-      fn.call(null, arg1, arg2, arg3);
-    });
-  default:
-    args = new Array(len - 1);
-    i = 0;
-    while (i < args.length) {
-      args[i++] = arguments[i];
-    }
-    return process.nextTick(function afterTick() {
-      fn.apply(null, args);
-    });
-  }
-}
-
-
-}).call(this)}).call(this,require('_process'))
-
-},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -85132,1425 +86095,7 @@ module.exports = function xor (a, b) {
   return a
 }
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/punycode/punycode.js":[function(require,module,exports){
-(function (global){(function (){
-/*! https://mths.be/punycode v1.4.1 by @mathias */
-;(function(root) {
-
-	/** Detect free variables */
-	var freeExports = typeof exports == 'object' && exports &&
-		!exports.nodeType && exports;
-	var freeModule = typeof module == 'object' && module &&
-		!module.nodeType && module;
-	var freeGlobal = typeof global == 'object' && global;
-	if (
-		freeGlobal.global === freeGlobal ||
-		freeGlobal.window === freeGlobal ||
-		freeGlobal.self === freeGlobal
-	) {
-		root = freeGlobal;
-	}
-
-	/**
-	 * The `punycode` object.
-	 * @name punycode
-	 * @type Object
-	 */
-	var punycode,
-
-	/** Highest positive signed 32-bit float value */
-	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
-
-	/** Bootstring parameters */
-	base = 36,
-	tMin = 1,
-	tMax = 26,
-	skew = 38,
-	damp = 700,
-	initialBias = 72,
-	initialN = 128, // 0x80
-	delimiter = '-', // '\x2D'
-
-	/** Regular expressions */
-	regexPunycode = /^xn--/,
-	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
-	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
-
-	/** Error messages */
-	errors = {
-		'overflow': 'Overflow: input needs wider integers to process',
-		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
-		'invalid-input': 'Invalid input'
-	},
-
-	/** Convenience shortcuts */
-	baseMinusTMin = base - tMin,
-	floor = Math.floor,
-	stringFromCharCode = String.fromCharCode,
-
-	/** Temporary variable */
-	key;
-
-	/*--------------------------------------------------------------------------*/
-
-	/**
-	 * A generic error utility function.
-	 * @private
-	 * @param {String} type The error type.
-	 * @returns {Error} Throws a `RangeError` with the applicable error message.
-	 */
-	function error(type) {
-		throw new RangeError(errors[type]);
-	}
-
-	/**
-	 * A generic `Array#map` utility function.
-	 * @private
-	 * @param {Array} array The array to iterate over.
-	 * @param {Function} callback The function that gets called for every array
-	 * item.
-	 * @returns {Array} A new array of values returned by the callback function.
-	 */
-	function map(array, fn) {
-		var length = array.length;
-		var result = [];
-		while (length--) {
-			result[length] = fn(array[length]);
-		}
-		return result;
-	}
-
-	/**
-	 * A simple `Array#map`-like wrapper to work with domain name strings or email
-	 * addresses.
-	 * @private
-	 * @param {String} domain The domain name or email address.
-	 * @param {Function} callback The function that gets called for every
-	 * character.
-	 * @returns {Array} A new string of characters returned by the callback
-	 * function.
-	 */
-	function mapDomain(string, fn) {
-		var parts = string.split('@');
-		var result = '';
-		if (parts.length > 1) {
-			// In email addresses, only the domain name should be punycoded. Leave
-			// the local part (i.e. everything up to `@`) intact.
-			result = parts[0] + '@';
-			string = parts[1];
-		}
-		// Avoid `split(regex)` for IE8 compatibility. See #17.
-		string = string.replace(regexSeparators, '\x2E');
-		var labels = string.split('.');
-		var encoded = map(labels, fn).join('.');
-		return result + encoded;
-	}
-
-	/**
-	 * Creates an array containing the numeric code points of each Unicode
-	 * character in the string. While JavaScript uses UCS-2 internally,
-	 * this function will convert a pair of surrogate halves (each of which
-	 * UCS-2 exposes as separate characters) into a single code point,
-	 * matching UTF-16.
-	 * @see `punycode.ucs2.encode`
-	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
-	 * @memberOf punycode.ucs2
-	 * @name decode
-	 * @param {String} string The Unicode input string (UCS-2).
-	 * @returns {Array} The new array of code points.
-	 */
-	function ucs2decode(string) {
-		var output = [],
-		    counter = 0,
-		    length = string.length,
-		    value,
-		    extra;
-		while (counter < length) {
-			value = string.charCodeAt(counter++);
-			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
-				// high surrogate, and there is a next character
-				extra = string.charCodeAt(counter++);
-				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
-					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
-				} else {
-					// unmatched surrogate; only append this code unit, in case the next
-					// code unit is the high surrogate of a surrogate pair
-					output.push(value);
-					counter--;
-				}
-			} else {
-				output.push(value);
-			}
-		}
-		return output;
-	}
-
-	/**
-	 * Creates a string based on an array of numeric code points.
-	 * @see `punycode.ucs2.decode`
-	 * @memberOf punycode.ucs2
-	 * @name encode
-	 * @param {Array} codePoints The array of numeric code points.
-	 * @returns {String} The new Unicode string (UCS-2).
-	 */
-	function ucs2encode(array) {
-		return map(array, function(value) {
-			var output = '';
-			if (value > 0xFFFF) {
-				value -= 0x10000;
-				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
-				value = 0xDC00 | value & 0x3FF;
-			}
-			output += stringFromCharCode(value);
-			return output;
-		}).join('');
-	}
-
-	/**
-	 * Converts a basic code point into a digit/integer.
-	 * @see `digitToBasic()`
-	 * @private
-	 * @param {Number} codePoint The basic numeric code point value.
-	 * @returns {Number} The numeric value of a basic code point (for use in
-	 * representing integers) in the range `0` to `base - 1`, or `base` if
-	 * the code point does not represent a value.
-	 */
-	function basicToDigit(codePoint) {
-		if (codePoint - 48 < 10) {
-			return codePoint - 22;
-		}
-		if (codePoint - 65 < 26) {
-			return codePoint - 65;
-		}
-		if (codePoint - 97 < 26) {
-			return codePoint - 97;
-		}
-		return base;
-	}
-
-	/**
-	 * Converts a digit/integer into a basic code point.
-	 * @see `basicToDigit()`
-	 * @private
-	 * @param {Number} digit The numeric value of a basic code point.
-	 * @returns {Number} The basic code point whose value (when used for
-	 * representing integers) is `digit`, which needs to be in the range
-	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
-	 * used; else, the lowercase form is used. The behavior is undefined
-	 * if `flag` is non-zero and `digit` has no uppercase form.
-	 */
-	function digitToBasic(digit, flag) {
-		//  0..25 map to ASCII a..z or A..Z
-		// 26..35 map to ASCII 0..9
-		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
-	}
-
-	/**
-	 * Bias adaptation function as per section 3.4 of RFC 3492.
-	 * https://tools.ietf.org/html/rfc3492#section-3.4
-	 * @private
-	 */
-	function adapt(delta, numPoints, firstTime) {
-		var k = 0;
-		delta = firstTime ? floor(delta / damp) : delta >> 1;
-		delta += floor(delta / numPoints);
-		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
-			delta = floor(delta / baseMinusTMin);
-		}
-		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
-	}
-
-	/**
-	 * Converts a Punycode string of ASCII-only symbols to a string of Unicode
-	 * symbols.
-	 * @memberOf punycode
-	 * @param {String} input The Punycode string of ASCII-only symbols.
-	 * @returns {String} The resulting string of Unicode symbols.
-	 */
-	function decode(input) {
-		// Don't use UCS-2
-		var output = [],
-		    inputLength = input.length,
-		    out,
-		    i = 0,
-		    n = initialN,
-		    bias = initialBias,
-		    basic,
-		    j,
-		    index,
-		    oldi,
-		    w,
-		    k,
-		    digit,
-		    t,
-		    /** Cached calculation results */
-		    baseMinusT;
-
-		// Handle the basic code points: let `basic` be the number of input code
-		// points before the last delimiter, or `0` if there is none, then copy
-		// the first basic code points to the output.
-
-		basic = input.lastIndexOf(delimiter);
-		if (basic < 0) {
-			basic = 0;
-		}
-
-		for (j = 0; j < basic; ++j) {
-			// if it's not a basic code point
-			if (input.charCodeAt(j) >= 0x80) {
-				error('not-basic');
-			}
-			output.push(input.charCodeAt(j));
-		}
-
-		// Main decoding loop: start just after the last delimiter if any basic code
-		// points were copied; start at the beginning otherwise.
-
-		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
-
-			// `index` is the index of the next character to be consumed.
-			// Decode a generalized variable-length integer into `delta`,
-			// which gets added to `i`. The overflow checking is easier
-			// if we increase `i` as we go, then subtract off its starting
-			// value at the end to obtain `delta`.
-			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
-
-				if (index >= inputLength) {
-					error('invalid-input');
-				}
-
-				digit = basicToDigit(input.charCodeAt(index++));
-
-				if (digit >= base || digit > floor((maxInt - i) / w)) {
-					error('overflow');
-				}
-
-				i += digit * w;
-				t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
-
-				if (digit < t) {
-					break;
-				}
-
-				baseMinusT = base - t;
-				if (w > floor(maxInt / baseMinusT)) {
-					error('overflow');
-				}
-
-				w *= baseMinusT;
-
-			}
-
-			out = output.length + 1;
-			bias = adapt(i - oldi, out, oldi == 0);
-
-			// `i` was supposed to wrap around from `out` to `0`,
-			// incrementing `n` each time, so we'll fix that now:
-			if (floor(i / out) > maxInt - n) {
-				error('overflow');
-			}
-
-			n += floor(i / out);
-			i %= out;
-
-			// Insert `n` at position `i` of the output
-			output.splice(i++, 0, n);
-
-		}
-
-		return ucs2encode(output);
-	}
-
-	/**
-	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
-	 * Punycode string of ASCII-only symbols.
-	 * @memberOf punycode
-	 * @param {String} input The string of Unicode symbols.
-	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
-	 */
-	function encode(input) {
-		var n,
-		    delta,
-		    handledCPCount,
-		    basicLength,
-		    bias,
-		    j,
-		    m,
-		    q,
-		    k,
-		    t,
-		    currentValue,
-		    output = [],
-		    /** `inputLength` will hold the number of code points in `input`. */
-		    inputLength,
-		    /** Cached calculation results */
-		    handledCPCountPlusOne,
-		    baseMinusT,
-		    qMinusT;
-
-		// Convert the input in UCS-2 to Unicode
-		input = ucs2decode(input);
-
-		// Cache the length
-		inputLength = input.length;
-
-		// Initialize the state
-		n = initialN;
-		delta = 0;
-		bias = initialBias;
-
-		// Handle the basic code points
-		for (j = 0; j < inputLength; ++j) {
-			currentValue = input[j];
-			if (currentValue < 0x80) {
-				output.push(stringFromCharCode(currentValue));
-			}
-		}
-
-		handledCPCount = basicLength = output.length;
-
-		// `handledCPCount` is the number of code points that have been handled;
-		// `basicLength` is the number of basic code points.
-
-		// Finish the basic string - if it is not empty - with a delimiter
-		if (basicLength) {
-			output.push(delimiter);
-		}
-
-		// Main encoding loop:
-		while (handledCPCount < inputLength) {
-
-			// All non-basic code points < n have been handled already. Find the next
-			// larger one:
-			for (m = maxInt, j = 0; j < inputLength; ++j) {
-				currentValue = input[j];
-				if (currentValue >= n && currentValue < m) {
-					m = currentValue;
-				}
-			}
-
-			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
-			// but guard against overflow
-			handledCPCountPlusOne = handledCPCount + 1;
-			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
-				error('overflow');
-			}
-
-			delta += (m - n) * handledCPCountPlusOne;
-			n = m;
-
-			for (j = 0; j < inputLength; ++j) {
-				currentValue = input[j];
-
-				if (currentValue < n && ++delta > maxInt) {
-					error('overflow');
-				}
-
-				if (currentValue == n) {
-					// Represent delta as a generalized variable-length integer
-					for (q = delta, k = base; /* no condition */; k += base) {
-						t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
-						if (q < t) {
-							break;
-						}
-						qMinusT = q - t;
-						baseMinusT = base - t;
-						output.push(
-							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
-						);
-						q = floor(qMinusT / baseMinusT);
-					}
-
-					output.push(stringFromCharCode(digitToBasic(q, 0)));
-					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
-					delta = 0;
-					++handledCPCount;
-				}
-			}
-
-			++delta;
-			++n;
-
-		}
-		return output.join('');
-	}
-
-	/**
-	 * Converts a Punycode string representing a domain name or an email address
-	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
-	 * it doesn't matter if you call it on a string that has already been
-	 * converted to Unicode.
-	 * @memberOf punycode
-	 * @param {String} input The Punycoded domain name or email address to
-	 * convert to Unicode.
-	 * @returns {String} The Unicode representation of the given Punycode
-	 * string.
-	 */
-	function toUnicode(input) {
-		return mapDomain(input, function(string) {
-			return regexPunycode.test(string)
-				? decode(string.slice(4).toLowerCase())
-				: string;
-		});
-	}
-
-	/**
-	 * Converts a Unicode string representing a domain name or an email address to
-	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
-	 * i.e. it doesn't matter if you call it with a domain that's already in
-	 * ASCII.
-	 * @memberOf punycode
-	 * @param {String} input The domain name or email address to convert, as a
-	 * Unicode string.
-	 * @returns {String} The Punycode representation of the given domain name or
-	 * email address.
-	 */
-	function toASCII(input) {
-		return mapDomain(input, function(string) {
-			return regexNonASCII.test(string)
-				? 'xn--' + encode(string)
-				: string;
-		});
-	}
-
-	/*--------------------------------------------------------------------------*/
-
-	/** Define the public API */
-	punycode = {
-		/**
-		 * A string representing the current Punycode.js version number.
-		 * @memberOf punycode
-		 * @type String
-		 */
-		'version': '1.4.1',
-		/**
-		 * An object of methods to convert from JavaScript's internal character
-		 * representation (UCS-2) to Unicode code points, and back.
-		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
-		 * @memberOf punycode
-		 * @type Object
-		 */
-		'ucs2': {
-			'decode': ucs2decode,
-			'encode': ucs2encode
-		},
-		'decode': decode,
-		'encode': encode,
-		'toASCII': toASCII,
-		'toUnicode': toUnicode
-	};
-
-	/** Expose `punycode` */
-	// Some AMD build optimizers, like r.js, check for specific condition patterns
-	// like the following:
-	if (
-		typeof define == 'function' &&
-		typeof define.amd == 'object' &&
-		define.amd
-	) {
-		define('punycode', function() {
-			return punycode;
-		});
-	} else if (freeExports && freeModule) {
-		if (module.exports == freeExports) {
-			// in Node.js, io.js, or RingoJS v0.8.0+
-			freeModule.exports = punycode;
-		} else {
-			// in Narwhal or RingoJS v0.7.0-
-			for (key in punycode) {
-				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
-			}
-		}
-	} else {
-		// in Rhino or a web browser
-		root.punycode = punycode;
-	}
-
-}(this));
-
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/formats.js":[function(require,module,exports){
-'use strict';
-
-var replace = String.prototype.replace;
-var percentTwenties = /%20/g;
-
-var Format = {
-    RFC1738: 'RFC1738',
-    RFC3986: 'RFC3986'
-};
-
-module.exports = {
-    'default': Format.RFC3986,
-    formatters: {
-        RFC1738: function (value) {
-            return replace.call(value, percentTwenties, '+');
-        },
-        RFC3986: function (value) {
-            return String(value);
-        }
-    },
-    RFC1738: Format.RFC1738,
-    RFC3986: Format.RFC3986
-};
-
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/index.js":[function(require,module,exports){
-'use strict';
-
-var stringify = require('./stringify');
-var parse = require('./parse');
-var formats = require('./formats');
-
-module.exports = {
-    formats: formats,
-    parse: parse,
-    stringify: stringify
-};
-
-},{"./formats":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/formats.js","./parse":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/parse.js","./stringify":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/stringify.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/parse.js":[function(require,module,exports){
-'use strict';
-
-var utils = require('./utils');
-
-var has = Object.prototype.hasOwnProperty;
-var isArray = Array.isArray;
-
-var defaults = {
-    allowDots: false,
-    allowPrototypes: false,
-    allowSparse: false,
-    arrayLimit: 20,
-    charset: 'utf-8',
-    charsetSentinel: false,
-    comma: false,
-    decoder: utils.decode,
-    delimiter: '&',
-    depth: 5,
-    ignoreQueryPrefix: false,
-    interpretNumericEntities: false,
-    parameterLimit: 1000,
-    parseArrays: true,
-    plainObjects: false,
-    strictNullHandling: false
-};
-
-var interpretNumericEntities = function (str) {
-    return str.replace(/&#(\d+);/g, function ($0, numberStr) {
-        return String.fromCharCode(parseInt(numberStr, 10));
-    });
-};
-
-var parseArrayValue = function (val, options) {
-    if (val && typeof val === 'string' && options.comma && val.indexOf(',') > -1) {
-        return val.split(',');
-    }
-
-    return val;
-};
-
-// This is what browsers will submit when the ✓ character occurs in an
-// application/x-www-form-urlencoded body and the encoding of the page containing
-// the form is iso-8859-1, or when the submitted form has an accept-charset
-// attribute of iso-8859-1. Presumably also with other charsets that do not contain
-// the ✓ character, such as us-ascii.
-var isoSentinel = 'utf8=%26%2310003%3B'; // encodeURIComponent('&#10003;')
-
-// These are the percent-encoded utf-8 octets representing a checkmark, indicating that the request actually is utf-8 encoded.
-var charsetSentinel = 'utf8=%E2%9C%93'; // encodeURIComponent('✓')
-
-var parseValues = function parseQueryStringValues(str, options) {
-    var obj = { __proto__: null };
-
-    var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, '') : str;
-    var limit = options.parameterLimit === Infinity ? undefined : options.parameterLimit;
-    var parts = cleanStr.split(options.delimiter, limit);
-    var skipIndex = -1; // Keep track of where the utf8 sentinel was found
-    var i;
-
-    var charset = options.charset;
-    if (options.charsetSentinel) {
-        for (i = 0; i < parts.length; ++i) {
-            if (parts[i].indexOf('utf8=') === 0) {
-                if (parts[i] === charsetSentinel) {
-                    charset = 'utf-8';
-                } else if (parts[i] === isoSentinel) {
-                    charset = 'iso-8859-1';
-                }
-                skipIndex = i;
-                i = parts.length; // The eslint settings do not allow break;
-            }
-        }
-    }
-
-    for (i = 0; i < parts.length; ++i) {
-        if (i === skipIndex) {
-            continue;
-        }
-        var part = parts[i];
-
-        var bracketEqualsPos = part.indexOf(']=');
-        var pos = bracketEqualsPos === -1 ? part.indexOf('=') : bracketEqualsPos + 1;
-
-        var key, val;
-        if (pos === -1) {
-            key = options.decoder(part, defaults.decoder, charset, 'key');
-            val = options.strictNullHandling ? null : '';
-        } else {
-            key = options.decoder(part.slice(0, pos), defaults.decoder, charset, 'key');
-            val = utils.maybeMap(
-                parseArrayValue(part.slice(pos + 1), options),
-                function (encodedVal) {
-                    return options.decoder(encodedVal, defaults.decoder, charset, 'value');
-                }
-            );
-        }
-
-        if (val && options.interpretNumericEntities && charset === 'iso-8859-1') {
-            val = interpretNumericEntities(val);
-        }
-
-        if (part.indexOf('[]=') > -1) {
-            val = isArray(val) ? [val] : val;
-        }
-
-        if (has.call(obj, key)) {
-            obj[key] = utils.combine(obj[key], val);
-        } else {
-            obj[key] = val;
-        }
-    }
-
-    return obj;
-};
-
-var parseObject = function (chain, val, options, valuesParsed) {
-    var leaf = valuesParsed ? val : parseArrayValue(val, options);
-
-    for (var i = chain.length - 1; i >= 0; --i) {
-        var obj;
-        var root = chain[i];
-
-        if (root === '[]' && options.parseArrays) {
-            obj = [].concat(leaf);
-        } else {
-            obj = options.plainObjects ? Object.create(null) : {};
-            var cleanRoot = root.charAt(0) === '[' && root.charAt(root.length - 1) === ']' ? root.slice(1, -1) : root;
-            var index = parseInt(cleanRoot, 10);
-            if (!options.parseArrays && cleanRoot === '') {
-                obj = { 0: leaf };
-            } else if (
-                !isNaN(index)
-                && root !== cleanRoot
-                && String(index) === cleanRoot
-                && index >= 0
-                && (options.parseArrays && index <= options.arrayLimit)
-            ) {
-                obj = [];
-                obj[index] = leaf;
-            } else if (cleanRoot !== '__proto__') {
-                obj[cleanRoot] = leaf;
-            }
-        }
-
-        leaf = obj;
-    }
-
-    return leaf;
-};
-
-var parseKeys = function parseQueryStringKeys(givenKey, val, options, valuesParsed) {
-    if (!givenKey) {
-        return;
-    }
-
-    // Transform dot notation to bracket notation
-    var key = options.allowDots ? givenKey.replace(/\.([^.[]+)/g, '[$1]') : givenKey;
-
-    // The regex chunks
-
-    var brackets = /(\[[^[\]]*])/;
-    var child = /(\[[^[\]]*])/g;
-
-    // Get the parent
-
-    var segment = options.depth > 0 && brackets.exec(key);
-    var parent = segment ? key.slice(0, segment.index) : key;
-
-    // Stash the parent if it exists
-
-    var keys = [];
-    if (parent) {
-        // If we aren't using plain objects, optionally prefix keys that would overwrite object prototype properties
-        if (!options.plainObjects && has.call(Object.prototype, parent)) {
-            if (!options.allowPrototypes) {
-                return;
-            }
-        }
-
-        keys.push(parent);
-    }
-
-    // Loop through children appending to the array until we hit depth
-
-    var i = 0;
-    while (options.depth > 0 && (segment = child.exec(key)) !== null && i < options.depth) {
-        i += 1;
-        if (!options.plainObjects && has.call(Object.prototype, segment[1].slice(1, -1))) {
-            if (!options.allowPrototypes) {
-                return;
-            }
-        }
-        keys.push(segment[1]);
-    }
-
-    // If there's a remainder, just add whatever is left
-
-    if (segment) {
-        keys.push('[' + key.slice(segment.index) + ']');
-    }
-
-    return parseObject(keys, val, options, valuesParsed);
-};
-
-var normalizeParseOptions = function normalizeParseOptions(opts) {
-    if (!opts) {
-        return defaults;
-    }
-
-    if (opts.decoder !== null && opts.decoder !== undefined && typeof opts.decoder !== 'function') {
-        throw new TypeError('Decoder has to be a function.');
-    }
-
-    if (typeof opts.charset !== 'undefined' && opts.charset !== 'utf-8' && opts.charset !== 'iso-8859-1') {
-        throw new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined');
-    }
-    var charset = typeof opts.charset === 'undefined' ? defaults.charset : opts.charset;
-
-    return {
-        allowDots: typeof opts.allowDots === 'undefined' ? defaults.allowDots : !!opts.allowDots,
-        allowPrototypes: typeof opts.allowPrototypes === 'boolean' ? opts.allowPrototypes : defaults.allowPrototypes,
-        allowSparse: typeof opts.allowSparse === 'boolean' ? opts.allowSparse : defaults.allowSparse,
-        arrayLimit: typeof opts.arrayLimit === 'number' ? opts.arrayLimit : defaults.arrayLimit,
-        charset: charset,
-        charsetSentinel: typeof opts.charsetSentinel === 'boolean' ? opts.charsetSentinel : defaults.charsetSentinel,
-        comma: typeof opts.comma === 'boolean' ? opts.comma : defaults.comma,
-        decoder: typeof opts.decoder === 'function' ? opts.decoder : defaults.decoder,
-        delimiter: typeof opts.delimiter === 'string' || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults.delimiter,
-        // eslint-disable-next-line no-implicit-coercion, no-extra-parens
-        depth: (typeof opts.depth === 'number' || opts.depth === false) ? +opts.depth : defaults.depth,
-        ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
-        interpretNumericEntities: typeof opts.interpretNumericEntities === 'boolean' ? opts.interpretNumericEntities : defaults.interpretNumericEntities,
-        parameterLimit: typeof opts.parameterLimit === 'number' ? opts.parameterLimit : defaults.parameterLimit,
-        parseArrays: opts.parseArrays !== false,
-        plainObjects: typeof opts.plainObjects === 'boolean' ? opts.plainObjects : defaults.plainObjects,
-        strictNullHandling: typeof opts.strictNullHandling === 'boolean' ? opts.strictNullHandling : defaults.strictNullHandling
-    };
-};
-
-module.exports = function (str, opts) {
-    var options = normalizeParseOptions(opts);
-
-    if (str === '' || str === null || typeof str === 'undefined') {
-        return options.plainObjects ? Object.create(null) : {};
-    }
-
-    var tempObj = typeof str === 'string' ? parseValues(str, options) : str;
-    var obj = options.plainObjects ? Object.create(null) : {};
-
-    // Iterate over the keys and setup the new object
-
-    var keys = Object.keys(tempObj);
-    for (var i = 0; i < keys.length; ++i) {
-        var key = keys[i];
-        var newObj = parseKeys(key, tempObj[key], options, typeof str === 'string');
-        obj = utils.merge(obj, newObj, options);
-    }
-
-    if (options.allowSparse === true) {
-        return obj;
-    }
-
-    return utils.compact(obj);
-};
-
-},{"./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/utils.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/stringify.js":[function(require,module,exports){
-'use strict';
-
-var getSideChannel = require('side-channel');
-var utils = require('./utils');
-var formats = require('./formats');
-var has = Object.prototype.hasOwnProperty;
-
-var arrayPrefixGenerators = {
-    brackets: function brackets(prefix) {
-        return prefix + '[]';
-    },
-    comma: 'comma',
-    indices: function indices(prefix, key) {
-        return prefix + '[' + key + ']';
-    },
-    repeat: function repeat(prefix) {
-        return prefix;
-    }
-};
-
-var isArray = Array.isArray;
-var push = Array.prototype.push;
-var pushToArray = function (arr, valueOrArray) {
-    push.apply(arr, isArray(valueOrArray) ? valueOrArray : [valueOrArray]);
-};
-
-var toISO = Date.prototype.toISOString;
-
-var defaultFormat = formats['default'];
-var defaults = {
-    addQueryPrefix: false,
-    allowDots: false,
-    charset: 'utf-8',
-    charsetSentinel: false,
-    delimiter: '&',
-    encode: true,
-    encoder: utils.encode,
-    encodeValuesOnly: false,
-    format: defaultFormat,
-    formatter: formats.formatters[defaultFormat],
-    // deprecated
-    indices: false,
-    serializeDate: function serializeDate(date) {
-        return toISO.call(date);
-    },
-    skipNulls: false,
-    strictNullHandling: false
-};
-
-var isNonNullishPrimitive = function isNonNullishPrimitive(v) {
-    return typeof v === 'string'
-        || typeof v === 'number'
-        || typeof v === 'boolean'
-        || typeof v === 'symbol'
-        || typeof v === 'bigint';
-};
-
-var sentinel = {};
-
-var stringify = function stringify(
-    object,
-    prefix,
-    generateArrayPrefix,
-    commaRoundTrip,
-    strictNullHandling,
-    skipNulls,
-    encoder,
-    filter,
-    sort,
-    allowDots,
-    serializeDate,
-    format,
-    formatter,
-    encodeValuesOnly,
-    charset,
-    sideChannel
-) {
-    var obj = object;
-
-    var tmpSc = sideChannel;
-    var step = 0;
-    var findFlag = false;
-    while ((tmpSc = tmpSc.get(sentinel)) !== void undefined && !findFlag) {
-        // Where object last appeared in the ref tree
-        var pos = tmpSc.get(object);
-        step += 1;
-        if (typeof pos !== 'undefined') {
-            if (pos === step) {
-                throw new RangeError('Cyclic object value');
-            } else {
-                findFlag = true; // Break while
-            }
-        }
-        if (typeof tmpSc.get(sentinel) === 'undefined') {
-            step = 0;
-        }
-    }
-
-    if (typeof filter === 'function') {
-        obj = filter(prefix, obj);
-    } else if (obj instanceof Date) {
-        obj = serializeDate(obj);
-    } else if (generateArrayPrefix === 'comma' && isArray(obj)) {
-        obj = utils.maybeMap(obj, function (value) {
-            if (value instanceof Date) {
-                return serializeDate(value);
-            }
-            return value;
-        });
-    }
-
-    if (obj === null) {
-        if (strictNullHandling) {
-            return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, 'key', format) : prefix;
-        }
-
-        obj = '';
-    }
-
-    if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
-        if (encoder) {
-            var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, 'key', format);
-            return [formatter(keyValue) + '=' + formatter(encoder(obj, defaults.encoder, charset, 'value', format))];
-        }
-        return [formatter(prefix) + '=' + formatter(String(obj))];
-    }
-
-    var values = [];
-
-    if (typeof obj === 'undefined') {
-        return values;
-    }
-
-    var objKeys;
-    if (generateArrayPrefix === 'comma' && isArray(obj)) {
-        // we need to join elements in
-        if (encodeValuesOnly && encoder) {
-            obj = utils.maybeMap(obj, encoder);
-        }
-        objKeys = [{ value: obj.length > 0 ? obj.join(',') || null : void undefined }];
-    } else if (isArray(filter)) {
-        objKeys = filter;
-    } else {
-        var keys = Object.keys(obj);
-        objKeys = sort ? keys.sort(sort) : keys;
-    }
-
-    var adjustedPrefix = commaRoundTrip && isArray(obj) && obj.length === 1 ? prefix + '[]' : prefix;
-
-    for (var j = 0; j < objKeys.length; ++j) {
-        var key = objKeys[j];
-        var value = typeof key === 'object' && typeof key.value !== 'undefined' ? key.value : obj[key];
-
-        if (skipNulls && value === null) {
-            continue;
-        }
-
-        var keyPrefix = isArray(obj)
-            ? typeof generateArrayPrefix === 'function' ? generateArrayPrefix(adjustedPrefix, key) : adjustedPrefix
-            : adjustedPrefix + (allowDots ? '.' + key : '[' + key + ']');
-
-        sideChannel.set(object, step);
-        var valueSideChannel = getSideChannel();
-        valueSideChannel.set(sentinel, sideChannel);
-        pushToArray(values, stringify(
-            value,
-            keyPrefix,
-            generateArrayPrefix,
-            commaRoundTrip,
-            strictNullHandling,
-            skipNulls,
-            generateArrayPrefix === 'comma' && encodeValuesOnly && isArray(obj) ? null : encoder,
-            filter,
-            sort,
-            allowDots,
-            serializeDate,
-            format,
-            formatter,
-            encodeValuesOnly,
-            charset,
-            valueSideChannel
-        ));
-    }
-
-    return values;
-};
-
-var normalizeStringifyOptions = function normalizeStringifyOptions(opts) {
-    if (!opts) {
-        return defaults;
-    }
-
-    if (opts.encoder !== null && typeof opts.encoder !== 'undefined' && typeof opts.encoder !== 'function') {
-        throw new TypeError('Encoder has to be a function.');
-    }
-
-    var charset = opts.charset || defaults.charset;
-    if (typeof opts.charset !== 'undefined' && opts.charset !== 'utf-8' && opts.charset !== 'iso-8859-1') {
-        throw new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined');
-    }
-
-    var format = formats['default'];
-    if (typeof opts.format !== 'undefined') {
-        if (!has.call(formats.formatters, opts.format)) {
-            throw new TypeError('Unknown format option provided.');
-        }
-        format = opts.format;
-    }
-    var formatter = formats.formatters[format];
-
-    var filter = defaults.filter;
-    if (typeof opts.filter === 'function' || isArray(opts.filter)) {
-        filter = opts.filter;
-    }
-
-    return {
-        addQueryPrefix: typeof opts.addQueryPrefix === 'boolean' ? opts.addQueryPrefix : defaults.addQueryPrefix,
-        allowDots: typeof opts.allowDots === 'undefined' ? defaults.allowDots : !!opts.allowDots,
-        charset: charset,
-        charsetSentinel: typeof opts.charsetSentinel === 'boolean' ? opts.charsetSentinel : defaults.charsetSentinel,
-        delimiter: typeof opts.delimiter === 'undefined' ? defaults.delimiter : opts.delimiter,
-        encode: typeof opts.encode === 'boolean' ? opts.encode : defaults.encode,
-        encoder: typeof opts.encoder === 'function' ? opts.encoder : defaults.encoder,
-        encodeValuesOnly: typeof opts.encodeValuesOnly === 'boolean' ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
-        filter: filter,
-        format: format,
-        formatter: formatter,
-        serializeDate: typeof opts.serializeDate === 'function' ? opts.serializeDate : defaults.serializeDate,
-        skipNulls: typeof opts.skipNulls === 'boolean' ? opts.skipNulls : defaults.skipNulls,
-        sort: typeof opts.sort === 'function' ? opts.sort : null,
-        strictNullHandling: typeof opts.strictNullHandling === 'boolean' ? opts.strictNullHandling : defaults.strictNullHandling
-    };
-};
-
-module.exports = function (object, opts) {
-    var obj = object;
-    var options = normalizeStringifyOptions(opts);
-
-    var objKeys;
-    var filter;
-
-    if (typeof options.filter === 'function') {
-        filter = options.filter;
-        obj = filter('', obj);
-    } else if (isArray(options.filter)) {
-        filter = options.filter;
-        objKeys = filter;
-    }
-
-    var keys = [];
-
-    if (typeof obj !== 'object' || obj === null) {
-        return '';
-    }
-
-    var arrayFormat;
-    if (opts && opts.arrayFormat in arrayPrefixGenerators) {
-        arrayFormat = opts.arrayFormat;
-    } else if (opts && 'indices' in opts) {
-        arrayFormat = opts.indices ? 'indices' : 'repeat';
-    } else {
-        arrayFormat = 'indices';
-    }
-
-    var generateArrayPrefix = arrayPrefixGenerators[arrayFormat];
-    if (opts && 'commaRoundTrip' in opts && typeof opts.commaRoundTrip !== 'boolean') {
-        throw new TypeError('`commaRoundTrip` must be a boolean, or absent');
-    }
-    var commaRoundTrip = generateArrayPrefix === 'comma' && opts && opts.commaRoundTrip;
-
-    if (!objKeys) {
-        objKeys = Object.keys(obj);
-    }
-
-    if (options.sort) {
-        objKeys.sort(options.sort);
-    }
-
-    var sideChannel = getSideChannel();
-    for (var i = 0; i < objKeys.length; ++i) {
-        var key = objKeys[i];
-
-        if (options.skipNulls && obj[key] === null) {
-            continue;
-        }
-        pushToArray(keys, stringify(
-            obj[key],
-            key,
-            generateArrayPrefix,
-            commaRoundTrip,
-            options.strictNullHandling,
-            options.skipNulls,
-            options.encode ? options.encoder : null,
-            options.filter,
-            options.sort,
-            options.allowDots,
-            options.serializeDate,
-            options.format,
-            options.formatter,
-            options.encodeValuesOnly,
-            options.charset,
-            sideChannel
-        ));
-    }
-
-    var joined = keys.join(options.delimiter);
-    var prefix = options.addQueryPrefix === true ? '?' : '';
-
-    if (options.charsetSentinel) {
-        if (options.charset === 'iso-8859-1') {
-            // encodeURIComponent('&#10003;'), the "numeric entity" representation of a checkmark
-            prefix += 'utf8=%26%2310003%3B&';
-        } else {
-            // encodeURIComponent('✓')
-            prefix += 'utf8=%E2%9C%93&';
-        }
-    }
-
-    return joined.length > 0 ? prefix + joined : '';
-};
-
-},{"./formats":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/formats.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/utils.js","side-channel":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/side-channel/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/utils.js":[function(require,module,exports){
-'use strict';
-
-var formats = require('./formats');
-
-var has = Object.prototype.hasOwnProperty;
-var isArray = Array.isArray;
-
-var hexTable = (function () {
-    var array = [];
-    for (var i = 0; i < 256; ++i) {
-        array.push('%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase());
-    }
-
-    return array;
-}());
-
-var compactQueue = function compactQueue(queue) {
-    while (queue.length > 1) {
-        var item = queue.pop();
-        var obj = item.obj[item.prop];
-
-        if (isArray(obj)) {
-            var compacted = [];
-
-            for (var j = 0; j < obj.length; ++j) {
-                if (typeof obj[j] !== 'undefined') {
-                    compacted.push(obj[j]);
-                }
-            }
-
-            item.obj[item.prop] = compacted;
-        }
-    }
-};
-
-var arrayToObject = function arrayToObject(source, options) {
-    var obj = options && options.plainObjects ? Object.create(null) : {};
-    for (var i = 0; i < source.length; ++i) {
-        if (typeof source[i] !== 'undefined') {
-            obj[i] = source[i];
-        }
-    }
-
-    return obj;
-};
-
-var merge = function merge(target, source, options) {
-    /* eslint no-param-reassign: 0 */
-    if (!source) {
-        return target;
-    }
-
-    if (typeof source !== 'object') {
-        if (isArray(target)) {
-            target.push(source);
-        } else if (target && typeof target === 'object') {
-            if ((options && (options.plainObjects || options.allowPrototypes)) || !has.call(Object.prototype, source)) {
-                target[source] = true;
-            }
-        } else {
-            return [target, source];
-        }
-
-        return target;
-    }
-
-    if (!target || typeof target !== 'object') {
-        return [target].concat(source);
-    }
-
-    var mergeTarget = target;
-    if (isArray(target) && !isArray(source)) {
-        mergeTarget = arrayToObject(target, options);
-    }
-
-    if (isArray(target) && isArray(source)) {
-        source.forEach(function (item, i) {
-            if (has.call(target, i)) {
-                var targetItem = target[i];
-                if (targetItem && typeof targetItem === 'object' && item && typeof item === 'object') {
-                    target[i] = merge(targetItem, item, options);
-                } else {
-                    target.push(item);
-                }
-            } else {
-                target[i] = item;
-            }
-        });
-        return target;
-    }
-
-    return Object.keys(source).reduce(function (acc, key) {
-        var value = source[key];
-
-        if (has.call(acc, key)) {
-            acc[key] = merge(acc[key], value, options);
-        } else {
-            acc[key] = value;
-        }
-        return acc;
-    }, mergeTarget);
-};
-
-var assign = function assignSingleSource(target, source) {
-    return Object.keys(source).reduce(function (acc, key) {
-        acc[key] = source[key];
-        return acc;
-    }, target);
-};
-
-var decode = function (str, decoder, charset) {
-    var strWithoutPlus = str.replace(/\+/g, ' ');
-    if (charset === 'iso-8859-1') {
-        // unescape never throws, no try...catch needed:
-        return strWithoutPlus.replace(/%[0-9a-f]{2}/gi, unescape);
-    }
-    // utf-8
-    try {
-        return decodeURIComponent(strWithoutPlus);
-    } catch (e) {
-        return strWithoutPlus;
-    }
-};
-
-var encode = function encode(str, defaultEncoder, charset, kind, format) {
-    // This code was originally written by Brian White (mscdex) for the io.js core querystring library.
-    // It has been adapted here for stricter adherence to RFC 3986
-    if (str.length === 0) {
-        return str;
-    }
-
-    var string = str;
-    if (typeof str === 'symbol') {
-        string = Symbol.prototype.toString.call(str);
-    } else if (typeof str !== 'string') {
-        string = String(str);
-    }
-
-    if (charset === 'iso-8859-1') {
-        return escape(string).replace(/%u[0-9a-f]{4}/gi, function ($0) {
-            return '%26%23' + parseInt($0.slice(2), 16) + '%3B';
-        });
-    }
-
-    var out = '';
-    for (var i = 0; i < string.length; ++i) {
-        var c = string.charCodeAt(i);
-
-        if (
-            c === 0x2D // -
-            || c === 0x2E // .
-            || c === 0x5F // _
-            || c === 0x7E // ~
-            || (c >= 0x30 && c <= 0x39) // 0-9
-            || (c >= 0x41 && c <= 0x5A) // a-z
-            || (c >= 0x61 && c <= 0x7A) // A-Z
-            || (format === formats.RFC1738 && (c === 0x28 || c === 0x29)) // ( )
-        ) {
-            out += string.charAt(i);
-            continue;
-        }
-
-        if (c < 0x80) {
-            out = out + hexTable[c];
-            continue;
-        }
-
-        if (c < 0x800) {
-            out = out + (hexTable[0xC0 | (c >> 6)] + hexTable[0x80 | (c & 0x3F)]);
-            continue;
-        }
-
-        if (c < 0xD800 || c >= 0xE000) {
-            out = out + (hexTable[0xE0 | (c >> 12)] + hexTable[0x80 | ((c >> 6) & 0x3F)] + hexTable[0x80 | (c & 0x3F)]);
-            continue;
-        }
-
-        i += 1;
-        c = 0x10000 + (((c & 0x3FF) << 10) | (string.charCodeAt(i) & 0x3FF));
-        /* eslint operator-linebreak: [2, "before"] */
-        out += hexTable[0xF0 | (c >> 18)]
-            + hexTable[0x80 | ((c >> 12) & 0x3F)]
-            + hexTable[0x80 | ((c >> 6) & 0x3F)]
-            + hexTable[0x80 | (c & 0x3F)];
-    }
-
-    return out;
-};
-
-var compact = function compact(value) {
-    var queue = [{ obj: { o: value }, prop: 'o' }];
-    var refs = [];
-
-    for (var i = 0; i < queue.length; ++i) {
-        var item = queue[i];
-        var obj = item.obj[item.prop];
-
-        var keys = Object.keys(obj);
-        for (var j = 0; j < keys.length; ++j) {
-            var key = keys[j];
-            var val = obj[key];
-            if (typeof val === 'object' && val !== null && refs.indexOf(val) === -1) {
-                queue.push({ obj: obj, prop: key });
-                refs.push(val);
-            }
-        }
-    }
-
-    compactQueue(queue);
-
-    return value;
-};
-
-var isRegExp = function isRegExp(obj) {
-    return Object.prototype.toString.call(obj) === '[object RegExp]';
-};
-
-var isBuffer = function isBuffer(obj) {
-    if (!obj || typeof obj !== 'object') {
-        return false;
-    }
-
-    return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
-};
-
-var combine = function combine(a, b) {
-    return [].concat(a, b);
-};
-
-var maybeMap = function maybeMap(val, fn) {
-    if (isArray(val)) {
-        var mapped = [];
-        for (var i = 0; i < val.length; i += 1) {
-            mapped.push(fn(val[i]));
-        }
-        return mapped;
-    }
-    return fn(val);
-};
-
-module.exports = {
-    arrayToObject: arrayToObject,
-    assign: assign,
-    combine: combine,
-    compact: compact,
-    decode: decode,
-    encode: encode,
-    isBuffer: isBuffer,
-    isRegExp: isRegExp,
-    maybeMap: maybeMap,
-    merge: merge
-};
-
-},{"./formats":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/formats.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js":[function(require,module,exports){
 (function (process,global){(function (){
 'use strict'
 
@@ -86718,2662 +86263,7 @@ function randomFillSync (buf, offset, size) {
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/duplex-browser.js":[function(require,module,exports){
-module.exports = require('./lib/_stream_duplex.js');
-
-},{"./lib/_stream_duplex.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// a duplex stream is just a stream that is both readable and writable.
-// Since JS doesn't have multiple prototypal inheritance, this class
-// prototypally inherits from Readable, and then parasitically from
-// Writable.
-
-'use strict';
-
-/*<replacement>*/
-
-var pna = require('process-nextick-args');
-/*</replacement>*/
-
-/*<replacement>*/
-var objectKeys = Object.keys || function (obj) {
-  var keys = [];
-  for (var key in obj) {
-    keys.push(key);
-  }return keys;
-};
-/*</replacement>*/
-
-module.exports = Duplex;
-
-/*<replacement>*/
-var util = Object.create(require('core-util-is'));
-util.inherits = require('inherits');
-/*</replacement>*/
-
-var Readable = require('./_stream_readable');
-var Writable = require('./_stream_writable');
-
-util.inherits(Duplex, Readable);
-
-{
-  // avoid scope creep, the keys array can then be collected
-  var keys = objectKeys(Writable.prototype);
-  for (var v = 0; v < keys.length; v++) {
-    var method = keys[v];
-    if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
-  }
-}
-
-function Duplex(options) {
-  if (!(this instanceof Duplex)) return new Duplex(options);
-
-  Readable.call(this, options);
-  Writable.call(this, options);
-
-  if (options && options.readable === false) this.readable = false;
-
-  if (options && options.writable === false) this.writable = false;
-
-  this.allowHalfOpen = true;
-  if (options && options.allowHalfOpen === false) this.allowHalfOpen = false;
-
-  this.once('end', onend);
-}
-
-Object.defineProperty(Duplex.prototype, 'writableHighWaterMark', {
-  // making it explicit this property is not enumerable
-  // because otherwise some prototype manipulation in
-  // userland will fail
-  enumerable: false,
-  get: function () {
-    return this._writableState.highWaterMark;
-  }
-});
-
-// the no-half-open enforcer
-function onend() {
-  // if we allow half-open state, or if the writable side ended,
-  // then we're ok.
-  if (this.allowHalfOpen || this._writableState.ended) return;
-
-  // no more data can be written.
-  // But allow more writes to happen in this tick.
-  pna.nextTick(onEndNT, this);
-}
-
-function onEndNT(self) {
-  self.end();
-}
-
-Object.defineProperty(Duplex.prototype, 'destroyed', {
-  get: function () {
-    if (this._readableState === undefined || this._writableState === undefined) {
-      return false;
-    }
-    return this._readableState.destroyed && this._writableState.destroyed;
-  },
-  set: function (value) {
-    // we ignore the value if the stream
-    // has not been initialized yet
-    if (this._readableState === undefined || this._writableState === undefined) {
-      return;
-    }
-
-    // backward compatibility, the user is explicitly
-    // managing destroyed
-    this._readableState.destroyed = value;
-    this._writableState.destroyed = value;
-  }
-});
-
-Duplex.prototype._destroy = function (err, cb) {
-  this.push(null);
-  this.end();
-
-  pna.nextTick(cb, err);
-};
-},{"./_stream_readable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js","core-util-is":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","process-nextick-args":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process-nextick-args/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// a passthrough stream.
-// basically just the most minimal sort of Transform stream.
-// Every written chunk gets output as-is.
-
-'use strict';
-
-module.exports = PassThrough;
-
-var Transform = require('./_stream_transform');
-
-/*<replacement>*/
-var util = Object.create(require('core-util-is'));
-util.inherits = require('inherits');
-/*</replacement>*/
-
-util.inherits(PassThrough, Transform);
-
-function PassThrough(options) {
-  if (!(this instanceof PassThrough)) return new PassThrough(options);
-
-  Transform.call(this, options);
-}
-
-PassThrough.prototype._transform = function (chunk, encoding, cb) {
-  cb(null, chunk);
-};
-},{"./_stream_transform":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_transform.js","core-util-is":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
-(function (process,global){(function (){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-/*<replacement>*/
-
-var pna = require('process-nextick-args');
-/*</replacement>*/
-
-module.exports = Readable;
-
-/*<replacement>*/
-var isArray = require('isarray');
-/*</replacement>*/
-
-/*<replacement>*/
-var Duplex;
-/*</replacement>*/
-
-Readable.ReadableState = ReadableState;
-
-/*<replacement>*/
-var EE = require('events').EventEmitter;
-
-var EElistenerCount = function (emitter, type) {
-  return emitter.listeners(type).length;
-};
-/*</replacement>*/
-
-/*<replacement>*/
-var Stream = require('./internal/streams/stream');
-/*</replacement>*/
-
-/*<replacement>*/
-
-var Buffer = require('safe-buffer').Buffer;
-var OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
-function _uint8ArrayToBuffer(chunk) {
-  return Buffer.from(chunk);
-}
-function _isUint8Array(obj) {
-  return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
-}
-
-/*</replacement>*/
-
-/*<replacement>*/
-var util = Object.create(require('core-util-is'));
-util.inherits = require('inherits');
-/*</replacement>*/
-
-/*<replacement>*/
-var debugUtil = require('util');
-var debug = void 0;
-if (debugUtil && debugUtil.debuglog) {
-  debug = debugUtil.debuglog('stream');
-} else {
-  debug = function () {};
-}
-/*</replacement>*/
-
-var BufferList = require('./internal/streams/BufferList');
-var destroyImpl = require('./internal/streams/destroy');
-var StringDecoder;
-
-util.inherits(Readable, Stream);
-
-var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
-
-function prependListener(emitter, event, fn) {
-  // Sadly this is not cacheable as some libraries bundle their own
-  // event emitter implementation with them.
-  if (typeof emitter.prependListener === 'function') return emitter.prependListener(event, fn);
-
-  // This is a hack to make sure that our error handler is attached before any
-  // userland ones.  NEVER DO THIS. This is here only because this code needs
-  // to continue to work with older versions of Node.js that do not include
-  // the prependListener() method. The goal is to eventually remove this hack.
-  if (!emitter._events || !emitter._events[event]) emitter.on(event, fn);else if (isArray(emitter._events[event])) emitter._events[event].unshift(fn);else emitter._events[event] = [fn, emitter._events[event]];
-}
-
-function ReadableState(options, stream) {
-  Duplex = Duplex || require('./_stream_duplex');
-
-  options = options || {};
-
-  // Duplex streams are both readable and writable, but share
-  // the same options object.
-  // However, some cases require setting options to different
-  // values for the readable and the writable sides of the duplex stream.
-  // These options can be provided separately as readableXXX and writableXXX.
-  var isDuplex = stream instanceof Duplex;
-
-  // object stream flag. Used to make read(n) ignore n and to
-  // make all the buffer merging and length checks go away
-  this.objectMode = !!options.objectMode;
-
-  if (isDuplex) this.objectMode = this.objectMode || !!options.readableObjectMode;
-
-  // the point at which it stops calling _read() to fill the buffer
-  // Note: 0 is a valid value, means "don't call _read preemptively ever"
-  var hwm = options.highWaterMark;
-  var readableHwm = options.readableHighWaterMark;
-  var defaultHwm = this.objectMode ? 16 : 16 * 1024;
-
-  if (hwm || hwm === 0) this.highWaterMark = hwm;else if (isDuplex && (readableHwm || readableHwm === 0)) this.highWaterMark = readableHwm;else this.highWaterMark = defaultHwm;
-
-  // cast to ints.
-  this.highWaterMark = Math.floor(this.highWaterMark);
-
-  // A linked list is used to store data chunks instead of an array because the
-  // linked list can remove elements from the beginning faster than
-  // array.shift()
-  this.buffer = new BufferList();
-  this.length = 0;
-  this.pipes = null;
-  this.pipesCount = 0;
-  this.flowing = null;
-  this.ended = false;
-  this.endEmitted = false;
-  this.reading = false;
-
-  // a flag to be able to tell if the event 'readable'/'data' is emitted
-  // immediately, or on a later tick.  We set this to true at first, because
-  // any actions that shouldn't happen until "later" should generally also
-  // not happen before the first read call.
-  this.sync = true;
-
-  // whenever we return null, then we set a flag to say
-  // that we're awaiting a 'readable' event emission.
-  this.needReadable = false;
-  this.emittedReadable = false;
-  this.readableListening = false;
-  this.resumeScheduled = false;
-
-  // has it been destroyed
-  this.destroyed = false;
-
-  // Crypto is kind of old and crusty.  Historically, its default string
-  // encoding is 'binary' so we have to make this configurable.
-  // Everything else in the universe uses 'utf8', though.
-  this.defaultEncoding = options.defaultEncoding || 'utf8';
-
-  // the number of writers that are awaiting a drain event in .pipe()s
-  this.awaitDrain = 0;
-
-  // if true, a maybeReadMore has been scheduled
-  this.readingMore = false;
-
-  this.decoder = null;
-  this.encoding = null;
-  if (options.encoding) {
-    if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
-    this.decoder = new StringDecoder(options.encoding);
-    this.encoding = options.encoding;
-  }
-}
-
-function Readable(options) {
-  Duplex = Duplex || require('./_stream_duplex');
-
-  if (!(this instanceof Readable)) return new Readable(options);
-
-  this._readableState = new ReadableState(options, this);
-
-  // legacy
-  this.readable = true;
-
-  if (options) {
-    if (typeof options.read === 'function') this._read = options.read;
-
-    if (typeof options.destroy === 'function') this._destroy = options.destroy;
-  }
-
-  Stream.call(this);
-}
-
-Object.defineProperty(Readable.prototype, 'destroyed', {
-  get: function () {
-    if (this._readableState === undefined) {
-      return false;
-    }
-    return this._readableState.destroyed;
-  },
-  set: function (value) {
-    // we ignore the value if the stream
-    // has not been initialized yet
-    if (!this._readableState) {
-      return;
-    }
-
-    // backward compatibility, the user is explicitly
-    // managing destroyed
-    this._readableState.destroyed = value;
-  }
-});
-
-Readable.prototype.destroy = destroyImpl.destroy;
-Readable.prototype._undestroy = destroyImpl.undestroy;
-Readable.prototype._destroy = function (err, cb) {
-  this.push(null);
-  cb(err);
-};
-
-// Manually shove something into the read() buffer.
-// This returns true if the highWaterMark has not been hit yet,
-// similar to how Writable.write() returns true if you should
-// write() some more.
-Readable.prototype.push = function (chunk, encoding) {
-  var state = this._readableState;
-  var skipChunkCheck;
-
-  if (!state.objectMode) {
-    if (typeof chunk === 'string') {
-      encoding = encoding || state.defaultEncoding;
-      if (encoding !== state.encoding) {
-        chunk = Buffer.from(chunk, encoding);
-        encoding = '';
-      }
-      skipChunkCheck = true;
-    }
-  } else {
-    skipChunkCheck = true;
-  }
-
-  return readableAddChunk(this, chunk, encoding, false, skipChunkCheck);
-};
-
-// Unshift should *always* be something directly out of read()
-Readable.prototype.unshift = function (chunk) {
-  return readableAddChunk(this, chunk, null, true, false);
-};
-
-function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
-  var state = stream._readableState;
-  if (chunk === null) {
-    state.reading = false;
-    onEofChunk(stream, state);
-  } else {
-    var er;
-    if (!skipChunkCheck) er = chunkInvalid(state, chunk);
-    if (er) {
-      stream.emit('error', er);
-    } else if (state.objectMode || chunk && chunk.length > 0) {
-      if (typeof chunk !== 'string' && !state.objectMode && Object.getPrototypeOf(chunk) !== Buffer.prototype) {
-        chunk = _uint8ArrayToBuffer(chunk);
-      }
-
-      if (addToFront) {
-        if (state.endEmitted) stream.emit('error', new Error('stream.unshift() after end event'));else addChunk(stream, state, chunk, true);
-      } else if (state.ended) {
-        stream.emit('error', new Error('stream.push() after EOF'));
-      } else {
-        state.reading = false;
-        if (state.decoder && !encoding) {
-          chunk = state.decoder.write(chunk);
-          if (state.objectMode || chunk.length !== 0) addChunk(stream, state, chunk, false);else maybeReadMore(stream, state);
-        } else {
-          addChunk(stream, state, chunk, false);
-        }
-      }
-    } else if (!addToFront) {
-      state.reading = false;
-    }
-  }
-
-  return needMoreData(state);
-}
-
-function addChunk(stream, state, chunk, addToFront) {
-  if (state.flowing && state.length === 0 && !state.sync) {
-    stream.emit('data', chunk);
-    stream.read(0);
-  } else {
-    // update the buffer info.
-    state.length += state.objectMode ? 1 : chunk.length;
-    if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
-
-    if (state.needReadable) emitReadable(stream);
-  }
-  maybeReadMore(stream, state);
-}
-
-function chunkInvalid(state, chunk) {
-  var er;
-  if (!_isUint8Array(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
-    er = new TypeError('Invalid non-string/buffer chunk');
-  }
-  return er;
-}
-
-// if it's past the high water mark, we can push in some more.
-// Also, if we have no data yet, we can stand some
-// more bytes.  This is to work around cases where hwm=0,
-// such as the repl.  Also, if the push() triggered a
-// readable event, and the user called read(largeNumber) such that
-// needReadable was set, then we ought to push more, so that another
-// 'readable' event will be triggered.
-function needMoreData(state) {
-  return !state.ended && (state.needReadable || state.length < state.highWaterMark || state.length === 0);
-}
-
-Readable.prototype.isPaused = function () {
-  return this._readableState.flowing === false;
-};
-
-// backwards compatibility.
-Readable.prototype.setEncoding = function (enc) {
-  if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
-  this._readableState.decoder = new StringDecoder(enc);
-  this._readableState.encoding = enc;
-  return this;
-};
-
-// Don't raise the hwm > 8MB
-var MAX_HWM = 0x800000;
-function computeNewHighWaterMark(n) {
-  if (n >= MAX_HWM) {
-    n = MAX_HWM;
-  } else {
-    // Get the next highest power of 2 to prevent increasing hwm excessively in
-    // tiny amounts
-    n--;
-    n |= n >>> 1;
-    n |= n >>> 2;
-    n |= n >>> 4;
-    n |= n >>> 8;
-    n |= n >>> 16;
-    n++;
-  }
-  return n;
-}
-
-// This function is designed to be inlinable, so please take care when making
-// changes to the function body.
-function howMuchToRead(n, state) {
-  if (n <= 0 || state.length === 0 && state.ended) return 0;
-  if (state.objectMode) return 1;
-  if (n !== n) {
-    // Only flow one buffer at a time
-    if (state.flowing && state.length) return state.buffer.head.data.length;else return state.length;
-  }
-  // If we're asking for more than the current hwm, then raise the hwm.
-  if (n > state.highWaterMark) state.highWaterMark = computeNewHighWaterMark(n);
-  if (n <= state.length) return n;
-  // Don't have enough
-  if (!state.ended) {
-    state.needReadable = true;
-    return 0;
-  }
-  return state.length;
-}
-
-// you can override either this method, or the async _read(n) below.
-Readable.prototype.read = function (n) {
-  debug('read', n);
-  n = parseInt(n, 10);
-  var state = this._readableState;
-  var nOrig = n;
-
-  if (n !== 0) state.emittedReadable = false;
-
-  // if we're doing read(0) to trigger a readable event, but we
-  // already have a bunch of data in the buffer, then just trigger
-  // the 'readable' event and move on.
-  if (n === 0 && state.needReadable && (state.length >= state.highWaterMark || state.ended)) {
-    debug('read: emitReadable', state.length, state.ended);
-    if (state.length === 0 && state.ended) endReadable(this);else emitReadable(this);
-    return null;
-  }
-
-  n = howMuchToRead(n, state);
-
-  // if we've ended, and we're now clear, then finish it up.
-  if (n === 0 && state.ended) {
-    if (state.length === 0) endReadable(this);
-    return null;
-  }
-
-  // All the actual chunk generation logic needs to be
-  // *below* the call to _read.  The reason is that in certain
-  // synthetic stream cases, such as passthrough streams, _read
-  // may be a completely synchronous operation which may change
-  // the state of the read buffer, providing enough data when
-  // before there was *not* enough.
-  //
-  // So, the steps are:
-  // 1. Figure out what the state of things will be after we do
-  // a read from the buffer.
-  //
-  // 2. If that resulting state will trigger a _read, then call _read.
-  // Note that this may be asynchronous, or synchronous.  Yes, it is
-  // deeply ugly to write APIs this way, but that still doesn't mean
-  // that the Readable class should behave improperly, as streams are
-  // designed to be sync/async agnostic.
-  // Take note if the _read call is sync or async (ie, if the read call
-  // has returned yet), so that we know whether or not it's safe to emit
-  // 'readable' etc.
-  //
-  // 3. Actually pull the requested chunks out of the buffer and return.
-
-  // if we need a readable event, then we need to do some reading.
-  var doRead = state.needReadable;
-  debug('need readable', doRead);
-
-  // if we currently have less than the highWaterMark, then also read some
-  if (state.length === 0 || state.length - n < state.highWaterMark) {
-    doRead = true;
-    debug('length less than watermark', doRead);
-  }
-
-  // however, if we've ended, then there's no point, and if we're already
-  // reading, then it's unnecessary.
-  if (state.ended || state.reading) {
-    doRead = false;
-    debug('reading or ended', doRead);
-  } else if (doRead) {
-    debug('do read');
-    state.reading = true;
-    state.sync = true;
-    // if the length is currently zero, then we *need* a readable event.
-    if (state.length === 0) state.needReadable = true;
-    // call internal read method
-    this._read(state.highWaterMark);
-    state.sync = false;
-    // If _read pushed data synchronously, then `reading` will be false,
-    // and we need to re-evaluate how much data we can return to the user.
-    if (!state.reading) n = howMuchToRead(nOrig, state);
-  }
-
-  var ret;
-  if (n > 0) ret = fromList(n, state);else ret = null;
-
-  if (ret === null) {
-    state.needReadable = true;
-    n = 0;
-  } else {
-    state.length -= n;
-  }
-
-  if (state.length === 0) {
-    // If we have nothing in the buffer, then we want to know
-    // as soon as we *do* get something into the buffer.
-    if (!state.ended) state.needReadable = true;
-
-    // If we tried to read() past the EOF, then emit end on the next tick.
-    if (nOrig !== n && state.ended) endReadable(this);
-  }
-
-  if (ret !== null) this.emit('data', ret);
-
-  return ret;
-};
-
-function onEofChunk(stream, state) {
-  if (state.ended) return;
-  if (state.decoder) {
-    var chunk = state.decoder.end();
-    if (chunk && chunk.length) {
-      state.buffer.push(chunk);
-      state.length += state.objectMode ? 1 : chunk.length;
-    }
-  }
-  state.ended = true;
-
-  // emit 'readable' now to make sure it gets picked up.
-  emitReadable(stream);
-}
-
-// Don't emit readable right away in sync mode, because this can trigger
-// another read() call => stack overflow.  This way, it might trigger
-// a nextTick recursion warning, but that's not so bad.
-function emitReadable(stream) {
-  var state = stream._readableState;
-  state.needReadable = false;
-  if (!state.emittedReadable) {
-    debug('emitReadable', state.flowing);
-    state.emittedReadable = true;
-    if (state.sync) pna.nextTick(emitReadable_, stream);else emitReadable_(stream);
-  }
-}
-
-function emitReadable_(stream) {
-  debug('emit readable');
-  stream.emit('readable');
-  flow(stream);
-}
-
-// at this point, the user has presumably seen the 'readable' event,
-// and called read() to consume some data.  that may have triggered
-// in turn another _read(n) call, in which case reading = true if
-// it's in progress.
-// However, if we're not ended, or reading, and the length < hwm,
-// then go ahead and try to read some more preemptively.
-function maybeReadMore(stream, state) {
-  if (!state.readingMore) {
-    state.readingMore = true;
-    pna.nextTick(maybeReadMore_, stream, state);
-  }
-}
-
-function maybeReadMore_(stream, state) {
-  var len = state.length;
-  while (!state.reading && !state.flowing && !state.ended && state.length < state.highWaterMark) {
-    debug('maybeReadMore read 0');
-    stream.read(0);
-    if (len === state.length)
-      // didn't get any data, stop spinning.
-      break;else len = state.length;
-  }
-  state.readingMore = false;
-}
-
-// abstract method.  to be overridden in specific implementation classes.
-// call cb(er, data) where data is <= n in length.
-// for virtual (non-string, non-buffer) streams, "length" is somewhat
-// arbitrary, and perhaps not very meaningful.
-Readable.prototype._read = function (n) {
-  this.emit('error', new Error('_read() is not implemented'));
-};
-
-Readable.prototype.pipe = function (dest, pipeOpts) {
-  var src = this;
-  var state = this._readableState;
-
-  switch (state.pipesCount) {
-    case 0:
-      state.pipes = dest;
-      break;
-    case 1:
-      state.pipes = [state.pipes, dest];
-      break;
-    default:
-      state.pipes.push(dest);
-      break;
-  }
-  state.pipesCount += 1;
-  debug('pipe count=%d opts=%j', state.pipesCount, pipeOpts);
-
-  var doEnd = (!pipeOpts || pipeOpts.end !== false) && dest !== process.stdout && dest !== process.stderr;
-
-  var endFn = doEnd ? onend : unpipe;
-  if (state.endEmitted) pna.nextTick(endFn);else src.once('end', endFn);
-
-  dest.on('unpipe', onunpipe);
-  function onunpipe(readable, unpipeInfo) {
-    debug('onunpipe');
-    if (readable === src) {
-      if (unpipeInfo && unpipeInfo.hasUnpiped === false) {
-        unpipeInfo.hasUnpiped = true;
-        cleanup();
-      }
-    }
-  }
-
-  function onend() {
-    debug('onend');
-    dest.end();
-  }
-
-  // when the dest drains, it reduces the awaitDrain counter
-  // on the source.  This would be more elegant with a .once()
-  // handler in flow(), but adding and removing repeatedly is
-  // too slow.
-  var ondrain = pipeOnDrain(src);
-  dest.on('drain', ondrain);
-
-  var cleanedUp = false;
-  function cleanup() {
-    debug('cleanup');
-    // cleanup event handlers once the pipe is broken
-    dest.removeListener('close', onclose);
-    dest.removeListener('finish', onfinish);
-    dest.removeListener('drain', ondrain);
-    dest.removeListener('error', onerror);
-    dest.removeListener('unpipe', onunpipe);
-    src.removeListener('end', onend);
-    src.removeListener('end', unpipe);
-    src.removeListener('data', ondata);
-
-    cleanedUp = true;
-
-    // if the reader is waiting for a drain event from this
-    // specific writer, then it would cause it to never start
-    // flowing again.
-    // So, if this is awaiting a drain, then we just call it now.
-    // If we don't know, then assume that we are waiting for one.
-    if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain)) ondrain();
-  }
-
-  // If the user pushes more data while we're writing to dest then we'll end up
-  // in ondata again. However, we only want to increase awaitDrain once because
-  // dest will only emit one 'drain' event for the multiple writes.
-  // => Introduce a guard on increasing awaitDrain.
-  var increasedAwaitDrain = false;
-  src.on('data', ondata);
-  function ondata(chunk) {
-    debug('ondata');
-    increasedAwaitDrain = false;
-    var ret = dest.write(chunk);
-    if (false === ret && !increasedAwaitDrain) {
-      // If the user unpiped during `dest.write()`, it is possible
-      // to get stuck in a permanently paused state if that write
-      // also returned false.
-      // => Check whether `dest` is still a piping destination.
-      if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf(state.pipes, dest) !== -1) && !cleanedUp) {
-        debug('false write response, pause', state.awaitDrain);
-        state.awaitDrain++;
-        increasedAwaitDrain = true;
-      }
-      src.pause();
-    }
-  }
-
-  // if the dest has an error, then stop piping into it.
-  // however, don't suppress the throwing behavior for this.
-  function onerror(er) {
-    debug('onerror', er);
-    unpipe();
-    dest.removeListener('error', onerror);
-    if (EElistenerCount(dest, 'error') === 0) dest.emit('error', er);
-  }
-
-  // Make sure our error handler is attached before userland ones.
-  prependListener(dest, 'error', onerror);
-
-  // Both close and finish should trigger unpipe, but only once.
-  function onclose() {
-    dest.removeListener('finish', onfinish);
-    unpipe();
-  }
-  dest.once('close', onclose);
-  function onfinish() {
-    debug('onfinish');
-    dest.removeListener('close', onclose);
-    unpipe();
-  }
-  dest.once('finish', onfinish);
-
-  function unpipe() {
-    debug('unpipe');
-    src.unpipe(dest);
-  }
-
-  // tell the dest that it's being piped to
-  dest.emit('pipe', src);
-
-  // start the flow if it hasn't been started already.
-  if (!state.flowing) {
-    debug('pipe resume');
-    src.resume();
-  }
-
-  return dest;
-};
-
-function pipeOnDrain(src) {
-  return function () {
-    var state = src._readableState;
-    debug('pipeOnDrain', state.awaitDrain);
-    if (state.awaitDrain) state.awaitDrain--;
-    if (state.awaitDrain === 0 && EElistenerCount(src, 'data')) {
-      state.flowing = true;
-      flow(src);
-    }
-  };
-}
-
-Readable.prototype.unpipe = function (dest) {
-  var state = this._readableState;
-  var unpipeInfo = { hasUnpiped: false };
-
-  // if we're not piping anywhere, then do nothing.
-  if (state.pipesCount === 0) return this;
-
-  // just one destination.  most common case.
-  if (state.pipesCount === 1) {
-    // passed in one, but it's not the right one.
-    if (dest && dest !== state.pipes) return this;
-
-    if (!dest) dest = state.pipes;
-
-    // got a match.
-    state.pipes = null;
-    state.pipesCount = 0;
-    state.flowing = false;
-    if (dest) dest.emit('unpipe', this, unpipeInfo);
-    return this;
-  }
-
-  // slow case. multiple pipe destinations.
-
-  if (!dest) {
-    // remove all.
-    var dests = state.pipes;
-    var len = state.pipesCount;
-    state.pipes = null;
-    state.pipesCount = 0;
-    state.flowing = false;
-
-    for (var i = 0; i < len; i++) {
-      dests[i].emit('unpipe', this, { hasUnpiped: false });
-    }return this;
-  }
-
-  // try to find the right one.
-  var index = indexOf(state.pipes, dest);
-  if (index === -1) return this;
-
-  state.pipes.splice(index, 1);
-  state.pipesCount -= 1;
-  if (state.pipesCount === 1) state.pipes = state.pipes[0];
-
-  dest.emit('unpipe', this, unpipeInfo);
-
-  return this;
-};
-
-// set up data events if they are asked for
-// Ensure readable listeners eventually get something
-Readable.prototype.on = function (ev, fn) {
-  var res = Stream.prototype.on.call(this, ev, fn);
-
-  if (ev === 'data') {
-    // Start flowing on next tick if stream isn't explicitly paused
-    if (this._readableState.flowing !== false) this.resume();
-  } else if (ev === 'readable') {
-    var state = this._readableState;
-    if (!state.endEmitted && !state.readableListening) {
-      state.readableListening = state.needReadable = true;
-      state.emittedReadable = false;
-      if (!state.reading) {
-        pna.nextTick(nReadingNextTick, this);
-      } else if (state.length) {
-        emitReadable(this);
-      }
-    }
-  }
-
-  return res;
-};
-Readable.prototype.addListener = Readable.prototype.on;
-
-function nReadingNextTick(self) {
-  debug('readable nexttick read 0');
-  self.read(0);
-}
-
-// pause() and resume() are remnants of the legacy readable stream API
-// If the user uses them, then switch into old mode.
-Readable.prototype.resume = function () {
-  var state = this._readableState;
-  if (!state.flowing) {
-    debug('resume');
-    state.flowing = true;
-    resume(this, state);
-  }
-  return this;
-};
-
-function resume(stream, state) {
-  if (!state.resumeScheduled) {
-    state.resumeScheduled = true;
-    pna.nextTick(resume_, stream, state);
-  }
-}
-
-function resume_(stream, state) {
-  if (!state.reading) {
-    debug('resume read 0');
-    stream.read(0);
-  }
-
-  state.resumeScheduled = false;
-  state.awaitDrain = 0;
-  stream.emit('resume');
-  flow(stream);
-  if (state.flowing && !state.reading) stream.read(0);
-}
-
-Readable.prototype.pause = function () {
-  debug('call pause flowing=%j', this._readableState.flowing);
-  if (false !== this._readableState.flowing) {
-    debug('pause');
-    this._readableState.flowing = false;
-    this.emit('pause');
-  }
-  return this;
-};
-
-function flow(stream) {
-  var state = stream._readableState;
-  debug('flow', state.flowing);
-  while (state.flowing && stream.read() !== null) {}
-}
-
-// wrap an old-style stream as the async data source.
-// This is *not* part of the readable stream interface.
-// It is an ugly unfortunate mess of history.
-Readable.prototype.wrap = function (stream) {
-  var _this = this;
-
-  var state = this._readableState;
-  var paused = false;
-
-  stream.on('end', function () {
-    debug('wrapped end');
-    if (state.decoder && !state.ended) {
-      var chunk = state.decoder.end();
-      if (chunk && chunk.length) _this.push(chunk);
-    }
-
-    _this.push(null);
-  });
-
-  stream.on('data', function (chunk) {
-    debug('wrapped data');
-    if (state.decoder) chunk = state.decoder.write(chunk);
-
-    // don't skip over falsy values in objectMode
-    if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
-
-    var ret = _this.push(chunk);
-    if (!ret) {
-      paused = true;
-      stream.pause();
-    }
-  });
-
-  // proxy all the other methods.
-  // important when wrapping filters and duplexes.
-  for (var i in stream) {
-    if (this[i] === undefined && typeof stream[i] === 'function') {
-      this[i] = function (method) {
-        return function () {
-          return stream[method].apply(stream, arguments);
-        };
-      }(i);
-    }
-  }
-
-  // proxy certain important events.
-  for (var n = 0; n < kProxyEvents.length; n++) {
-    stream.on(kProxyEvents[n], this.emit.bind(this, kProxyEvents[n]));
-  }
-
-  // when we try to consume some more bytes, simply unpause the
-  // underlying stream.
-  this._read = function (n) {
-    debug('wrapped _read', n);
-    if (paused) {
-      paused = false;
-      stream.resume();
-    }
-  };
-
-  return this;
-};
-
-Object.defineProperty(Readable.prototype, 'readableHighWaterMark', {
-  // making it explicit this property is not enumerable
-  // because otherwise some prototype manipulation in
-  // userland will fail
-  enumerable: false,
-  get: function () {
-    return this._readableState.highWaterMark;
-  }
-});
-
-// exposed for testing purposes only.
-Readable._fromList = fromList;
-
-// Pluck off n bytes from an array of buffers.
-// Length is the combined lengths of all the buffers in the list.
-// This function is designed to be inlinable, so please take care when making
-// changes to the function body.
-function fromList(n, state) {
-  // nothing buffered
-  if (state.length === 0) return null;
-
-  var ret;
-  if (state.objectMode) ret = state.buffer.shift();else if (!n || n >= state.length) {
-    // read it all, truncate the list
-    if (state.decoder) ret = state.buffer.join('');else if (state.buffer.length === 1) ret = state.buffer.head.data;else ret = state.buffer.concat(state.length);
-    state.buffer.clear();
-  } else {
-    // read part of list
-    ret = fromListPartial(n, state.buffer, state.decoder);
-  }
-
-  return ret;
-}
-
-// Extracts only enough buffered data to satisfy the amount requested.
-// This function is designed to be inlinable, so please take care when making
-// changes to the function body.
-function fromListPartial(n, list, hasStrings) {
-  var ret;
-  if (n < list.head.data.length) {
-    // slice is the same for buffers and strings
-    ret = list.head.data.slice(0, n);
-    list.head.data = list.head.data.slice(n);
-  } else if (n === list.head.data.length) {
-    // first chunk is a perfect match
-    ret = list.shift();
-  } else {
-    // result spans more than one buffer
-    ret = hasStrings ? copyFromBufferString(n, list) : copyFromBuffer(n, list);
-  }
-  return ret;
-}
-
-// Copies a specified amount of characters from the list of buffered data
-// chunks.
-// This function is designed to be inlinable, so please take care when making
-// changes to the function body.
-function copyFromBufferString(n, list) {
-  var p = list.head;
-  var c = 1;
-  var ret = p.data;
-  n -= ret.length;
-  while (p = p.next) {
-    var str = p.data;
-    var nb = n > str.length ? str.length : n;
-    if (nb === str.length) ret += str;else ret += str.slice(0, n);
-    n -= nb;
-    if (n === 0) {
-      if (nb === str.length) {
-        ++c;
-        if (p.next) list.head = p.next;else list.head = list.tail = null;
-      } else {
-        list.head = p;
-        p.data = str.slice(nb);
-      }
-      break;
-    }
-    ++c;
-  }
-  list.length -= c;
-  return ret;
-}
-
-// Copies a specified amount of bytes from the list of buffered data chunks.
-// This function is designed to be inlinable, so please take care when making
-// changes to the function body.
-function copyFromBuffer(n, list) {
-  var ret = Buffer.allocUnsafe(n);
-  var p = list.head;
-  var c = 1;
-  p.data.copy(ret);
-  n -= p.data.length;
-  while (p = p.next) {
-    var buf = p.data;
-    var nb = n > buf.length ? buf.length : n;
-    buf.copy(ret, ret.length - n, 0, nb);
-    n -= nb;
-    if (n === 0) {
-      if (nb === buf.length) {
-        ++c;
-        if (p.next) list.head = p.next;else list.head = list.tail = null;
-      } else {
-        list.head = p;
-        p.data = buf.slice(nb);
-      }
-      break;
-    }
-    ++c;
-  }
-  list.length -= c;
-  return ret;
-}
-
-function endReadable(stream) {
-  var state = stream._readableState;
-
-  // If we get here before consuming all the bytes, then that is a
-  // bug in node.  Should never happen.
-  if (state.length > 0) throw new Error('"endReadable()" called on non-empty stream');
-
-  if (!state.endEmitted) {
-    state.ended = true;
-    pna.nextTick(endReadableNT, state, stream);
-  }
-}
-
-function endReadableNT(state, stream) {
-  // Check that we didn't get one last unshift.
-  if (!state.endEmitted && state.length === 0) {
-    state.endEmitted = true;
-    stream.readable = false;
-    stream.emit('end');
-  }
-}
-
-function indexOf(xs, x) {
-  for (var i = 0, l = xs.length; i < l; i++) {
-    if (xs[i] === x) return i;
-  }
-  return -1;
-}
-}).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/BufferList":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/BufferList.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","core-util-is":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js","events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","isarray":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/isarray/index.js","process-nextick-args":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process-nextick-args/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js","string_decoder/":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js","util":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browser-resolve/empty.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// a transform stream is a readable/writable stream where you do
-// something with the data.  Sometimes it's called a "filter",
-// but that's not a great name for it, since that implies a thing where
-// some bits pass through, and others are simply ignored.  (That would
-// be a valid example of a transform, of course.)
-//
-// While the output is causally related to the input, it's not a
-// necessarily symmetric or synchronous transformation.  For example,
-// a zlib stream might take multiple plain-text writes(), and then
-// emit a single compressed chunk some time in the future.
-//
-// Here's how this works:
-//
-// The Transform stream has all the aspects of the readable and writable
-// stream classes.  When you write(chunk), that calls _write(chunk,cb)
-// internally, and returns false if there's a lot of pending writes
-// buffered up.  When you call read(), that calls _read(n) until
-// there's enough pending readable data buffered up.
-//
-// In a transform stream, the written data is placed in a buffer.  When
-// _read(n) is called, it transforms the queued up data, calling the
-// buffered _write cb's as it consumes chunks.  If consuming a single
-// written chunk would result in multiple output chunks, then the first
-// outputted bit calls the readcb, and subsequent chunks just go into
-// the read buffer, and will cause it to emit 'readable' if necessary.
-//
-// This way, back-pressure is actually determined by the reading side,
-// since _read has to be called to start processing a new chunk.  However,
-// a pathological inflate type of transform can cause excessive buffering
-// here.  For example, imagine a stream where every byte of input is
-// interpreted as an integer from 0-255, and then results in that many
-// bytes of output.  Writing the 4 bytes {ff,ff,ff,ff} would result in
-// 1kb of data being output.  In this case, you could write a very small
-// amount of input, and end up with a very large amount of output.  In
-// such a pathological inflating mechanism, there'd be no way to tell
-// the system to stop doing the transform.  A single 4MB write could
-// cause the system to run out of memory.
-//
-// However, even in such a pathological case, only a single written chunk
-// would be consumed, and then the rest would wait (un-transformed) until
-// the results of the previous transformed chunk were consumed.
-
-'use strict';
-
-module.exports = Transform;
-
-var Duplex = require('./_stream_duplex');
-
-/*<replacement>*/
-var util = Object.create(require('core-util-is'));
-util.inherits = require('inherits');
-/*</replacement>*/
-
-util.inherits(Transform, Duplex);
-
-function afterTransform(er, data) {
-  var ts = this._transformState;
-  ts.transforming = false;
-
-  var cb = ts.writecb;
-
-  if (!cb) {
-    return this.emit('error', new Error('write callback called multiple times'));
-  }
-
-  ts.writechunk = null;
-  ts.writecb = null;
-
-  if (data != null) // single equals check for both `null` and `undefined`
-    this.push(data);
-
-  cb(er);
-
-  var rs = this._readableState;
-  rs.reading = false;
-  if (rs.needReadable || rs.length < rs.highWaterMark) {
-    this._read(rs.highWaterMark);
-  }
-}
-
-function Transform(options) {
-  if (!(this instanceof Transform)) return new Transform(options);
-
-  Duplex.call(this, options);
-
-  this._transformState = {
-    afterTransform: afterTransform.bind(this),
-    needTransform: false,
-    transforming: false,
-    writecb: null,
-    writechunk: null,
-    writeencoding: null
-  };
-
-  // start out asking for a readable event once data is transformed.
-  this._readableState.needReadable = true;
-
-  // we have implemented the _read method, and done the other things
-  // that Readable wants before the first _read call, so unset the
-  // sync guard flag.
-  this._readableState.sync = false;
-
-  if (options) {
-    if (typeof options.transform === 'function') this._transform = options.transform;
-
-    if (typeof options.flush === 'function') this._flush = options.flush;
-  }
-
-  // When the writable side finishes, then flush out anything remaining.
-  this.on('prefinish', prefinish);
-}
-
-function prefinish() {
-  var _this = this;
-
-  if (typeof this._flush === 'function') {
-    this._flush(function (er, data) {
-      done(_this, er, data);
-    });
-  } else {
-    done(this, null, null);
-  }
-}
-
-Transform.prototype.push = function (chunk, encoding) {
-  this._transformState.needTransform = false;
-  return Duplex.prototype.push.call(this, chunk, encoding);
-};
-
-// This is the part where you do stuff!
-// override this function in implementation classes.
-// 'chunk' is an input chunk.
-//
-// Call `push(newChunk)` to pass along transformed output
-// to the readable side.  You may call 'push' zero or more times.
-//
-// Call `cb(err)` when you are done with this chunk.  If you pass
-// an error, then that'll put the hurt on the whole operation.  If you
-// never call cb(), then you'll never get another chunk.
-Transform.prototype._transform = function (chunk, encoding, cb) {
-  throw new Error('_transform() is not implemented');
-};
-
-Transform.prototype._write = function (chunk, encoding, cb) {
-  var ts = this._transformState;
-  ts.writecb = cb;
-  ts.writechunk = chunk;
-  ts.writeencoding = encoding;
-  if (!ts.transforming) {
-    var rs = this._readableState;
-    if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
-  }
-};
-
-// Doesn't matter what the args are here.
-// _transform does all the work.
-// That we got here means that the readable side wants more data.
-Transform.prototype._read = function (n) {
-  var ts = this._transformState;
-
-  if (ts.writechunk !== null && ts.writecb && !ts.transforming) {
-    ts.transforming = true;
-    this._transform(ts.writechunk, ts.writeencoding, ts.afterTransform);
-  } else {
-    // mark that we need a transform, so that any data that comes in
-    // will get processed, now that we've asked for it.
-    ts.needTransform = true;
-  }
-};
-
-Transform.prototype._destroy = function (err, cb) {
-  var _this2 = this;
-
-  Duplex.prototype._destroy.call(this, err, function (err2) {
-    cb(err2);
-    _this2.emit('close');
-  });
-};
-
-function done(stream, er, data) {
-  if (er) return stream.emit('error', er);
-
-  if (data != null) // single equals check for both `null` and `undefined`
-    stream.push(data);
-
-  // if there's nothing in the write buffer, then that means
-  // that nothing more will ever be provided
-  if (stream._writableState.length) throw new Error('Calling transform done when ws.length != 0');
-
-  if (stream._transformState.transforming) throw new Error('Calling transform done when still transforming');
-
-  return stream.push(null);
-}
-},{"./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","core-util-is":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
-(function (process,global,setImmediate){(function (){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// A bit simpler than readable streams.
-// Implement an async ._write(chunk, encoding, cb), and it'll handle all
-// the drain event emission and buffering.
-
-'use strict';
-
-/*<replacement>*/
-
-var pna = require('process-nextick-args');
-/*</replacement>*/
-
-module.exports = Writable;
-
-/* <replacement> */
-function WriteReq(chunk, encoding, cb) {
-  this.chunk = chunk;
-  this.encoding = encoding;
-  this.callback = cb;
-  this.next = null;
-}
-
-// It seems a linked list but it is not
-// there will be only 2 of these for each stream
-function CorkedRequest(state) {
-  var _this = this;
-
-  this.next = null;
-  this.entry = null;
-  this.finish = function () {
-    onCorkedFinish(_this, state);
-  };
-}
-/* </replacement> */
-
-/*<replacement>*/
-var asyncWrite = !process.browser && ['v0.10', 'v0.9.'].indexOf(process.version.slice(0, 5)) > -1 ? setImmediate : pna.nextTick;
-/*</replacement>*/
-
-/*<replacement>*/
-var Duplex;
-/*</replacement>*/
-
-Writable.WritableState = WritableState;
-
-/*<replacement>*/
-var util = Object.create(require('core-util-is'));
-util.inherits = require('inherits');
-/*</replacement>*/
-
-/*<replacement>*/
-var internalUtil = {
-  deprecate: require('util-deprecate')
-};
-/*</replacement>*/
-
-/*<replacement>*/
-var Stream = require('./internal/streams/stream');
-/*</replacement>*/
-
-/*<replacement>*/
-
-var Buffer = require('safe-buffer').Buffer;
-var OurUint8Array = (typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
-function _uint8ArrayToBuffer(chunk) {
-  return Buffer.from(chunk);
-}
-function _isUint8Array(obj) {
-  return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
-}
-
-/*</replacement>*/
-
-var destroyImpl = require('./internal/streams/destroy');
-
-util.inherits(Writable, Stream);
-
-function nop() {}
-
-function WritableState(options, stream) {
-  Duplex = Duplex || require('./_stream_duplex');
-
-  options = options || {};
-
-  // Duplex streams are both readable and writable, but share
-  // the same options object.
-  // However, some cases require setting options to different
-  // values for the readable and the writable sides of the duplex stream.
-  // These options can be provided separately as readableXXX and writableXXX.
-  var isDuplex = stream instanceof Duplex;
-
-  // object stream flag to indicate whether or not this stream
-  // contains buffers or objects.
-  this.objectMode = !!options.objectMode;
-
-  if (isDuplex) this.objectMode = this.objectMode || !!options.writableObjectMode;
-
-  // the point at which write() starts returning false
-  // Note: 0 is a valid value, means that we always return false if
-  // the entire buffer is not flushed immediately on write()
-  var hwm = options.highWaterMark;
-  var writableHwm = options.writableHighWaterMark;
-  var defaultHwm = this.objectMode ? 16 : 16 * 1024;
-
-  if (hwm || hwm === 0) this.highWaterMark = hwm;else if (isDuplex && (writableHwm || writableHwm === 0)) this.highWaterMark = writableHwm;else this.highWaterMark = defaultHwm;
-
-  // cast to ints.
-  this.highWaterMark = Math.floor(this.highWaterMark);
-
-  // if _final has been called
-  this.finalCalled = false;
-
-  // drain event flag.
-  this.needDrain = false;
-  // at the start of calling end()
-  this.ending = false;
-  // when end() has been called, and returned
-  this.ended = false;
-  // when 'finish' is emitted
-  this.finished = false;
-
-  // has it been destroyed
-  this.destroyed = false;
-
-  // should we decode strings into buffers before passing to _write?
-  // this is here so that some node-core streams can optimize string
-  // handling at a lower level.
-  var noDecode = options.decodeStrings === false;
-  this.decodeStrings = !noDecode;
-
-  // Crypto is kind of old and crusty.  Historically, its default string
-  // encoding is 'binary' so we have to make this configurable.
-  // Everything else in the universe uses 'utf8', though.
-  this.defaultEncoding = options.defaultEncoding || 'utf8';
-
-  // not an actual buffer we keep track of, but a measurement
-  // of how much we're waiting to get pushed to some underlying
-  // socket or file.
-  this.length = 0;
-
-  // a flag to see when we're in the middle of a write.
-  this.writing = false;
-
-  // when true all writes will be buffered until .uncork() call
-  this.corked = 0;
-
-  // a flag to be able to tell if the onwrite cb is called immediately,
-  // or on a later tick.  We set this to true at first, because any
-  // actions that shouldn't happen until "later" should generally also
-  // not happen before the first write call.
-  this.sync = true;
-
-  // a flag to know if we're processing previously buffered items, which
-  // may call the _write() callback in the same tick, so that we don't
-  // end up in an overlapped onwrite situation.
-  this.bufferProcessing = false;
-
-  // the callback that's passed to _write(chunk,cb)
-  this.onwrite = function (er) {
-    onwrite(stream, er);
-  };
-
-  // the callback that the user supplies to write(chunk,encoding,cb)
-  this.writecb = null;
-
-  // the amount that is being written when _write is called.
-  this.writelen = 0;
-
-  this.bufferedRequest = null;
-  this.lastBufferedRequest = null;
-
-  // number of pending user-supplied write callbacks
-  // this must be 0 before 'finish' can be emitted
-  this.pendingcb = 0;
-
-  // emit prefinish if the only thing we're waiting for is _write cbs
-  // This is relevant for synchronous Transform streams
-  this.prefinished = false;
-
-  // True if the error was already emitted and should not be thrown again
-  this.errorEmitted = false;
-
-  // count buffered requests
-  this.bufferedRequestCount = 0;
-
-  // allocate the first CorkedRequest, there is always
-  // one allocated and free to use, and we maintain at most two
-  this.corkedRequestsFree = new CorkedRequest(this);
-}
-
-WritableState.prototype.getBuffer = function getBuffer() {
-  var current = this.bufferedRequest;
-  var out = [];
-  while (current) {
-    out.push(current);
-    current = current.next;
-  }
-  return out;
-};
-
-(function () {
-  try {
-    Object.defineProperty(WritableState.prototype, 'buffer', {
-      get: internalUtil.deprecate(function () {
-        return this.getBuffer();
-      }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.', 'DEP0003')
-    });
-  } catch (_) {}
-})();
-
-// Test _writableState for inheritance to account for Duplex streams,
-// whose prototype chain only points to Readable.
-var realHasInstance;
-if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.prototype[Symbol.hasInstance] === 'function') {
-  realHasInstance = Function.prototype[Symbol.hasInstance];
-  Object.defineProperty(Writable, Symbol.hasInstance, {
-    value: function (object) {
-      if (realHasInstance.call(this, object)) return true;
-      if (this !== Writable) return false;
-
-      return object && object._writableState instanceof WritableState;
-    }
-  });
-} else {
-  realHasInstance = function (object) {
-    return object instanceof this;
-  };
-}
-
-function Writable(options) {
-  Duplex = Duplex || require('./_stream_duplex');
-
-  // Writable ctor is applied to Duplexes, too.
-  // `realHasInstance` is necessary because using plain `instanceof`
-  // would return false, as no `_writableState` property is attached.
-
-  // Trying to use the custom `instanceof` for Writable here will also break the
-  // Node.js LazyTransform implementation, which has a non-trivial getter for
-  // `_writableState` that would lead to infinite recursion.
-  if (!realHasInstance.call(Writable, this) && !(this instanceof Duplex)) {
-    return new Writable(options);
-  }
-
-  this._writableState = new WritableState(options, this);
-
-  // legacy.
-  this.writable = true;
-
-  if (options) {
-    if (typeof options.write === 'function') this._write = options.write;
-
-    if (typeof options.writev === 'function') this._writev = options.writev;
-
-    if (typeof options.destroy === 'function') this._destroy = options.destroy;
-
-    if (typeof options.final === 'function') this._final = options.final;
-  }
-
-  Stream.call(this);
-}
-
-// Otherwise people can pipe Writable streams, which is just wrong.
-Writable.prototype.pipe = function () {
-  this.emit('error', new Error('Cannot pipe, not readable'));
-};
-
-function writeAfterEnd(stream, cb) {
-  var er = new Error('write after end');
-  // TODO: defer error events consistently everywhere, not just the cb
-  stream.emit('error', er);
-  pna.nextTick(cb, er);
-}
-
-// Checks that a user-supplied chunk is valid, especially for the particular
-// mode the stream is in. Currently this means that `null` is never accepted
-// and undefined/non-string values are only allowed in object mode.
-function validChunk(stream, state, chunk, cb) {
-  var valid = true;
-  var er = false;
-
-  if (chunk === null) {
-    er = new TypeError('May not write null values to stream');
-  } else if (typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
-    er = new TypeError('Invalid non-string/buffer chunk');
-  }
-  if (er) {
-    stream.emit('error', er);
-    pna.nextTick(cb, er);
-    valid = false;
-  }
-  return valid;
-}
-
-Writable.prototype.write = function (chunk, encoding, cb) {
-  var state = this._writableState;
-  var ret = false;
-  var isBuf = !state.objectMode && _isUint8Array(chunk);
-
-  if (isBuf && !Buffer.isBuffer(chunk)) {
-    chunk = _uint8ArrayToBuffer(chunk);
-  }
-
-  if (typeof encoding === 'function') {
-    cb = encoding;
-    encoding = null;
-  }
-
-  if (isBuf) encoding = 'buffer';else if (!encoding) encoding = state.defaultEncoding;
-
-  if (typeof cb !== 'function') cb = nop;
-
-  if (state.ended) writeAfterEnd(this, cb);else if (isBuf || validChunk(this, state, chunk, cb)) {
-    state.pendingcb++;
-    ret = writeOrBuffer(this, state, isBuf, chunk, encoding, cb);
-  }
-
-  return ret;
-};
-
-Writable.prototype.cork = function () {
-  var state = this._writableState;
-
-  state.corked++;
-};
-
-Writable.prototype.uncork = function () {
-  var state = this._writableState;
-
-  if (state.corked) {
-    state.corked--;
-
-    if (!state.writing && !state.corked && !state.bufferProcessing && state.bufferedRequest) clearBuffer(this, state);
-  }
-};
-
-Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
-  // node::ParseEncoding() requires lower case.
-  if (typeof encoding === 'string') encoding = encoding.toLowerCase();
-  if (!(['hex', 'utf8', 'utf-8', 'ascii', 'binary', 'base64', 'ucs2', 'ucs-2', 'utf16le', 'utf-16le', 'raw'].indexOf((encoding + '').toLowerCase()) > -1)) throw new TypeError('Unknown encoding: ' + encoding);
-  this._writableState.defaultEncoding = encoding;
-  return this;
-};
-
-function decodeChunk(state, chunk, encoding) {
-  if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
-    chunk = Buffer.from(chunk, encoding);
-  }
-  return chunk;
-}
-
-Object.defineProperty(Writable.prototype, 'writableHighWaterMark', {
-  // making it explicit this property is not enumerable
-  // because otherwise some prototype manipulation in
-  // userland will fail
-  enumerable: false,
-  get: function () {
-    return this._writableState.highWaterMark;
-  }
-});
-
-// if we're already writing something, then just put this
-// in the queue, and wait our turn.  Otherwise, call _write
-// If we return false, then we need a drain event, so set that flag.
-function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
-  if (!isBuf) {
-    var newChunk = decodeChunk(state, chunk, encoding);
-    if (chunk !== newChunk) {
-      isBuf = true;
-      encoding = 'buffer';
-      chunk = newChunk;
-    }
-  }
-  var len = state.objectMode ? 1 : chunk.length;
-
-  state.length += len;
-
-  var ret = state.length < state.highWaterMark;
-  // we must ensure that previous needDrain will not be reset to false.
-  if (!ret) state.needDrain = true;
-
-  if (state.writing || state.corked) {
-    var last = state.lastBufferedRequest;
-    state.lastBufferedRequest = {
-      chunk: chunk,
-      encoding: encoding,
-      isBuf: isBuf,
-      callback: cb,
-      next: null
-    };
-    if (last) {
-      last.next = state.lastBufferedRequest;
-    } else {
-      state.bufferedRequest = state.lastBufferedRequest;
-    }
-    state.bufferedRequestCount += 1;
-  } else {
-    doWrite(stream, state, false, len, chunk, encoding, cb);
-  }
-
-  return ret;
-}
-
-function doWrite(stream, state, writev, len, chunk, encoding, cb) {
-  state.writelen = len;
-  state.writecb = cb;
-  state.writing = true;
-  state.sync = true;
-  if (writev) stream._writev(chunk, state.onwrite);else stream._write(chunk, encoding, state.onwrite);
-  state.sync = false;
-}
-
-function onwriteError(stream, state, sync, er, cb) {
-  --state.pendingcb;
-
-  if (sync) {
-    // defer the callback if we are being called synchronously
-    // to avoid piling up things on the stack
-    pna.nextTick(cb, er);
-    // this can emit finish, and it will always happen
-    // after error
-    pna.nextTick(finishMaybe, stream, state);
-    stream._writableState.errorEmitted = true;
-    stream.emit('error', er);
-  } else {
-    // the caller expect this to happen before if
-    // it is async
-    cb(er);
-    stream._writableState.errorEmitted = true;
-    stream.emit('error', er);
-    // this can emit finish, but finish must
-    // always follow error
-    finishMaybe(stream, state);
-  }
-}
-
-function onwriteStateUpdate(state) {
-  state.writing = false;
-  state.writecb = null;
-  state.length -= state.writelen;
-  state.writelen = 0;
-}
-
-function onwrite(stream, er) {
-  var state = stream._writableState;
-  var sync = state.sync;
-  var cb = state.writecb;
-
-  onwriteStateUpdate(state);
-
-  if (er) onwriteError(stream, state, sync, er, cb);else {
-    // Check if we're actually ready to finish, but don't emit yet
-    var finished = needFinish(state);
-
-    if (!finished && !state.corked && !state.bufferProcessing && state.bufferedRequest) {
-      clearBuffer(stream, state);
-    }
-
-    if (sync) {
-      /*<replacement>*/
-      asyncWrite(afterWrite, stream, state, finished, cb);
-      /*</replacement>*/
-    } else {
-      afterWrite(stream, state, finished, cb);
-    }
-  }
-}
-
-function afterWrite(stream, state, finished, cb) {
-  if (!finished) onwriteDrain(stream, state);
-  state.pendingcb--;
-  cb();
-  finishMaybe(stream, state);
-}
-
-// Must force callback to be called on nextTick, so that we don't
-// emit 'drain' before the write() consumer gets the 'false' return
-// value, and has a chance to attach a 'drain' listener.
-function onwriteDrain(stream, state) {
-  if (state.length === 0 && state.needDrain) {
-    state.needDrain = false;
-    stream.emit('drain');
-  }
-}
-
-// if there's something in the buffer waiting, then process it
-function clearBuffer(stream, state) {
-  state.bufferProcessing = true;
-  var entry = state.bufferedRequest;
-
-  if (stream._writev && entry && entry.next) {
-    // Fast case, write everything using _writev()
-    var l = state.bufferedRequestCount;
-    var buffer = new Array(l);
-    var holder = state.corkedRequestsFree;
-    holder.entry = entry;
-
-    var count = 0;
-    var allBuffers = true;
-    while (entry) {
-      buffer[count] = entry;
-      if (!entry.isBuf) allBuffers = false;
-      entry = entry.next;
-      count += 1;
-    }
-    buffer.allBuffers = allBuffers;
-
-    doWrite(stream, state, true, state.length, buffer, '', holder.finish);
-
-    // doWrite is almost always async, defer these to save a bit of time
-    // as the hot path ends with doWrite
-    state.pendingcb++;
-    state.lastBufferedRequest = null;
-    if (holder.next) {
-      state.corkedRequestsFree = holder.next;
-      holder.next = null;
-    } else {
-      state.corkedRequestsFree = new CorkedRequest(state);
-    }
-    state.bufferedRequestCount = 0;
-  } else {
-    // Slow case, write chunks one-by-one
-    while (entry) {
-      var chunk = entry.chunk;
-      var encoding = entry.encoding;
-      var cb = entry.callback;
-      var len = state.objectMode ? 1 : chunk.length;
-
-      doWrite(stream, state, false, len, chunk, encoding, cb);
-      entry = entry.next;
-      state.bufferedRequestCount--;
-      // if we didn't call the onwrite immediately, then
-      // it means that we need to wait until it does.
-      // also, that means that the chunk and cb are currently
-      // being processed, so move the buffer counter past them.
-      if (state.writing) {
-        break;
-      }
-    }
-
-    if (entry === null) state.lastBufferedRequest = null;
-  }
-
-  state.bufferedRequest = entry;
-  state.bufferProcessing = false;
-}
-
-Writable.prototype._write = function (chunk, encoding, cb) {
-  cb(new Error('_write() is not implemented'));
-};
-
-Writable.prototype._writev = null;
-
-Writable.prototype.end = function (chunk, encoding, cb) {
-  var state = this._writableState;
-
-  if (typeof chunk === 'function') {
-    cb = chunk;
-    chunk = null;
-    encoding = null;
-  } else if (typeof encoding === 'function') {
-    cb = encoding;
-    encoding = null;
-  }
-
-  if (chunk !== null && chunk !== undefined) this.write(chunk, encoding);
-
-  // .end() fully uncorks
-  if (state.corked) {
-    state.corked = 1;
-    this.uncork();
-  }
-
-  // ignore unnecessary end() calls.
-  if (!state.ending) endWritable(this, state, cb);
-};
-
-function needFinish(state) {
-  return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
-}
-function callFinal(stream, state) {
-  stream._final(function (err) {
-    state.pendingcb--;
-    if (err) {
-      stream.emit('error', err);
-    }
-    state.prefinished = true;
-    stream.emit('prefinish');
-    finishMaybe(stream, state);
-  });
-}
-function prefinish(stream, state) {
-  if (!state.prefinished && !state.finalCalled) {
-    if (typeof stream._final === 'function') {
-      state.pendingcb++;
-      state.finalCalled = true;
-      pna.nextTick(callFinal, stream, state);
-    } else {
-      state.prefinished = true;
-      stream.emit('prefinish');
-    }
-  }
-}
-
-function finishMaybe(stream, state) {
-  var need = needFinish(state);
-  if (need) {
-    prefinish(stream, state);
-    if (state.pendingcb === 0) {
-      state.finished = true;
-      stream.emit('finish');
-    }
-  }
-  return need;
-}
-
-function endWritable(stream, state, cb) {
-  state.ending = true;
-  finishMaybe(stream, state);
-  if (cb) {
-    if (state.finished) pna.nextTick(cb);else stream.once('finish', cb);
-  }
-  state.ended = true;
-  stream.writable = false;
-}
-
-function onCorkedFinish(corkReq, state, err) {
-  var entry = corkReq.entry;
-  corkReq.entry = null;
-  while (entry) {
-    var cb = entry.callback;
-    state.pendingcb--;
-    cb(err);
-    entry = entry.next;
-  }
-
-  // reuse the free corkReq.
-  state.corkedRequestsFree.next = corkReq;
-}
-
-Object.defineProperty(Writable.prototype, 'destroyed', {
-  get: function () {
-    if (this._writableState === undefined) {
-      return false;
-    }
-    return this._writableState.destroyed;
-  },
-  set: function (value) {
-    // we ignore the value if the stream
-    // has not been initialized yet
-    if (!this._writableState) {
-      return;
-    }
-
-    // backward compatibility, the user is explicitly
-    // managing destroyed
-    this._writableState.destroyed = value;
-  }
-});
-
-Writable.prototype.destroy = destroyImpl.destroy;
-Writable.prototype._undestroy = destroyImpl.undestroy;
-Writable.prototype._destroy = function (err, cb) {
-  this.end();
-  cb(err);
-};
-}).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
-
-},{"./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","core-util-is":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/core-util-is/lib/util.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","process-nextick-args":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process-nextick-args/index.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js","timers":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/timers-browserify/main.js","util-deprecate":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util-deprecate/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/BufferList.js":[function(require,module,exports){
-'use strict';
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Buffer = require('safe-buffer').Buffer;
-var util = require('util');
-
-function copyBuffer(src, target, offset) {
-  src.copy(target, offset);
-}
-
-module.exports = function () {
-  function BufferList() {
-    _classCallCheck(this, BufferList);
-
-    this.head = null;
-    this.tail = null;
-    this.length = 0;
-  }
-
-  BufferList.prototype.push = function push(v) {
-    var entry = { data: v, next: null };
-    if (this.length > 0) this.tail.next = entry;else this.head = entry;
-    this.tail = entry;
-    ++this.length;
-  };
-
-  BufferList.prototype.unshift = function unshift(v) {
-    var entry = { data: v, next: this.head };
-    if (this.length === 0) this.tail = entry;
-    this.head = entry;
-    ++this.length;
-  };
-
-  BufferList.prototype.shift = function shift() {
-    if (this.length === 0) return;
-    var ret = this.head.data;
-    if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
-    --this.length;
-    return ret;
-  };
-
-  BufferList.prototype.clear = function clear() {
-    this.head = this.tail = null;
-    this.length = 0;
-  };
-
-  BufferList.prototype.join = function join(s) {
-    if (this.length === 0) return '';
-    var p = this.head;
-    var ret = '' + p.data;
-    while (p = p.next) {
-      ret += s + p.data;
-    }return ret;
-  };
-
-  BufferList.prototype.concat = function concat(n) {
-    if (this.length === 0) return Buffer.alloc(0);
-    var ret = Buffer.allocUnsafe(n >>> 0);
-    var p = this.head;
-    var i = 0;
-    while (p) {
-      copyBuffer(p.data, ret, i);
-      i += p.data.length;
-      p = p.next;
-    }
-    return ret;
-  };
-
-  return BufferList;
-}();
-
-if (util && util.inspect && util.inspect.custom) {
-  module.exports.prototype[util.inspect.custom] = function () {
-    var obj = util.inspect({ length: this.length });
-    return this.constructor.name + ' ' + obj;
-  };
-}
-},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js","util":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browser-resolve/empty.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports){
-'use strict';
-
-/*<replacement>*/
-
-var pna = require('process-nextick-args');
-/*</replacement>*/
-
-// undocumented cb() API, needed for core, not for public API
-function destroy(err, cb) {
-  var _this = this;
-
-  var readableDestroyed = this._readableState && this._readableState.destroyed;
-  var writableDestroyed = this._writableState && this._writableState.destroyed;
-
-  if (readableDestroyed || writableDestroyed) {
-    if (cb) {
-      cb(err);
-    } else if (err) {
-      if (!this._writableState) {
-        pna.nextTick(emitErrorNT, this, err);
-      } else if (!this._writableState.errorEmitted) {
-        this._writableState.errorEmitted = true;
-        pna.nextTick(emitErrorNT, this, err);
-      }
-    }
-
-    return this;
-  }
-
-  // we set destroyed to true before firing error callbacks in order
-  // to make it re-entrance safe in case destroy() is called within callbacks
-
-  if (this._readableState) {
-    this._readableState.destroyed = true;
-  }
-
-  // if this is a duplex stream mark the writable part as destroyed as well
-  if (this._writableState) {
-    this._writableState.destroyed = true;
-  }
-
-  this._destroy(err || null, function (err) {
-    if (!cb && err) {
-      if (!_this._writableState) {
-        pna.nextTick(emitErrorNT, _this, err);
-      } else if (!_this._writableState.errorEmitted) {
-        _this._writableState.errorEmitted = true;
-        pna.nextTick(emitErrorNT, _this, err);
-      }
-    } else if (cb) {
-      cb(err);
-    }
-  });
-
-  return this;
-}
-
-function undestroy() {
-  if (this._readableState) {
-    this._readableState.destroyed = false;
-    this._readableState.reading = false;
-    this._readableState.ended = false;
-    this._readableState.endEmitted = false;
-  }
-
-  if (this._writableState) {
-    this._writableState.destroyed = false;
-    this._writableState.ended = false;
-    this._writableState.ending = false;
-    this._writableState.finalCalled = false;
-    this._writableState.prefinished = false;
-    this._writableState.finished = false;
-    this._writableState.errorEmitted = false;
-  }
-}
-
-function emitErrorNT(self, err) {
-  self.emit('error', err);
-}
-
-module.exports = {
-  destroy: destroy,
-  undestroy: undestroy
-};
-},{"process-nextick-args":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process-nextick-args/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports){
-arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js"][0].apply(exports,arguments)
-},{"events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js":[function(require,module,exports){
-/* eslint-disable node/no-deprecated-api */
-var buffer = require('buffer')
-var Buffer = buffer.Buffer
-
-// alternative to using Object.keys for old browsers
-function copyProps (src, dst) {
-  for (var key in src) {
-    dst[key] = src[key]
-  }
-}
-if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
-  module.exports = buffer
-} else {
-  // Copy properties from require('buffer')
-  copyProps(buffer, exports)
-  exports.Buffer = SafeBuffer
-}
-
-function SafeBuffer (arg, encodingOrOffset, length) {
-  return Buffer(arg, encodingOrOffset, length)
-}
-
-// Copy static methods from Buffer
-copyProps(Buffer, SafeBuffer)
-
-SafeBuffer.from = function (arg, encodingOrOffset, length) {
-  if (typeof arg === 'number') {
-    throw new TypeError('Argument must not be a number')
-  }
-  return Buffer(arg, encodingOrOffset, length)
-}
-
-SafeBuffer.alloc = function (size, fill, encoding) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  var buf = Buffer(size)
-  if (fill !== undefined) {
-    if (typeof encoding === 'string') {
-      buf.fill(fill, encoding)
-    } else {
-      buf.fill(fill)
-    }
-  } else {
-    buf.fill(0)
-  }
-  return buf
-}
-
-SafeBuffer.allocUnsafe = function (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  return Buffer(size)
-}
-
-SafeBuffer.allocUnsafeSlow = function (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  return buffer.SlowBuffer(size)
-}
-
-},{"buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js":[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-/*<replacement>*/
-
-var Buffer = require('safe-buffer').Buffer;
-/*</replacement>*/
-
-var isEncoding = Buffer.isEncoding || function (encoding) {
-  encoding = '' + encoding;
-  switch (encoding && encoding.toLowerCase()) {
-    case 'hex':case 'utf8':case 'utf-8':case 'ascii':case 'binary':case 'base64':case 'ucs2':case 'ucs-2':case 'utf16le':case 'utf-16le':case 'raw':
-      return true;
-    default:
-      return false;
-  }
-};
-
-function _normalizeEncoding(enc) {
-  if (!enc) return 'utf8';
-  var retried;
-  while (true) {
-    switch (enc) {
-      case 'utf8':
-      case 'utf-8':
-        return 'utf8';
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return 'utf16le';
-      case 'latin1':
-      case 'binary':
-        return 'latin1';
-      case 'base64':
-      case 'ascii':
-      case 'hex':
-        return enc;
-      default:
-        if (retried) return; // undefined
-        enc = ('' + enc).toLowerCase();
-        retried = true;
-    }
-  }
-};
-
-// Do not cache `Buffer.isEncoding` when checking encoding names as some
-// modules monkey-patch it to support additional encodings
-function normalizeEncoding(enc) {
-  var nenc = _normalizeEncoding(enc);
-  if (typeof nenc !== 'string' && (Buffer.isEncoding === isEncoding || !isEncoding(enc))) throw new Error('Unknown encoding: ' + enc);
-  return nenc || enc;
-}
-
-// StringDecoder provides an interface for efficiently splitting a series of
-// buffers into a series of JS strings without breaking apart multi-byte
-// characters.
-exports.StringDecoder = StringDecoder;
-function StringDecoder(encoding) {
-  this.encoding = normalizeEncoding(encoding);
-  var nb;
-  switch (this.encoding) {
-    case 'utf16le':
-      this.text = utf16Text;
-      this.end = utf16End;
-      nb = 4;
-      break;
-    case 'utf8':
-      this.fillLast = utf8FillLast;
-      nb = 4;
-      break;
-    case 'base64':
-      this.text = base64Text;
-      this.end = base64End;
-      nb = 3;
-      break;
-    default:
-      this.write = simpleWrite;
-      this.end = simpleEnd;
-      return;
-  }
-  this.lastNeed = 0;
-  this.lastTotal = 0;
-  this.lastChar = Buffer.allocUnsafe(nb);
-}
-
-StringDecoder.prototype.write = function (buf) {
-  if (buf.length === 0) return '';
-  var r;
-  var i;
-  if (this.lastNeed) {
-    r = this.fillLast(buf);
-    if (r === undefined) return '';
-    i = this.lastNeed;
-    this.lastNeed = 0;
-  } else {
-    i = 0;
-  }
-  if (i < buf.length) return r ? r + this.text(buf, i) : this.text(buf, i);
-  return r || '';
-};
-
-StringDecoder.prototype.end = utf8End;
-
-// Returns only complete characters in a Buffer
-StringDecoder.prototype.text = utf8Text;
-
-// Attempts to complete a partial non-UTF-8 character using bytes from a Buffer
-StringDecoder.prototype.fillLast = function (buf) {
-  if (this.lastNeed <= buf.length) {
-    buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, this.lastNeed);
-    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
-  }
-  buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, buf.length);
-  this.lastNeed -= buf.length;
-};
-
-// Checks the type of a UTF-8 byte, whether it's ASCII, a leading byte, or a
-// continuation byte. If an invalid byte is detected, -2 is returned.
-function utf8CheckByte(byte) {
-  if (byte <= 0x7F) return 0;else if (byte >> 5 === 0x06) return 2;else if (byte >> 4 === 0x0E) return 3;else if (byte >> 3 === 0x1E) return 4;
-  return byte >> 6 === 0x02 ? -1 : -2;
-}
-
-// Checks at most 3 bytes at the end of a Buffer in order to detect an
-// incomplete multi-byte UTF-8 character. The total number of bytes (2, 3, or 4)
-// needed to complete the UTF-8 character (if applicable) are returned.
-function utf8CheckIncomplete(self, buf, i) {
-  var j = buf.length - 1;
-  if (j < i) return 0;
-  var nb = utf8CheckByte(buf[j]);
-  if (nb >= 0) {
-    if (nb > 0) self.lastNeed = nb - 1;
-    return nb;
-  }
-  if (--j < i || nb === -2) return 0;
-  nb = utf8CheckByte(buf[j]);
-  if (nb >= 0) {
-    if (nb > 0) self.lastNeed = nb - 2;
-    return nb;
-  }
-  if (--j < i || nb === -2) return 0;
-  nb = utf8CheckByte(buf[j]);
-  if (nb >= 0) {
-    if (nb > 0) {
-      if (nb === 2) nb = 0;else self.lastNeed = nb - 3;
-    }
-    return nb;
-  }
-  return 0;
-}
-
-// Validates as many continuation bytes for a multi-byte UTF-8 character as
-// needed or are available. If we see a non-continuation byte where we expect
-// one, we "replace" the validated continuation bytes we've seen so far with
-// a single UTF-8 replacement character ('\ufffd'), to match v8's UTF-8 decoding
-// behavior. The continuation byte check is included three times in the case
-// where all of the continuation bytes for a character exist in the same buffer.
-// It is also done this way as a slight performance increase instead of using a
-// loop.
-function utf8CheckExtraBytes(self, buf, p) {
-  if ((buf[0] & 0xC0) !== 0x80) {
-    self.lastNeed = 0;
-    return '\ufffd';
-  }
-  if (self.lastNeed > 1 && buf.length > 1) {
-    if ((buf[1] & 0xC0) !== 0x80) {
-      self.lastNeed = 1;
-      return '\ufffd';
-    }
-    if (self.lastNeed > 2 && buf.length > 2) {
-      if ((buf[2] & 0xC0) !== 0x80) {
-        self.lastNeed = 2;
-        return '\ufffd';
-      }
-    }
-  }
-}
-
-// Attempts to complete a multi-byte UTF-8 character using bytes from a Buffer.
-function utf8FillLast(buf) {
-  var p = this.lastTotal - this.lastNeed;
-  var r = utf8CheckExtraBytes(this, buf, p);
-  if (r !== undefined) return r;
-  if (this.lastNeed <= buf.length) {
-    buf.copy(this.lastChar, p, 0, this.lastNeed);
-    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
-  }
-  buf.copy(this.lastChar, p, 0, buf.length);
-  this.lastNeed -= buf.length;
-}
-
-// Returns all complete UTF-8 characters in a Buffer. If the Buffer ended on a
-// partial character, the character's bytes are buffered until the required
-// number of bytes are available.
-function utf8Text(buf, i) {
-  var total = utf8CheckIncomplete(this, buf, i);
-  if (!this.lastNeed) return buf.toString('utf8', i);
-  this.lastTotal = total;
-  var end = buf.length - (total - this.lastNeed);
-  buf.copy(this.lastChar, 0, end);
-  return buf.toString('utf8', i, end);
-}
-
-// For UTF-8, a replacement character is added when ending on a partial
-// character.
-function utf8End(buf) {
-  var r = buf && buf.length ? this.write(buf) : '';
-  if (this.lastNeed) return r + '\ufffd';
-  return r;
-}
-
-// UTF-16LE typically needs two bytes per character, but even if we have an even
-// number of bytes available, we need to check if we end on a leading/high
-// surrogate. In that case, we need to wait for the next two bytes in order to
-// decode the last character properly.
-function utf16Text(buf, i) {
-  if ((buf.length - i) % 2 === 0) {
-    var r = buf.toString('utf16le', i);
-    if (r) {
-      var c = r.charCodeAt(r.length - 1);
-      if (c >= 0xD800 && c <= 0xDBFF) {
-        this.lastNeed = 2;
-        this.lastTotal = 4;
-        this.lastChar[0] = buf[buf.length - 2];
-        this.lastChar[1] = buf[buf.length - 1];
-        return r.slice(0, -1);
-      }
-    }
-    return r;
-  }
-  this.lastNeed = 1;
-  this.lastTotal = 2;
-  this.lastChar[0] = buf[buf.length - 1];
-  return buf.toString('utf16le', i, buf.length - 1);
-}
-
-// For UTF-16LE we do not explicitly append special replacement characters if we
-// end on a partial character, we simply let v8 handle that.
-function utf16End(buf) {
-  var r = buf && buf.length ? this.write(buf) : '';
-  if (this.lastNeed) {
-    var end = this.lastTotal - this.lastNeed;
-    return r + this.lastChar.toString('utf16le', 0, end);
-  }
-  return r;
-}
-
-function base64Text(buf, i) {
-  var n = (buf.length - i) % 3;
-  if (n === 0) return buf.toString('base64', i);
-  this.lastNeed = 3 - n;
-  this.lastTotal = 3;
-  if (n === 1) {
-    this.lastChar[0] = buf[buf.length - 1];
-  } else {
-    this.lastChar[0] = buf[buf.length - 2];
-    this.lastChar[1] = buf[buf.length - 1];
-  }
-  return buf.toString('base64', i, buf.length - n);
-}
-
-function base64End(buf) {
-  var r = buf && buf.length ? this.write(buf) : '';
-  if (this.lastNeed) return r + this.lastChar.toString('base64', 0, 3 - this.lastNeed);
-  return r;
-}
-
-// Pass bytes on through for single-byte encodings (e.g. ascii, latin1, hex)
-function simpleWrite(buf) {
-  return buf.toString(this.encoding);
-}
-
-function simpleEnd(buf) {
-  return buf && buf.length ? this.write(buf) : '';
-}
-},{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/passthrough.js":[function(require,module,exports){
-module.exports = require('./readable').PassThrough
-
-},{"./readable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/readable-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/readable-browser.js":[function(require,module,exports){
-exports = module.exports = require('./lib/_stream_readable.js');
-exports.Stream = exports;
-exports.Readable = exports;
-exports.Writable = require('./lib/_stream_writable.js');
-exports.Duplex = require('./lib/_stream_duplex.js');
-exports.Transform = require('./lib/_stream_transform.js');
-exports.PassThrough = require('./lib/_stream_passthrough.js');
-
-},{"./lib/_stream_duplex.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/transform.js":[function(require,module,exports){
-module.exports = require('./readable').Transform
-
-},{"./readable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/readable-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/writable-browser.js":[function(require,module,exports){
-module.exports = require('./lib/_stream_writable.js');
-
-},{"./lib/_stream_writable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/lib/_stream_writable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ripemd160/index.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","randombytes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/randombytes/browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/ripemd160/index.js":[function(require,module,exports){
 'use strict'
 var Buffer = require('buffer').Buffer
 var inherits = require('inherits')
@@ -89687,7 +86577,53 @@ module.exports = safer
 
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/set-function-length/index.js":[function(require,module,exports){
+'use strict';
+
+var GetIntrinsic = require('get-intrinsic');
+var define = require('define-data-property');
+var hasDescriptors = require('has-property-descriptors')();
+var gOPD = require('gopd');
+
+var $TypeError = require('es-errors/type');
+var $floor = GetIntrinsic('%Math.floor%');
+
+/** @typedef {(...args: unknown[]) => unknown} Func */
+
+/** @type {<T extends Func = Func>(fn: T, length: number, loose?: boolean) => T} */
+module.exports = function setFunctionLength(fn, length) {
+	if (typeof fn !== 'function') {
+		throw new $TypeError('`fn` is not a function');
+	}
+	if (typeof length !== 'number' || length < 0 || length > 0xFFFFFFFF || $floor(length) !== length) {
+		throw new $TypeError('`length` must be a positive 32-bit integer');
+	}
+
+	var loose = arguments.length > 2 && !!arguments[2];
+
+	var functionLengthIsConfigurable = true;
+	var functionLengthIsWritable = true;
+	if ('length' in fn && gOPD) {
+		var desc = gOPD(fn, 'length');
+		if (desc && !desc.configurable) {
+			functionLengthIsConfigurable = false;
+		}
+		if (desc && !desc.writable) {
+			functionLengthIsWritable = false;
+		}
+	}
+
+	if (functionLengthIsConfigurable || functionLengthIsWritable || !loose) {
+		if (hasDescriptors) {
+			define(/** @type {Parameters<define>[0]} */ (fn), 'length', length, true, true);
+		} else {
+			define(/** @type {Parameters<define>[0]} */ (fn), 'length', length);
+		}
+	}
+	return fn;
+};
+
+},{"define-data-property":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/define-data-property/index.js","es-errors/type":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/es-errors/type.js","get-intrinsic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/get-intrinsic/index.js","gopd":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/gopd/index.js","has-property-descriptors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-property-descriptors/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js":[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 
 // prototype class for hash functions
@@ -90497,133 +87433,7 @@ Sha512.prototype._hash = function () {
 
 module.exports = Sha512
 
-},{"./hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/side-channel/index.js":[function(require,module,exports){
-'use strict';
-
-var GetIntrinsic = require('get-intrinsic');
-var callBound = require('call-bind/callBound');
-var inspect = require('object-inspect');
-
-var $TypeError = GetIntrinsic('%TypeError%');
-var $WeakMap = GetIntrinsic('%WeakMap%', true);
-var $Map = GetIntrinsic('%Map%', true);
-
-var $weakMapGet = callBound('WeakMap.prototype.get', true);
-var $weakMapSet = callBound('WeakMap.prototype.set', true);
-var $weakMapHas = callBound('WeakMap.prototype.has', true);
-var $mapGet = callBound('Map.prototype.get', true);
-var $mapSet = callBound('Map.prototype.set', true);
-var $mapHas = callBound('Map.prototype.has', true);
-
-/*
- * This function traverses the list returning the node corresponding to the
- * given key.
- *
- * That node is also moved to the head of the list, so that if it's accessed
- * again we don't need to traverse the whole list. By doing so, all the recently
- * used nodes can be accessed relatively quickly.
- */
-var listGetNode = function (list, key) { // eslint-disable-line consistent-return
-	for (var prev = list, curr; (curr = prev.next) !== null; prev = curr) {
-		if (curr.key === key) {
-			prev.next = curr.next;
-			curr.next = list.next;
-			list.next = curr; // eslint-disable-line no-param-reassign
-			return curr;
-		}
-	}
-};
-
-var listGet = function (objects, key) {
-	var node = listGetNode(objects, key);
-	return node && node.value;
-};
-var listSet = function (objects, key, value) {
-	var node = listGetNode(objects, key);
-	if (node) {
-		node.value = value;
-	} else {
-		// Prepend the new node to the beginning of the list
-		objects.next = { // eslint-disable-line no-param-reassign
-			key: key,
-			next: objects.next,
-			value: value
-		};
-	}
-};
-var listHas = function (objects, key) {
-	return !!listGetNode(objects, key);
-};
-
-module.exports = function getSideChannel() {
-	var $wm;
-	var $m;
-	var $o;
-	var channel = {
-		assert: function (key) {
-			if (!channel.has(key)) {
-				throw new $TypeError('Side channel does not contain ' + inspect(key));
-			}
-		},
-		get: function (key) { // eslint-disable-line consistent-return
-			if ($WeakMap && key && (typeof key === 'object' || typeof key === 'function')) {
-				if ($wm) {
-					return $weakMapGet($wm, key);
-				}
-			} else if ($Map) {
-				if ($m) {
-					return $mapGet($m, key);
-				}
-			} else {
-				if ($o) { // eslint-disable-line no-lonely-if
-					return listGet($o, key);
-				}
-			}
-		},
-		has: function (key) {
-			if ($WeakMap && key && (typeof key === 'object' || typeof key === 'function')) {
-				if ($wm) {
-					return $weakMapHas($wm, key);
-				}
-			} else if ($Map) {
-				if ($m) {
-					return $mapHas($m, key);
-				}
-			} else {
-				if ($o) { // eslint-disable-line no-lonely-if
-					return listHas($o, key);
-				}
-			}
-			return false;
-		},
-		set: function (key, value) {
-			if ($WeakMap && key && (typeof key === 'object' || typeof key === 'function')) {
-				if (!$wm) {
-					$wm = new $WeakMap();
-				}
-				$weakMapSet($wm, key, value);
-			} else if ($Map) {
-				if (!$m) {
-					$m = new $Map();
-				}
-				$mapSet($m, key, value);
-			} else {
-				if (!$o) {
-					/*
-					 * Initialize the linked list as an empty node, so that we don't have
-					 * to special-case handling of the first node: we can always refer to
-					 * it as (previous node).next, instead of something like (list).head
-					 */
-					$o = { key: {}, next: null };
-				}
-				listSet($o, key, value);
-			}
-		}
-	};
-	return channel;
-};
-
-},{"call-bind/callBound":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/call-bind/callBound.js","get-intrinsic":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/get-intrinsic/index.js","object-inspect":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/object-inspect/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js":[function(require,module,exports){
+},{"./hash":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/sha.js/hash.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/index.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -90651,11 +87461,13 @@ var EE = require('events').EventEmitter;
 var inherits = require('inherits');
 
 inherits(Stream, EE);
-Stream.Readable = require('readable-stream/readable.js');
-Stream.Writable = require('readable-stream/writable.js');
-Stream.Duplex = require('readable-stream/duplex.js');
-Stream.Transform = require('readable-stream/transform.js');
-Stream.PassThrough = require('readable-stream/passthrough.js');
+Stream.Readable = require('readable-stream/lib/_stream_readable.js');
+Stream.Writable = require('readable-stream/lib/_stream_writable.js');
+Stream.Duplex = require('readable-stream/lib/_stream_duplex.js');
+Stream.Transform = require('readable-stream/lib/_stream_transform.js');
+Stream.PassThrough = require('readable-stream/lib/_stream_passthrough.js');
+Stream.finished = require('readable-stream/lib/internal/streams/end-of-stream.js')
+Stream.pipeline = require('readable-stream/lib/internal/streams/pipeline.js')
 
 // Backwards-compat with node 0.4.x
 Stream.Stream = Stream;
@@ -90752,735 +87564,9 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream/duplex.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/duplex-browser.js","readable-stream/passthrough.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/passthrough.js","readable-stream/readable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/readable-browser.js","readable-stream/transform.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/transform.js","readable-stream/writable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/writable-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/index.js":[function(require,module,exports){
-(function (global){(function (){
-var ClientRequest = require('./lib/request')
-var response = require('./lib/response')
-var extend = require('xtend')
-var statusCodes = require('builtin-status-codes')
-var url = require('url')
-
-var http = exports
-
-http.request = function (opts, cb) {
-	if (typeof opts === 'string')
-		opts = url.parse(opts)
-	else
-		opts = extend(opts)
-
-	// Normally, the page is loaded from http or https, so not specifying a protocol
-	// will result in a (valid) protocol-relative url. However, this won't work if
-	// the protocol is something else, like 'file:'
-	var defaultProtocol = global.location.protocol.search(/^https?:$/) === -1 ? 'http:' : ''
-
-	var protocol = opts.protocol || defaultProtocol
-	var host = opts.hostname || opts.host
-	var port = opts.port
-	var path = opts.path || '/'
-
-	// Necessary for IPv6 addresses
-	if (host && host.indexOf(':') !== -1)
-		host = '[' + host + ']'
-
-	// This may be a relative url. The browser should always be able to interpret it correctly.
-	opts.url = (host ? (protocol + '//' + host) : '') + (port ? ':' + port : '') + path
-	opts.method = (opts.method || 'GET').toUpperCase()
-	opts.headers = opts.headers || {}
-
-	// Also valid opts.auth, opts.mode
-
-	var req = new ClientRequest(opts)
-	if (cb)
-		req.on('response', cb)
-	return req
-}
-
-http.get = function get (opts, cb) {
-	var req = http.request(opts, cb)
-	req.end()
-	return req
-}
-
-http.ClientRequest = ClientRequest
-http.IncomingMessage = response.IncomingMessage
-
-http.Agent = function () {}
-http.Agent.defaultMaxSockets = 4
-
-http.globalAgent = new http.Agent()
-
-http.STATUS_CODES = statusCodes
-
-http.METHODS = [
-	'CHECKOUT',
-	'CONNECT',
-	'COPY',
-	'DELETE',
-	'GET',
-	'HEAD',
-	'LOCK',
-	'M-SEARCH',
-	'MERGE',
-	'MKACTIVITY',
-	'MKCOL',
-	'MOVE',
-	'NOTIFY',
-	'OPTIONS',
-	'PATCH',
-	'POST',
-	'PROPFIND',
-	'PROPPATCH',
-	'PURGE',
-	'PUT',
-	'REPORT',
-	'SEARCH',
-	'SUBSCRIBE',
-	'TRACE',
-	'UNLOCK',
-	'UNSUBSCRIBE'
-]
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"./lib/request":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/lib/request.js","./lib/response":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/lib/response.js","builtin-status-codes":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/builtin-status-codes/browser.js","url":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/url/url.js","xtend":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/xtend/immutable.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/lib/capability.js":[function(require,module,exports){
-(function (global){(function (){
-exports.fetch = isFunction(global.fetch) && isFunction(global.ReadableStream)
-
-exports.writableStream = isFunction(global.WritableStream)
-
-exports.abortController = isFunction(global.AbortController)
-
-// The xhr request to example.com may violate some restrictive CSP configurations,
-// so if we're running in a browser that supports `fetch`, avoid calling getXHR()
-// and assume support for certain features below.
-var xhr
-function getXHR () {
-	// Cache the xhr value
-	if (xhr !== undefined) return xhr
-
-	if (global.XMLHttpRequest) {
-		xhr = new global.XMLHttpRequest()
-		// If XDomainRequest is available (ie only, where xhr might not work
-		// cross domain), use the page location. Otherwise use example.com
-		// Note: this doesn't actually make an http request.
-		try {
-			xhr.open('GET', global.XDomainRequest ? '/' : 'https://example.com')
-		} catch(e) {
-			xhr = null
-		}
-	} else {
-		// Service workers don't have XHR
-		xhr = null
-	}
-	return xhr
-}
-
-function checkTypeSupport (type) {
-	var xhr = getXHR()
-	if (!xhr) return false
-	try {
-		xhr.responseType = type
-		return xhr.responseType === type
-	} catch (e) {}
-	return false
-}
-
-// If fetch is supported, then arraybuffer will be supported too. Skip calling
-// checkTypeSupport(), since that calls getXHR().
-exports.arraybuffer = exports.fetch || checkTypeSupport('arraybuffer')
-
-// These next two tests unavoidably show warnings in Chrome. Since fetch will always
-// be used if it's available, just return false for these to avoid the warnings.
-exports.msstream = !exports.fetch && checkTypeSupport('ms-stream')
-exports.mozchunkedarraybuffer = !exports.fetch && checkTypeSupport('moz-chunked-arraybuffer')
-
-// If fetch is supported, then overrideMimeType will be supported too. Skip calling
-// getXHR().
-exports.overrideMimeType = exports.fetch || (getXHR() ? isFunction(getXHR().overrideMimeType) : false)
-
-function isFunction (value) {
-	return typeof value === 'function'
-}
-
-xhr = null // Help gc
-
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/lib/request.js":[function(require,module,exports){
-(function (process,global,Buffer){(function (){
-var capability = require('./capability')
-var inherits = require('inherits')
-var response = require('./response')
-var stream = require('readable-stream')
-
-var IncomingMessage = response.IncomingMessage
-var rStates = response.readyStates
-
-function decideMode (preferBinary, useFetch) {
-	if (capability.fetch && useFetch) {
-		return 'fetch'
-	} else if (capability.mozchunkedarraybuffer) {
-		return 'moz-chunked-arraybuffer'
-	} else if (capability.msstream) {
-		return 'ms-stream'
-	} else if (capability.arraybuffer && preferBinary) {
-		return 'arraybuffer'
-	} else {
-		return 'text'
-	}
-}
-
-var ClientRequest = module.exports = function (opts) {
-	var self = this
-	stream.Writable.call(self)
-
-	self._opts = opts
-	self._body = []
-	self._headers = {}
-	if (opts.auth)
-		self.setHeader('Authorization', 'Basic ' + Buffer.from(opts.auth).toString('base64'))
-	Object.keys(opts.headers).forEach(function (name) {
-		self.setHeader(name, opts.headers[name])
-	})
-
-	var preferBinary
-	var useFetch = true
-	if (opts.mode === 'disable-fetch' || ('requestTimeout' in opts && !capability.abortController)) {
-		// If the use of XHR should be preferred. Not typically needed.
-		useFetch = false
-		preferBinary = true
-	} else if (opts.mode === 'prefer-streaming') {
-		// If streaming is a high priority but binary compatibility and
-		// the accuracy of the 'content-type' header aren't
-		preferBinary = false
-	} else if (opts.mode === 'allow-wrong-content-type') {
-		// If streaming is more important than preserving the 'content-type' header
-		preferBinary = !capability.overrideMimeType
-	} else if (!opts.mode || opts.mode === 'default' || opts.mode === 'prefer-fast') {
-		// Use binary if text streaming may corrupt data or the content-type header, or for speed
-		preferBinary = true
-	} else {
-		throw new Error('Invalid value for opts.mode')
-	}
-	self._mode = decideMode(preferBinary, useFetch)
-	self._fetchTimer = null
-	self._socketTimeout = null
-	self._socketTimer = null
-
-	self.on('finish', function () {
-		self._onFinish()
-	})
-}
-
-inherits(ClientRequest, stream.Writable)
-
-ClientRequest.prototype.setHeader = function (name, value) {
-	var self = this
-	var lowerName = name.toLowerCase()
-	// This check is not necessary, but it prevents warnings from browsers about setting unsafe
-	// headers. To be honest I'm not entirely sure hiding these warnings is a good thing, but
-	// http-browserify did it, so I will too.
-	if (unsafeHeaders.indexOf(lowerName) !== -1)
-		return
-
-	self._headers[lowerName] = {
-		name: name,
-		value: value
-	}
-}
-
-ClientRequest.prototype.getHeader = function (name) {
-	var header = this._headers[name.toLowerCase()]
-	if (header)
-		return header.value
-	return null
-}
-
-ClientRequest.prototype.removeHeader = function (name) {
-	var self = this
-	delete self._headers[name.toLowerCase()]
-}
-
-ClientRequest.prototype._onFinish = function () {
-	var self = this
-
-	if (self._destroyed)
-		return
-	var opts = self._opts
-
-	if ('timeout' in opts && opts.timeout !== 0) {
-		self.setTimeout(opts.timeout)
-	}
-
-	var headersObj = self._headers
-	var body = null
-	if (opts.method !== 'GET' && opts.method !== 'HEAD') {
-        body = new Blob(self._body, {
-            type: (headersObj['content-type'] || {}).value || ''
-        });
-    }
-
-	// create flattened list of headers
-	var headersList = []
-	Object.keys(headersObj).forEach(function (keyName) {
-		var name = headersObj[keyName].name
-		var value = headersObj[keyName].value
-		if (Array.isArray(value)) {
-			value.forEach(function (v) {
-				headersList.push([name, v])
-			})
-		} else {
-			headersList.push([name, value])
-		}
-	})
-
-	if (self._mode === 'fetch') {
-		var signal = null
-		if (capability.abortController) {
-			var controller = new AbortController()
-			signal = controller.signal
-			self._fetchAbortController = controller
-
-			if ('requestTimeout' in opts && opts.requestTimeout !== 0) {
-				self._fetchTimer = global.setTimeout(function () {
-					self.emit('requestTimeout')
-					if (self._fetchAbortController)
-						self._fetchAbortController.abort()
-				}, opts.requestTimeout)
-			}
-		}
-
-		global.fetch(self._opts.url, {
-			method: self._opts.method,
-			headers: headersList,
-			body: body || undefined,
-			mode: 'cors',
-			credentials: opts.withCredentials ? 'include' : 'same-origin',
-			signal: signal
-		}).then(function (response) {
-			self._fetchResponse = response
-			self._resetTimers(false)
-			self._connect()
-		}, function (reason) {
-			self._resetTimers(true)
-			if (!self._destroyed)
-				self.emit('error', reason)
-		})
-	} else {
-		var xhr = self._xhr = new global.XMLHttpRequest()
-		try {
-			xhr.open(self._opts.method, self._opts.url, true)
-		} catch (err) {
-			process.nextTick(function () {
-				self.emit('error', err)
-			})
-			return
-		}
-
-		// Can't set responseType on really old browsers
-		if ('responseType' in xhr)
-			xhr.responseType = self._mode
-
-		if ('withCredentials' in xhr)
-			xhr.withCredentials = !!opts.withCredentials
-
-		if (self._mode === 'text' && 'overrideMimeType' in xhr)
-			xhr.overrideMimeType('text/plain; charset=x-user-defined')
-
-		if ('requestTimeout' in opts) {
-			xhr.timeout = opts.requestTimeout
-			xhr.ontimeout = function () {
-				self.emit('requestTimeout')
-			}
-		}
-
-		headersList.forEach(function (header) {
-			xhr.setRequestHeader(header[0], header[1])
-		})
-
-		self._response = null
-		xhr.onreadystatechange = function () {
-			switch (xhr.readyState) {
-				case rStates.LOADING:
-				case rStates.DONE:
-					self._onXHRProgress()
-					break
-			}
-		}
-		// Necessary for streaming in Firefox, since xhr.response is ONLY defined
-		// in onprogress, not in onreadystatechange with xhr.readyState = 3
-		if (self._mode === 'moz-chunked-arraybuffer') {
-			xhr.onprogress = function () {
-				self._onXHRProgress()
-			}
-		}
-
-		xhr.onerror = function () {
-			if (self._destroyed)
-				return
-			self._resetTimers(true)
-			self.emit('error', new Error('XHR error'))
-		}
-
-		try {
-			xhr.send(body)
-		} catch (err) {
-			process.nextTick(function () {
-				self.emit('error', err)
-			})
-			return
-		}
-	}
-}
-
-/**
- * Checks if xhr.status is readable and non-zero, indicating no error.
- * Even though the spec says it should be available in readyState 3,
- * accessing it throws an exception in IE8
- */
-function statusValid (xhr) {
-	try {
-		var status = xhr.status
-		return (status !== null && status !== 0)
-	} catch (e) {
-		return false
-	}
-}
-
-ClientRequest.prototype._onXHRProgress = function () {
-	var self = this
-
-	self._resetTimers(false)
-
-	if (!statusValid(self._xhr) || self._destroyed)
-		return
-
-	if (!self._response)
-		self._connect()
-
-	self._response._onXHRProgress(self._resetTimers.bind(self))
-}
-
-ClientRequest.prototype._connect = function () {
-	var self = this
-
-	if (self._destroyed)
-		return
-
-	self._response = new IncomingMessage(self._xhr, self._fetchResponse, self._mode, self._resetTimers.bind(self))
-	self._response.on('error', function(err) {
-		self.emit('error', err)
-	})
-
-	self.emit('response', self._response)
-}
-
-ClientRequest.prototype._write = function (chunk, encoding, cb) {
-	var self = this
-
-	self._body.push(chunk)
-	cb()
-}
-
-ClientRequest.prototype._resetTimers = function (done) {
-	var self = this
-
-	global.clearTimeout(self._socketTimer)
-	self._socketTimer = null
-
-	if (done) {
-		global.clearTimeout(self._fetchTimer)
-		self._fetchTimer = null
-	} else if (self._socketTimeout) {
-		self._socketTimer = global.setTimeout(function () {
-			self.emit('timeout')
-		}, self._socketTimeout)
-	}
-}
-
-ClientRequest.prototype.abort = ClientRequest.prototype.destroy = function (err) {
-	var self = this
-	self._destroyed = true
-	self._resetTimers(true)
-	if (self._response)
-		self._response._destroyed = true
-	if (self._xhr)
-		self._xhr.abort()
-	else if (self._fetchAbortController)
-		self._fetchAbortController.abort()
-
-	if (err)
-		self.emit('error', err)
-}
-
-ClientRequest.prototype.end = function (data, encoding, cb) {
-	var self = this
-	if (typeof data === 'function') {
-		cb = data
-		data = undefined
-	}
-
-	stream.Writable.prototype.end.call(self, data, encoding, cb)
-}
-
-ClientRequest.prototype.setTimeout = function (timeout, cb) {
-	var self = this
-
-	if (cb)
-		self.once('timeout', cb)
-
-	self._socketTimeout = timeout
-	self._resetTimers(false)
-}
-
-ClientRequest.prototype.flushHeaders = function () {}
-ClientRequest.prototype.setNoDelay = function () {}
-ClientRequest.prototype.setSocketKeepAlive = function () {}
-
-// Taken from http://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader%28%29-method
-var unsafeHeaders = [
-	'accept-charset',
-	'accept-encoding',
-	'access-control-request-headers',
-	'access-control-request-method',
-	'connection',
-	'content-length',
-	'cookie',
-	'cookie2',
-	'date',
-	'dnt',
-	'expect',
-	'host',
-	'keep-alive',
-	'origin',
-	'referer',
-	'te',
-	'trailer',
-	'transfer-encoding',
-	'upgrade',
-	'via'
-]
-
-}).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-
-},{"./capability":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/lib/capability.js","./response":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/lib/response.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/readable-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/lib/response.js":[function(require,module,exports){
-(function (process,global,Buffer){(function (){
-var capability = require('./capability')
-var inherits = require('inherits')
-var stream = require('readable-stream')
-
-var rStates = exports.readyStates = {
-	UNSENT: 0,
-	OPENED: 1,
-	HEADERS_RECEIVED: 2,
-	LOADING: 3,
-	DONE: 4
-}
-
-var IncomingMessage = exports.IncomingMessage = function (xhr, response, mode, resetTimers) {
-	var self = this
-	stream.Readable.call(self)
-
-	self._mode = mode
-	self.headers = {}
-	self.rawHeaders = []
-	self.trailers = {}
-	self.rawTrailers = []
-
-	// Fake the 'close' event, but only once 'end' fires
-	self.on('end', function () {
-		// The nextTick is necessary to prevent the 'request' module from causing an infinite loop
-		process.nextTick(function () {
-			self.emit('close')
-		})
-	})
-
-	if (mode === 'fetch') {
-		self._fetchResponse = response
-
-		self.url = response.url
-		self.statusCode = response.status
-		self.statusMessage = response.statusText
-		
-		response.headers.forEach(function (header, key){
-			self.headers[key.toLowerCase()] = header
-			self.rawHeaders.push(key, header)
-		})
-
-		if (capability.writableStream) {
-			var writable = new WritableStream({
-				write: function (chunk) {
-					resetTimers(false)
-					return new Promise(function (resolve, reject) {
-						if (self._destroyed) {
-							reject()
-						} else if(self.push(Buffer.from(chunk))) {
-							resolve()
-						} else {
-							self._resumeFetch = resolve
-						}
-					})
-				},
-				close: function () {
-					resetTimers(true)
-					if (!self._destroyed)
-						self.push(null)
-				},
-				abort: function (err) {
-					resetTimers(true)
-					if (!self._destroyed)
-						self.emit('error', err)
-				}
-			})
-
-			try {
-				response.body.pipeTo(writable).catch(function (err) {
-					resetTimers(true)
-					if (!self._destroyed)
-						self.emit('error', err)
-				})
-				return
-			} catch (e) {} // pipeTo method isn't defined. Can't find a better way to feature test this
-		}
-		// fallback for when writableStream or pipeTo aren't available
-		var reader = response.body.getReader()
-		function read () {
-			reader.read().then(function (result) {
-				if (self._destroyed)
-					return
-				resetTimers(result.done)
-				if (result.done) {
-					self.push(null)
-					return
-				}
-				self.push(Buffer.from(result.value))
-				read()
-			}).catch(function (err) {
-				resetTimers(true)
-				if (!self._destroyed)
-					self.emit('error', err)
-			})
-		}
-		read()
-	} else {
-		self._xhr = xhr
-		self._pos = 0
-
-		self.url = xhr.responseURL
-		self.statusCode = xhr.status
-		self.statusMessage = xhr.statusText
-		var headers = xhr.getAllResponseHeaders().split(/\r?\n/)
-		headers.forEach(function (header) {
-			var matches = header.match(/^([^:]+):\s*(.*)/)
-			if (matches) {
-				var key = matches[1].toLowerCase()
-				if (key === 'set-cookie') {
-					if (self.headers[key] === undefined) {
-						self.headers[key] = []
-					}
-					self.headers[key].push(matches[2])
-				} else if (self.headers[key] !== undefined) {
-					self.headers[key] += ', ' + matches[2]
-				} else {
-					self.headers[key] = matches[2]
-				}
-				self.rawHeaders.push(matches[1], matches[2])
-			}
-		})
-
-		self._charset = 'x-user-defined'
-		if (!capability.overrideMimeType) {
-			var mimeType = self.rawHeaders['mime-type']
-			if (mimeType) {
-				var charsetMatch = mimeType.match(/;\s*charset=([^;])(;|$)/)
-				if (charsetMatch) {
-					self._charset = charsetMatch[1].toLowerCase()
-				}
-			}
-			if (!self._charset)
-				self._charset = 'utf-8' // best guess
-		}
-	}
-}
-
-inherits(IncomingMessage, stream.Readable)
-
-IncomingMessage.prototype._read = function () {
-	var self = this
-
-	var resolve = self._resumeFetch
-	if (resolve) {
-		self._resumeFetch = null
-		resolve()
-	}
-}
-
-IncomingMessage.prototype._onXHRProgress = function (resetTimers) {
-	var self = this
-
-	var xhr = self._xhr
-
-	var response = null
-	switch (self._mode) {
-		case 'text':
-			response = xhr.responseText
-			if (response.length > self._pos) {
-				var newData = response.substr(self._pos)
-				if (self._charset === 'x-user-defined') {
-					var buffer = Buffer.alloc(newData.length)
-					for (var i = 0; i < newData.length; i++)
-						buffer[i] = newData.charCodeAt(i) & 0xff
-
-					self.push(buffer)
-				} else {
-					self.push(newData, self._charset)
-				}
-				self._pos = response.length
-			}
-			break
-		case 'arraybuffer':
-			if (xhr.readyState !== rStates.DONE || !xhr.response)
-				break
-			response = xhr.response
-			self.push(Buffer.from(new Uint8Array(response)))
-			break
-		case 'moz-chunked-arraybuffer': // take whole
-			response = xhr.response
-			if (xhr.readyState !== rStates.LOADING || !response)
-				break
-			self.push(Buffer.from(new Uint8Array(response)))
-			break
-		case 'ms-stream':
-			response = xhr.response
-			if (xhr.readyState !== rStates.LOADING)
-				break
-			var reader = new global.MSStreamReader()
-			reader.onprogress = function () {
-				if (reader.result.byteLength > self._pos) {
-					self.push(Buffer.from(new Uint8Array(reader.result.slice(self._pos))))
-					self._pos = reader.result.byteLength
-				}
-			}
-			reader.onload = function () {
-				resetTimers(true)
-				self.push(null)
-			}
-			// reader.onerror = ??? // TODO: this
-			reader.readAsArrayBuffer(response)
-			break
-	}
-
-	// The ms-stream case handles end separately in reader.onload()
-	if (self._xhr.readyState === rStates.DONE && self._mode !== 'ms-stream') {
-		resetTimers(true)
-		self.push(null)
-	}
-}
-
-}).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-
-},{"./capability":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/lib/capability.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/readable-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/errors-browser.js":[function(require,module,exports){
+},{"events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","readable-stream/lib/_stream_duplex.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_duplex.js","readable-stream/lib/_stream_passthrough.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_passthrough.js","readable-stream/lib/_stream_readable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_readable.js","readable-stream/lib/_stream_transform.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_transform.js","readable-stream/lib/_stream_writable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_writable.js","readable-stream/lib/internal/streams/end-of-stream.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","readable-stream/lib/internal/streams/pipeline.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/pipeline.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js":[function(require,module,exports){
 arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/errors-browser.js"][0].apply(exports,arguments)
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports){
 (function (process){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -91610,9 +87696,9 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
 });
 }).call(this)}).call(this,require('_process'))
 
-},{"./_stream_readable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_writable.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
+},{"./_stream_readable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_writable.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports){
 arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_passthrough.js"][0].apply(exports,arguments)
-},{"./_stream_transform":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_transform.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
+},{"./_stream_transform":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_transform.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -92643,9 +88729,9 @@ function indexOf(xs, x) {
 }
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/async_iterator":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/async_iterator.js","./internal/streams/buffer_list":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/buffer_list.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/from":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/from-browser.js","./internal/streams/state":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","string_decoder/":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js","util":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browser-resolve/empty.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
+},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/async_iterator":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/async_iterator.js","./internal/streams/buffer_list":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/buffer_list.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/from":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/from-browser.js","./internal/streams/state":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","string_decoder/":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js","util":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browser-resolve/empty.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports){
 arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js"][0].apply(exports,arguments)
-},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_duplex.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
+},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_duplex.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -93290,7 +89376,7 @@ Writable.prototype._destroy = function (err, cb) {
 };
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/state":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","util-deprecate":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util-deprecate/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/async_iterator.js":[function(require,module,exports){
+},{"../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js","./_stream_duplex":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_duplex.js","./internal/streams/destroy":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/destroy.js","./internal/streams/state":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/state.js","./internal/streams/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/stream-browser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js","util-deprecate":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util-deprecate/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/async_iterator.js":[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -93474,9 +89560,9 @@ var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterat
 module.exports = createReadableStreamAsyncIterator;
 }).call(this)}).call(this,require('_process'))
 
-},{"./end-of-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/buffer_list.js":[function(require,module,exports){
+},{"./end-of-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/buffer_list.js":[function(require,module,exports){
 arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/buffer_list.js"][0].apply(exports,arguments)
-},{"buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","util":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browser-resolve/empty.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports){
+},{"buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/buffer/index.js","util":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browser-resolve/empty.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -93576,20 +89662,313 @@ module.exports = {
 };
 }).call(this)}).call(this,require('_process'))
 
-},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/end-of-stream.js":[function(require,module,exports){
+},{"_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/end-of-stream.js":[function(require,module,exports){
 arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"][0].apply(exports,arguments)
-},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/errors-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/from-browser.js":[function(require,module,exports){
+},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/from-browser.js":[function(require,module,exports){
 arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/from-browser.js"][0].apply(exports,arguments)
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/pipeline.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/pipeline.js":[function(require,module,exports){
 arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/pipeline.js"][0].apply(exports,arguments)
-},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/errors-browser.js","./end-of-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/state.js":[function(require,module,exports){
+},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js","./end-of-stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/state.js":[function(require,module,exports){
 arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/state.js"][0].apply(exports,arguments)
-},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/errors-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports){
+},{"../../../errors":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports){
 arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js"][0].apply(exports,arguments)
-},{"events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/readable-browser.js":[function(require,module,exports){
-arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/browserify-sign/node_modules/readable-stream/readable-browser.js"][0].apply(exports,arguments)
-},{"./lib/_stream_duplex.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_passthrough.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_passthrough.js","./lib/_stream_readable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_transform.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_writable.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/_stream_writable.js","./lib/internal/streams/end-of-stream.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/end-of-stream.js","./lib/internal/streams/pipeline.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/pipeline.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js":[function(require,module,exports){
-arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js"][0].apply(exports,arguments)
+},{"events":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/events/events.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/string_decoder/lib/string_decoder.js":[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+/*<replacement>*/
+
+var Buffer = require('safe-buffer').Buffer;
+/*</replacement>*/
+
+var isEncoding = Buffer.isEncoding || function (encoding) {
+  encoding = '' + encoding;
+  switch (encoding && encoding.toLowerCase()) {
+    case 'hex':case 'utf8':case 'utf-8':case 'ascii':case 'binary':case 'base64':case 'ucs2':case 'ucs-2':case 'utf16le':case 'utf-16le':case 'raw':
+      return true;
+    default:
+      return false;
+  }
+};
+
+function _normalizeEncoding(enc) {
+  if (!enc) return 'utf8';
+  var retried;
+  while (true) {
+    switch (enc) {
+      case 'utf8':
+      case 'utf-8':
+        return 'utf8';
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return 'utf16le';
+      case 'latin1':
+      case 'binary':
+        return 'latin1';
+      case 'base64':
+      case 'ascii':
+      case 'hex':
+        return enc;
+      default:
+        if (retried) return; // undefined
+        enc = ('' + enc).toLowerCase();
+        retried = true;
+    }
+  }
+};
+
+// Do not cache `Buffer.isEncoding` when checking encoding names as some
+// modules monkey-patch it to support additional encodings
+function normalizeEncoding(enc) {
+  var nenc = _normalizeEncoding(enc);
+  if (typeof nenc !== 'string' && (Buffer.isEncoding === isEncoding || !isEncoding(enc))) throw new Error('Unknown encoding: ' + enc);
+  return nenc || enc;
+}
+
+// StringDecoder provides an interface for efficiently splitting a series of
+// buffers into a series of JS strings without breaking apart multi-byte
+// characters.
+exports.StringDecoder = StringDecoder;
+function StringDecoder(encoding) {
+  this.encoding = normalizeEncoding(encoding);
+  var nb;
+  switch (this.encoding) {
+    case 'utf16le':
+      this.text = utf16Text;
+      this.end = utf16End;
+      nb = 4;
+      break;
+    case 'utf8':
+      this.fillLast = utf8FillLast;
+      nb = 4;
+      break;
+    case 'base64':
+      this.text = base64Text;
+      this.end = base64End;
+      nb = 3;
+      break;
+    default:
+      this.write = simpleWrite;
+      this.end = simpleEnd;
+      return;
+  }
+  this.lastNeed = 0;
+  this.lastTotal = 0;
+  this.lastChar = Buffer.allocUnsafe(nb);
+}
+
+StringDecoder.prototype.write = function (buf) {
+  if (buf.length === 0) return '';
+  var r;
+  var i;
+  if (this.lastNeed) {
+    r = this.fillLast(buf);
+    if (r === undefined) return '';
+    i = this.lastNeed;
+    this.lastNeed = 0;
+  } else {
+    i = 0;
+  }
+  if (i < buf.length) return r ? r + this.text(buf, i) : this.text(buf, i);
+  return r || '';
+};
+
+StringDecoder.prototype.end = utf8End;
+
+// Returns only complete characters in a Buffer
+StringDecoder.prototype.text = utf8Text;
+
+// Attempts to complete a partial non-UTF-8 character using bytes from a Buffer
+StringDecoder.prototype.fillLast = function (buf) {
+  if (this.lastNeed <= buf.length) {
+    buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, this.lastNeed);
+    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
+  }
+  buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, buf.length);
+  this.lastNeed -= buf.length;
+};
+
+// Checks the type of a UTF-8 byte, whether it's ASCII, a leading byte, or a
+// continuation byte. If an invalid byte is detected, -2 is returned.
+function utf8CheckByte(byte) {
+  if (byte <= 0x7F) return 0;else if (byte >> 5 === 0x06) return 2;else if (byte >> 4 === 0x0E) return 3;else if (byte >> 3 === 0x1E) return 4;
+  return byte >> 6 === 0x02 ? -1 : -2;
+}
+
+// Checks at most 3 bytes at the end of a Buffer in order to detect an
+// incomplete multi-byte UTF-8 character. The total number of bytes (2, 3, or 4)
+// needed to complete the UTF-8 character (if applicable) are returned.
+function utf8CheckIncomplete(self, buf, i) {
+  var j = buf.length - 1;
+  if (j < i) return 0;
+  var nb = utf8CheckByte(buf[j]);
+  if (nb >= 0) {
+    if (nb > 0) self.lastNeed = nb - 1;
+    return nb;
+  }
+  if (--j < i || nb === -2) return 0;
+  nb = utf8CheckByte(buf[j]);
+  if (nb >= 0) {
+    if (nb > 0) self.lastNeed = nb - 2;
+    return nb;
+  }
+  if (--j < i || nb === -2) return 0;
+  nb = utf8CheckByte(buf[j]);
+  if (nb >= 0) {
+    if (nb > 0) {
+      if (nb === 2) nb = 0;else self.lastNeed = nb - 3;
+    }
+    return nb;
+  }
+  return 0;
+}
+
+// Validates as many continuation bytes for a multi-byte UTF-8 character as
+// needed or are available. If we see a non-continuation byte where we expect
+// one, we "replace" the validated continuation bytes we've seen so far with
+// a single UTF-8 replacement character ('\ufffd'), to match v8's UTF-8 decoding
+// behavior. The continuation byte check is included three times in the case
+// where all of the continuation bytes for a character exist in the same buffer.
+// It is also done this way as a slight performance increase instead of using a
+// loop.
+function utf8CheckExtraBytes(self, buf, p) {
+  if ((buf[0] & 0xC0) !== 0x80) {
+    self.lastNeed = 0;
+    return '\ufffd';
+  }
+  if (self.lastNeed > 1 && buf.length > 1) {
+    if ((buf[1] & 0xC0) !== 0x80) {
+      self.lastNeed = 1;
+      return '\ufffd';
+    }
+    if (self.lastNeed > 2 && buf.length > 2) {
+      if ((buf[2] & 0xC0) !== 0x80) {
+        self.lastNeed = 2;
+        return '\ufffd';
+      }
+    }
+  }
+}
+
+// Attempts to complete a multi-byte UTF-8 character using bytes from a Buffer.
+function utf8FillLast(buf) {
+  var p = this.lastTotal - this.lastNeed;
+  var r = utf8CheckExtraBytes(this, buf, p);
+  if (r !== undefined) return r;
+  if (this.lastNeed <= buf.length) {
+    buf.copy(this.lastChar, p, 0, this.lastNeed);
+    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
+  }
+  buf.copy(this.lastChar, p, 0, buf.length);
+  this.lastNeed -= buf.length;
+}
+
+// Returns all complete UTF-8 characters in a Buffer. If the Buffer ended on a
+// partial character, the character's bytes are buffered until the required
+// number of bytes are available.
+function utf8Text(buf, i) {
+  var total = utf8CheckIncomplete(this, buf, i);
+  if (!this.lastNeed) return buf.toString('utf8', i);
+  this.lastTotal = total;
+  var end = buf.length - (total - this.lastNeed);
+  buf.copy(this.lastChar, 0, end);
+  return buf.toString('utf8', i, end);
+}
+
+// For UTF-8, a replacement character is added when ending on a partial
+// character.
+function utf8End(buf) {
+  var r = buf && buf.length ? this.write(buf) : '';
+  if (this.lastNeed) return r + '\ufffd';
+  return r;
+}
+
+// UTF-16LE typically needs two bytes per character, but even if we have an even
+// number of bytes available, we need to check if we end on a leading/high
+// surrogate. In that case, we need to wait for the next two bytes in order to
+// decode the last character properly.
+function utf16Text(buf, i) {
+  if ((buf.length - i) % 2 === 0) {
+    var r = buf.toString('utf16le', i);
+    if (r) {
+      var c = r.charCodeAt(r.length - 1);
+      if (c >= 0xD800 && c <= 0xDBFF) {
+        this.lastNeed = 2;
+        this.lastTotal = 4;
+        this.lastChar[0] = buf[buf.length - 2];
+        this.lastChar[1] = buf[buf.length - 1];
+        return r.slice(0, -1);
+      }
+    }
+    return r;
+  }
+  this.lastNeed = 1;
+  this.lastTotal = 2;
+  this.lastChar[0] = buf[buf.length - 1];
+  return buf.toString('utf16le', i, buf.length - 1);
+}
+
+// For UTF-16LE we do not explicitly append special replacement characters if we
+// end on a partial character, we simply let v8 handle that.
+function utf16End(buf) {
+  var r = buf && buf.length ? this.write(buf) : '';
+  if (this.lastNeed) {
+    var end = this.lastTotal - this.lastNeed;
+    return r + this.lastChar.toString('utf16le', 0, end);
+  }
+  return r;
+}
+
+function base64Text(buf, i) {
+  var n = (buf.length - i) % 3;
+  if (n === 0) return buf.toString('base64', i);
+  this.lastNeed = 3 - n;
+  this.lastTotal = 3;
+  if (n === 1) {
+    this.lastChar[0] = buf[buf.length - 1];
+  } else {
+    this.lastChar[0] = buf[buf.length - 2];
+    this.lastChar[1] = buf[buf.length - 1];
+  }
+  return buf.toString('base64', i, buf.length - n);
+}
+
+function base64End(buf) {
+  var r = buf && buf.length ? this.write(buf) : '';
+  if (this.lastNeed) return r + this.lastChar.toString('base64', 0, 3 - this.lastNeed);
+  return r;
+}
+
+// Pass bytes on through for single-byte encodings (e.g. ascii, latin1, hex)
+function simpleWrite(buf) {
+  return buf.toString(this.encoding);
+}
+
+function simpleEnd(buf) {
+  return buf && buf.length ? this.write(buf) : '';
+}
 },{"safe-buffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/safe-buffer/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/timers-browserify/main.js":[function(require,module,exports){
 (function (setImmediate,clearImmediate){(function (){
 var nextTick = require('process/browser.js').nextTick;
@@ -93670,785 +90049,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 };
 }).call(this)}).call(this,require("timers").setImmediate,require("timers").clearImmediate)
 
-},{"process/browser.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","timers":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/timers-browserify/main.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/url/url.js":[function(require,module,exports){
-/*
- * Copyright Joyent, Inc. and other Node contributors.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to permit
- * persons to whom the Software is furnished to do so, subject to the
- * following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
- * NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
-'use strict';
-
-var punycode = require('punycode');
-
-function Url() {
-  this.protocol = null;
-  this.slashes = null;
-  this.auth = null;
-  this.host = null;
-  this.port = null;
-  this.hostname = null;
-  this.hash = null;
-  this.search = null;
-  this.query = null;
-  this.pathname = null;
-  this.path = null;
-  this.href = null;
-}
-
-// Reference: RFC 3986, RFC 1808, RFC 2396
-
-/*
- * define these here so at least they only have to be
- * compiled once on the first module load.
- */
-var protocolPattern = /^([a-z0-9.+-]+:)/i,
-  portPattern = /:[0-9]*$/,
-
-  // Special case for a simple path URL
-  simplePathPattern = /^(\/\/?(?!\/)[^?\s]*)(\?[^\s]*)?$/,
-
-  /*
-   * RFC 2396: characters reserved for delimiting URLs.
-   * We actually just auto-escape these.
-   */
-  delims = [
-    '<', '>', '"', '`', ' ', '\r', '\n', '\t'
-  ],
-
-  // RFC 2396: characters not allowed for various reasons.
-  unwise = [
-    '{', '}', '|', '\\', '^', '`'
-  ].concat(delims),
-
-  // Allowed by RFCs, but cause of XSS attacks.  Always escape these.
-  autoEscape = ['\''].concat(unwise),
-  /*
-   * Characters that are never ever allowed in a hostname.
-   * Note that any invalid chars are also handled, but these
-   * are the ones that are *expected* to be seen, so we fast-path
-   * them.
-   */
-  nonHostChars = [
-    '%', '/', '?', ';', '#'
-  ].concat(autoEscape),
-  hostEndingChars = [
-    '/', '?', '#'
-  ],
-  hostnameMaxLen = 255,
-  hostnamePartPattern = /^[+a-z0-9A-Z_-]{0,63}$/,
-  hostnamePartStart = /^([+a-z0-9A-Z_-]{0,63})(.*)$/,
-  // protocols that can allow "unsafe" and "unwise" chars.
-  unsafeProtocol = {
-    javascript: true,
-    'javascript:': true
-  },
-  // protocols that never have a hostname.
-  hostlessProtocol = {
-    javascript: true,
-    'javascript:': true
-  },
-  // protocols that always contain a // bit.
-  slashedProtocol = {
-    http: true,
-    https: true,
-    ftp: true,
-    gopher: true,
-    file: true,
-    'http:': true,
-    'https:': true,
-    'ftp:': true,
-    'gopher:': true,
-    'file:': true
-  },
-  querystring = require('qs');
-
-function urlParse(url, parseQueryString, slashesDenoteHost) {
-  if (url && typeof url === 'object' && url instanceof Url) { return url; }
-
-  var u = new Url();
-  u.parse(url, parseQueryString, slashesDenoteHost);
-  return u;
-}
-
-Url.prototype.parse = function (url, parseQueryString, slashesDenoteHost) {
-  if (typeof url !== 'string') {
-    throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
-  }
-
-  /*
-   * Copy chrome, IE, opera backslash-handling behavior.
-   * Back slashes before the query string get converted to forward slashes
-   * See: https://code.google.com/p/chromium/issues/detail?id=25916
-   */
-  var queryIndex = url.indexOf('?'),
-    splitter = queryIndex !== -1 && queryIndex < url.indexOf('#') ? '?' : '#',
-    uSplit = url.split(splitter),
-    slashRegex = /\\/g;
-  uSplit[0] = uSplit[0].replace(slashRegex, '/');
-  url = uSplit.join(splitter);
-
-  var rest = url;
-
-  /*
-   * trim before proceeding.
-   * This is to support parse stuff like "  http://foo.com  \n"
-   */
-  rest = rest.trim();
-
-  if (!slashesDenoteHost && url.split('#').length === 1) {
-    // Try fast path regexp
-    var simplePath = simplePathPattern.exec(rest);
-    if (simplePath) {
-      this.path = rest;
-      this.href = rest;
-      this.pathname = simplePath[1];
-      if (simplePath[2]) {
-        this.search = simplePath[2];
-        if (parseQueryString) {
-          this.query = querystring.parse(this.search.substr(1));
-        } else {
-          this.query = this.search.substr(1);
-        }
-      } else if (parseQueryString) {
-        this.search = '';
-        this.query = {};
-      }
-      return this;
-    }
-  }
-
-  var proto = protocolPattern.exec(rest);
-  if (proto) {
-    proto = proto[0];
-    var lowerProto = proto.toLowerCase();
-    this.protocol = lowerProto;
-    rest = rest.substr(proto.length);
-  }
-
-  /*
-   * figure out if it's got a host
-   * user@server is *always* interpreted as a hostname, and url
-   * resolution will treat //foo/bar as host=foo,path=bar because that's
-   * how the browser resolves relative URLs.
-   */
-  if (slashesDenoteHost || proto || rest.match(/^\/\/[^@/]+@[^@/]+/)) {
-    var slashes = rest.substr(0, 2) === '//';
-    if (slashes && !(proto && hostlessProtocol[proto])) {
-      rest = rest.substr(2);
-      this.slashes = true;
-    }
-  }
-
-  if (!hostlessProtocol[proto] && (slashes || (proto && !slashedProtocol[proto]))) {
-
-    /*
-     * there's a hostname.
-     * the first instance of /, ?, ;, or # ends the host.
-     *
-     * If there is an @ in the hostname, then non-host chars *are* allowed
-     * to the left of the last @ sign, unless some host-ending character
-     * comes *before* the @-sign.
-     * URLs are obnoxious.
-     *
-     * ex:
-     * http://a@b@c/ => user:a@b host:c
-     * http://a@b?@c => user:a host:c path:/?@c
-     */
-
-    /*
-     * v0.12 TODO(isaacs): This is not quite how Chrome does things.
-     * Review our test case against browsers more comprehensively.
-     */
-
-    // find the first instance of any hostEndingChars
-    var hostEnd = -1;
-    for (var i = 0; i < hostEndingChars.length; i++) {
-      var hec = rest.indexOf(hostEndingChars[i]);
-      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd)) { hostEnd = hec; }
-    }
-
-    /*
-     * at this point, either we have an explicit point where the
-     * auth portion cannot go past, or the last @ char is the decider.
-     */
-    var auth, atSign;
-    if (hostEnd === -1) {
-      // atSign can be anywhere.
-      atSign = rest.lastIndexOf('@');
-    } else {
-      /*
-       * atSign must be in auth portion.
-       * http://a@b/c@d => host:b auth:a path:/c@d
-       */
-      atSign = rest.lastIndexOf('@', hostEnd);
-    }
-
-    /*
-     * Now we have a portion which is definitely the auth.
-     * Pull that off.
-     */
-    if (atSign !== -1) {
-      auth = rest.slice(0, atSign);
-      rest = rest.slice(atSign + 1);
-      this.auth = decodeURIComponent(auth);
-    }
-
-    // the host is the remaining to the left of the first non-host char
-    hostEnd = -1;
-    for (var i = 0; i < nonHostChars.length; i++) {
-      var hec = rest.indexOf(nonHostChars[i]);
-      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd)) { hostEnd = hec; }
-    }
-    // if we still have not hit it, then the entire thing is a host.
-    if (hostEnd === -1) { hostEnd = rest.length; }
-
-    this.host = rest.slice(0, hostEnd);
-    rest = rest.slice(hostEnd);
-
-    // pull out port.
-    this.parseHost();
-
-    /*
-     * we've indicated that there is a hostname,
-     * so even if it's empty, it has to be present.
-     */
-    this.hostname = this.hostname || '';
-
-    /*
-     * if hostname begins with [ and ends with ]
-     * assume that it's an IPv6 address.
-     */
-    var ipv6Hostname = this.hostname[0] === '[' && this.hostname[this.hostname.length - 1] === ']';
-
-    // validate a little.
-    if (!ipv6Hostname) {
-      var hostparts = this.hostname.split(/\./);
-      for (var i = 0, l = hostparts.length; i < l; i++) {
-        var part = hostparts[i];
-        if (!part) { continue; }
-        if (!part.match(hostnamePartPattern)) {
-          var newpart = '';
-          for (var j = 0, k = part.length; j < k; j++) {
-            if (part.charCodeAt(j) > 127) {
-              /*
-               * we replace non-ASCII char with a temporary placeholder
-               * we need this to make sure size of hostname is not
-               * broken by replacing non-ASCII by nothing
-               */
-              newpart += 'x';
-            } else {
-              newpart += part[j];
-            }
-          }
-          // we test again with ASCII char only
-          if (!newpart.match(hostnamePartPattern)) {
-            var validParts = hostparts.slice(0, i);
-            var notHost = hostparts.slice(i + 1);
-            var bit = part.match(hostnamePartStart);
-            if (bit) {
-              validParts.push(bit[1]);
-              notHost.unshift(bit[2]);
-            }
-            if (notHost.length) {
-              rest = '/' + notHost.join('.') + rest;
-            }
-            this.hostname = validParts.join('.');
-            break;
-          }
-        }
-      }
-    }
-
-    if (this.hostname.length > hostnameMaxLen) {
-      this.hostname = '';
-    } else {
-      // hostnames are always lower case.
-      this.hostname = this.hostname.toLowerCase();
-    }
-
-    if (!ipv6Hostname) {
-      /*
-       * IDNA Support: Returns a punycoded representation of "domain".
-       * It only converts parts of the domain name that
-       * have non-ASCII characters, i.e. it doesn't matter if
-       * you call it with a domain that already is ASCII-only.
-       */
-      this.hostname = punycode.toASCII(this.hostname);
-    }
-
-    var p = this.port ? ':' + this.port : '';
-    var h = this.hostname || '';
-    this.host = h + p;
-    this.href += this.host;
-
-    /*
-     * strip [ and ] from the hostname
-     * the host field still retains them, though
-     */
-    if (ipv6Hostname) {
-      this.hostname = this.hostname.substr(1, this.hostname.length - 2);
-      if (rest[0] !== '/') {
-        rest = '/' + rest;
-      }
-    }
-  }
-
-  /*
-   * now rest is set to the post-host stuff.
-   * chop off any delim chars.
-   */
-  if (!unsafeProtocol[lowerProto]) {
-
-    /*
-     * First, make 100% sure that any "autoEscape" chars get
-     * escaped, even if encodeURIComponent doesn't think they
-     * need to be.
-     */
-    for (var i = 0, l = autoEscape.length; i < l; i++) {
-      var ae = autoEscape[i];
-      if (rest.indexOf(ae) === -1) { continue; }
-      var esc = encodeURIComponent(ae);
-      if (esc === ae) {
-        esc = escape(ae);
-      }
-      rest = rest.split(ae).join(esc);
-    }
-  }
-
-  // chop off from the tail first.
-  var hash = rest.indexOf('#');
-  if (hash !== -1) {
-    // got a fragment string.
-    this.hash = rest.substr(hash);
-    rest = rest.slice(0, hash);
-  }
-  var qm = rest.indexOf('?');
-  if (qm !== -1) {
-    this.search = rest.substr(qm);
-    this.query = rest.substr(qm + 1);
-    if (parseQueryString) {
-      this.query = querystring.parse(this.query);
-    }
-    rest = rest.slice(0, qm);
-  } else if (parseQueryString) {
-    // no query string, but parseQueryString still requested
-    this.search = '';
-    this.query = {};
-  }
-  if (rest) { this.pathname = rest; }
-  if (slashedProtocol[lowerProto] && this.hostname && !this.pathname) {
-    this.pathname = '/';
-  }
-
-  // to support http.request
-  if (this.pathname || this.search) {
-    var p = this.pathname || '';
-    var s = this.search || '';
-    this.path = p + s;
-  }
-
-  // finally, reconstruct the href based on what has been validated.
-  this.href = this.format();
-  return this;
-};
-
-// format a parsed object into a url string
-function urlFormat(obj) {
-  /*
-   * ensure it's an object, and not a string url.
-   * If it's an obj, this is a no-op.
-   * this way, you can call url_format() on strings
-   * to clean up potentially wonky urls.
-   */
-  if (typeof obj === 'string') { obj = urlParse(obj); }
-  if (!(obj instanceof Url)) { return Url.prototype.format.call(obj); }
-  return obj.format();
-}
-
-Url.prototype.format = function () {
-  var auth = this.auth || '';
-  if (auth) {
-    auth = encodeURIComponent(auth);
-    auth = auth.replace(/%3A/i, ':');
-    auth += '@';
-  }
-
-  var protocol = this.protocol || '',
-    pathname = this.pathname || '',
-    hash = this.hash || '',
-    host = false,
-    query = '';
-
-  if (this.host) {
-    host = auth + this.host;
-  } else if (this.hostname) {
-    host = auth + (this.hostname.indexOf(':') === -1 ? this.hostname : '[' + this.hostname + ']');
-    if (this.port) {
-      host += ':' + this.port;
-    }
-  }
-
-  if (this.query && typeof this.query === 'object' && Object.keys(this.query).length) {
-    query = querystring.stringify(this.query, {
-      arrayFormat: 'repeat',
-      addQueryPrefix: false
-    });
-  }
-
-  var search = this.search || (query && ('?' + query)) || '';
-
-  if (protocol && protocol.substr(-1) !== ':') { protocol += ':'; }
-
-  /*
-   * only the slashedProtocols get the //.  Not mailto:, xmpp:, etc.
-   * unless they had them to begin with.
-   */
-  if (this.slashes || (!protocol || slashedProtocol[protocol]) && host !== false) {
-    host = '//' + (host || '');
-    if (pathname && pathname.charAt(0) !== '/') { pathname = '/' + pathname; }
-  } else if (!host) {
-    host = '';
-  }
-
-  if (hash && hash.charAt(0) !== '#') { hash = '#' + hash; }
-  if (search && search.charAt(0) !== '?') { search = '?' + search; }
-
-  pathname = pathname.replace(/[?#]/g, function (match) {
-    return encodeURIComponent(match);
-  });
-  search = search.replace('#', '%23');
-
-  return protocol + host + pathname + search + hash;
-};
-
-function urlResolve(source, relative) {
-  return urlParse(source, false, true).resolve(relative);
-}
-
-Url.prototype.resolve = function (relative) {
-  return this.resolveObject(urlParse(relative, false, true)).format();
-};
-
-function urlResolveObject(source, relative) {
-  if (!source) { return relative; }
-  return urlParse(source, false, true).resolveObject(relative);
-}
-
-Url.prototype.resolveObject = function (relative) {
-  if (typeof relative === 'string') {
-    var rel = new Url();
-    rel.parse(relative, false, true);
-    relative = rel;
-  }
-
-  var result = new Url();
-  var tkeys = Object.keys(this);
-  for (var tk = 0; tk < tkeys.length; tk++) {
-    var tkey = tkeys[tk];
-    result[tkey] = this[tkey];
-  }
-
-  /*
-   * hash is always overridden, no matter what.
-   * even href="" will remove it.
-   */
-  result.hash = relative.hash;
-
-  // if the relative url is empty, then there's nothing left to do here.
-  if (relative.href === '') {
-    result.href = result.format();
-    return result;
-  }
-
-  // hrefs like //foo/bar always cut to the protocol.
-  if (relative.slashes && !relative.protocol) {
-    // take everything except the protocol from relative
-    var rkeys = Object.keys(relative);
-    for (var rk = 0; rk < rkeys.length; rk++) {
-      var rkey = rkeys[rk];
-      if (rkey !== 'protocol') { result[rkey] = relative[rkey]; }
-    }
-
-    // urlParse appends trailing / to urls like http://www.example.com
-    if (slashedProtocol[result.protocol] && result.hostname && !result.pathname) {
-      result.pathname = '/';
-      result.path = result.pathname;
-    }
-
-    result.href = result.format();
-    return result;
-  }
-
-  if (relative.protocol && relative.protocol !== result.protocol) {
-    /*
-     * if it's a known url protocol, then changing
-     * the protocol does weird things
-     * first, if it's not file:, then we MUST have a host,
-     * and if there was a path
-     * to begin with, then we MUST have a path.
-     * if it is file:, then the host is dropped,
-     * because that's known to be hostless.
-     * anything else is assumed to be absolute.
-     */
-    if (!slashedProtocol[relative.protocol]) {
-      var keys = Object.keys(relative);
-      for (var v = 0; v < keys.length; v++) {
-        var k = keys[v];
-        result[k] = relative[k];
-      }
-      result.href = result.format();
-      return result;
-    }
-
-    result.protocol = relative.protocol;
-    if (!relative.host && !hostlessProtocol[relative.protocol]) {
-      var relPath = (relative.pathname || '').split('/');
-      while (relPath.length && !(relative.host = relPath.shift())) { }
-      if (!relative.host) { relative.host = ''; }
-      if (!relative.hostname) { relative.hostname = ''; }
-      if (relPath[0] !== '') { relPath.unshift(''); }
-      if (relPath.length < 2) { relPath.unshift(''); }
-      result.pathname = relPath.join('/');
-    } else {
-      result.pathname = relative.pathname;
-    }
-    result.search = relative.search;
-    result.query = relative.query;
-    result.host = relative.host || '';
-    result.auth = relative.auth;
-    result.hostname = relative.hostname || relative.host;
-    result.port = relative.port;
-    // to support http.request
-    if (result.pathname || result.search) {
-      var p = result.pathname || '';
-      var s = result.search || '';
-      result.path = p + s;
-    }
-    result.slashes = result.slashes || relative.slashes;
-    result.href = result.format();
-    return result;
-  }
-
-  var isSourceAbs = result.pathname && result.pathname.charAt(0) === '/',
-    isRelAbs = relative.host || relative.pathname && relative.pathname.charAt(0) === '/',
-    mustEndAbs = isRelAbs || isSourceAbs || (result.host && relative.pathname),
-    removeAllDots = mustEndAbs,
-    srcPath = result.pathname && result.pathname.split('/') || [],
-    relPath = relative.pathname && relative.pathname.split('/') || [],
-    psychotic = result.protocol && !slashedProtocol[result.protocol];
-
-  /*
-   * if the url is a non-slashed url, then relative
-   * links like ../.. should be able
-   * to crawl up to the hostname, as well.  This is strange.
-   * result.protocol has already been set by now.
-   * Later on, put the first path part into the host field.
-   */
-  if (psychotic) {
-    result.hostname = '';
-    result.port = null;
-    if (result.host) {
-      if (srcPath[0] === '') { srcPath[0] = result.host; } else { srcPath.unshift(result.host); }
-    }
-    result.host = '';
-    if (relative.protocol) {
-      relative.hostname = null;
-      relative.port = null;
-      if (relative.host) {
-        if (relPath[0] === '') { relPath[0] = relative.host; } else { relPath.unshift(relative.host); }
-      }
-      relative.host = null;
-    }
-    mustEndAbs = mustEndAbs && (relPath[0] === '' || srcPath[0] === '');
-  }
-
-  if (isRelAbs) {
-    // it's absolute.
-    result.host = relative.host || relative.host === '' ? relative.host : result.host;
-    result.hostname = relative.hostname || relative.hostname === '' ? relative.hostname : result.hostname;
-    result.search = relative.search;
-    result.query = relative.query;
-    srcPath = relPath;
-    // fall through to the dot-handling below.
-  } else if (relPath.length) {
-    /*
-     * it's relative
-     * throw away the existing file, and take the new path instead.
-     */
-    if (!srcPath) { srcPath = []; }
-    srcPath.pop();
-    srcPath = srcPath.concat(relPath);
-    result.search = relative.search;
-    result.query = relative.query;
-  } else if (relative.search != null) {
-    /*
-     * just pull out the search.
-     * like href='?foo'.
-     * Put this after the other two cases because it simplifies the booleans
-     */
-    if (psychotic) {
-      result.host = srcPath.shift();
-      result.hostname = result.host;
-      /*
-       * occationaly the auth can get stuck only in host
-       * this especially happens in cases like
-       * url.resolveObject('mailto:local1@domain1', 'local2@domain2')
-       */
-      var authInHost = result.host && result.host.indexOf('@') > 0 ? result.host.split('@') : false;
-      if (authInHost) {
-        result.auth = authInHost.shift();
-        result.hostname = authInHost.shift();
-        result.host = result.hostname;
-      }
-    }
-    result.search = relative.search;
-    result.query = relative.query;
-    // to support http.request
-    if (result.pathname !== null || result.search !== null) {
-      result.path = (result.pathname ? result.pathname : '') + (result.search ? result.search : '');
-    }
-    result.href = result.format();
-    return result;
-  }
-
-  if (!srcPath.length) {
-    /*
-     * no path at all.  easy.
-     * we've already handled the other stuff above.
-     */
-    result.pathname = null;
-    // to support http.request
-    if (result.search) {
-      result.path = '/' + result.search;
-    } else {
-      result.path = null;
-    }
-    result.href = result.format();
-    return result;
-  }
-
-  /*
-   * if a url ENDs in . or .., then it must get a trailing slash.
-   * however, if it ends in anything else non-slashy,
-   * then it must NOT get a trailing slash.
-   */
-  var last = srcPath.slice(-1)[0];
-  var hasTrailingSlash = (result.host || relative.host || srcPath.length > 1) && (last === '.' || last === '..') || last === '';
-
-  /*
-   * strip single dots, resolve double dots to parent dir
-   * if the path tries to go above the root, `up` ends up > 0
-   */
-  var up = 0;
-  for (var i = srcPath.length; i >= 0; i--) {
-    last = srcPath[i];
-    if (last === '.') {
-      srcPath.splice(i, 1);
-    } else if (last === '..') {
-      srcPath.splice(i, 1);
-      up++;
-    } else if (up) {
-      srcPath.splice(i, 1);
-      up--;
-    }
-  }
-
-  // if the path is allowed to go above the root, restore leading ..s
-  if (!mustEndAbs && !removeAllDots) {
-    for (; up--; up) {
-      srcPath.unshift('..');
-    }
-  }
-
-  if (mustEndAbs && srcPath[0] !== '' && (!srcPath[0] || srcPath[0].charAt(0) !== '/')) {
-    srcPath.unshift('');
-  }
-
-  if (hasTrailingSlash && (srcPath.join('/').substr(-1) !== '/')) {
-    srcPath.push('');
-  }
-
-  var isAbsolute = srcPath[0] === '' || (srcPath[0] && srcPath[0].charAt(0) === '/');
-
-  // put the host back
-  if (psychotic) {
-    result.hostname = isAbsolute ? '' : srcPath.length ? srcPath.shift() : '';
-    result.host = result.hostname;
-    /*
-     * occationaly the auth can get stuck only in host
-     * this especially happens in cases like
-     * url.resolveObject('mailto:local1@domain1', 'local2@domain2')
-     */
-    var authInHost = result.host && result.host.indexOf('@') > 0 ? result.host.split('@') : false;
-    if (authInHost) {
-      result.auth = authInHost.shift();
-      result.hostname = authInHost.shift();
-      result.host = result.hostname;
-    }
-  }
-
-  mustEndAbs = mustEndAbs || (result.host && srcPath.length);
-
-  if (mustEndAbs && !isAbsolute) {
-    srcPath.unshift('');
-  }
-
-  if (srcPath.length > 0) {
-    result.pathname = srcPath.join('/');
-  } else {
-    result.pathname = null;
-    result.path = null;
-  }
-
-  // to support request.http
-  if (result.pathname !== null || result.search !== null) {
-    result.path = (result.pathname ? result.pathname : '') + (result.search ? result.search : '');
-  }
-  result.auth = relative.auth || result.auth;
-  result.slashes = result.slashes || relative.slashes;
-  result.href = result.format();
-  return result;
-};
-
-Url.prototype.parseHost = function () {
-  var host = this.host;
-  var port = portPattern.exec(host);
-  if (port) {
-    port = port[0];
-    if (port !== ':') {
-      this.port = port.substr(1);
-    }
-    host = host.substr(0, host.length - port.length);
-  }
-  if (host) { this.hostname = host; }
-};
-
-exports.parse = urlParse;
-exports.resolve = urlResolve;
-exports.resolveObject = urlResolveObject;
-exports.format = urlFormat;
-
-exports.Url = Url;
-
-},{"punycode":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/punycode/punycode.js","qs":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/qs/lib/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util-deprecate/browser.js":[function(require,module,exports){
+},{"process/browser.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","timers":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/timers-browserify/main.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util-deprecate/browser.js":[function(require,module,exports){
 (function (global){(function (){
 
 /**
@@ -94520,40 +90121,346 @@ function config (name) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/support/isBufferBrowser.js":[function(require,module,exports){
+arguments[4]["/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/assert/node_modules/util/support/isBufferBrowser.js"][0].apply(exports,arguments)
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/support/types.js":[function(require,module,exports){
+// Currently in sync with Node.js lib/internal/util/types.js
+// https://github.com/nodejs/node/commit/112cc7c27551254aa2b17098fb774867f05ed0d9
+
+'use strict';
+
+var isArgumentsObject = require('is-arguments');
+var isGeneratorFunction = require('is-generator-function');
+var whichTypedArray = require('which-typed-array');
+var isTypedArray = require('is-typed-array');
+
+function uncurryThis(f) {
+  return f.call.bind(f);
+}
+
+var BigIntSupported = typeof BigInt !== 'undefined';
+var SymbolSupported = typeof Symbol !== 'undefined';
+
+var ObjectToString = uncurryThis(Object.prototype.toString);
+
+var numberValue = uncurryThis(Number.prototype.valueOf);
+var stringValue = uncurryThis(String.prototype.valueOf);
+var booleanValue = uncurryThis(Boolean.prototype.valueOf);
+
+if (BigIntSupported) {
+  var bigIntValue = uncurryThis(BigInt.prototype.valueOf);
+}
+
+if (SymbolSupported) {
+  var symbolValue = uncurryThis(Symbol.prototype.valueOf);
+}
+
+function checkBoxedPrimitive(value, prototypeValueOf) {
+  if (typeof value !== 'object') {
+    return false;
+  }
+  try {
+    prototypeValueOf(value);
+    return true;
+  } catch(e) {
+    return false;
   }
 }
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/support/isBufferBrowser.js":[function(require,module,exports){
-module.exports = function isBuffer(arg) {
-  return arg && typeof arg === 'object'
-    && typeof arg.copy === 'function'
-    && typeof arg.fill === 'function'
-    && typeof arg.readUInt8 === 'function';
+exports.isArgumentsObject = isArgumentsObject;
+exports.isGeneratorFunction = isGeneratorFunction;
+exports.isTypedArray = isTypedArray;
+
+// Taken from here and modified for better browser support
+// https://github.com/sindresorhus/p-is-promise/blob/cda35a513bda03f977ad5cde3a079d237e82d7ef/index.js
+function isPromise(input) {
+	return (
+		(
+			typeof Promise !== 'undefined' &&
+			input instanceof Promise
+		) ||
+		(
+			input !== null &&
+			typeof input === 'object' &&
+			typeof input.then === 'function' &&
+			typeof input.catch === 'function'
+		)
+	);
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/util.js":[function(require,module,exports){
-(function (process,global){(function (){
+exports.isPromise = isPromise;
+
+function isArrayBufferView(value) {
+  if (typeof ArrayBuffer !== 'undefined' && ArrayBuffer.isView) {
+    return ArrayBuffer.isView(value);
+  }
+
+  return (
+    isTypedArray(value) ||
+    isDataView(value)
+  );
+}
+exports.isArrayBufferView = isArrayBufferView;
+
+
+function isUint8Array(value) {
+  return whichTypedArray(value) === 'Uint8Array';
+}
+exports.isUint8Array = isUint8Array;
+
+function isUint8ClampedArray(value) {
+  return whichTypedArray(value) === 'Uint8ClampedArray';
+}
+exports.isUint8ClampedArray = isUint8ClampedArray;
+
+function isUint16Array(value) {
+  return whichTypedArray(value) === 'Uint16Array';
+}
+exports.isUint16Array = isUint16Array;
+
+function isUint32Array(value) {
+  return whichTypedArray(value) === 'Uint32Array';
+}
+exports.isUint32Array = isUint32Array;
+
+function isInt8Array(value) {
+  return whichTypedArray(value) === 'Int8Array';
+}
+exports.isInt8Array = isInt8Array;
+
+function isInt16Array(value) {
+  return whichTypedArray(value) === 'Int16Array';
+}
+exports.isInt16Array = isInt16Array;
+
+function isInt32Array(value) {
+  return whichTypedArray(value) === 'Int32Array';
+}
+exports.isInt32Array = isInt32Array;
+
+function isFloat32Array(value) {
+  return whichTypedArray(value) === 'Float32Array';
+}
+exports.isFloat32Array = isFloat32Array;
+
+function isFloat64Array(value) {
+  return whichTypedArray(value) === 'Float64Array';
+}
+exports.isFloat64Array = isFloat64Array;
+
+function isBigInt64Array(value) {
+  return whichTypedArray(value) === 'BigInt64Array';
+}
+exports.isBigInt64Array = isBigInt64Array;
+
+function isBigUint64Array(value) {
+  return whichTypedArray(value) === 'BigUint64Array';
+}
+exports.isBigUint64Array = isBigUint64Array;
+
+function isMapToString(value) {
+  return ObjectToString(value) === '[object Map]';
+}
+isMapToString.working = (
+  typeof Map !== 'undefined' &&
+  isMapToString(new Map())
+);
+
+function isMap(value) {
+  if (typeof Map === 'undefined') {
+    return false;
+  }
+
+  return isMapToString.working
+    ? isMapToString(value)
+    : value instanceof Map;
+}
+exports.isMap = isMap;
+
+function isSetToString(value) {
+  return ObjectToString(value) === '[object Set]';
+}
+isSetToString.working = (
+  typeof Set !== 'undefined' &&
+  isSetToString(new Set())
+);
+function isSet(value) {
+  if (typeof Set === 'undefined') {
+    return false;
+  }
+
+  return isSetToString.working
+    ? isSetToString(value)
+    : value instanceof Set;
+}
+exports.isSet = isSet;
+
+function isWeakMapToString(value) {
+  return ObjectToString(value) === '[object WeakMap]';
+}
+isWeakMapToString.working = (
+  typeof WeakMap !== 'undefined' &&
+  isWeakMapToString(new WeakMap())
+);
+function isWeakMap(value) {
+  if (typeof WeakMap === 'undefined') {
+    return false;
+  }
+
+  return isWeakMapToString.working
+    ? isWeakMapToString(value)
+    : value instanceof WeakMap;
+}
+exports.isWeakMap = isWeakMap;
+
+function isWeakSetToString(value) {
+  return ObjectToString(value) === '[object WeakSet]';
+}
+isWeakSetToString.working = (
+  typeof WeakSet !== 'undefined' &&
+  isWeakSetToString(new WeakSet())
+);
+function isWeakSet(value) {
+  return isWeakSetToString(value);
+}
+exports.isWeakSet = isWeakSet;
+
+function isArrayBufferToString(value) {
+  return ObjectToString(value) === '[object ArrayBuffer]';
+}
+isArrayBufferToString.working = (
+  typeof ArrayBuffer !== 'undefined' &&
+  isArrayBufferToString(new ArrayBuffer())
+);
+function isArrayBuffer(value) {
+  if (typeof ArrayBuffer === 'undefined') {
+    return false;
+  }
+
+  return isArrayBufferToString.working
+    ? isArrayBufferToString(value)
+    : value instanceof ArrayBuffer;
+}
+exports.isArrayBuffer = isArrayBuffer;
+
+function isDataViewToString(value) {
+  return ObjectToString(value) === '[object DataView]';
+}
+isDataViewToString.working = (
+  typeof ArrayBuffer !== 'undefined' &&
+  typeof DataView !== 'undefined' &&
+  isDataViewToString(new DataView(new ArrayBuffer(1), 0, 1))
+);
+function isDataView(value) {
+  if (typeof DataView === 'undefined') {
+    return false;
+  }
+
+  return isDataViewToString.working
+    ? isDataViewToString(value)
+    : value instanceof DataView;
+}
+exports.isDataView = isDataView;
+
+// Store a copy of SharedArrayBuffer in case it's deleted elsewhere
+var SharedArrayBufferCopy = typeof SharedArrayBuffer !== 'undefined' ? SharedArrayBuffer : undefined;
+function isSharedArrayBufferToString(value) {
+  return ObjectToString(value) === '[object SharedArrayBuffer]';
+}
+function isSharedArrayBuffer(value) {
+  if (typeof SharedArrayBufferCopy === 'undefined') {
+    return false;
+  }
+
+  if (typeof isSharedArrayBufferToString.working === 'undefined') {
+    isSharedArrayBufferToString.working = isSharedArrayBufferToString(new SharedArrayBufferCopy());
+  }
+
+  return isSharedArrayBufferToString.working
+    ? isSharedArrayBufferToString(value)
+    : value instanceof SharedArrayBufferCopy;
+}
+exports.isSharedArrayBuffer = isSharedArrayBuffer;
+
+function isAsyncFunction(value) {
+  return ObjectToString(value) === '[object AsyncFunction]';
+}
+exports.isAsyncFunction = isAsyncFunction;
+
+function isMapIterator(value) {
+  return ObjectToString(value) === '[object Map Iterator]';
+}
+exports.isMapIterator = isMapIterator;
+
+function isSetIterator(value) {
+  return ObjectToString(value) === '[object Set Iterator]';
+}
+exports.isSetIterator = isSetIterator;
+
+function isGeneratorObject(value) {
+  return ObjectToString(value) === '[object Generator]';
+}
+exports.isGeneratorObject = isGeneratorObject;
+
+function isWebAssemblyCompiledModule(value) {
+  return ObjectToString(value) === '[object WebAssembly.Module]';
+}
+exports.isWebAssemblyCompiledModule = isWebAssemblyCompiledModule;
+
+function isNumberObject(value) {
+  return checkBoxedPrimitive(value, numberValue);
+}
+exports.isNumberObject = isNumberObject;
+
+function isStringObject(value) {
+  return checkBoxedPrimitive(value, stringValue);
+}
+exports.isStringObject = isStringObject;
+
+function isBooleanObject(value) {
+  return checkBoxedPrimitive(value, booleanValue);
+}
+exports.isBooleanObject = isBooleanObject;
+
+function isBigIntObject(value) {
+  return BigIntSupported && checkBoxedPrimitive(value, bigIntValue);
+}
+exports.isBigIntObject = isBigIntObject;
+
+function isSymbolObject(value) {
+  return SymbolSupported && checkBoxedPrimitive(value, symbolValue);
+}
+exports.isSymbolObject = isSymbolObject;
+
+function isBoxedPrimitive(value) {
+  return (
+    isNumberObject(value) ||
+    isStringObject(value) ||
+    isBooleanObject(value) ||
+    isBigIntObject(value) ||
+    isSymbolObject(value)
+  );
+}
+exports.isBoxedPrimitive = isBoxedPrimitive;
+
+function isAnyArrayBuffer(value) {
+  return typeof Uint8Array !== 'undefined' && (
+    isArrayBuffer(value) ||
+    isSharedArrayBuffer(value)
+  );
+}
+exports.isAnyArrayBuffer = isAnyArrayBuffer;
+
+['isProxy', 'isExternal', 'isModuleNamespaceObject'].forEach(function(method) {
+  Object.defineProperty(exports, method, {
+    enumerable: false,
+    value: function() {
+      throw new Error(method + ' is not supported in userland');
+    }
+  });
+});
+
+},{"is-arguments":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-arguments/index.js","is-generator-function":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-generator-function/index.js","is-typed-array":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-typed-array/index.js","which-typed-array":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/which-typed-array/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/util.js":[function(require,module,exports){
+(function (process){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -94574,6 +90481,16 @@ module.exports = function isBuffer(arg) {
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors ||
+  function getOwnPropertyDescriptors(obj) {
+    var keys = Object.keys(obj);
+    var descriptors = {};
+    for (var i = 0; i < keys.length; i++) {
+      descriptors[keys[i]] = Object.getOwnPropertyDescriptor(obj, keys[i]);
+    }
+    return descriptors;
+  };
 
 var formatRegExp = /%[sdj%]/g;
 exports.format = function(f) {
@@ -94619,15 +90536,15 @@ exports.format = function(f) {
 // Returns a modified function which warns once by default.
 // If --no-deprecation is set, then it is a no-op.
 exports.deprecate = function(fn, msg) {
+  if (typeof process !== 'undefined' && process.noDeprecation === true) {
+    return fn;
+  }
+
   // Allow for deprecating things in the process of starting up.
-  if (isUndefined(global.process)) {
+  if (typeof process === 'undefined') {
     return function() {
       return exports.deprecate(fn, msg).apply(this, arguments);
     };
-  }
-
-  if (process.noDeprecation === true) {
-    return fn;
   }
 
   var warned = false;
@@ -94650,13 +90567,20 @@ exports.deprecate = function(fn, msg) {
 
 
 var debugs = {};
-var debugEnviron;
+var debugEnvRegex = /^$/;
+
+if (process.env.NODE_DEBUG) {
+  var debugEnv = process.env.NODE_DEBUG;
+  debugEnv = debugEnv.replace(/[|\\{}()[\]^$+?.]/g, '\\$&')
+    .replace(/\*/g, '.*')
+    .replace(/,/g, '$|^')
+    .toUpperCase();
+  debugEnvRegex = new RegExp('^' + debugEnv + '$', 'i');
+}
 exports.debuglog = function(set) {
-  if (isUndefined(debugEnviron))
-    debugEnviron = process.env.NODE_DEBUG || '';
   set = set.toUpperCase();
   if (!debugs[set]) {
-    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+    if (debugEnvRegex.test(set)) {
       var pid = process.pid;
       debugs[set] = function() {
         var msg = exports.format.apply(exports, arguments);
@@ -94949,7 +90873,7 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
         if (array) {
           str = str.split('\n').map(function(line) {
             return '  ' + line;
-          }).join('\n').substr(2);
+          }).join('\n').slice(2);
         } else {
           str = '\n' + str.split('\n').map(function(line) {
             return '   ' + line;
@@ -94966,7 +90890,7 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
     }
     name = JSON.stringify('' + key);
     if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
-      name = name.substr(1, name.length - 2);
+      name = name.slice(1, -1);
       name = ctx.stylize(name, 'name');
     } else {
       name = name.replace(/'/g, "\\'")
@@ -95003,6 +90927,8 @@ function reduceToSingleString(output, base, braces) {
 
 // NOTE: These type checking functions intentionally don't use `instanceof`
 // because it is fragile and can be easily faked with `Object.create()`.
+exports.types = require('./support/types');
+
 function isArray(ar) {
   return Array.isArray(ar);
 }
@@ -95047,6 +90973,7 @@ function isRegExp(re) {
   return isObject(re) && objectToString(re) === '[object RegExp]';
 }
 exports.isRegExp = isRegExp;
+exports.types.isRegExp = isRegExp;
 
 function isObject(arg) {
   return typeof arg === 'object' && arg !== null;
@@ -95057,12 +90984,14 @@ function isDate(d) {
   return isObject(d) && objectToString(d) === '[object Date]';
 }
 exports.isDate = isDate;
+exports.types.isDate = isDate;
 
 function isError(e) {
   return isObject(e) &&
       (objectToString(e) === '[object Error]' || e instanceof Error);
 }
 exports.isError = isError;
+exports.types.isNativeError = isError;
 
 function isFunction(arg) {
   return typeof arg === 'function';
@@ -95141,9 +91070,116 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-}).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+var kCustomPromisifiedSymbol = typeof Symbol !== 'undefined' ? Symbol('util.promisify.custom') : undefined;
 
-},{"./support/isBuffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/support/isBufferBrowser.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/vm-browserify/index.js":[function(require,module,exports){
+exports.promisify = function promisify(original) {
+  if (typeof original !== 'function')
+    throw new TypeError('The "original" argument must be of type Function');
+
+  if (kCustomPromisifiedSymbol && original[kCustomPromisifiedSymbol]) {
+    var fn = original[kCustomPromisifiedSymbol];
+    if (typeof fn !== 'function') {
+      throw new TypeError('The "util.promisify.custom" argument must be of type Function');
+    }
+    Object.defineProperty(fn, kCustomPromisifiedSymbol, {
+      value: fn, enumerable: false, writable: false, configurable: true
+    });
+    return fn;
+  }
+
+  function fn() {
+    var promiseResolve, promiseReject;
+    var promise = new Promise(function (resolve, reject) {
+      promiseResolve = resolve;
+      promiseReject = reject;
+    });
+
+    var args = [];
+    for (var i = 0; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+    args.push(function (err, value) {
+      if (err) {
+        promiseReject(err);
+      } else {
+        promiseResolve(value);
+      }
+    });
+
+    try {
+      original.apply(this, args);
+    } catch (err) {
+      promiseReject(err);
+    }
+
+    return promise;
+  }
+
+  Object.setPrototypeOf(fn, Object.getPrototypeOf(original));
+
+  if (kCustomPromisifiedSymbol) Object.defineProperty(fn, kCustomPromisifiedSymbol, {
+    value: fn, enumerable: false, writable: false, configurable: true
+  });
+  return Object.defineProperties(
+    fn,
+    getOwnPropertyDescriptors(original)
+  );
+}
+
+exports.promisify.custom = kCustomPromisifiedSymbol
+
+function callbackifyOnRejected(reason, cb) {
+  // `!reason` guard inspired by bluebird (Ref: https://goo.gl/t5IS6M).
+  // Because `null` is a special error value in callbacks which means "no error
+  // occurred", we error-wrap so the callback consumer can distinguish between
+  // "the promise rejected with null" or "the promise fulfilled with undefined".
+  if (!reason) {
+    var newReason = new Error('Promise was rejected with a falsy value');
+    newReason.reason = reason;
+    reason = newReason;
+  }
+  return cb(reason);
+}
+
+function callbackify(original) {
+  if (typeof original !== 'function') {
+    throw new TypeError('The "original" argument must be of type Function');
+  }
+
+  // We DO NOT return the promise as it gives the user a false sense that
+  // the promise is actually somehow related to the callback's execution
+  // and that the callback throwing will reject the promise.
+  function callbackified() {
+    var args = [];
+    for (var i = 0; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+
+    var maybeCb = args.pop();
+    if (typeof maybeCb !== 'function') {
+      throw new TypeError('The last argument must be of type Function');
+    }
+    var self = this;
+    var cb = function() {
+      return maybeCb.apply(self, arguments);
+    };
+    // In true node style we process the callback on `nextTick` with all the
+    // implications (stack, `uncaughtException`, `async_hooks`)
+    original.apply(this, args)
+      .then(function(ret) { process.nextTick(cb.bind(null, null, ret)) },
+            function(rej) { process.nextTick(callbackifyOnRejected.bind(null, rej, cb)) });
+  }
+
+  Object.setPrototypeOf(callbackified, Object.getPrototypeOf(original));
+  Object.defineProperties(callbackified,
+                          getOwnPropertyDescriptors(original));
+  return callbackified;
+}
+exports.callbackify = callbackify;
+
+}).call(this)}).call(this,require('_process'))
+
+},{"./support/isBuffer":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/support/isBufferBrowser.js","./support/types":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/util/support/types.js","_process":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/process/browser.js","inherits":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/inherits/inherits_browser.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/vm-browserify/index.js":[function(require,module,exports){
 var indexOf = function (xs, item) {
     if (xs.indexOf) return xs.indexOf(item);
     else for (var i = 0; i < xs.length; i++) {
@@ -95294,28 +91330,125 @@ exports.createContext = Script.createContext = function (context) {
     return copy;
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/xtend/immutable.js":[function(require,module,exports){
-module.exports = extend
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/which-typed-array/index.js":[function(require,module,exports){
+(function (global){(function (){
+'use strict';
 
-var hasOwnProperty = Object.prototype.hasOwnProperty;
+var forEach = require('for-each');
+var availableTypedArrays = require('available-typed-arrays');
+var callBind = require('call-bind');
+var callBound = require('call-bind/callBound');
+var gOPD = require('gopd');
 
-function extend() {
-    var target = {}
+var $toString = callBound('Object.prototype.toString');
+var hasToStringTag = require('has-tostringtag/shams')();
 
-    for (var i = 0; i < arguments.length; i++) {
-        var source = arguments[i]
+var g = typeof globalThis === 'undefined' ? global : globalThis;
+var typedArrays = availableTypedArrays();
 
-        for (var key in source) {
-            if (hasOwnProperty.call(source, key)) {
-                target[key] = source[key]
-            }
-        }
-    }
+var $slice = callBound('String.prototype.slice');
+var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 
-    return target
+var $indexOf = callBound('Array.prototype.indexOf', true) || /** @type {(array: readonly unknown[], value: unknown) => keyof array} */ function indexOf(array, value) {
+	for (var i = 0; i < array.length; i += 1) {
+		if (array[i] === value) {
+			return i;
+		}
+	}
+	return -1;
+};
+
+/** @typedef {Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array | BigInt64Array | BigUint64Array} TypedArray */
+/** @typedef {'Int8Array' | 'Uint8Array' | 'Uint8ClampedArray' | 'Int16Array' | 'Uint16Array' | 'Int32Array' | 'Uint32Array' | 'Float32Array' | 'Float64Array' | 'BigInt64Array' | 'BigUint64Array'} TypedArrayName */
+/** @type {{ [k in `\$${TypedArrayName}`]?: (receiver: TypedArray) => string | typeof Uint8Array.prototype.slice.call | typeof Uint8Array.prototype.set.call } & { __proto__: null }} */
+var cache = { __proto__: null };
+if (hasToStringTag && gOPD && getPrototypeOf) {
+	forEach(typedArrays, function (typedArray) {
+		var arr = new g[typedArray]();
+		if (Symbol.toStringTag in arr) {
+			var proto = getPrototypeOf(arr);
+			// @ts-expect-error TS won't narrow inside a closure
+			var descriptor = gOPD(proto, Symbol.toStringTag);
+			if (!descriptor) {
+				var superProto = getPrototypeOf(proto);
+				// @ts-expect-error TS won't narrow inside a closure
+				descriptor = gOPD(superProto, Symbol.toStringTag);
+			}
+			// @ts-expect-error TODO: fix
+			cache['$' + typedArray] = callBind(descriptor.get);
+		}
+	});
+} else {
+	forEach(typedArrays, function (typedArray) {
+		var arr = new g[typedArray]();
+		var fn = arr.slice || arr.set;
+		if (fn) {
+			// @ts-expect-error TODO: fix
+			cache['$' + typedArray] = callBind(fn);
+		}
+	});
 }
 
-},{}],"opendsu/bootScripts/browser/iframeBoot":[function(require,module,exports){
+/** @type {import('.')} */
+var tryTypedArrays = function tryAllTypedArrays(value) {
+	/** @type {ReturnType<tryAllTypedArrays>} */ var found = false;
+	forEach(
+		// eslint-disable-next-line no-extra-parens
+		/** @type {Record<`\$${TypedArrayName}`, typeof cache>} */ /** @type {any} */ (cache),
+		/** @type {(getter: typeof cache, name: `\$${TypedArrayName}`) => void} */ function (getter, typedArray) {
+			if (!found) {
+				try {
+				// @ts-expect-error TODO: fix
+					if ('$' + getter(value) === typedArray) {
+						found = $slice(typedArray, 1);
+					}
+				} catch (e) { /**/ }
+			}
+		}
+	);
+	return found;
+};
+
+/** @type {import('.')} */
+var trySlices = function tryAllSlices(value) {
+	/** @type {ReturnType<tryAllSlices>} */ var found = false;
+	forEach(
+		// eslint-disable-next-line no-extra-parens
+		/** @type {any} */ (cache),
+		/** @type {(getter: typeof cache, name: `\$${TypedArrayName}`) => void} */ function (getter, name) {
+			if (!found) {
+				try {
+				// @ts-expect-error TODO: fix
+					getter(value);
+					found = $slice(name, 1);
+				} catch (e) { /**/ }
+			}
+		}
+	);
+	return found;
+};
+
+/** @type {import('.')} */
+module.exports = function whichTypedArray(value) {
+	if (!value || typeof value !== 'object') { return false; }
+	if (!hasToStringTag) {
+		var tag = $slice($toString(value), 8, -1);
+		if ($indexOf(typedArrays, tag) > -1) {
+			return tag;
+		}
+		if (tag !== 'Object') {
+			return false;
+		}
+		// node < 0.6 hits here on real Typed Arrays
+		return trySlices(value);
+	}
+	if (!gOPD) { return null; } // unknown engine
+	return tryTypedArrays(value);
+};
+
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"available-typed-arrays":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/available-typed-arrays/index.js","call-bind":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/call-bind/index.js","call-bind/callBound":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/call-bind/callBound.js","for-each":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/for-each/index.js","gopd":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/gopd/index.js","has-tostringtag/shams":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/has-tostringtag/shams.js"}],"opendsu/bootScripts/browser/iframeBoot":[function(require,module,exports){
 function setSSAppContext() {
     const baseUrl = typeof document !== "undefined" ? (document.getElementsByTagName("base")[0] || {}).href : undefined;
     let seed;

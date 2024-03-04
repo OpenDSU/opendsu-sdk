@@ -24,11 +24,11 @@ if (typeof $$ !== "undefined") {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js":[function(require,module,exports){
+},{"overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js":[function(require,module,exports){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
-
+const errorTypes = require("./errorTypes");
 if (typeof process.env.OPENDSU_ENABLE_DEBUG === "undefined") {
     process.env.OPENDSU_ENABLE_DEBUG = IS_DEV_MODE.toString();
 }
@@ -58,8 +58,23 @@ function MemoryFileMock() {
     }
 }
 
+
 function Logger(className, moduleName, logFile) {
     const MAX_STRING_LENGTH = 11;
+    const verbosityLevels = {
+        "trace": 0,
+        "debug": 1,
+        "info": 2,
+        "log": 3,
+        "warn": 3,
+        "error": 4,
+        "critical": 5,
+        "audit": 6
+    }
+
+    let verbosity;
+
+
     const getPaddingForArg = (arg, maxLen = MAX_STRING_LENGTH) => {
         let noSpaces = Math.abs(maxLen - arg.length);
         let spaces = String(" ").repeat(noSpaces);
@@ -101,6 +116,7 @@ function Logger(className, moduleName, logFile) {
         }
         return msg;
     }
+
     const createLogObject = (functionName, code = 0, ...args) => {
         let message = "";
         for (let i = 0; i < args.length; i++) {
@@ -166,6 +182,7 @@ function Logger(className, moduleName, logFile) {
         }
     }
 
+    const functions = errorTypes;
     const getConsoleFunction = (functionName) => {
         if (functionName === functions.CRITICAL) {
             functionName = functions.ERROR;
@@ -179,6 +196,15 @@ function Logger(className, moduleName, logFile) {
     }
 
     const executeFunctionFromConsole = (functionName, ...args) => {
+        if (typeof $$.debug !== "undefined" && typeof $$.debug.getVerbosityLevel === "function") {
+            verbosity = verbosityLevels[$$.debug.getVerbosityLevel()];
+        } else {
+            verbosity = verbosityLevels["trace"];
+        }
+
+        if (verbosity > verbosityLevels[functionName]) {
+            return;
+        }
         if ($$.memoryLogger) {
             originalConsole[getConsoleFunction(functionName)](...args);
         } else {
@@ -213,17 +239,6 @@ function Logger(className, moduleName, logFile) {
         writeToFile(functionName, ...args);
     }
 
-    const functions = {
-        LOG: "log",
-        INFO: "info",
-        WARN: "warn",
-        TRACE: "trace",
-        DEBUG: "debug",
-        ERROR: "error",
-        CRITICAL: "critical",
-        AUDIT: "audit"
-    }
-
     for (let fnName in functions) {
         this[functions[fnName]] = (...args) => {
             printToConsoleAndFile(functions[fnName], ...args);
@@ -236,6 +251,37 @@ function Logger(className, moduleName, logFile) {
         this[functions.TRACE] = this[functions.DEBUG] = () => {
         };
     }
+
+    const originalWarn = this.warn;
+    const originalError = this.error;
+    const originalTrace = this.trace;
+
+    if ($$.debug && typeof $$.debug.errorWithCodeShouldBeRedirectedToStdout === "function") {
+        const __generateFunction = (functionName) => {
+            return (...args) => {
+                const res = stripCodeFromArgs(...args);
+                if ($$.debug.errorWithCodeShouldBeRedirectedToStdout(res.code)) {
+                    executeFunctionFromConsole(functions.DEBUG, ...args);
+                    $$.debug.useStderrForErrorWithCode(res.code);
+                    this.warn = originalWarn;
+                    this.error = originalError;
+                    this.trace = originalTrace;
+                    console.error = this.error;
+                    console.warn = this.warn;
+                    console.trace = this.trace;
+                } else {
+                    printToConsoleAndFile(functionName, ...args);
+                }
+            }
+        }
+        this.error = __generateFunction(functions.ERROR);
+        this.warn = __generateFunction(functions.WARN);
+        this.trace = __generateFunction(functions.TRACE);
+
+        console.error = this.error;
+        console.warn = this.warn;
+        console.trace = this.trace;
+    }
 }
 
 const getLogger = (className, moduleName, criticalLogFile) => {
@@ -246,7 +292,18 @@ module.exports = {
     getLogger
 }
 
-},{"./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js":[function(require,module,exports){
+},{"./errorTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js":[function(require,module,exports){
+module.exports = {
+    LOG: "log",
+    ERROR: "error",
+    WARN: "warn",
+    INFO: "info",
+    DEBUG: "debug",
+    TRACE: "trace",
+    CRITICAL: "critical",
+    AUDIT: "audit"
+}
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js":[function(require,module,exports){
 module.exports = {
   BROWSER_ENVIRONMENT_TYPE: 'browser',
   MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
@@ -257,7 +314,7 @@ module.exports = {
   NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js":[function(require,module,exports){
 (function (global){(function (){
 let logger = console;
 
@@ -1599,9 +1656,9 @@ module.exports.createUidGenerator = function (minBuffers, bufferSize) {
  require and $$.require are overwriting the node.js defaults in loading modules for increasing security, speed and making it work to the privatesky runtime build with browserify.
  The privatesky code for domains should work in node and browsers.
  */
-function enableForEnvironment(envType){
+function enableForEnvironment(envType) {
 
-    const moduleConstants = require("./moduleConstants");
+    const moduleConstants = require("./src/moduleConstants");
 
     /**
      * Used to provide autocomplete for $$ variables
@@ -1624,7 +1681,7 @@ function enableForEnvironment(envType){
             Error.stackTraceLimit = Infinity;
     }
 
-    if (typeof(global.$$) == "undefined") {
+    if (typeof (global.$$) == "undefined") {
         /**
          * Used to provide autocomplete for $$ variables
          * @type {$$}
@@ -1632,7 +1689,7 @@ function enableForEnvironment(envType){
         global.$$ = {};
     }
 
-    if (typeof($$.__global) == "undefined") {
+    if (typeof ($$.__global) == "undefined") {
         $$.__global = {};
     }
 
@@ -1640,7 +1697,7 @@ function enableForEnvironment(envType){
         global.wprint = console.warn;
     }
     Object.defineProperty($$, "environmentType", {
-        get: function(){
+        get: function () {
             return envType;
         },
         set: function (value) {
@@ -1649,18 +1706,18 @@ function enableForEnvironment(envType){
     });
 
 
-    if (typeof($$.__global.requireLibrariesNames) == "undefined") {
+    if (typeof ($$.__global.requireLibrariesNames) == "undefined") {
         $$.__global.currentLibraryName = null;
         $$.__global.requireLibrariesNames = {};
     }
 
 
-    if (typeof($$.__runtimeModules) == "undefined") {
+    if (typeof ($$.__runtimeModules) == "undefined") {
         $$.__runtimeModules = {};
     }
 
 
-    if (typeof(global.functionUndefined) == "undefined") {
+    if (typeof (global.functionUndefined) == "undefined") {
         global.functionUndefined = function () {
             console.log("Called of an undefined function!!!!");
             throw new Error("Called of an undefined function");
@@ -1693,8 +1750,6 @@ function enableForEnvironment(envType){
     $$.__registerModule = function (name, module) {
         $$.__runtimeModules[name] = module;
     }
-
-    $$.getLogger = require("./Logger").getLogger;
 
     function wrapStep(callbackName) {
         const callback = global[callbackName];
@@ -1753,13 +1808,13 @@ function enableForEnvironment(envType){
 
             } catch (err) {
                 if (err.type !== "PSKIgnorableError") {
-                    if(err instanceof SyntaxError){
+                    if (err instanceof SyntaxError) {
                         console.error(err);
-                    } else{
-                        if(request === 'zeromq'){
-                            console.warn("Failed to load module ", request," with error:", err.message);
-                        }else{
-                            console.error("Failed to load module ", request," with error:", err);
+                    } else {
+                        if (request === 'zeromq') {
+                            console.warn("Failed to load module ", request, " with error:", err.message);
+                        } else {
+                            console.error("Failed to load module ", request, " with error:", err);
                         }
                     }
                     //$$.err("Require encountered an error while loading ", request, "\nCause:\n", err.stack);
@@ -1779,7 +1834,7 @@ function enableForEnvironment(envType){
         return result;
     }
 
-    function makeBrowserRequire(){
+    function makeBrowserRequire() {
         console.log("Defining global require in browser");
 
 
@@ -1790,7 +1845,7 @@ function enableForEnvironment(envType){
         }
     }
 
-    function makeIsolateRequire(){
+    function makeIsolateRequire() {
         // require should be provided when code is loaded in browserify
         //const bundleRequire = require;
 
@@ -1837,7 +1892,7 @@ function enableForEnvironment(envType){
         global.require = newLoader;
     }
 
-    function makeNodeJSRequire(){
+    function makeNodeJSRequire() {
         const pathModuleName = 'path';
         const path = require(pathModuleName);
         const cryptoModuleName = 'crypto';
@@ -1868,7 +1923,7 @@ function enableForEnvironment(envType){
                 } catch (err) {
                     if (err.code === "MODULE_NOT_FOUND") {
                         let pathOrName = request;
-                        if(pathOrName.startsWith('/') || pathOrName.startsWith('./') || pathOrName.startsWith('../')){
+                        if (pathOrName.startsWith('/') || pathOrName.startsWith('./') || pathOrName.startsWith('../')) {
                             pathOrName = path.join(process.cwd(), request);
                         }
                         res = moduleOriginalRequire.call(self, pathOrName);
@@ -1888,9 +1943,9 @@ function enableForEnvironment(envType){
         return newLoader;
     }
 
-    require("./standardGlobalSymbols.js");
+    require("./src/standardGlobalSymbols.js");
 
-    if (typeof($$.require) == "undefined") {
+    if (typeof ($$.require) == "undefined") {
 
         $$.__requireList = ["webshimsRequire"];
         $$.__requireFunctionsChain = [];
@@ -1916,9 +1971,9 @@ function enableForEnvironment(envType){
                 makeBrowserRequire();
                 $$.require = require;
                 let possibleRedirects = [301, 302];
-                $$.httpUnknownResponseGlobalHandler = function(res){
+                $$.httpUnknownResponseGlobalHandler = function (res) {
                     console.log("Global handler for unknown http errors was called", res.status, res);
-                    if(res.status && possibleRedirects.indexOf(res.status)!==-1){
+                    if (res.status && possibleRedirects.indexOf(res.status) !== -1) {
                         window.location = "/";
                         return;
                     }
@@ -1937,7 +1992,7 @@ function enableForEnvironment(envType){
                 $$.require = require;
                 break;
             default:
-               $$.require = makeNodeJSRequire();
+                $$.require = makeNodeJSRequire();
         }
 
     }
@@ -1964,11 +2019,11 @@ function enableForEnvironment(envType){
         return promisifiedFn;
     };
 
-   $$.callAsync = async function (func, ...args) {
+    $$.callAsync = async function (func, ...args) {
         let error, result;
         try {
-            result =  await func(...args);
-        } catch(err) {
+            result = await func(...args);
+        } catch (err) {
             error = err
         }
         return [error, result];
@@ -1978,11 +2033,11 @@ function enableForEnvironment(envType){
         let asyncFunc = $$.promisify(func);
         return $$.callAsync(asyncFunc, ...args);
     }
- 
+
     $$.makeSaneCallback = function makeSaneCallback(fn) {
         let alreadyCalled = false;
         let prevErr;
-        if(fn.alreadyWrapped){
+        if (fn.alreadyWrapped) {
             return fn;
         }
 
@@ -1995,7 +2050,7 @@ function enableForEnvironment(envType){
                 throw new Error(`Callback called 2 times! Second call was stopped. Function code:\n${fn.toString()}\n` + (prevErr ? `Previous error stack ${prevErr.toString()}` : ''));
             }
             alreadyCalled = true;
-            if(err){
+            if (err) {
                 prevErr = err;
             }
             return fn(err, res, ...args);
@@ -2005,86 +2060,114 @@ function enableForEnvironment(envType){
         return newFn;
     };
 
-   function DebugHelper(){
-       let debugEnabled = false;
-       let debugEvents = [];
-       let eventsStack = [];
+    function DebugHelper() {
+        let debugEnabled = false;
+        let debugEvents = [];
+        let eventsStack = [];
 
-       function getStackTrace(){
-              return new Error().stack;
-       }
-       this.start = function(){
-           debugEnabled = true;
-       }
+        function getStackTrace() {
+            return new Error().stack;
+        }
 
-       this.resume = this.start;
+        this.start = function () {
+            debugEnabled = true;
+        }
 
-       this.reset =function(){
-           debugEnabled = true;
-           let debugEvents = [];
-           let eventsStack = [];
-       }
+        this.resume = this.start;
 
-       this.stop = function(){
-           debugEnabled = false;
-       }
+        this.reset = function () {
+            debugEnabled = true;
+            let debugEvents = [];
+            let eventsStack = [];
+        }
 
-       this.logDSUEvent = function(dsu, ...args){
-            if(!debugEnabled) return;
+        this.stop = function () {
+            debugEnabled = false;
+        }
+
+        this.logDSUEvent = function (dsu, ...args) {
+            if (!debugEnabled) return;
 
             let anchorID, dsuInstanceUID;
-            try{
+            try {
                 anchorID = dsu.getAnchorIdSync();
-                anchorID = anchorID.substring(4, 27)+"...";
-            } catch(err){
+                anchorID = anchorID.substring(4, 27) + "...";
+            } catch (err) {
                 anchorID = "N/A";
             }
 
-           try{
-               dsuInstanceUID = dsu.getInstanceUID();
-           } catch(err){
-               dsuInstanceUID = "N/A";
-           }
+            try {
+                dsuInstanceUID = dsu.getInstanceUID();
+            } catch (err) {
+                dsuInstanceUID = "N/A";
+            }
             this.log(`[${anchorID}][${dsuInstanceUID}]`, ...args);
-       }
+        }
 
-       this.log = function(...args){
-           console.debug(...args);
-           if(!debugEnabled) return;
-           debugEvents.push(`Log #${debugEvents.length}` +[...args].join(" "));
-           eventsStack.push(getStackTrace());
-       }
+        this.log = function (...args) {
+            console.debug(...args);
+            if (!debugEnabled) return;
+            debugEvents.push(`Log #${debugEvents.length}` + [...args].join(" "));
+            eventsStack.push(getStackTrace());
+        }
 
-       this.logs = function(){
+        this.logs = function () {
             console.log(`${debugEvents.length} events logged`);
             console.log(debugEvents.join("\n"));
-       }
+        }
 
-       this.context = function(eventNumber){
-           let realNumber = eventNumber;
-           if(typeof eventNumber == "string"){
-               eventNumber = eventNumber.slice(1);
-               realNumber = parseInt(eventNumber);
-           }
-           return console.log(`Event ${debugEvents[eventNumber]}:\n`, eventsStack[realNumber],"\n");
-       }
+        this.context = function (eventNumber) {
+            let realNumber = eventNumber;
+            if (typeof eventNumber == "string") {
+                eventNumber = eventNumber.slice(1);
+                realNumber = parseInt(eventNumber);
+            }
+            return console.log(`Event ${debugEvents[eventNumber]}:\n`, eventsStack[realNumber], "\n");
+        }
 
-   }
+        const errorCodesForStdout = new Set();
 
-   $$.debug = new DebugHelper()
+        this.useStdoutOnceForErrorWithCode = function (code) {
+            errorCodesForStdout.add(code);
+        }
 
+        this.useStderrForErrorWithCode = function (code) {
+            if (errorCodesForStdout.has(code)) {
+                errorCodesForStdout.delete(code);
+            }
+        }
+
+        this.errorWithCodeShouldBeRedirectedToStdout = function (code) {
+            if (errorCodesForStdout.has(code)) {
+                return true;
+            }
+
+            return false;
+        }
+
+        let verbosityLevel;
+        this.verbosity = function (level) {
+            verbosityLevel = level;
+        }
+
+        this.getVerbosityLevel = function () {
+            return verbosityLevel;
+        }
+    }
+
+    $$.debug = new DebugHelper();
+    $$.getLogger = require("./src/Logger").getLogger;
 }
-
 
 
 module.exports = {
     enableForEnvironment,
-    constants: require("./moduleConstants")
+    constants: require("./src/moduleConstants")
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/Logger.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/moduleConstants.js","./standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/standardGlobalSymbols.js"}],"swarmutils":[function(require,module,exports){
+},{"./src/Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js","./src/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","./src/standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js"}],"swarmutils":[function(require,module,exports){
 
 let cachedUIDGenerator = undefined;
 let cachedSafeUid = undefined;
