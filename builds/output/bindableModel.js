@@ -1,4 +1,4 @@
-bindableModelRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel.js":[function(require,module,exports){
+bindableModelRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/cosmin/work/epi4Mar/opendsu-sdk/builds/tmp/bindableModel.js":[function(require,module,exports){
 (function (global){(function (){
 if (typeof window !== "undefined" && typeof window.process === "undefined") {
 	window.process = {};
@@ -12,7 +12,7 @@ require("./bindableModel_intermediar");
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./bindableModel_intermediar":"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel_intermediar.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel_intermediar.js":[function(require,module,exports){
+},{"./bindableModel_intermediar":"/home/cosmin/work/epi4Mar/opendsu-sdk/builds/tmp/bindableModel_intermediar.js"}],"/home/cosmin/work/epi4Mar/opendsu-sdk/builds/tmp/bindableModel_intermediar.js":[function(require,module,exports){
 (function (global){(function (){
 global.bindableModelLoadModules = function(){ 
 
@@ -42,7 +42,7 @@ if (typeof $$ !== "undefined") {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"overwrite-require":"overwrite-require","psk-bindable-model":"psk-bindable-model","queue":"queue","soundpubsub":"soundpubsub"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js":[function(require,module,exports){
+},{"overwrite-require":"overwrite-require","psk-bindable-model":"psk-bindable-model","queue":"queue","soundpubsub":"soundpubsub"}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/Logger.js":[function(require,module,exports){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
@@ -310,7 +310,7 @@ module.exports = {
     getLogger
 }
 
-},{"./errorTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js":[function(require,module,exports){
+},{"./errorTypes":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/errorTypes.js","./moduleConstants":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/errorTypes.js":[function(require,module,exports){
 module.exports = {
     LOG: "log",
     ERROR: "error",
@@ -321,7 +321,7 @@ module.exports = {
     CRITICAL: "critical",
     AUDIT: "audit"
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js":[function(require,module,exports){
 module.exports = {
   BROWSER_ENVIRONMENT_TYPE: 'browser',
   MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
@@ -332,7 +332,7 @@ module.exports = {
   NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js":[function(require,module,exports){
 (function (global){(function (){
 let logger = console;
 
@@ -655,7 +655,7 @@ $$.registerGlobalSymbol("throttlingEvent", function (...args) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"buffer":false,"psklogger":false,"swarmutils":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js":[function(require,module,exports){
+},{"buffer":false,"psklogger":false,"swarmutils":false}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js":[function(require,module,exports){
 const SoundPubSub = require("soundpubsub").soundPubSub;
 const CHAIN_CHANGED = 'chainChanged';
 const WILDCARD = "*";
@@ -1142,7 +1142,7 @@ class PskBindableModel {
 
 module.exports = PskBindableModel;
 
-},{"soundpubsub":"soundpubsub"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js":[function(require,module,exports){
+},{"soundpubsub":"soundpubsub"}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js":[function(require,module,exports){
 /*
 Initial License: (c) Axiologic Research & Alboaie Sînică.
 Contributors: Axiologic Research , PrivateSky project
@@ -2084,9 +2084,9 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./src/Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js","./src/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","./src/standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js"}],"psk-bindable-model":[function(require,module,exports){
+},{"./src/Logger":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/Logger.js","./src/moduleConstants":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","./src/standardGlobalSymbols.js":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js"}],"psk-bindable-model":[function(require,module,exports){
 module.exports = require("./lib/PskBindableModel");
-},{"./lib/PskBindableModel":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js"}],"queue":[function(require,module,exports){
+},{"./lib/PskBindableModel":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js"}],"queue":[function(require,module,exports){
 function QueueElement(content) {
 	this.content = content;
 	this.next = null;
@@ -2159,7 +2159,7 @@ module.exports = Queue;
 module.exports = {
 					soundPubSub: require("./lib/soundPubSub").soundPubSub
 };
-},{"./lib/soundPubSub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js"}]},{},["/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel.js"])
+},{"./lib/soundPubSub":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js"}]},{},["/home/cosmin/work/epi4Mar/opendsu-sdk/builds/tmp/bindableModel.js"])
                     ;(function(global) {
                         global.bundlePaths = {"pskWebServer":"builds/output/pskWebServer.js","openDSU":"builds/output/openDSU.js","nodeBoot":"builds/output/nodeBoot.js","loaderBoot":"builds/output/loaderBoot.js","testsRuntime":"builds/output/testsRuntime.js","bindableModel":"builds/output/bindableModel.js","iframeBoot":"builds/output/iframeBoot.js","versionLessBoot":"builds/output/versionLessBoot.js","testRunnerBoot":"builds/output/testRunnerBoot.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
