@@ -1,8 +1,8 @@
-testRunnerBootRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/cosmin/work/epi4Mar/opendsu-sdk/builds/tmp/testRunnerBoot.js":[function(require,module,exports){
+testRunnerBootRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testRunnerBoot.js":[function(require,module,exports){
 const or = require('overwrite-require');
 or.enableForEnvironment(or.constants.NODEJS_ENVIRONMENT_TYPE);
 require("./testRunnerBoot_intermediar");
-},{"./testRunnerBoot_intermediar":"/home/cosmin/work/epi4Mar/opendsu-sdk/builds/tmp/testRunnerBoot_intermediar.js","overwrite-require":"overwrite-require"}],"/home/cosmin/work/epi4Mar/opendsu-sdk/builds/tmp/testRunnerBoot_intermediar.js":[function(require,module,exports){
+},{"./testRunnerBoot_intermediar":"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testRunnerBoot_intermediar.js","overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testRunnerBoot_intermediar.js":[function(require,module,exports){
 (function (global){(function (){
 global.testRunnerBootLoadModules = function(){ 
 
@@ -24,7 +24,7 @@ if (typeof $$ !== "undefined") {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/Logger.js":[function(require,module,exports){
+},{"overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js":[function(require,module,exports){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
@@ -292,7 +292,7 @@ module.exports = {
     getLogger
 }
 
-},{"./errorTypes":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/errorTypes.js","./moduleConstants":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/errorTypes.js":[function(require,module,exports){
+},{"./errorTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js":[function(require,module,exports){
 module.exports = {
     LOG: "log",
     ERROR: "error",
@@ -303,7 +303,7 @@ module.exports = {
     CRITICAL: "critical",
     AUDIT: "audit"
 }
-},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js":[function(require,module,exports){
 module.exports = {
   BROWSER_ENVIRONMENT_TYPE: 'browser',
   MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
@@ -314,7 +314,7 @@ module.exports = {
   NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js":[function(require,module,exports){
 (function (global){(function (){
 let logger = console;
 
@@ -637,7 +637,7 @@ $$.registerGlobalSymbol("throttlingEvent", function (...args) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"buffer":false,"psklogger":false,"swarmutils":"swarmutils"}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
+},{"buffer":false,"psklogger":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
 function product(args) {
     if(!args.length){
         return [ [] ];
@@ -663,7 +663,7 @@ function objectProduct(obj) {
 }
 
 module.exports = objectProduct;
-},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
 var meta = "meta";
 
 function OwM(serialized){
@@ -754,7 +754,7 @@ OwM.prototype.setMetaFor = function(obj, name, value){
 };
 
 module.exports = OwM;
-},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
 function QueueElement(content) {
 	this.content = content;
 	this.next = null;
@@ -855,7 +855,7 @@ Queue.prototype.inspect = Queue.prototype.toString;
 
 module.exports = Queue;
 
-},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
 const HEADER_SIZE_RESEARVED = 4;
 
 function SwarmPacker(){
@@ -1004,7 +1004,7 @@ SwarmPacker.getHeader = function(pack){
     return header;
 };
 module.exports = SwarmPacker;
-},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
 
 function TaskCounter(finalCallback) {
 	let results = [];
@@ -1054,7 +1054,7 @@ function TaskCounter(finalCallback) {
 }
 
 module.exports = TaskCounter;
-},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
 const OwM = require("./OwM");
 
 /*
@@ -1110,7 +1110,7 @@ exports.jsonToNative = function(serialisedValues, result){
     };
 
 };
-},{"./OwM":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
+},{"./OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
 function replaceAll(str, search, replacement) {
     return str.split(search).join(replacement);
 }
@@ -1297,7 +1297,7 @@ module.exports = {
     extname
 };
 
-},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
 const PING = "PING";
 const PONG = "PONG";
 
@@ -1389,7 +1389,7 @@ module.exports.enableLifeLine = function(timeout){
         }
     }, interval);
 };
-},{"child_process":false}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
+},{"child_process":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
 var commands = {};
 var commands_help = {};
 
@@ -1460,7 +1460,7 @@ module.exports = {
 };
 
 
-},{}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
 const removeDir = (...args) => {
     const fs = require("fs");
     if (typeof fs.rm !== "function") {
@@ -1481,7 +1481,7 @@ module.exports = {
     removeDirSync,
     removeDir
 }
-},{"fs":false}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
+},{"fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
 
 function encode(buffer) {
     return buffer.toString('base64')
@@ -1548,7 +1548,7 @@ exports.short_uuid = function(callback) {
         callback(null, encode(buf));
     });
 };
-},{"crypto":false}],"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
 function UidGenerator(minBuffers, buffersSize) {
     const Queue = require("./Queue");
     var PSKBuffer = typeof $$ !== "undefined" && $$.PSKBuffer ? $$.PSKBuffer : $$.Buffer;
@@ -1650,7 +1650,7 @@ module.exports.createUidGenerator = function (minBuffers, bufferSize) {
     return new UidGenerator(minBuffers, bufferSize);
 };
 
-},{"./Queue":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":false}],"overwrite-require":[function(require,module,exports){
+},{"./Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":false}],"overwrite-require":[function(require,module,exports){
 (function (global){(function (){
 /*
  require and $$.require are overwriting the node.js defaults in loading modules for increasing security, speed and making it work to the privatesky runtime build with browserify.
@@ -2167,7 +2167,7 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./src/Logger":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/Logger.js","./src/moduleConstants":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","./src/standardGlobalSymbols.js":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js"}],"swarmutils":[function(require,module,exports){
+},{"./src/Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js","./src/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","./src/standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js"}],"swarmutils":[function(require,module,exports){
 
 let cachedUIDGenerator = undefined;
 let cachedSafeUid = undefined;
@@ -2222,7 +2222,7 @@ module.exports.ensureIsBuffer = function (data) {
 module.exports.removeDir = require("./lib/removeDir").removeDir;
 module.exports.removeDirSync = require("./lib/removeDir").removeDirSync;
 
-},{"./lib/Combos":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/cosmin/work/epi4Mar/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}]},{},["/home/cosmin/work/epi4Mar/opendsu-sdk/builds/tmp/testRunnerBoot.js"])
+},{"./lib/Combos":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}]},{},["/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testRunnerBoot.js"])
                     ;(function(global) {
                         global.bundlePaths = {"pskWebServer":"builds/output/pskWebServer.js","openDSU":"builds/output/openDSU.js","nodeBoot":"builds/output/nodeBoot.js","loaderBoot":"builds/output/loaderBoot.js","testsRuntime":"builds/output/testsRuntime.js","bindableModel":"builds/output/bindableModel.js","iframeBoot":"builds/output/iframeBoot.js","versionLessBoot":"builds/output/versionLessBoot.js","testRunnerBoot":"builds/output/testRunnerBoot.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
