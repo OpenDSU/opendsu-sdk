@@ -94,6 +94,10 @@ function launch(){
                     callback();
                 }
             });
+        }else{
+            if(callback){
+                callback();
+            }
         }
     }
 
