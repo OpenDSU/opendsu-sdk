@@ -27189,6 +27189,8 @@ function LightDBEnclave(dbName, slots) {
                 try {
                     response = JSON.parse(response);
                 } catch (e) {
+                    console.log(`Failed to execute command: ${JSON.stringify(signedCommand)}`);
+                    console.log(`Failed to JSON.parse on the following response: ${response}`);
                     return callback(e);
                 }
 
@@ -29861,7 +29863,7 @@ function generateMethodForRequestWithData(httpMethod) {
 			});
 		}).on("error", (error) => {
 			const errorWrapper = createOpenDSUErrorWrapper(`Network error`, error, constants.ERROR_ROOT_CAUSE.NETWORK_ERROR);
-			console.log(`[POST] ${url}`, errorWrapper);
+			console.log(`[${httpMethod}] ${url}`, errorWrapper);
 			callback(errorWrapper);
 		})
 

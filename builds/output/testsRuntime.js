@@ -376,6 +376,111 @@ module.exports.createMemoryPersistence = function () {
 
 
 
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/index.js":[function(require,module,exports){
+const template = require("./template");
+module.exports = function (server){
+
+    function getEndpointRow(endpoint){
+        //return endpoint;
+        let enabled = true;
+        if(["get", "head"].indexOf(endpoint.method) === -1 && server.readOnlyModeActive){
+            enabled = false;
+        }
+        return `<div class="row">
+                    <div class="cell">endpoint</div>
+                    <div class="cell">${endpoint.method}</div>
+                    <div class="cell">${endpoint.url}</div>
+                    <div class="cell">${enabled}</div>
+                </div>`;
+    }
+
+    function getMiddlewareRow(endpoint){
+        //return endpoint;
+        let enabled = "PUT, POST, DELETE methods are disabled in readOnly";
+        return `<div class="row">
+                    <div class="cell">middleware</div>
+                    <div class="cell">${endpoint.method ? endpoint.method : "ALL"}</div>
+                    <div class="cell">${endpoint.url ? endpoint.url : "-"} [${endpoint.fn.name}]</div>
+                    <div class="cell">${enabled}</div>
+                </div>`;
+    }
+
+    function testIfEndpoint(endpoint){
+        return !!endpoint.url && !!endpoint.method;
+    }
+
+    function testIfMiddleware(endpoint){
+        return !testIfEndpoint(endpoint) && !!endpoint.fn.name;
+    }
+
+    server.get("/listActiveComponents", async function(req, res){
+        let template = require("./template.js");
+        let $$HEADER = "";
+
+        let endpoints = server.getRegisteredMiddlewareFunctions();
+        let $$ACTIVE_COMPONENTS = '';
+        let endpointsCounter = 0;
+        let middlewaresCounter = 0;
+        for(let endpoint of endpoints){
+            if(testIfEndpoint(endpoint)){
+                endpointsCounter++;
+                $$ACTIVE_COMPONENTS += getEndpointRow(endpoint);
+            }
+            if(testIfMiddleware(endpoint)){
+                middlewaresCounter++;
+                $$ACTIVE_COMPONENTS += getMiddlewareRow(endpoint);
+            }
+        }
+        $$HEADER = `
+        <div>
+        No. middlewares: ${middlewaresCounter}
+        <br>
+        No. endpoints: ${endpointsCounter}
+        </div>
+        `;
+        template = template.replace("$$HEADER", $$HEADER);
+        template = template.replace("$$ACTIVE_COMPONENTS", $$ACTIVE_COMPONENTS);
+
+        res.statusCode = 200;
+        res.end(template);
+    });
+}
+},{"./template":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/template.js","./template.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/template.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/template.js":[function(require,module,exports){
+module.exports = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Active Components</title>
+    <style>
+        .table {
+            display: table;
+        }
+
+        .row {
+            display: table-row;
+        }
+
+        .cell {
+            display: table-cell;
+            border: 1px solid black;
+            padding: 1em;
+        }
+    </style>
+</head>
+<body>
+$$HEADER
+<div class="table">
+    <div class="row">
+        <div class="cell">TYPE</div>
+        <div class="cell">HTTP METHOD</div>
+        <div class="cell">PATH [MIDDLEWARE NAME]</div>
+        <div class="cell">ACTIVE</div>
+    </div>
+    $$ACTIVE_COMPONENTS
+</div>
+</body>
+</html>`;
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js":[function(require,module,exports){
 const DATABASE_NAME = "adminEnclave";
 const DATABASE_PERSISTENCE_TIMEOUT = 100;
@@ -2579,6 +2684,7 @@ function handleSetSSAppTokenRequest(request, response) {
         name: SSAPP_TOKEN_COOKIE_NAME,
         value: JSON.stringify(ssappTokenCookieValue),
         httpOnly: true,
+        secure: true,
         path: "/",
         maxAge: 2147483647, // (2038-01-19 04:14:07) maximum value to avoid integer overflow on older browsers
     });
@@ -4915,6 +5021,7 @@ function StaticServer(server) {
     const config = require("../../config");
     let componentsConfig = config.getConfig("componentsConfig");
     const logger = $$.getLogger("StaticServer", "apihub/staticServer");
+    const excludedFiles = ["apihub.json"];
     let excludedFilesRegex;
     if (componentsConfig && componentsConfig.staticServer && componentsConfig.staticServer.excludedFiles) {
         excludedFilesRegex = componentsConfig.staticServer.excludedFiles.map(str => new RegExp(str));
@@ -5095,6 +5202,11 @@ function StaticServer(server) {
     }
 
     function sendFile(res, file) {
+        if (excludedFiles.includes(require("path").basename(file))) {
+            res.statusCode = 403;
+            res.end();
+            return;
+        }
         if (excludedFilesRegex) {
             let index = excludedFilesRegex.findIndex(regExp => file.match(regExp) !== null);
             if (index >= 0) {
@@ -5221,7 +5333,7 @@ function StaticServer(server) {
 
 module.exports = StaticServer;
 
-},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/index.js","./../admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","fs":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/controller.js":[function(require,module,exports){
+},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/index.js","./../admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","fs":false,"path":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/controller.js":[function(require,module,exports){
 (function (global){(function (){
 const syndicate = require("syndicate");
 const logger = $$.getLogger("stream", "apihub/stream");
@@ -5815,6 +5927,9 @@ const defaultConfig = {
             "comment": "this is a standard middleware but its config is here to make it as uniform as possible",
             "statusLogInterval": 3000,
             "longRequests":["/mq/"]
+        },
+        "activeComponents":{
+            "module": "./components/activeComponents",
         }
     },
     "tokenBucket": {
@@ -6847,6 +6962,10 @@ function MiddlewareRegistry() {
         registeredMiddlewareFunctions.push({method, url, fn});
     }
 
+    this.getRegisteredMiddlewareFunctions = function() {
+        return registeredMiddlewareFunctions;
+    }
+
     this.use = function (...params) {
 	    let args = [ undefined, undefined, undefined ];
 
@@ -7044,6 +7163,8 @@ function Server(sslOptions) {
     this.head = function getReq(reqUrl, reqResolver) {
         middleware.use("HEAD", reqUrl, reqResolver);
     };
+
+    this.getRegisteredMiddlewareFunctions = middleware.getRegisteredMiddlewareFunctions;
 
     this.makeLocalRequest = function (method,path, body,headers, callback)
     {
@@ -7626,7 +7747,7 @@ module.exports = function (server) {
 
     const workingDir = path.join(server.rootFolder, "external-volume", "fixed-urls");
     const storage = path.join(workingDir, "storage");
-    let lightDBEnclaveClient;
+    let lightDBEnclaveClient = enclaveAPI.initialiseLightDBEnclave(DATABASE);
 
     let watchedUrls = [];
     //we inject a helper function that can be called by different components or middleware to signal that their requests
@@ -7669,7 +7790,7 @@ module.exports = function (server) {
     }
 
     function getIdentifier(fixedUrl) {
-        return Buffer.from(fixedUrl).toString("base64");
+        return Buffer.from(fixedUrl).toString("base64url");
     }
 
     const indexer = {
@@ -7735,7 +7856,8 @@ module.exports = function (server) {
                     record.counter = 0;
                 }
                 record.counter++;
-                return lightDBEnclaveClient.updateRecord($$.SYSTEM_IDENTIFIER, TASKS_TABLE, record.pk, record, callback)
+                record.__fallbackToInsert = true;
+                return lightDBEnclaveClient.updateRecord($$.SYSTEM_IDENTIFIER, TASKS_TABLE, record.pk, record, callback);
             });
         },
         remove: function (task, callback) {
@@ -7746,6 +7868,7 @@ module.exports = function (server) {
                 }
                 if (record.counter && record.counter > 1) {
                     record.counter = 1;
+                    record.__fallbackToInsert = true;
                     return lightDBEnclaveClient.updateRecord($$.SYSTEM_IDENTIFIER, TASKS_TABLE, toBeRemoved.pk, record, callback);
                 }
 
@@ -7796,6 +7919,9 @@ module.exports = function (server) {
             lightDBEnclaveClient.getRecord($$.SYSTEM_IDENTIFIER, HISTORY_TABLE, target.pk, callback);
         },
         schedule: function (criteria, callback) {
+            if(server.readOnlyModeActive){
+                return callback(new Error("FixedURL scheduling is not possible when server is in readOnly mode"));
+            }
             lightDBEnclaveClient.filter($$.SYSTEM_IDENTIFIER, HISTORY_TABLE, criteria, function (err, records) {
                 if (err) {
                     if (err.code === 404) {
@@ -7854,6 +7980,10 @@ module.exports = function (server) {
             });
         },
         status: function () {
+            if(server.readOnlyModeActive){
+                //preventing log noise in readOnly mode
+                return ;
+            }
             let inProgressCounter = Object.keys(taskRegistry.inProgress);
             logger.debug(`Number of tasks that are in progress: ${inProgressCounter ? inProgressCounter.length : 0}`);
 
@@ -7867,6 +7997,22 @@ module.exports = function (server) {
                     logger.debug(`Number of fixed urls: ${tasks ? tasks.length : 0}`);
                 }
             });
+        },
+        httpStatus: async function(req, res){
+            let inProgressCounter = Object.keys(taskRegistry.inProgress);
+            let status = {};
+            try{
+                status.inProgress = inProgressCounter ? inProgressCounter.length : 0;
+                let scheduledTasks = await $$.promisify(lightDBEnclaveClient.getAllRecords)($$.SYSTEM_IDENTIFIER, TASKS_TABLE);
+                status.scheduled = scheduledTasks ? scheduledTasks.length : 0;
+                let tasks = await $$.promisify(lightDBEnclaveClient.getAllRecords)($$.SYSTEM_IDENTIFIER, HISTORY_TABLE);
+                status.total = tasks ? tasks.length : 0;
+            }catch(err){
+                res.statusCode = 500;
+                res.end(`Failed to generate status info ${err.message}`);
+            }
+            res.statusCode = 200;
+            res.end(JSON.stringify(status));
         }
     };
     const taskRunner = {
@@ -7992,6 +8138,10 @@ module.exports = function (server) {
             }
         },
         status: function () {
+            if(server.readOnlyModeActive){
+                //preventing log noise in readOnly mode
+                return ;
+            }
             let pendingReq = Object.keys(taskRunner.pendingRequests);
             let counter = 0;
             for (let pendingUrl of pendingReq) {
@@ -8005,38 +8155,37 @@ module.exports = function (server) {
         }
     };
 
-    fs.mkdir(storage, {recursive: true}, (err) => {
-        if (err) {
-            logger.error("Failed to ensure folder structure due to", err);
-        }
-        lightDBEnclaveClient = enclaveAPI.initialiseLightDBEnclave(DATABASE);
-        lightDBEnclaveClient.createDatabase(DATABASE, (err) => {
+    if(!server.readOnlyModeActive){
+        fs.mkdir(storage, {recursive: true}, (err) => {
             if (err) {
-                logger.debug("Failed to create database", err.message, err.code, err.rootCause);
+                logger.error("Failed to ensure folder structure due to", err);
             }
-
-            lightDBEnclaveClient.hasWriteAccess($$.SYSTEM_IDENTIFIER, (err, hasAccess) => {
+            lightDBEnclaveClient.createDatabase(DATABASE, (err) => {
                 if (err) {
-                    logger.debug("Failed to check if we have write access", err.message, err.code, err.rootCause);
+                    logger.debug("Failed to create database", err.message, err.code, err.rootCause);
                 }
 
-                if (hasAccess) {
-                    setInterval(taskRunner.execute, INTERVAL_TIME);
-                    setInterval(taskRunner.status, 1 * 60 * 1000);//each minute
-                    return;
-                }
-
-                lightDBEnclaveClient.grantWriteAccess($$.SYSTEM_IDENTIFIER, (err) => {
+                lightDBEnclaveClient.hasWriteAccess($$.SYSTEM_IDENTIFIER, (err, hasAccess) => {
                     if (err) {
-                        logger.debug("Failed to grant write access to the enclave", err.message, err.code, err.rootCause);
+                        logger.error("Failed to check if we have write access", err.message, err.code, err.rootCause);
                     }
 
-                    setInterval(taskRunner.execute, INTERVAL_TIME);
-                    setInterval(taskRunner.status, 1 * 60 * 1000);//each minute
+                    if (hasAccess) {
+                        setInterval(taskRunner.execute, INTERVAL_TIME);
+                        return;
+                    }
+
+                    lightDBEnclaveClient.grantWriteAccess($$.SYSTEM_IDENTIFIER, (err) => {
+                        if (err) {
+                            logger.error("Failed to grant write access to the enclave", err.message, err.code, err.rootCause);
+                        }
+
+                        setInterval(taskRunner.execute, INTERVAL_TIME);
+                    })
                 })
             })
-        })
-    });
+        });
+    }
 
     server.put("/registerFixedURLs", require("./../../utils/middlewares").bodyReaderMiddleware);
     server.put("/registerFixedURLs", function register(req, res, next) {
@@ -8066,7 +8215,7 @@ module.exports = function (server) {
             taskRegistry.register(fixedUrl, function (err) {
                 if (err) {
                     res.statusCode = 500;
-                    return res.end(err.message);
+                    return res.end(`Failed to register url because: ${err.message}`);
                 }
                 recursiveRegistry();
             });
@@ -8086,7 +8235,7 @@ module.exports = function (server) {
             if (err) {
                 logger.log(err);
                 res.statusCode = 500;
-                return res.end();
+                return res.end(`Failed to schedule task ${err.message}`);
             }
             res.statusCode = 200;
             res.end();
@@ -8104,7 +8253,7 @@ module.exports = function (server) {
             if (err) {
                 logger.log(err);
                 res.statusCode = 500;
-                return res.end();
+                return res.end(`Failed to cancel task ${err.message}`);
             }
             res.statusCode = 200;
             res.end();
@@ -8220,6 +8369,24 @@ module.exports = function (server) {
         taskRegistry.isKnown(fixedUrl, (err, known) => {
             //if reached this point it might be a fixed url that is not known yet, and it should get registered and scheduled for resolving...
             //this case could catch params combinations that are not captured...
+
+            if(server.readOnlyModeActive){
+                //this case of readOnlyModeActive needs to be handled carefully in order to prevent any writes possible
+                if(known){
+                    return indexer.get(fixedUrl, (err, content) => {
+                        if (err) {
+                            logger.warn(`Failed to load content for fixedUrl; This could happen when the task is not yet resolved by full container`);
+                            //no current task and no cache... let's move on to resolving the req
+                            return next();
+                        }
+                        //known fixed url let's respond to the client
+                        respond(res, content);
+                    });
+                }else{
+                    return next();
+                }
+            }
+
             if (!known) {
                 return taskRegistry.register(fixedUrl, (err) => {
                     if (err) {
@@ -8240,6 +8407,7 @@ module.exports = function (server) {
     });
     server.use("*", getTimestampHandler);
     server.get("/mtime/*", getTimestampHandler);
+    server.get("/statusFixedURL", taskRegistry.httpStatus);
 }
 }).call(this)}).call(this,require("buffer").Buffer)
 
@@ -8302,7 +8470,7 @@ function Logger(server) {
         return (diff[0] * 1e9 + diff[1]) / 1e6;
     };
 
-    let ms = 3000;
+    let ms = 10000;
     let longRequests = [];
     const config = server.config.componentsConfig;
     if (config.requestLogger) {
@@ -8478,13 +8646,15 @@ function OAuthMiddleware(server) {
     const oauthConfig = config.getConfig("oauthConfig");
     const path = require("path");
     const ENCRYPTION_KEYS_LOCATION = oauthConfig.encryptionKeysLocation || path.join(server.rootFolder, "external-volume", "encryption-keys");
-    const urlsToSkip = util.getUrlsToSkip();
+    let urlsToSkip = util.getUrlsToSkip() ;
 
     const WebClient = require("./WebClient");
     const webClient = new WebClient(oauthConfig);
     const errorMessages = require("./errorMessages");
 
-    const defaultUrlsToSkip = ["brick-exists", "get-all-versions", "get-last-version", "get-brick", "credential"];
+    const defaultUrlsToSkip = ["/installation-details", "/ready-probe"];
+    urlsToSkip = urlsToSkip.concat(defaultUrlsToSkip);
+    const defaultActionsToSkip = ["brick-exists", "get-all-versions", "get-last-version", "get-brick", "credential"];
 
     //we let KeyManager to boot and prepare ...
     util.initializeKeyManager(ENCRYPTION_KEYS_LOCATION, oauthConfig.keyTTL);
@@ -8508,7 +8678,7 @@ function OAuthMiddleware(server) {
             if (err) {
                 return sendUnauthorizedResponse(req, res, "Unable to encrypt login info");
             }
-            let cookies = [`loginContextCookie=${encryptedContext}; Path=/; HttpOnly`];
+            let cookies = [`loginContextCookie=${encryptedContext}; Path=/; HttpOnly; Secure`];
             logger.info("SSO redirect (http 301) triggered for:", req.url);
             res.writeHead(301, {
                 Location: loginContext.redirect,
@@ -8571,7 +8741,7 @@ function OAuthMiddleware(server) {
                         util.printDebugLog("SSODetectedId", SSODetectedId);
                         res.writeHead(301, {
                             Location: "/setSSODetectedId",
-                            "Set-Cookie": [`logout=false; Path=/; HttpOnly`, `accessTokenCookie=${encryptedTokenSet.encryptedAccessToken}; Max-age=86400; HttpOnly`, "isActiveSession=true; Max-age=86400; HttpOnly", `refreshTokenCookie=${encryptedTokenSet.encryptedRefreshToken}; Max-age=86400; HttpOnly`, `SSOUserId=${SSOUserId}; Max-age=86400; HttpOnly`, `SSODetectedId=${SSODetectedId}; Max-age=86400; HttpOnly`, `loginContextCookie=; Max-Age=0; Path=/; HttpOnly`],
+                            "Set-Cookie": [`logout=false; Path=/; HttpOnly; Secure`, `accessTokenCookie=${encryptedTokenSet.encryptedAccessToken}; Max-age=86400; HttpOnly; Secure`, "isActiveSession=true; Max-age=86400; HttpOnly; Secure", `refreshTokenCookie=${encryptedTokenSet.encryptedRefreshToken}; Max-age=86400; HttpOnly; Secure`, `SSOUserId=${SSOUserId}; Max-age=86400; HttpOnly; Secure`, `SSODetectedId=${SSODetectedId}; Max-age=86400; HttpOnly; Secure`, `loginContextCookie=; Max-Age=0; Path=/; HttpOnly; Secure`],
                             "Cache-Control": "no-store, no-cache, must-revalidate, post-check=0, pre-check=0"
                         });
                         res.end();
@@ -8589,7 +8759,7 @@ function OAuthMiddleware(server) {
             post_logout_redirect_uri: oauthConfig.client.postLogoutRedirectUrl, client_id: oauthConfig.client.clientId,
         };
 
-        let cookies = ["logout=true; Path=/; HttpOnly", "accessTokenCookie=; Max-Age=0; HttpOnly", "isActiveSession=; Max-Age=0; HttpOnly", "refreshTokenCookie=; Max-Age=0; HttpOnly", "loginContextCookie=; Path=/; HttpOnly; Max-Age=0", `logoutUrl=${logoutUrl.href}; Path=/; HttpOnly`, `postLogoutRedirectUrl=${oauthConfig.client.postLogoutRedirectUrl}; Path=/; HttpOnly`];
+        let cookies = ["logout=true; Path=/; HttpOnly; Secure", "accessTokenCookie=; Max-Age=0; HttpOnly; Secure", "isActiveSession=; Max-Age=0; HttpOnly; Secure", "refreshTokenCookie=; Max-Age=0; HttpOnly; Secure", "loginContextCookie=; Path=/; HttpOnly; Secure; Max-Age=0", `logoutUrl=${logoutUrl.href}; Path=/; HttpOnly; Secure`, `postLogoutRedirectUrl=${oauthConfig.client.postLogoutRedirectUrl}; Path=/; HttpOnly; Secure`];
         logger.info("SSO redirect (http 301) triggered for:", req.url);
         if (oauthConfig.usePostForLogout) {
             res.writeHead(301, {
@@ -8646,7 +8816,7 @@ function OAuthMiddleware(server) {
         }
 
         function startLogoutPhase(res) {
-            let cookies = ["accessTokenCookie=; Max-Age=0; HttpOnly", "isActiveSession=; Max-Age=0; HttpOnly", "refreshTokenCookie=; Max-Age=0; HttpOnly", "loginContextCookie=; Path=/; Max-Age=0; HttpOnly"];
+            let cookies = ["accessTokenCookie=; Max-Age=0; HttpOnly; Secure", "isActiveSession=; Max-Age=0; HttpOnly; Secure", "refreshTokenCookie=; Max-Age=0; HttpOnly; Secure", "loginContextCookie=; Path=/; Max-Age=0; HttpOnly; Secure"];
             logger.info("SSO redirect (http 301) triggered for:", req.url);
             res.writeHead(301, {
                 Location: "/logout",
@@ -8687,7 +8857,7 @@ function OAuthMiddleware(server) {
             //ignored on purpose
         }
 
-        if (defaultUrlsToSkip.indexOf(action) !== -1) {
+        if (defaultActionsToSkip.indexOf(action) !== -1) {
             next();
             return;
         }
@@ -8812,7 +8982,7 @@ function OAuthMiddleware(server) {
                         return sendUnauthorizedResponse(req, res, "Unable to refresh token");
                     }
 
-                    cookies = cookies.concat([`accessTokenCookie=${tokenSet.encryptedAccessToken}; Max-age=86400; HttpOnly`, `refreshTokenCookie=${tokenSet.encryptedRefreshToken}; HttpOnly`]);
+                    cookies = cookies.concat([`accessTokenCookie=${tokenSet.encryptedAccessToken}; Max-age=86400; HttpOnly; Secure`, `refreshTokenCookie=${tokenSet.encryptedRefreshToken}; HttpOnly; Secure`]);
                     logger.info("SSO redirect (http 301) triggered for:", req.url);
                     res.writeHead(301, {Location: "/", "Set-Cookie": cookies});
                     res.end();
@@ -8837,7 +9007,7 @@ function OAuthMiddleware(server) {
                     }
 
                     const sessionExpiryTime = Date.now() + oauthConfig.sessionTimeout;
-                    cookies = cookies.concat([`sessionExpiryTime=${sessionExpiryTime}; Path=/; HttpOnly`, `accessTokenCookie=${encryptedAccessToken}; Path=/; Max-age=86400; HttpOnly`]);
+                    cookies = cookies.concat([`sessionExpiryTime=${sessionExpiryTime}; Path=/; HttpOnly; Secure`, `accessTokenCookie=${encryptedAccessToken}; Path=/; Max-age=86400; HttpOnly; Secure`]);
                     res.setHeader("Set-Cookie", cookies);
                     next();
                 })
@@ -9860,6 +10030,9 @@ module.exports = function (server) {
             return res.end();
         }
 
+        const index = htpPwdSecrets.findIndex(entry => entry.startsWith(authorisationData[0]));
+        let [user, pwd, mail, ssoId] = htpPwdSecrets[index].split(':');
+        req.headers["user-id"] = ssoId;
         next();
     });
 
@@ -29338,7 +29511,7 @@ function LightDBServer(config, callback) {
 
                     if(server.readOnlyModeActive ) {
                         if (enclaves[req.params.dbName].allowedInReadOnlyMode &&
-                            !enclaves[req.params.dbName].allowedInReadOnlyMode([command.commandName])) {
+                            !enclaves[req.params.dbName].allowedInReadOnlyMode(command.commandName)) {
 
                             res.statusCode = 403;
                             res.end();
@@ -29349,7 +29522,7 @@ function LightDBServer(config, callback) {
                         try {
                             let lastRefresh = lastRefreshes[req.params.dbName];
                             if (!lastRefresh || LAST_REFRESH_TIMEOUT < Date.now() - lastRefresh) {
-                                enclaves[req.params.dbName].refreshAsync();
+                                await enclaves[req.params.dbName].refreshAsync();
                                 lastRefreshes[req.params.dbName] = Date.now();
                             }
                         } catch (err) {
@@ -29357,6 +29530,7 @@ function LightDBServer(config, callback) {
                         }
                     }
 
+                    const label = `Executing command ${command.commandName} with args ${args} on database ${req.params.dbName}`;
                     const cb = (err, result) => {
                         if (err) {
                             res.statusCode = 500;
@@ -29369,11 +29543,18 @@ function LightDBServer(config, callback) {
                         if(typeof result !== "undefined"){
                             res.write(JSON.stringify(result));
                         }
+
                         res.end();
                     }
 
                     args.push(cb);
-                    enclaves[req.params.dbName][command.commandName](...args);
+
+                    // trying to capture any sync error that might occur during the execution of the command
+                    try {
+                        enclaves[req.params.dbName][command.commandName](...args);
+                    }catch (e) {
+                        cb(e);
+                    }
                 });
             }
             if(args[0] === $$.SYSTEM_IDENTIFIER){
@@ -29623,9 +29804,22 @@ function LokiDb(rootFolder, autosaveInterval, adaptorConstructorFunction) {
 
     this.updateRecord = function (tableName, pk, record, callback) {
         let table = db.getCollection(tableName);
-        const doc = table.by("pk", pk);
-        for (let prop in record) {
-            doc[prop] = record[prop];
+        let doc;
+        try {
+            doc = table.by("pk", pk);
+            if(!doc && record.__fallbackToInsert){
+                //this __fallbackToInsert e.g. is used by fixedURL component
+                record.__fallbackToInsert = undefined;
+                delete record.__fallbackToInsert;
+                return self.insertRecord(tableName, pk, record, callback);
+            }
+            for (let prop in record) {
+                doc[prop] = record[prop];
+            }
+        } catch (err) {
+            logger.error(err);
+            logger.debug(`Failed to update ${pk} in table ${tableName}`);
+            return callback(createOpenDSUErrorWrapper(`Could not update record in table ${tableName}`, err));
         }
 
         doc.__timestamp = Date.now();
@@ -30102,8 +30296,9 @@ function LokiEnclaveFacade(rootFolder, autosaveInterval, adaptorConstructorFunct
     }
 
     this.refreshAsync =  () => {
+        let self = this;
         return new Promise((resolve, reject) => {
-            this.refresh((err)=>{
+            self.storageDB.refresh((err)=>{
                 if(err){
                     return reject(err);
                 }
@@ -49515,6 +49710,8 @@ function LightDBEnclave(dbName, slots) {
                 try {
                     response = JSON.parse(response);
                 } catch (e) {
+                    console.log(`Failed to execute command: ${JSON.stringify(signedCommand)}`);
+                    console.log(`Failed to JSON.parse on the following response: ${response}`);
                     return callback(e);
                 }
 
@@ -52179,7 +52376,7 @@ function generateMethodForRequestWithData(httpMethod) {
 			});
 		}).on("error", (error) => {
 			const errorWrapper = createOpenDSUErrorWrapper(`Network error`, error, constants.ERROR_ROOT_CAUSE.NETWORK_ERROR);
-			console.log(`[POST] ${url}`, errorWrapper);
+			console.log(`[${httpMethod}] ${url}`, errorWrapper);
 			callback(errorWrapper);
 		})
 
@@ -71436,6 +71633,7 @@ const CHECK_FOR_RESTART_COMMAND_FILE_INTERVAL = 500;
 	require('./components/stream');
 	require('./components/requestForwarder');
 	require('./components/lightDBEnclave');
+	require("./components/activeComponents");
 	//end
 })();
 
@@ -71752,7 +71950,8 @@ function HttpServer({ listeningPort, rootFolder, sslConfig, dynamicPort, restart
 
 		function addComponents(cb) {
             const requiredComponentNames = ["config"];
-            addComponent("config", {module: "./components/config"});
+            //addComponent("config", {module: "./components/config"});
+			addComponent("activeComponents", {module: "./components/activeComponents"});
 
             // take only the components that have configurations and that are not part of the required components
 			const middlewareList = [...conf.activeComponents]
@@ -71866,7 +72065,8 @@ module.exports.getSecretsServiceInstanceAsync = require("./components/secrets/Se
 
 module.exports.anchoringStrategies = require("./components/anchoring/strategies");
 
-},{"./components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./components/anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/index.js","./components/anchoring/strategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./components/bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bdns/index.js","./components/bricking":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/index.js","./components/cloudWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/cloudWallet/index.js","./components/config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/config/index.js","./components/debugLogger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/debugLogger/index.js","./components/installation-details":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/installation-details/index.js","./components/keySsiNotifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/keySsiNotifications/index.js","./components/lightDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/lightDBEnclave/index.js","./components/mainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mainDSU/index.js","./components/mqHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/index.js","./components/requestForwarder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/requestForwarder/index.js","./components/secrets":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js","./components/secrets/SecretsService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js","./components/staticServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js","./components/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/index.js","./components/versionlessDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/versionlessDSU/index.js","./config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./libs/http-wrapper":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/index.js","./middlewares/SimpleLock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/SimpleLock/index.js","./middlewares/apiKeyAuth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/apiKeyAuth/index.js","./middlewares/authorisation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/authorisation/index.js","./middlewares/clientCredentialsOauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/clientCredentialsOauth/index.js","./middlewares/fixedUrls":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/fixedUrls/index.js","./middlewares/genericErrorMiddleware":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js","./middlewares/logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/logger/index.js","./middlewares/oauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/index.js","./middlewares/readOnly":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/readOnly/index.js","./middlewares/requestEnhancements":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js","./middlewares/responseHeader":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/responseHeader/index.js","./middlewares/simpleAuth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/simpleAuth/index.js","./middlewares/throttler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/throttler/index.js","swarmutils":"swarmutils"}],"bar-fs-adapter":[function(require,module,exports){
+module.exports.TokenBucket = require("./libs/TokenBucket");
+},{"./components/activeComponents":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/index.js","./components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./components/anchoring":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/index.js","./components/anchoring/strategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","./components/bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bdns/index.js","./components/bricking":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/bricking/index.js","./components/cloudWallet":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/cloudWallet/index.js","./components/config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/config/index.js","./components/debugLogger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/debugLogger/index.js","./components/installation-details":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/installation-details/index.js","./components/keySsiNotifications":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/keySsiNotifications/index.js","./components/lightDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/lightDBEnclave/index.js","./components/mainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mainDSU/index.js","./components/mqHub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/index.js","./components/requestForwarder":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/requestForwarder/index.js","./components/secrets":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js","./components/secrets/SecretsService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js","./components/staticServer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/staticServer/index.js","./components/stream":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/stream/index.js","./components/versionlessDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/versionlessDSU/index.js","./config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./libs/TokenBucket":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/TokenBucket.js","./libs/http-wrapper":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/index.js","./middlewares/SimpleLock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/SimpleLock/index.js","./middlewares/apiKeyAuth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/apiKeyAuth/index.js","./middlewares/authorisation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/authorisation/index.js","./middlewares/clientCredentialsOauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/clientCredentialsOauth/index.js","./middlewares/fixedUrls":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/fixedUrls/index.js","./middlewares/genericErrorMiddleware":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/genericErrorMiddleware/index.js","./middlewares/logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/logger/index.js","./middlewares/oauth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/index.js","./middlewares/readOnly":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/readOnly/index.js","./middlewares/requestEnhancements":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/requestEnhancements/index.js","./middlewares/responseHeader":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/responseHeader/index.js","./middlewares/simpleAuth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/simpleAuth/index.js","./middlewares/throttler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/throttler/index.js","swarmutils":"swarmutils"}],"bar-fs-adapter":[function(require,module,exports){
 module.exports.createFsAdapter = () => {
     const FsAdapter = require("./lib/FsAdapter");
     return new FsAdapter();
