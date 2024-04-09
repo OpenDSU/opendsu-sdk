@@ -6,6 +6,7 @@ const path = require("path");
 process.env.PSK_ROOT_INSTALATION_FOLDER = path.join(__dirname, "../../../");
 process.env.OPENDSU_ENABLE_DEBUG = true;
 process.env.DEV = true;
+process.env.SSO_SECRETS_ENCRYPTION_KEY = require("opendsu").loadAPI("crypto").generateRandom(32).toString("base64");
 require(path.resolve(path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, "builds/output/pskWebServer.js")));
 
 const os = require("os");
