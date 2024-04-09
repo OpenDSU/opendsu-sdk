@@ -76,7 +76,7 @@ const Tir = function () {
      *
      * @param exitStatus The exit status, to exit the process.
      */
-    this.tearDown = (exitStatus) => {
+    this.tearDown = () => {
         console.info("[TIR] Tearing down...");
         if (testerNode) {
             console.info("[TIR] Killing node", testerNode.pid);
