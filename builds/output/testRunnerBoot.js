@@ -1036,15 +1036,15 @@ function TaskCounter(finalCallback) {
 	}
 
 	function callCallback() {
-	    if(errors && errors.length === 0) {
-	        errors = undefined;
-        }
+		if(errors && errors.length === 0) {
+			errors = undefined;
+		}
 
-	    if(results && results.length === 0) {
-	        results = undefined;
-        }
+		if(results && results.length === 0) {
+			results = undefined;
+		}
 
-        finalCallback(errors, results);
+		finalCallback(errors, results);
     }
 
 	return {
@@ -1100,14 +1100,14 @@ exports.jsonToNative = function(serialisedValues, result){
     for(let v in serialisedValues.publicVars){
         result.publicVars[v] = serialisedValues.publicVars[v];
 
-    };
+    }
     for(let l in serialisedValues.privateVars){
         result.privateVars[l] = serialisedValues.privateVars[l];
-    };
+    }
 
     for(let i in OwM.prototype.getMetaFrom(serialisedValues)){
         OwM.prototype.setMetaFor(result, i, OwM.prototype.getMetaFrom(serialisedValues, i));
-    };
+    }
 
 };
 },{"./OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
@@ -1488,7 +1488,7 @@ function encode(buffer) {
         .replace(/\+/g, '')
         .replace(/\//g, '')
         .replace(/=+$/, '');
-};
+}
 
 function stampWithTime(buf, salt, msalt){
     if(!salt){

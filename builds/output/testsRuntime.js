@@ -377,7 +377,6 @@ module.exports.createMemoryPersistence = function () {
 
 
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/index.js":[function(require,module,exports){
-const template = require("./template");
 module.exports = function (server){
 
     function getEndpointRow(endpoint){
@@ -445,7 +444,7 @@ module.exports = function (server){
         res.end(template);
     });
 }
-},{"./template":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/template.js","./template.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/template.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/template.js":[function(require,module,exports){
+},{"./template.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/template.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/activeComponents/template.js":[function(require,module,exports){
 module.exports = `
 <!DOCTYPE html>
 <html lang="en">
@@ -978,8 +977,6 @@ module.exports = {
 };
 
 },{"../strategies":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/index.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/index.js":[function(require,module,exports){
-const {getAllVersions, getLastVersion, totalNumberOfAnchors} = require("./controllers");
-
 function Anchoring(server) {
     function requestServerMiddleware(request, response, next) {
         request.server = server;
@@ -992,8 +989,7 @@ function Anchoring(server) {
         createOrUpdateMultipleAnchors,
         getAllVersions,
         getLastVersion,
-        totalNumberOfAnchors,
-        dumpAnchors
+        totalNumberOfAnchors
     } = require("./controllers");
 
     const {responseModifierMiddleware, requestBodyJSONMiddleware} = require("../../utils/middlewares");
@@ -1138,8 +1134,6 @@ function ETH(server, domainConfig, anchorId, newAnchorValue, jsonData) {
 
 module.exports = ETH;
 },{"../../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/utils/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/filePersistence.js":[function(require,module,exports){
-const {totalNumberOfAnchors} = require("../../controllers");
-
 function FilePersistenceStrategy(rootFolder, configuredPath) {
     const self = this;
     const fileOperations = new FileOperations();
@@ -1281,7 +1275,7 @@ function FileOperations() {
             return callback(new Error("No fileId specified."));
         }
 
-        let forbiddenCharacters = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g);
+        let forbiddenCharacters = new RegExp(/[~`!#$%^&*+=\-\[\]\\';,/{}|":<>?]/g);
         if (forbiddenCharacters.test(anchorId)) {
             logger.error(`Found forbidden characters in anchorId ${anchorId}`);
             return callback(new Error(`anchorId ${anchorId} contains forbidden characters`));
@@ -1359,7 +1353,7 @@ module.exports = {
     FilePersistenceStrategy
 }
 
-},{"../../controllers":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/controllers/index.js","../utils/AnchorPathResolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/AnchorPathResolver.js","../utils/FSLock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/FSLock.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/index.js":[function(require,module,exports){
+},{"../utils/AnchorPathResolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/AnchorPathResolver.js","../utils/FSLock":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/utils/FSLock.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/anchoring/strategies/fs/index.js":[function(require,module,exports){
 
 const openDSU = require("opendsu");
 
@@ -1805,7 +1799,7 @@ function FSLock(filePath, maxTimeMilliSeconds, forcedLockDelay) {
                 return callback(err);
             }
             if (isMyLock) {
-                return removeDir(getLockPath(filePath), {recursive: true}, callback);
+                return removeDir(getLockPath(), {recursive: true}, callback);
             }
 
             callback(Error(`The lock is owned by another instance.`));
@@ -1813,7 +1807,7 @@ function FSLock(filePath, maxTimeMilliSeconds, forcedLockDelay) {
     }
 
     this.isMyLock = (callback) => {
-        getLockCreationTime(filePath).then(creationTime => {
+        getLockCreationTime().then(creationTime => {
             let isOwnLock = false;
             if (creationTime === lockCreationTime) {
                 isOwnLock = true;
@@ -1897,7 +1891,7 @@ const getAnchoringDomainConfig = async (domain) => {
         }
     }
 
-    domainConfig = clone(domainConfig || {});
+    domainConfig = clone(domainConfig);
     domainConfig.option = domainConfig.option || {};
     domainConfig.option.path = require("path").join(config.getConfig("externalStorage"), `domains/${domain}/anchors`);
 
@@ -1993,7 +1987,7 @@ function BDNS(server) {
         }
     }
 
-    async function bdnsHandler(request, response, next) {
+    async function bdnsHandler(request, response) {
         try {
             await initialize();
         } catch (e) {
@@ -2027,7 +2021,7 @@ const logger = $$.getLogger("apihub", "bricking");
 async function brickExists(request, response) {
     response.setHeader("Cache-control", "No-Cache"); // set brick cache to expire in 1 year
 
-    const {domain, hashLink} = request.params;
+    const {hashLink} = request.params;
     let brickExists;
     try {
         brickExists = await request.fsBrickStorage.brickExists(hashLink);
@@ -2054,7 +2048,7 @@ async function getBrick(request, response) {
         try {
             brick = await getBrickWithExternalProvidersFallbackAsync(request, domain, hashLink, request.fsBrickStorage);
         } catch (e) {
-            logger.error("Failed to get brick", e); 
+            logger.debug("Failed to get brick", e);
         }
         if (!brick) {
             brick = await getBrickWithExternalProvidersFallbackAsync(request, domain, hashLink, request.oldFsBrickStorage);
@@ -2792,7 +2786,7 @@ const path = require('swarmutils').path;
 const API_HUB = require('apihub');
 
 let config = API_HUB.getServerConfig();
-const rootFolder = arguments.rootFolder || path.resolve(config.storage);
+const rootFolder = path.resolve(config.storage);
 
 const levels = {
   error: 'error',
@@ -2803,19 +2797,19 @@ const levels = {
 
 const logger = $$.getLogger("debugLogger", "apihub/debugLogger");
 
-function createHandlerAppendToLog(server) {
+function createHandlerAppendToLog() {
   return function appendToLog(request, response) {
     if (!request.body || !request.body.message) {
       response.send(400);
       return;
     }
-    const message = request.body && request.body.message;
+    const message = request.body.message;
     const anchorID = request.params.anchorID;
     const logLevel = levels[request.params.logLevel] || levels['info'];
 
     let data;
 
-    if (message && typeof message === 'string') {
+    if (typeof message === 'string') {
       data = { date: new Date().toISOString(), level: logLevel, anchorID: anchorID, message: message };
     } else {
       response.send(400);
@@ -2862,7 +2856,7 @@ function createHandlerAppendToLog(server) {
   };
 }
 
-function createHandlerReadFromLog(server) {
+function createHandlerReadFromLog() {
   return function readFromLog(request, response) {
     logger.debug('running');
     const today = new Date().toISOString().split('T')[0];
@@ -2890,6 +2884,7 @@ function createHandlerReadFromLog(server) {
           fs.readFile(fileName, (err, data) => {
             if (err) {
               reject(err);
+              return;
             }
             data = JSON.parse(data);
             data = data.filter((log) => log.anchorID === anchorID);
@@ -2925,8 +2920,8 @@ function DebugLogger(server) {
   const { responseModifierMiddleware, requestBodyJSONMiddleware } = require('../../utils/middlewares');
   const { createHandlerAppendToLog, createHandlerReadFromLog } = require('./controllers');
 
-  const appendToLog = createHandlerAppendToLog(server);
-  const readFromLog = createHandlerReadFromLog(server);
+  const appendToLog = createHandlerAppendToLog();
+  const readFromLog = createHandlerReadFromLog();
 
   server.use(`/log/*`, responseModifierMiddleware);
   server.use(`/log/*`, requestBodyJSONMiddleware);
@@ -2945,7 +2940,7 @@ function InstallationDetails(server){
 		const path = require("path");
 
 		const basicProcOptions = {cwd: path.resolve(targetPath), stdio: [0, "pipe", "pipe"]};
-		child_process.exec(" git log -n 1  --pretty=oneline", basicProcOptions, function (err, stdout, stderr) {
+		child_process.exec(" git log -n 1  --pretty=oneline", basicProcOptions, function (err, stdout) {
 			if (err) {
 				return callback(err);
 			}
@@ -3872,7 +3867,7 @@ function LokiMQAdapter(server, prefix, domain, configuration) {
 module.exports = LokiMQAdapter;
 
 },{"../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./MQAdapterMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/MQAdapterMixin.js","fs":false,"loki-enclave-facade":"loki-enclave-facade","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/solaceMQAdapter.js":[function(require,module,exports){
-function SolaceMQAdapter(configuration){
+function SolaceMQAdapter(){
 	throw new Error("Not Implemented!!!");
 }
 
@@ -4015,7 +4010,6 @@ function JWTIssuer(workingDir) {
 
 module.exports = JWTIssuer;
 },{"./../../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","fs":false,"opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/index.js":[function(require,module,exports){
-const config = require("../../config");
 const URL_PREFIX = "/mq";
 //known implementations for the MQ adapters
 const adapterImpls = {
@@ -4024,11 +4018,6 @@ const adapterImpls = {
 	loki: require("./adapters/lokiMQAdapter.js"),
 	lightdb: require("./adapters/lighDBEnclaveAdapter.js")
 };
-
-//just to expose the possibility to add new implementations for the adapters
-function registerMQAdapterImpl(adapterName, adapterImpl) {
-	adapterImpls[adapterName] = adapterImpl;
-}
 
 const defaultSettings = {
 	// normally there are gateways timeouts of 30seconds
@@ -4234,7 +4223,7 @@ module.exports = {
 	MQHub
 };
 
-},{"../../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./../../components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./../../config/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./adapters/lighDBEnclaveAdapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/lighDBEnclaveAdapter.js","./adapters/localMQAdapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/localMQAdapter.js","./adapters/lokiMQAdapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/lokiMQAdapter.js","./adapters/solaceMQAdapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/solaceMQAdapter.js","./auth/JWTIssuer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/auth/JWTIssuer.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/requestForwarder/index.js":[function(require,module,exports){
+},{"./../../components/admin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/admin/index.js","./../../config/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/config/index.js","./adapters/lighDBEnclaveAdapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/lighDBEnclaveAdapter.js","./adapters/localMQAdapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/localMQAdapter.js","./adapters/lokiMQAdapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/lokiMQAdapter.js","./adapters/solaceMQAdapter.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/adapters/solaceMQAdapter.js","./auth/JWTIssuer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/mqHub/auth/JWTIssuer.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/requestForwarder/index.js":[function(require,module,exports){
 const registeredUrl = "/forwardRequestForAuthenticatedClient";
 const logger = $$.getLogger("requestForwarder", "apihub/requestForwarder");
 module.exports = function(server){
@@ -4400,7 +4389,7 @@ function SecretsService(serverRootFolder) {
 
 
     const getSecretFilePath = (secretsContainerName) => {
-        const folderPath = getStorageFolderPath(secretsContainerName);
+        const folderPath = getStorageFolderPath();
         return path.join(folderPath, `${secretsContainerName}.secret`);
     }
 
@@ -4478,7 +4467,7 @@ function SecretsService(serverRootFolder) {
             } else {
                 containers[secretsContainerName][secretName] = secret;
             }
-            res = await writeSecretsAsync(secretsContainerName, secretName);
+            res = await writeSecretsAsync(secretsContainerName);
         } catch (e) {
             await lock.unlock();
             throw e;
@@ -4618,8 +4607,6 @@ module.exports = {
     SYSADMIN_SECRET: "sysadminSecret"
 }
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/index.js":[function(require,module,exports){
-const constants = require("./constants");
-
 function secrets(server) {
     const openDSU = require("opendsu");
     const crypto = openDSU.loadAPI("crypto");
@@ -4709,7 +4696,7 @@ function secrets(server) {
         const key = "presetEncryptionKeyForInitialLog";
         const text = "TheQuickBrownFoxJumpedOverTheLazyDog";
 
-        logger.info(0x500, "Recovery Passphrase Encryption Check\nPlain text: " + text);
+        logger.info(0x500, "Recovery Passphrase Encryption Check. Plain text: " + text);
         logger.info(0x500, "Preset encryption key: " + key);
 
         const filePath = require("path").join(server.rootFolder, "initialEncryptionTest");
@@ -5614,6 +5601,16 @@ async function handleGetVersionlessDSURequest(request, response) {
         if(resolvedFilePath.indexOf(versionlessDSUFolderPath) === -1){
             throw Error("Trying to read outside of VersionLess storage folder");
         }
+
+        try{
+            await $$.promisify(fs.access)(filePath, fs.constants.F_OK);
+        }catch(err){
+            logger.info(`[VersionlessDSU] Unable to locate storage file ${filePath}`, err);
+            response.statusCode = 404;
+            response.end();
+            return;
+        }
+
         const fileContent = await $$.promisify(fs.readFile)(filePath);
         logger.debug(`[VersionlessDSU] Reading existing versionlessDSU from ${filePath}`);
         response.setHeader('content-type', "application/octet-stream"); // required in order for opendsu http fetch to properly work
@@ -6464,7 +6461,6 @@ function NotificationsManager(workingFolderPath, storageFolderPath) {
 				}
 
 				let counter = 0;
-				let totalCount = 0;
 				for (const msg of queue) {
 					if (++counter > msgBatchSize) {
 						break;
@@ -6476,7 +6472,6 @@ function NotificationsManager(workingFolderPath, storageFolderPath) {
 					// Remove expired message
 					if (elapsed >= msg.ttl) {
 						queue.remove(msg);
-						totalCount++;
 					}
 				}
 			}
@@ -6967,41 +6962,41 @@ function MiddlewareRegistry() {
     }
 
     this.use = function (...params) {
-	    let args = [ undefined, undefined, undefined ];
+    let args = [ undefined, undefined, undefined ];
 
-	    switch (params.length) {
-            case 0:
-				throw Error('Use method needs at least one argument.');
-				
-            case 1:
-                if (typeof params[0] !== 'function') {
-                    throw Error('If only one argument is provided it must be a function');
-                }
+    switch (params.length) {
+        case 0:
+            throw Error('Use method needs at least one argument.');
 
-                args[2] = params[0];
+        case 1:
+            if (typeof params[0] !== 'function') {
+                throw Error('If only one argument is provided it must be a function');
+            }
 
-                break;
-            case 2:
-                if (typeof params[0] !== 'string' || typeof params[1] !== 'function') {
-                    throw Error('If two arguments are provided the first one must be a string (url) and the second a function');
-                }
+            args[2] = params[0];
 
-                args[1]=params[0];
-                args[2]=params[1];
+            break;
+        case 2:
+            if (typeof params[0] !== 'string' || typeof params[1] !== 'function') {
+                throw Error('If two arguments are provided the first one must be a string (url) and the second a function');
+            }
 
-                break;
-            default:
-                if (typeof params[0] !== 'string' || typeof params[1] !== 'string' || typeof params[2] !== 'function') {
-                    throw Error('If three or more arguments are provided the first one must be a string (HTTP verb), the second a string (url) and the third a function');
-                }
+            args[1]=params[0];
+            args[2]=params[1];
 
-                if (!([ 'get', 'post', 'put', 'delete', 'patch', 'head', 'connect', 'options', 'trace' ].includes(params[0].toLowerCase()))) {
-                    throw new Error('If three or more arguments are provided the first one must be a HTTP verb but none could be matched');
-                }
+            break;
+        default:
+            if (typeof params[0] !== 'string' || typeof params[1] !== 'string' || typeof params[2] !== 'function') {
+                throw Error('If three or more arguments are provided the first one must be a string (HTTP verb), the second a string (url) and the third a function');
+            }
 
-                args = params;
+            if (!([ 'get', 'post', 'put', 'delete', 'patch', 'head', 'connect', 'options', 'trace' ].includes(params[0].toLowerCase()))) {
+                throw new Error('If three or more arguments are provided the first one must be a HTTP verb but none could be matched');
+            }
 
-                break;
+            args = params;
+
+            break;
         }
 
         use.apply(this, args);
@@ -7038,11 +7033,11 @@ function MiddlewareRegistry() {
             return;
         }
 
-	    const registeredMethod = registeredMiddlewareFunctions[index].method;
-	    const registeredUrl = registeredMiddlewareFunctions[index].url;
-	    const fn = registeredMiddlewareFunctions[index].fn;
+        const registeredMethod = registeredMiddlewareFunctions[index].method;
+        const registeredUrl = registeredMiddlewareFunctions[index].url;
+        const fn = registeredMiddlewareFunctions[index].fn;
 
-	    if (!methodMatch(registeredMethod, method)) {
+        if (!methodMatch(registeredMethod, method)) {
             execute(++index, method, url, ...params);
             return;
         }
@@ -7166,28 +7161,19 @@ function Server(sslOptions) {
 
     this.getRegisteredMiddlewareFunctions = middleware.getRegisteredMiddlewareFunctions;
 
-    this.makeLocalRequest = function (method,path, body,headers, callback)
-    {
-        if (typeof headers === "function")
-        {
+    this.makeLocalRequest = function (method,path, body,headers, callback) {
+        if (typeof headers === "function") {
             callback = headers;
             headers = undefined;
         }
 
-        if (typeof body === "function")
-        {
+        if (typeof body === "function") {
             callback = body;
             headers = undefined;
             body = undefined;
         }
 
         const protocol =  require(this.protocol);
-
-        let hostName = "127.0.0.1";
-        if(process.env.BDNS_ROOT_HOSTS){
-            let hostUrl = new URL(process.env.BDNS_ROOT_HOSTS);
-            hostName = hostUrl.hostname;
-        }
 
         const options = {
             hostname : '127.0.0.1',
@@ -7248,15 +7234,15 @@ function Server(sslOptions) {
         try {
             const makeLocalRequest = $$.promisify(this.makeLocalRequest.bind(this));
             let response = await makeLocalRequest(method, path, body, headers);
-    
+
             if (response) {
                 try {
                     response = JSON.parse(response);
                 } catch (error) {
                     // the response isn't a JSON so we keep it as it is
-                }           
+                }
             }
-    
+
             return response;
         } catch (error) {
             // console.warn(`Failed to call ${method} on '${path}'`, error);
@@ -7469,7 +7455,7 @@ module.exports = function (server) {
         });
     }
 
-    function checkIfLockExists(id, secret, callback){
+    function checkIfLockExists(id, callback){
         getLockData(id, (err, lockData)=>{
             if(err){
                 return callback(err);
@@ -7484,10 +7470,7 @@ module.exports = function (server) {
                 });
             }
 
-            if(lockData.expire){
-                logger.debug("cleaning lock files, time to expire", Number(lockData.expire) < Date.now());
-            }
-
+            logger.debug("cleaning lock files, time to expire", Number(lockData.expire) < Date.now());
             logger.debug("cleaning lock files", lockData);
             return callback(undefined, true);
 
@@ -7499,7 +7482,7 @@ module.exports = function (server) {
     }
 
     function putLock(id, secret, period, callback){
-        checkIfLockExists(id, secret, (err, locked)=>{
+        checkIfLockExists(id, (err, locked)=>{
             if(err){
                 return callback(err);
             }
@@ -7827,12 +7810,8 @@ module.exports = function (server) {
         },
         register: function (task, callback) {
             let newRecord = taskRegistry.createModel(task);
-            lightDBEnclaveClient.getRecord($$.SYSTEM_IDENTIFIER, HISTORY_TABLE, newRecord.pk, function (err, record) {
-                if (err || !record) {
-                    return lightDBEnclaveClient.insertRecord($$.SYSTEM_IDENTIFIER, HISTORY_TABLE, newRecord.pk, newRecord,  callback);
-                }
-                return callback(undefined);
-            });
+            newRecord.__fallbackToInsert = true
+            return lightDBEnclaveClient.updateRecord($$.SYSTEM_IDENTIFIER, HISTORY_TABLE, newRecord.pk, newRecord,  callback);
         },
         add: function (task, callback) {
             let newRecord = taskRegistry.createModel(task);
@@ -7842,12 +7821,11 @@ module.exports = function (server) {
                         //if we fail... could be that the task is ready register by another request due to concurency
                         //we do another getrecord and if fails we return the original insert record error
                         if(insertError){
-                            return lightDBEnclaveClient.getRecord($$.SYSTEM_IDENTIFIER, TASKS_TABLE, newRecord.pk, function (err, record) {
-                                if (err || !record) {
-                                    return callback(insertError);
-                                }
-                                callback(undefined);
-                            });
+                            //we set the counter to 2 just in case there is a task with a counter value that we don't know,
+                            // and we hope to have enough invalidation of the task to don't have garbage
+                            newRecord.counter = 2;
+                            newRecord.__fallbackToInsert = true;
+                            return lightDBEnclaveClient.updateRecord($$.SYSTEM_IDENTIFIER, TASKS_TABLE, record.pk, record, callback);
                         }
                         callback(undefined);
                     });
@@ -7985,7 +7963,7 @@ module.exports = function (server) {
                 return ;
             }
             let inProgressCounter = Object.keys(taskRegistry.inProgress);
-            logger.debug(`Number of tasks that are in progress: ${inProgressCounter ? inProgressCounter.length : 0}`);
+            logger.debug(`Number of tasks that are in progress: ${inProgressCounter.length ? inProgressCounter.length : 0}`);
 
             lightDBEnclaveClient.getAllRecords($$.SYSTEM_IDENTIFIER, TASKS_TABLE, (err, scheduledTasks) => {
                 if (!err) {
@@ -8002,7 +7980,7 @@ module.exports = function (server) {
             let inProgressCounter = Object.keys(taskRegistry.inProgress);
             let status = {};
             try{
-                status.inProgress = inProgressCounter ? inProgressCounter.length : 0;
+                status.inProgress = inProgressCounter.length ? inProgressCounter.length : 0;
                 let scheduledTasks = await $$.promisify(lightDBEnclaveClient.getAllRecords)($$.SYSTEM_IDENTIFIER, TASKS_TABLE);
                 status.scheduled = scheduledTasks ? scheduledTasks.length : 0;
                 let tasks = await $$.promisify(lightDBEnclaveClient.getAllRecords)($$.SYSTEM_IDENTIFIER, HISTORY_TABLE);
@@ -8622,6 +8600,7 @@ module.exports = AccessTokenValidator;
 const util = require("./util");
 const urlModule = require("url");
 const {httpUtils} = require("../../../libs/http-wrapper");
+const {printDebugLog} = require("./util");
 
 function OAuthMiddleware(server) {
     const logger = $$.getLogger("OAuthMiddleware", "apihub/oauth");
@@ -8632,21 +8611,20 @@ function OAuthMiddleware(server) {
         const loginUrl = oauthConfig.client.postLogoutRedirectUrl;
         const returnHtml = "<html>" +
             `<body>We apologize for the inconvenience. The automated login attempt was unsuccessful. 
-                    You can either <a href=\"${loginUrl}\">retry the login</a> or if the issue persists, please restart your browser.
+                    You can either <a href="${loginUrl}">retry the login</a> or if the issue persists, please restart your browser.
                     <script>sessionStorage.setItem('initialURL', window.location.href);</script>
                 </body>` +
             "</html>";
         res.end(returnHtml);
     }
 
-    const LOADER_PATH = "/loader";
     logger.debug(`Registering OAuthMiddleware`);
     const staticContentIdentifiers = ["text/html", "application/xhtml+xml", "application/xml"];
     const config = require("../../../config");
     const oauthConfig = config.getConfig("oauthConfig");
     const path = require("path");
     const ENCRYPTION_KEYS_LOCATION = oauthConfig.encryptionKeysLocation || path.join(server.rootFolder, "external-volume", "encryption-keys");
-    let urlsToSkip = util.getUrlsToSkip() ;
+    let urlsToSkip = util.getUrlsToSkip();
 
     const WebClient = require("./WebClient");
     const webClient = new WebClient(oauthConfig);
@@ -8659,15 +8637,22 @@ function OAuthMiddleware(server) {
     //we let KeyManager to boot and prepare ...
     util.initializeKeyManager(ENCRYPTION_KEYS_LOCATION, oauthConfig.keyTTL);
 
-    function redirectToLogin(req, res) {
+    function redirectToLogin(res) {
         res.statusCode = 200;
         res.write(`<html><body><script>sessionStorage.setItem('initialURL', window.location.href); window.location.href = "/login";</script></body></html>`);
         res.end();
     }
 
-    function setSSODetectedId(ssoDetectedId, SSOUserId, accessTokenCookie, req, res) {
+    function setSSODetectedId(ssoDetectedId, SSOUserId, accessTokenCookie, res) {
         res.writeHead(200, {'Content-Type': 'text/html'});
-        return res.end(`<script>localStorage.setItem('SSODetectedId', '${ssoDetectedId}'); localStorage.setItem('SSOUserId', '${SSOUserId}'); localStorage.setItem('accessTokenCookie', '${accessTokenCookie}');window.location.href = '/redirect.html';</script>`);
+        return res.end(`<script>
+                localStorage.setItem('SSODetectedId', '${ssoDetectedId}');
+                localStorage.setItem('SSOUserId', '${SSOUserId}');
+                localStorage.setItem('accessTokenCookie', '${accessTokenCookie}');
+                localStorage.setItem('logoutUrl', '${oauthConfig.client.logoutUrl}');
+                localStorage.setItem('postLogoutRedirectUrl', '${oauthConfig.client.postLogoutRedirectUrl}');
+                window.location.href = '/redirect.html';
+                </script>`);
     }
 
     function startAuthFlow(req, res) {
@@ -8741,7 +8726,7 @@ function OAuthMiddleware(server) {
                         util.printDebugLog("SSODetectedId", SSODetectedId);
                         res.writeHead(301, {
                             Location: "/setSSODetectedId",
-                            "Set-Cookie": [`logout=false; Path=/; HttpOnly; Secure`, `accessTokenCookie=${encryptedTokenSet.encryptedAccessToken}; Max-age=86400; HttpOnly; Secure`, "isActiveSession=true; Max-age=86400; HttpOnly; Secure", `refreshTokenCookie=${encryptedTokenSet.encryptedRefreshToken}; Max-age=86400; HttpOnly; Secure`, `SSOUserId=${SSOUserId}; Max-age=86400; HttpOnly; Secure`, `SSODetectedId=${SSODetectedId}; Max-age=86400; HttpOnly; Secure`, `loginContextCookie=; Max-Age=0; Path=/; HttpOnly; Secure`],
+                            "Set-Cookie": [`logout=false; Path=/; HttpOnly; Secure`, `accessTokenCookie=${encryptedTokenSet.encryptedAccessToken}; HttpOnly; Secure`, "isActiveSession=true; HttpOnly; Secure", `refreshTokenCookie=${encryptedTokenSet.encryptedRefreshToken}; HttpOnly; Secure`, `SSOUserId=${SSOUserId}; HttpOnly; Secure`, `SSODetectedId=${SSODetectedId}; HttpOnly; Secure`, `loginContextCookie=; Max-Age=0; Path=/; HttpOnly; Secure`],
                             "Cache-Control": "no-store, no-cache, must-revalidate, post-check=0, pre-check=0"
                         });
                         res.end();
@@ -8759,7 +8744,11 @@ function OAuthMiddleware(server) {
             post_logout_redirect_uri: oauthConfig.client.postLogoutRedirectUrl, client_id: oauthConfig.client.clientId,
         };
 
-        let cookies = ["logout=true; Path=/; HttpOnly; Secure", "accessTokenCookie=; Max-Age=0; HttpOnly; Secure", "isActiveSession=; Max-Age=0; HttpOnly; Secure", "refreshTokenCookie=; Max-Age=0; HttpOnly; Secure", "loginContextCookie=; Path=/; HttpOnly; Secure; Max-Age=0", `logoutUrl=${logoutUrl.href}; Path=/; HttpOnly; Secure`, `postLogoutRedirectUrl=${oauthConfig.client.postLogoutRedirectUrl}; Path=/; HttpOnly; Secure`];
+        let cookies = ["logout=true; Path=/; HttpOnly; Secure",
+            "accessTokenCookie=; Path=/; Max-Age=0;",
+            "isActiveSession=; Path=/; Max-Age=0;",
+            "refreshTokenCookie=; Path=/; Max-Age=0;",
+            "loginContextCookie=; Path=/; Max-Age=0;"];
         logger.info("SSO redirect (http 301) triggered for:", req.url);
         if (oauthConfig.usePostForLogout) {
             res.writeHead(301, {
@@ -8838,7 +8827,6 @@ function OAuthMiddleware(server) {
             return url === "/logout-post";
         }
 
-
         if (req.skipSSO) {
             return next();
         }
@@ -8862,14 +8850,9 @@ function OAuthMiddleware(server) {
             return;
         }
 
-        if (!config.getConfig("enableLocalhostAuthorization") && req.headers.host.indexOf("localhost") === 0) {
-            next();
-            return;
-        }
-
         //this if is meant to help debugging "special" situation of wrong localhost req being checked with sso even if localhostAuthorization is disabled
         if (!config.getConfig("enableLocalhostAuthorization") && req.headers.host.indexOf("localhost") !== -1) {
-            logger.debug("SSO verification activated on 'local' request", "host header", req.headers.headers.host, JSON.stringify(req.headers));
+            printDebugLog("SSO verification activated on 'local' request", "host header", req.headers.host, JSON.stringify(req.headers));
         }
 
         if (isCallbackPhaseActive()) {
@@ -8887,7 +8870,7 @@ function OAuthMiddleware(server) {
         const parsedCookies = util.parseCookies(req.headers.cookie);
         let {accessTokenCookie, refreshTokenCookie, isActiveSession, SSODetectedId, SSOUserId} = parsedCookies;
         if (isSetSSODetectedIdPhaseActive()) {
-            return setSSODetectedId(SSODetectedId, SSOUserId, accessTokenCookie, req, res);
+            return setSSODetectedId(SSODetectedId, SSOUserId, accessTokenCookie, res);
         }
         let logoutCookie = parsedCookies.logout;
         let cookies = [];
@@ -8900,29 +8883,8 @@ function OAuthMiddleware(server) {
             const returnHtml = "<html>" +
                 `<body>
                  <script>
-                    function parseCookies(cookies) {
-                        const parsedCookies = {};
-                        if (!cookies) {
-                            return parsedCookies;
-                        }
-                        let splitCookies = cookies.split(";");
-                        splitCookies = splitCookies.map(splitCookie => splitCookie.trim());
-                        splitCookies.forEach(cookie => {
-                            const cookieComponents = cookie.split("=");
-                            const cookieName = cookieComponents[0].trim();
-                            let cookieValue = cookieComponents[1].trim();
-                            if (cookieValue === "null") {
-                                cookieValue = undefined;
-                            }
-                            parsedCookies[cookieName] = cookieValue;
-                        })
-                    
-                        return parsedCookies;
-                    }
-
-                    const parsedCookies = parseCookies(document.cookie);
-                    const logoutUrl = parsedCookies.logoutUrl;
-                    const postLogoutRedirectUrl = parsedCookies.postLogoutRedirectUrl;
+                    const logoutUrl = localStorage.getItem("logoutUrl");
+                    const postLogoutRedirectUrl = localStorage.getItem("postLogoutRedirectUrl");
                     
                     fetch(logoutUrl, {method: "POST"}).
                         then(response => {
@@ -8940,7 +8902,7 @@ function OAuthMiddleware(server) {
             const loginUrl = oauthConfig.client.postLogoutRedirectUrl;
             const returnHtml = "<html>" +
                 `<body>We apologize for the inconvenience. The automated login attempt was unsuccessful. 
-                    You can either <a href=\"${loginUrl}\">retry the login</a> or if the issue persists, please restart your browser.
+                    You can either <a href="${loginUrl}">retry the login</a> or if the issue persists, please restart your browser.
                     <script>sessionStorage.setItem('initialURL', window.location.href);</script>
                 </body>` +
                 "</html>";
@@ -8954,7 +8916,7 @@ function OAuthMiddleware(server) {
                 if (req.headers && req.headers.accept) {
                     const acceptHeadersIdentifiers = req.headers.accept.split(",");
                     if (acceptHeadersIdentifiers.some((acceptHeader) => staticContentIdentifiers.includes(acceptHeader))) {
-                        return redirectToLogin(req, res);
+                        return redirectToLogin(res);
                     }
                 }
                 res.statusCode = 401;
@@ -8982,7 +8944,7 @@ function OAuthMiddleware(server) {
                         return sendUnauthorizedResponse(req, res, "Unable to refresh token");
                     }
 
-                    cookies = cookies.concat([`accessTokenCookie=${tokenSet.encryptedAccessToken}; Max-age=86400; HttpOnly; Secure`, `refreshTokenCookie=${tokenSet.encryptedRefreshToken}; HttpOnly; Secure`]);
+                    cookies = cookies.concat([`accessTokenCookie=${tokenSet.encryptedAccessToken}; HttpOnly; Secure`, `refreshTokenCookie=${tokenSet.encryptedRefreshToken}; HttpOnly; Secure`]);
                     logger.info("SSO redirect (http 301) triggered for:", req.url);
                     res.writeHead(301, {Location: "/", "Set-Cookie": cookies});
                     res.end();
@@ -9007,7 +8969,7 @@ function OAuthMiddleware(server) {
                     }
 
                     const sessionExpiryTime = Date.now() + oauthConfig.sessionTimeout;
-                    cookies = cookies.concat([`sessionExpiryTime=${sessionExpiryTime}; Path=/; HttpOnly; Secure`, `accessTokenCookie=${encryptedAccessToken}; Path=/; Max-age=86400; HttpOnly; Secure`]);
+                    cookies = cookies.concat([`sessionExpiryTime=${sessionExpiryTime}; Path=/; HttpOnly; Secure`, `accessTokenCookie=${encryptedAccessToken}; Path=/; HttpOnly; Secure`]);
                     res.setHeader("Set-Cookie", cookies);
                     next();
                 })
@@ -9049,7 +9011,22 @@ function OAuthMiddleware(server) {
         }
         if (response.status !== 200) {
             res.statusCode = response.status;
-            res.end(response.statusText);
+            let errMessage = response.statusText;
+            try {
+                const data = await response.json();
+                if (data.error) {
+                    errMessage = data.error;
+                    logger.error(data.error);
+                }
+
+                if (data.error_description) {
+                    logger.error(data.error_description);
+                    errMessage = data.error_description;
+                }
+            } catch (e) {
+                logger.error(e);
+            }
+            res.end(errMessage);
             return;
         }
         let data;
@@ -9457,7 +9434,7 @@ function getPreviousEncryptionKey(callback) {
 const SSODetectedIdsAndUserIds = {};
 function encryptTokenSet(tokenSet, callback) {
     delete SSODetectedIdsAndUserIds[tokenSet.access_token];
-    getSSODetectedIdAndUserId(tokenSet, (err, {SSODetectedId, SSOUserId})=>{
+    getSSODetectedIdAndUserId(tokenSet, (err, {SSODetectedId})=>{
         if (err) {
             return callback(err);
         }
@@ -9595,16 +9572,6 @@ function decryptAccessTokenCookie(accessTokenCookie, callback) {
     })
 }
 
-function getDecryptedAccessToken(accessTokenCookie, callback) {
-    decryptAccessTokenCookie(accessTokenCookie, (err, decryptedAccessTokenCookie) => {
-        if (err) {
-            return callback(err);
-        }
-
-        callback(undefined, decryptedAccessTokenCookie.token);
-    })
-}
-
 function getSSODetectedIdFromPayload(obj) {
     return obj.email || obj.preferred_username || obj.upn || obj.sub;
 }
@@ -9707,7 +9674,7 @@ function validateAccessToken(jwksEndpoint, accessToken, callback) {
             return callback(err);
         }
 
-        crypto.joseAPI.verify(accessToken, publicKey, callback);
+        crypto.jsonWebTokenAPI.verify(accessToken, publicKey, callback);
     })
 }
 
@@ -9789,18 +9756,13 @@ function printDebugLog(...args) {
 
 module.exports = {
     pkce,
-    pkceChallenge,
     urlEncodeForm,
-    encodeCookie,
-    decodeCookie,
     parseCookies,
     initializeKeyManager,
     parseAccessToken,
     encryptTokenSet,
-    encryptAccessToken,
     encryptLoginInfo,
     decryptLoginInfo,
-    decryptAccessTokenCookie,
     decryptRefreshTokenCookie,
     getPublicKey,
     validateAccessToken,
@@ -9891,7 +9853,7 @@ function setupRequestEnhancements(server) {
     const constants = require("./../../moduleConstants");
 
 	server.use(function (req, res, next) {
-	    const logs = [];
+        const logs = [];
         req.log = function(...args){
             logs.push(args);
         };
@@ -9940,7 +9902,6 @@ const crypto = openDSU.loadAPI("crypto");
 const querystring = require('querystring');
 const cookieUtils = require("../../utils/cookie-utils");
 const SecretsService = require("../../components/secrets/SecretsService");
-const util = require("../oauth/lib/util");
 const appName = 'simpleAuth'
 const PUT_SECRETS_URL_PATH = "/putSSOSecret/simpleAuth";
 const GET_SECRETS_URL_PATH = "/getSSOSecret/simpleAuth";
@@ -10142,59 +10103,60 @@ module.exports = function (server) {
     server.put('/simpleAuth', simpleAuthHandler);
 }
 
-},{"../../components/secrets/SecretsService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js","../../libs/http-wrapper/src/httpUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js","../../utils/cookie-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/cookie-utils.js","../oauth/lib/util":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","../oauth/lib/util.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","fs":false,"opendsu":"opendsu","path":false,"querystring":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/throttler/index.js":[function(require,module,exports){
+},{"../../components/secrets/SecretsService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/components/secrets/SecretsService.js","../../libs/http-wrapper/src/httpUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/libs/http-wrapper/src/httpUtils.js","../../utils/cookie-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/utils/cookie-utils.js","../oauth/lib/util.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js","fs":false,"opendsu":"opendsu","path":false,"querystring":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/apihub/middlewares/throttler/index.js":[function(require,module,exports){
 const TokenBucket = require("../../libs/TokenBucket");
 
-function Throttler(server){
-	const logger = $$.getLogger("Throttler", "apihub");
-	const START_TOKENS = 6000000;
-	const tokenBucket = new TokenBucket(START_TOKENS, 1, 10);
-	let remainingTokens = START_TOKENS;
-	const conf =  require('../../config').getConfig();
-	 function throttlerHandler(req, res, next) {
-		 const ip = res.socket.remoteAddress;
-		 tokenBucket.takeToken(ip, tokenBucket.COST_MEDIUM, function (err, remainedTokens) {
-			 res.setHeader('X-RateLimit-Limit', tokenBucket.getLimitByCost(tokenBucket.COST_MEDIUM));
-			 res.setHeader('X-RateLimit-Remaining', tokenBucket.getRemainingTokenByCost(remainedTokens, tokenBucket.COST_MEDIUM));
-			 remainingTokens = remainedTokens;
-			 if (err) {
-				 if (err === TokenBucket.ERROR_LIMIT_EXCEEDED) {
-					 res.statusCode = 429;
-				 } else {
-					 res.statusCode = 500;
-				 }
+function Throttler(server) {
+    const logger = $$.getLogger("Throttler", "apihub");
+    const START_TOKENS = 6000000;
+    const tokenBucket = new TokenBucket(START_TOKENS, 1, 10);
+    let remainingTokens = START_TOKENS;
+    const conf = require('../../config').getConfig();
 
-				 res.end();
-				 return;
-			 }
+    function throttlerHandler(req, res, next) {
+        const ip = res.socket.remoteAddress;
+        tokenBucket.takeToken(ip, tokenBucket.COST_MEDIUM, function (err, remainedTokens) {
+            res.setHeader('X-RateLimit-Limit', tokenBucket.getLimitByCost(tokenBucket.COST_MEDIUM));
+            res.setHeader('X-RateLimit-Remaining', tokenBucket.getRemainingTokenByCost(remainedTokens, tokenBucket.COST_MEDIUM));
+            remainingTokens = remainedTokens;
+            if (err) {
+                if (err === TokenBucket.ERROR_LIMIT_EXCEEDED) {
+                    res.statusCode = 429;
+                } else {
+                    res.statusCode = 500;
+                }
 
-			 next();
-		 });
-	 }
+                res.end();
+                return;
+            }
 
-	 function readyProbeHandler(req, res) {
-		 const stats = {
-			 remainingTokens: tokenBucket.getRemainingTokenByCost(remainingTokens, tokenBucket.COST_MEDIUM),
-			 tokenLimit: tokenBucket.getLimitByCost(tokenBucket.COST_MEDIUM)
-		 }
+            next();
+        });
+    }
 
-		 res.setHeader('Content-Type', 'application/json');
-		 res.statusCode = 200;
-		 res.write(JSON.stringify(stats));
-		 res.end();
-	 }
+    function readyProbeHandler(req, res) {
+        const stats = {
+            remainingTokens: tokenBucket.getRemainingTokenByCost(remainingTokens, tokenBucket.COST_MEDIUM),
+            tokenLimit: tokenBucket.getLimitByCost(tokenBucket.COST_MEDIUM)
+        }
 
-	if (conf.preventRateLimit !== true) {
-		server.use(throttlerHandler);
-		server.get("/ready-probe", readyProbeHandler);
-	} else {
-		logger.debug(`Rate limit mechanism disabled!`);
-		server.get("/ready-probe", function (req, res) {
-			res.statusCode = 200;
-			res.write("Server ready");
-			res.end();
-		});
-	}
+        res.setHeader('Content-Type', 'application/json');
+        res.statusCode = 200;
+        res.write(JSON.stringify(stats));
+        res.end();
+    }
+
+    if (conf.preventRateLimit !== true) {
+        server.use(throttlerHandler);
+        server.get("/ready-probe", readyProbeHandler);
+    } else {
+        logger.debug(`Rate limit mechanism disabled!`);
+        server.get("/ready-probe", function (req, res) {
+            res.statusCode = 200;
+            res.write("Server ready");
+            res.end();
+        });
+    }
 }
 
 module.exports = Throttler;
@@ -10822,7 +10784,7 @@ function isJSON(data) {
 function getHeaders(data, headers) {
     const dataString = data ? JSON.stringify(data) : null;
     return Object.assign({}, { 'Content-Type': 'application/json' }, dataString ? { 'Content-Length': dataString.length } : null, headers);
-};
+}
 
 module.exports = makeRequest;
 
@@ -11019,7 +10981,7 @@ function PathAsyncIterator(inputPath) {
     };
 
     function walkFolder(folderPath, callback) {
-        const taskCounter = new TaskCounter((errors, results) => {
+        const taskCounter = new TaskCounter(() => {
             if (fileList.length > 0) {
                 const fileName = fileList.shift();
                 return callback(undefined, fileName, inputPath);
@@ -11147,7 +11109,6 @@ function AnchorValidator(options) {
 module.exports = AnchorValidator;
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Archive.js":[function(require,module,exports){
 const Brick = require('./Brick');
-const stream = require('stream');
 const BrickStorageService = require('./BrickStorageService').Service;
 const BrickMapController = require('./BrickMapController');
 const Manifest = require("./Manifest");
@@ -11401,7 +11362,7 @@ function Archive(archiveConfigurator) {
 
                             resolve(callback());
                         });
-                    }).catch((e) => {
+                    }).catch(() => {
                         console.trace("This shouldn't happen. Refresh errors should have been already caught");
                     })
                 })
@@ -11546,24 +11507,6 @@ function Archive(archiveConfigurator) {
 
             brickMapController.addFile(barPath, result, callback);
         })
-    }
-
-    const embedOrCreateBricks = (barPath, data, options, callback) => {
-        if (options.embed) {
-            return brickMapController.embedData(barPath, data, options, callback);
-        }
-
-        _fileIsEmbedded(barPath, (err, fileIsEmbedded) => {
-            if (err) {
-                return callback(err);
-            }
-
-            if (fileIsEmbedded) {
-                return brickMapController.embedData(barPath, data, options, callback);
-            }
-
-            _ingestData(barPath, data, options, callback);
-        });
     }
 
     /**
@@ -11794,7 +11737,7 @@ function Archive(archiveConfigurator) {
         }
 
         if (!bricksMeta || !bricksMeta.length) {
-            return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to find any info for path " + barPath, err));
+            return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper("Failed to find any info for path " + barPath));
         }
 
         if (!bricksMeta[0].size) {
@@ -12215,7 +12158,7 @@ function Archive(archiveConfigurator) {
     this.doAnchoring = (callback) => {
         const strategy = this.getAnchoringStrategy();
         let alreadyCalled = false;
-        let saneCallback = function (err, res) {
+        let saneCallback = function (err) {
             if (alreadyCalled) {
                 throw Error("Already called");
             }
@@ -12971,7 +12914,7 @@ function Archive(archiveConfigurator) {
 
                 this.getArchiveForPath(destPath, (err, dstDossierContext) => {
                     if (err) {
-                        return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${dstPath}`, err));
+                        return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${destPath}`, err));
                     }
 
                     if (dstDossierContext.prefixPath !== dossierContext.prefixPath) {
@@ -13299,7 +13242,7 @@ function Archive(archiveConfigurator) {
 
 module.exports = Archive;
 
-},{"./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMapController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js","./BrickStorageService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./Manifest":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Manifest.js","opendsu":"opendsu","path":false,"stream":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js":[function(require,module,exports){
+},{"./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMapController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapController.js","./BrickStorageService":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickStorageService/index.js","./Manifest":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Manifest.js","opendsu":"opendsu","path":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/ArchiveConfigurator.js":[function(require,module,exports){
 const storageProviders = {};
 const fsAdapters = {};
 
@@ -13457,7 +13400,7 @@ function ArchiveConfigurator(options) {
         return config.validationRules;
     }
 
-    this.getKey = (key) => {
+    this.getKey = () => {
         if (config.keySSI) {
             return config.keySSI.getKeyHash();
         }
@@ -13559,16 +13502,6 @@ function Brick(options) {
 
             hashLink = keySSISpace.createHashLinkSSI(options.templateKeySSI.getBricksDomain(), _hash, options.templateKeySSI.getVn(), options.templateKeySSI.getHint());
             callback(undefined, hashLink);
-        });
-    };
-
-    this.getAdler32 = (callback) => {
-        this.getTransformedData((err, _transformedData) => {
-            if (err) {
-                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to get transformed data`, err));
-            }
-
-            callback(undefined, adler32.sum(_transformedData));
         });
     };
 
@@ -14113,7 +14046,6 @@ module.exports = BrickMap;
 
 // HTTP error code returned by the anchoring middleware
 // when trying to anchor outdated changes
-const {anchoringStatus} = require("./constants");
 const ALIAS_SYNC_ERR_CODE = 428;
 
 
@@ -14321,7 +14253,6 @@ function State(options) {
 function BrickMapController(options) {
     const swarmutils = require("swarmutils");
     const BrickMap = require('./BrickMap');
-    const Brick = require('./Brick');
     const AnchorValidator = require('./AnchorValidator');
     const pskPth = swarmutils.path;
     const BrickMapDiff = require('./BrickMapDiff');
@@ -14350,9 +14281,6 @@ function BrickMapController(options) {
     let anchoringInProgress = false;
 
     let publishAnchoringNotifications = false;
-    let autoSync = false;
-    let dsuObsHandler;
-    let autoSyncOptions = {};
 
     let strategy = config.getBrickMapStrategy();
     let validator = new AnchorValidator({
@@ -15385,7 +15313,7 @@ function BrickMapController(options) {
 
 module.exports = BrickMapController;
 
-},{"./AnchorValidator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/AnchorValidator.js","./Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js":[function(require,module,exports){
+},{"./AnchorValidator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/AnchorValidator.js","./BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js","./constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/constants.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js":[function(require,module,exports){
 'use strict';
 
 const BrickMapMixin = require('./BrickMapMixin');
@@ -16273,7 +16201,7 @@ const BrickMapMixin = {
         }
 
         const files = findFiles(node.items);
-        const embeddedFiles = listEmbeddedFiles(files);
+        const embeddedFiles = listEmbeddedFiles();
 
         return files.concat(embeddedFiles);
     },
@@ -16660,11 +16588,11 @@ const BrickMapStrategyMixin = {
         return this.currentHashLink;
     },
 
-    afterBrickMapAnchoring: function (diff, diffHash, callback) {
+    afterBrickMapAnchoring: function () {
         throw new Error('Unimplemented');
     },
 
-    load: function (alias, callback) {
+    load: function () {
         throw new Error('Unimplemented');
     },
 
@@ -16821,8 +16749,6 @@ module.exports = BrickMapStrategyMixin;
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/DiffStrategy.js":[function(require,module,exports){
 'use strict';
 
-const BrickMapDiff = require('../../lib/BrickMapDiff');
-const BrickMap = require('../BrickMap');
 const BrickMapStrategyMixin = require('./BrickMapStrategyMixin');
 /**
  * @param {object} options
@@ -17133,11 +17059,9 @@ function DiffStrategy(options) {
 
 module.exports = DiffStrategy;
 
-},{"../../lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../../lib/BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","./BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js":[function(require,module,exports){
+},{"../../lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/LatestVersionStrategy.js":[function(require,module,exports){
 'use strict';
 
-const BrickMapDiff = require('../BrickMapDiff');
-const BrickMap = require('../BrickMap');
 const BrickMapStrategyMixin = require('./BrickMapStrategyMixin');
 const Brick = require("../../lib/Brick");
 
@@ -17338,10 +17262,6 @@ function LatestVersionStrategy(options) {
         this.loadBrickMapVersion(versionHash, callback);
     };
 
-    this.loadLastUncorruptedVersion = (keySSI, callback) => {
-
-    }
-
     /**
      * Compact a list of BrickMapDiff objects
      * into a single BrickMap object
@@ -17484,7 +17404,7 @@ function LatestVersionStrategy(options) {
 
 module.exports = LatestVersionStrategy;
 
-},{"../../lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","../BrickMap":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMap.js","../BrickMapDiff":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapDiff.js","./BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js":[function(require,module,exports){
+},{"../../lib/Brick":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/Brick.js","./BrickMapStrategyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/BrickMapStrategyMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/builtinBrickMapStrategies.js":[function(require,module,exports){
 module.exports = {
     DIFF: 'Diff',
     LATEST_VERSION: 'LatestVersion',
@@ -17493,15 +17413,10 @@ module.exports = {
 }
 
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/BrickMapStrategy/index.js":[function(require,module,exports){
-/**
- * @param {object} options
- */
-function BrickMapStrategyFactory(options) {
+function BrickMapStrategyFactory() {
     const DiffStrategy = require('./DiffStrategy');
     const LastestVersionStrategy = require('./LatestVersionStrategy');
     const builtInStrategies = require("./builtinBrickMapStrategies");
-    options = options || {};
-
     const factories = {};
 
     ////////////////////////////////////////////////////////////
@@ -17711,7 +17626,7 @@ function Service(options) {
             let brickIndex = 0;
 
             const readableStream = new stream.Readable({
-                read(size) {
+                read() {
                     if (!bricksMeta.length) {
                         return self.push(null);
                     }
@@ -18211,7 +18126,7 @@ function Service(options) {
 
             const conversionOptions = Object.assign({}, options);
             conversionOptions.blocksCount = blocksCount;
-            convertFileToBricks(bricksSummary, filePath, conversionOptions, (err, result) => {
+            convertFileToBricks(bricksSummary, filePath, conversionOptions, (err) => {
                 if (err) {
                     return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to convert file <${filePath}> to bricks`, err));
                 }
@@ -18482,7 +18397,7 @@ function Service(options) {
         let brickIndex = 0;
 
         const readableStream = new stream.Readable({
-            read(size) {
+            read() {
                 if (!bricksMeta.length) {
                     return this.push(null);
                 }
@@ -18872,61 +18787,7 @@ module.exports.getManifest = function getManifest(archive, options, callback) {
 };
 
 
-},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js":[function(require,module,exports){
-const zlib = require("zlib");
-
-function CompressionTransformation(config) {
-
-    this.getInverseTransformParameters = (transformedData) => {
-        return {data: transformedData};
-    };
-
-    this.createDirectTransform = () => {
-        return getCompression(true);
-    };
-
-    this.createInverseTransform = () => {
-        return getCompression(false);
-    };
-
-    function getCompression(isCompression) {
-        const algorithm = config.getCompressionAlgorithm();
-        switch (algorithm) {
-            case "gzip":
-                return __createCompress(zlib.gzipSync, zlib.gunzipSync, isCompression);
-            case "br":
-                return __createCompress(zlib.brotliCompressSync, zlib.brotliDecompressSync, isCompression);
-            case "deflate":
-                return __createCompress(zlib.deflateSync, zlib.inflateSync, isCompression);
-            case "deflateRaw":
-                return __createCompress(zlib.deflateRawSync, zlib.inflateRawSync, isCompression);
-            default:
-                return;
-        }
-    }
-
-    function __createCompress(compress, decompress, isCompression) {
-        const options = config.getCompressionOptions();
-        if (!isCompression) {
-            return {
-                transform(data) {
-                    return decompress(data, options);
-                }
-            }
-        }
-
-        return {
-            transform(data) {
-                return compress(data, options);
-            }
-        }
-    }
-}
-
-module.exports = CompressionTransformation;
-
-
-},{"zlib":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js":[function(require,module,exports){
+},{"opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js":[function(require,module,exports){
 const openDSU = require("opendsu");
 const crypto = openDSU.loadApi("crypto");
 
@@ -18972,7 +18833,6 @@ function EncryptionTransformation(options) {
 
 module.exports = EncryptionTransformation;
 },{"opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/index.js":[function(require,module,exports){
-const CompressionTransformation = require("./CompressionTransformation");
 const EncryptionTransformation = require("./EncryptionTransformation");
 
 const createBrickTransformation = (options) => {
@@ -18986,7 +18846,7 @@ module.exports = {
 };
 
 
-},{"./CompressionTransformation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/CompressionTransformation.js","./EncryptionTransformation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/constants.js":[function(require,module,exports){
+},{"./EncryptionTransformation":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/brick-transforms/EncryptionTransformation.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/bar/lib/constants.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -19520,10 +19380,9 @@ const fs = require("fs");
 function CloudEnclaveBootService(server) {
     const processList = {}
     this.createEnclave = async (req, res) => {
-        const adminDID = req.params.adminDID;
         const key = require('crypto').randomBytes(16).toString("base64")
         const didDocument = await $$.promisify(w3cDID.createIdentity)("key", undefined, key);
-        this.createFolderForDID(didDocument.getIdentifier(), (err, didDir) => {
+        this.createFolderForDID(didDocument.getIdentifier(), (err) => {
             if (err) {
                 res.end(err);
             }
@@ -19627,7 +19486,7 @@ module.exports = {
 }).call(this)}).call(this,"/modules/cloud-enclave/src")
 
 },{"child_process":false,"crypto":false,"fs":false,"opendsu":"opendsu","path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/cloud-enclave/src/config.js":[function(require,module,exports){
-module.exports = config = {
+module.exports = {
     rootFolder: "../cloud-enclave-root",
     name: "cloud-enclave"
 }
@@ -21342,52 +21201,51 @@ var globToRegExp = function (globExp) {
 
 module.exports = globToRegExp;
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/double-check/utils/AsyncDispatcher.js":[function(require,module,exports){
-
 function AsyncDispatcher(finalCallback) {
-	let results = [];
-	let errors = [];
+    let results = [];
+    let errors = [];
 
-	let started = 0;
+    let started = 0;
 
-	function markOneAsFinished(err, res) {
-		if(err) {
-			errors.push(err);
-		}
-
-		if(arguments.length > 2) {
-			arguments[0] = undefined;
-			res = arguments;
-		}
-
-		if(typeof res !== "undefined") {
-			results.push(res);
-		}
-
-		if(--started <= 0) {
-            return callCallback();
-		}
-	}
-
-	function dispatchEmpty(amount = 1) {
-		started += amount;
-	}
-
-	function callCallback() {
-	    if(errors && errors.length === 0) {
-	        errors = undefined;
+    function markOneAsFinished(err, res) {
+        if (err) {
+            errors.push(err);
         }
 
-	    if(results && results.length === 0) {
-	        results = undefined;
+        if (arguments.length > 2) {
+            arguments[0] = undefined;
+            res = arguments;
+        }
+
+        if (typeof res !== "undefined") {
+            results.push(res);
+        }
+
+        if (--started <= 0) {
+            return callCallback();
+        }
+    }
+
+    function dispatchEmpty(amount = 1) {
+        started += amount;
+    }
+
+    function callCallback() {
+        if (errors && errors.length === 0) {
+            errors = undefined;
+        }
+
+        if (results && results.length === 0) {
+            results = undefined;
         }
 
         finalCallback(errors, results);
     }
 
-	return {
-		dispatchEmpty,
-		markOneAsFinished
-	};
+    return {
+        dispatchEmpty,
+        markOneAsFinished
+    };
 }
 
 module.exports = AsyncDispatcher;
@@ -22449,7 +22307,7 @@ function ConstDSUFactory(options) {
         options.addLog = false;
         //testing if a constDSU already exists in order to prevent new instances
         options.disableTimeMetadata = true;
-        this.barFactory.load(keySSI, options, (err, loadedInstance)=>{
+        this.barFactory.load(keySSI, options, (err)=>{
             if(!err){
                 return callback(new Error("ConstDSU already exists! Can't be created again."));
             }
@@ -23284,9 +23142,6 @@ function KeySSIResolver(options) {
 module.exports = KeySSIResolver;
 
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/ConstSSIs/ArraySSI.js":[function(require,module,exports){
-const ConstSSI = require("./ConstSSI");
-const SSITypes = require("../SSITypes");
-
 function ArraySSI(enclave, identifier) {
     if (typeof enclave === "string") {
         identifier = enclave;
@@ -24065,7 +23920,6 @@ const cryptoRegistry = require("../CryptoAlgorithms/CryptoAlgorithmsRegistry");
 const pskCrypto = require("pskcrypto");
 const SSITypes = require("./SSITypes");
 const Hint = require("./Hint");
-const keySSIFactory = require("./KeySSIFactory");
 const MAX_KEYSSI_LENGTH = 2048
 
 function keySSIMixin(target, enclave) {
@@ -24244,7 +24098,6 @@ function keySSIMixin(target, enclave) {
         const dlDomain = target.getDLDomain() || '';
         const specificString = target.getSpecificString() || '';
         const controlString = target.getControlString() || '';
-        const vn = target.getVn() || "v0";
         let identifier = `${_prefix}:${target.getTypeName()}:${dlDomain}:${specificString}:${controlString}:${target.getVn()}`;
         return plain ? identifier : pskCrypto.pskBase58Encode(identifier);
     }
@@ -24747,7 +24600,6 @@ function VersionlessSSI(enclave, identifier) {
     }
 
     const crypto = require("opendsu").loadApi("crypto");
-    const pskcrypto = require("pskcrypto");
 
     self.getTypeName = function () {
         return SSITypes.VERSIONLESS_SSI;
@@ -24828,7 +24680,7 @@ module.exports = {
     createVersionlessSSI,
 };
 
-},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu","pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js":[function(require,module,exports){
+},{"../KeySSIMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/KeySSIMixin.js","../SSITypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/SSITypes.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/KeySSIs/OtherKeySSIs/WalletSSI.js":[function(require,module,exports){
 const ArraySSI = require("./../ConstSSIs/ArraySSI");
 const SSITypes = require("../SSITypes");
 
@@ -26881,16 +26733,15 @@ const DSU_ENTRY_TYPES = {
     FOLDER: "FOLDER",
 };
 
-let DSUSIntaceNo = 0;
 let BatchInstacesNo = 0;
 function VersionlessDSU(config) {
     const { keySSI } = config;
-
+    const keySSISpace = require("opendsu").loadAPI("keyssi");
     let keySSIString;
     let keySSIObject;
     if (typeof keySSI === "string") {
         keySSIString = keySSI;
-        keySSIObject = keySSISpace.parse(ssi);
+        keySSIObject = keySSISpace.parse(keySSI);
     } else {
         keySSIString = keySSI.getIdentifier();
         keySSIObject = keySSI;
@@ -26898,7 +26749,6 @@ function VersionlessDSU(config) {
 
     let refreshInProgress = false;
     let refreshPromise = Promise.resolve();
-    let isBatchCurrentlyInProgress = false;
 
     const controllerConfig = {
         keySSIString,
@@ -26991,7 +26841,7 @@ function VersionlessDSU(config) {
 
     this.init = (callback) => {
         callback = $$.makeSaneCallback(callback);
-        const controllerCallback = (error, result) => {
+        const controllerCallback = (error) => {
             if (error) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to create versionless DSU`, error));
             }
@@ -27004,7 +26854,7 @@ function VersionlessDSU(config) {
 
     this.load = (callback) => {
         callback = $$.makeSaneCallback(callback);
-        const controllerCallback = (error, result) => {
+        const controllerCallback = (error) => {
             if (error) {
                 return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to get versionless DSU`, error));
             }
@@ -27037,7 +26887,7 @@ function VersionlessDSU(config) {
 
                         resolve(callback());
                     });
-                }).catch((e) => {
+                }).catch(() => {
                     console.trace("This shouldn't happen. Refresh errors should have been already caught");
                 });
             });
@@ -27123,11 +26973,11 @@ function VersionlessDSU(config) {
      * @param {object} rules.preWrite
      * @param {object} rules.afterLoad
      */
-    this.setValidationRules = (rules) => {
-        callback("NotApplicableForVersionlessDSU");
+    this.setValidationRules = () => {
+        throw Error("NotApplicableForVersionlessDSU");
     };
 
-    this.setAnchoringEventListener = (listener) => {
+    this.setAnchoringEventListener = () => {
         throw new Error("NotApplicableForVersionlessDSU");
     };
 
@@ -27736,7 +27586,7 @@ function VersionlessDSU(config) {
                 this.getArchiveForPath(destPath, (err, destinationArchiveContext) => {
                     if (err) {
                         return OpenDSUSafeCallback(callback)(
-                            createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${dstPath}`, err)
+                            createOpenDSUErrorWrapper(`Failed to load DSU instance mounted at path ${destPath}`, err)
                         );
                     }
 
@@ -27932,7 +27782,7 @@ function VersionlessDSU(config) {
         });
     };
 
-    this.setMergeConflictsHandler = (handler) => {
+    this.setMergeConflictsHandler = () => {
         throw new Error("NotApplicableForVersionlessDSU");
     };
 
@@ -27964,7 +27814,7 @@ function VersionlessDSU(config) {
 
 module.exports = VersionlessDSU;
 
-},{"./VersionlessDSUController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUController.js","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUContentHandler.js":[function(require,module,exports){
+},{"./VersionlessDSUController":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUController.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/key-ssi-resolver/lib/dsu/VersionlessDSUContentHandler.js":[function(require,module,exports){
 function VersionlessDSUContentHandler(versionlessDSU, content) {
     const crypto = require("opendsu").loadAPI("crypto");
     const pskPath = require("swarmutils").path;
@@ -28381,7 +28231,7 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
         }
     };
 
-    this.writeFile = (path, data, options) => {
+    this.writeFile = (path, data) => {
         path = processPath(path);
 
         ensureFolderStructureForFilePath(path);
@@ -28410,7 +28260,7 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
         return fileContent;
     };
 
-    this.appendToFile = (path, data, options) => {
+    this.appendToFile = (path, data) => {
         path = processPath(path);
         if (!$$.Buffer.isBuffer(data)) {
             data = $$.Buffer.from(data);
@@ -28503,7 +28353,7 @@ function VersionlessDSUContentHandler(versionlessDSU, content) {
         return mountPoint ? mountPoint : null;
     };
 
-    this.mount = (path, identifier, options) => {
+    this.mount = (path, identifier) => {
         path = processPath(path);
         let manifestContent = readManifestFileContent();
         manifestContent.mounts[path] = identifier;
@@ -29530,7 +29380,6 @@ function LightDBServer(config, callback) {
                         }
                     }
 
-                    const label = `Executing command ${command.commandName} with args ${args} on database ${req.params.dbName}`;
                     const cb = (err, result) => {
                         if (err) {
                             res.statusCode = 500;
@@ -29803,11 +29652,11 @@ function LokiDb(rootFolder, autosaveInterval, adaptorConstructorFunction) {
     }
 
     this.updateRecord = function (tableName, pk, record, callback) {
-        let table = db.getCollection(tableName);
+        let table = db.getCollection(tableName) || db.addCollection(tableName);
         let doc;
         try {
             doc = table.by("pk", pk);
-            if(!doc && record.__fallbackToInsert){
+            if (!doc && record.__fallbackToInsert) {
                 //this __fallbackToInsert e.g. is used by fixedURL component
                 record.__fallbackToInsert = undefined;
                 delete record.__fallbackToInsert;
@@ -30007,7 +29856,6 @@ function LokiDb(rootFolder, autosaveInterval, adaptorConstructorFunction) {
             callback = ensureUniqueness;
             ensureUniqueness = false;
         }
-        let queue = db.getCollection(queueName) || db.addCollection(queueName);
         const crypto = require("opendsu").loadApi("crypto");
         const hash = crypto.sha256(encryptedObject);
         let pk = hash;
@@ -39222,7 +39070,6 @@ const {SmartUrl} = require("../utils");
 function RemotePersistence() {
     const openDSU = require("opendsu");
     const keySSISpace = openDSU.loadAPI("keyssi");
-    const resolver = openDSU.loadAPI("resolver");
     const promiseRunner = require("../utils/promise-runner");
 
     const getAnchoringServices = (dlDomain, callback) => {
@@ -39304,7 +39151,7 @@ function RemotePersistence() {
         updateAnchor(capableOfSigningKeySSI, anchorValue, "append-to-anchor", callback);
     }
 
-    const getFetchAnchor = (anchorId, dlDomain, actionName, callback) => {
+    const getFetchAnchor = (anchorId, dlDomain, actionName) => {
         return function (service) {
             return new Promise((resolve, reject) => {
 
@@ -39374,7 +39221,7 @@ function RemotePersistence() {
     }
 
     this.createOrUpdateMultipleAnchors = (anchors, callback) => {
-        let smartUrl = new SmartUrl(service);
+        let smartUrl = new SmartUrl();
         smartUrl = smartUrl.concatWith(`/anchor/create-or-update-multiple-anchors`);
 
         smartUrl.doPut(JSON.stringify(anchors), (err, data) => {
@@ -39389,103 +39236,8 @@ function RemotePersistence() {
 
 module.exports = RemotePersistence;
 
-},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","./../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js":[function(require,module,exports){
-const constants = require("../moduleConstants");
-
-function validateHashLinks(keySSI, hashLinks, callback) {
-    const validatedHashLinks = [];
-    let lastSSI;
-    let lastTransferSSI;
-
-    const __validateHashLinksRecursively = (index) => {
-        const newSSI = hashLinks[index];
-        if (typeof newSSI === "undefined") {
-            return callback(undefined, validatedHashLinks);
-        }
-        verifySignature(keySSI, newSSI, lastSSI, (err, status) => {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!status) {
-                return callback(Error("Failed to verify signature"));
-            }
-
-            if (!validateAnchoredSSI(lastTransferSSI, newSSI)) {
-                return callback(Error("Failed to validate SSIs"));
-            }
-
-            if (newSSI.getTypeName() === constants.KEY_SSIS.TRANSFER_SSI) {
-                lastTransferSSI = newSSI;
-            } else {
-                validatedHashLinks.push(newSSI);
-                lastSSI = newSSI;
-            }
-            __validateHashLinksRecursively(index + 1);
-        });
-    }
-
-    __validateHashLinksRecursively(0);
-}
-
-
-function validateAnchoredSSI(lastTransferSSI, currentSSI) {
-    if (!lastTransferSSI) {
-        return true;
-    }
-    if (lastTransferSSI.getSignature() !== currentSSI.getSignature()) {
-        return false;
-    }
-
-    return true;
-}
-
-function verifySignature(keySSI, newSSI, lastSSI, callback) {
-    if (typeof lastSSI === "function") {
-        callback = lastSSI;
-        lastSSI = undefined;
-    }
-
-    if (!keySSI.canSign()) {
-        return callback(undefined, true);
-    }
-    if (!newSSI.canBeVerified()) {
-        return callback(undefined, true);
-    }
-    const timestamp = newSSI.getTimestamp();
-    const signature = newSSI.getSignature();
-    let lastEntryInAnchor = '';
-    if (lastSSI) {
-        lastEntryInAnchor = lastSSI.getIdentifier();
-    }
-
-    let dataToVerify;
-    keySSI.getAnchorId((err, anchorId) => {
-        if (err) {
-            return callback(err);
-        }
-
-        if (newSSI.getTypeName() === constants.KEY_SSIS.SIGNED_HASH_LINK_SSI) {
-            dataToVerify = keySSI.hash(anchorId + newSSI.getHash() + lastEntryInAnchor + timestamp);
-            return callback(undefined, keySSI.verify(dataToVerify, signature));
-        }
-        if (newSSI.getTypeName() === constants.KEY_SSIS.TRANSFER_SSI) {
-            dataToVerify += newSSI.getSpecificString();
-            return callback(undefined, keySSI.verify(dataToVerify, signature));
-        }
-
-        callback(undefined, false);
-    });
-}
-
-module.exports = {
-    validateHashLinks,
-    verifySignature
-};
-
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js":[function(require,module,exports){
+},{"../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","./../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js":[function(require,module,exports){
 const {createOpenDSUErrorWrapper} = require("../error");
-const {parse} = require("../keyssi");
 const fakeHistory = {};
 const fakeLastVersion = {};
 
@@ -39766,121 +39518,16 @@ module.exports = {
     AnchoringAbstractBehaviour
 }
 
-},{"../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../keyssi":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js":[function(require,module,exports){
+},{"../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/index.js":[function(require,module,exports){
 const openDSU = require("opendsu")
-const keyssi = openDSU.loadAPI("keyssi");
 const utils = openDSU.loadAPI("utils");
 const SmartUrl = utils.SmartUrl;
 const constants = openDSU.constants;
 const promiseRunner = utils.promiseRunner;
-const config = openDSU.loadAPI("config");
-const {validateHashLinks, verifySignature} = require("./anchoring-utils");
 
 const getAnchoringBehaviour = (persistenceStrategy) => {
-        const Aab = require('./anchoringAbstractBehaviour').AnchoringAbstractBehaviour;
-        return new Aab(persistenceStrategy);
-    };
-
-
-const isValidVaultCache = () => {
-    return typeof config.get(constants.CACHE.VAULT_TYPE) !== "undefined" && config.get(constants.CACHE.VAULT_TYPE) !== constants.CACHE.NO_CACHE;
-}
-
-const buildGetVersionFunction = function(processingFunction){
-    return function (keySSI, authToken, callback) {
-        if (typeof authToken === 'function') {
-            callback = authToken;
-            authToken = undefined;
-        }
-
-        const dlDomain = keySSI.getDLDomain();
-        keySSI.getAnchorId((err, anchorId) => {
-            if (err) {
-                return callback(err);
-            }
-            const bdns = require("../bdns");
-            // if (dlDomain === constants.DOMAINS.VAULT && isValidVaultCache()) {
-            //     return cachedAnchoring.versions(anchorId, callback);
-            // }
-
-            bdns.getAnchoringServices(dlDomain, function (err, anchoringServicesArray) {
-                if (err) {
-                    return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to get anchoring services from bdns`, err));
-                }
-
-                if (!anchoringServicesArray.length) {
-                    return callback('No anchoring service provided');
-                }
-
-                //TODO: security issue (which response we trust)
-                const fetchAnchor = (service) => {
-                    let smartUrl = new SmartUrl(service);
-                    smartUrl = smartUrl.concatWith(`/anchor/${dlDomain}/get-all-versions/${anchorId}`);
-                    return smartUrl.fetch().then(processingFunction);
-                };
-
-                promiseRunner.runOneSuccessful(anchoringServicesArray, fetchAnchor, callback, new Error("get Anchoring Service"));
-            });
-        });
-    }
-}
-
-/**
- * Get versions
- * @param {keySSI} keySSI
- * @param {string} authToken
- * @param {function} callback
- */
-const getAllVersions = (keySSI, authToken, callback) => {
-    const fnc = buildGetVersionFunction((response) => {
-        return response.json().then(async (hlStrings) => {
-            if (!hlStrings) {
-                return [];
-            }
-            const hashLinks = hlStrings.map((hlString) => {
-                return keyssi.parse(hlString);
-            });
-
-            const validatedHashLinks = await $$.promisify(validateHashLinks)(keySSI, hashLinks);
-
-            // cache.put(anchorId, hlStrings);
-            return validatedHashLinks;
-        });
-    });
-    return fnc(keySSI, authToken, callback);
-};
-
-/**
- * Get the latest version only
- * @param {keySSI} keySSI
- * @param {string} authToken
- * @param {function} callback
- */
-const getLastVersion = (keySSI, authToken, callback) => {
-    const fnc = buildGetVersionFunction((response) => {
-        return response.json().then(async (hlStrings) => {
-            if (!hlStrings || (Array.isArray(hlStrings) && !hlStrings.length)) {
-                //no version found
-                return undefined;
-            }
-            // We need the last two hash links in order to validate the last one
-            const hashLinks = hlStrings.slice(-2).map((hlString) => {
-                return keyssi.parse(hlString);
-            });
-
-            const latestHashLink = hashLinks.pop();
-            const prevHashLink = hashLinks.pop();
-
-            const validHL = verifySignature(keySSI, latestHashLink, prevHashLink);
-
-            if (!validHL) {
-                throw new Error('Failed to verify signature');
-            }
-
-            return latestHashLink;
-        });
-    });
-    return fnc(keySSI, authToken, callback);
+    const Aab = require('./anchoringAbstractBehaviour').AnchoringAbstractBehaviour;
+    return new Aab(persistenceStrategy);
 };
 
 /**
@@ -40001,27 +39648,14 @@ function createDigitalProof(SSICapableOfSigning, newSSIIdentifier, lastSSIIdenti
     });
 }
 
-const getObservable = (keySSI, fromVersion, authToken, timeout) => {
-    // TODO: to be implemented
-}
-
-
 const callContractMethod = (domain, method, ...args) => {
     const callback = args.pop();
     const contracts = require("opendsu").loadApi("contracts");
     contracts.callContractMethod(domain, "anchoring", method, args, callback);
 }
 
-const createAnchor = (dsuKeySSI, callback) => {
-    addVersion(dsuKeySSI, callback)
-}
-
 const createNFT = (nftKeySSI, callback) => {
     addVersion(nftKeySSI, callback)
-}
-
-const appendToAnchor = (dsuKeySSI, newShlSSI, previousShlSSI, zkpValue, callback) => {
-    addVersion(dsuKeySSI, newShlSSI, previousShlSSI, zkpValue, callback)
 }
 
 const transferTokenOwnership = (nftKeySSI, ownershipSSI, callback) => {
@@ -40079,7 +39713,7 @@ module.exports = {
     getNextVersionNumberAsync
 }
 
-},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","./RemotePersistence":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js","./anchoring-utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoring-utils.js","./anchoringAbstractBehaviour":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/apiKey/APIKeysClient.js":[function(require,module,exports){
+},{"../bdns":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js","./RemotePersistence":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/RemotePersistence.js","./anchoringAbstractBehaviour":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/anchoring/anchoringAbstractBehaviour.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/apiKey/APIKeysClient.js":[function(require,module,exports){
 function APIKeysClient(baseUrl) {
     const openDSU = require("opendsu");
     const systemAPI = openDSU.loadAPI("system");
@@ -40143,7 +39777,6 @@ module.exports = {
     getAPIKeysClient
 }
 },{"./APIKeysClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/apiKey/APIKeysClient.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/bdns/index.js":[function(require,module,exports){
-const constants = require("../moduleConstants");
 const PendingCallMixin = require("../utils/PendingCallMixin");
 const getBaseURL = require("../utils/getBaseURL");
 
@@ -40239,22 +39872,6 @@ function BDNS() {
         getSection(dlDomain, "mqEndpoints", callback);
     }
 
-    this.addRawInfo = (dlDomain, rawInfo) => {
-        console.warn("This function is obsolete. Doing nothing");
-    };
-
-    this.addAnchoringServices = (dlDomain, anchoringServices) => {
-        console.warn("This function is obsolete. Doing nothing");
-    };
-
-    this.addBrickStorages = (dlDomain, brickStorages) => {
-        console.warn("This function is obsolete. Doing nothing");
-    };
-
-    this.addReplicas = (dlDomain, replicas) => {
-        console.warn("This function is obsolete. Doing nothing");
-    };
-
     this.setBDNSHosts = (bdnsHosts) => {
         isInitialized = true;
         bdnsCache = bdnsHosts;
@@ -40275,7 +39892,7 @@ function BDNS() {
 
 module.exports = new BDNS();
 
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js":[function(require,module,exports){
+},{"../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","../utils/getBaseURL":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getBaseURL.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/boot/BootEngine.js":[function(require,module,exports){
 (function (global){(function (){
 function BootEngine(getKeySSI) {
     if (typeof getKeySSI !== "function") {
@@ -40824,7 +40441,6 @@ module.exports = {
 };
 
 },{"../cache/":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js","../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/index.js","../utils/promise-runner":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/promise-runner.js","bar":"bar","bar-fs-adapter":"bar-fs-adapter","opendsu":"opendsu","overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/FSCache.js":[function(require,module,exports){
-let stores = {};
 const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
 const constants = require("../moduleConstants");
@@ -40927,10 +40543,7 @@ function FSCache(folderName) {
 
 module.exports.FSCache = FSCache;
 },{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js":[function(require,module,exports){
-let stores = {};
-const config = require("opendsu").loadApi("config");
 const CacheMixin = require("../utils/PendingCallMixin");
-const constants = require("../moduleConstants");
 
 function IndexedDBCache(storeName, lifetime) {
     const self = this;
@@ -41007,7 +40620,7 @@ function IndexedDBCache(storeName, lifetime) {
             transaction.onabort = function() {
                 console.log("Error", transaction.error);
             };
-            req.onerror = function (event){
+            req.onerror = function (){
                 next();
             }
         });
@@ -41038,7 +40651,7 @@ function IndexedDBCache(storeName, lifetime) {
                 transaction.onabort = function() {
                     console.log("Error", transaction.error);
                 };
-                req.onerror = function (event){
+                req.onerror = function (){
                     next();
                 }
             });
@@ -41066,7 +40679,7 @@ function IndexedDBCache(storeName, lifetime) {
             transaction.onabort = function() {
                 console.log("Error", transaction.error);
             };
-            req.onerror = function (event){
+            req.onerror = function (){
                 next();
             }
         });
@@ -41075,10 +40688,7 @@ function IndexedDBCache(storeName, lifetime) {
 
 
 module.exports.IndexedDBCache  = IndexedDBCache;
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/MemoryCache.js":[function(require,module,exports){
-
-const constants = require("../moduleConstants");
-
+},{"../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/MemoryCache.js":[function(require,module,exports){
 function MemoryCache(useWeakRef) {
     let storage = {};
     const self = this;
@@ -41121,10 +40731,9 @@ function MemoryCache(useWeakRef) {
 
 
 module.exports.MemoryCache = MemoryCache;
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/index.js":[function(require,module,exports){
 let stores = {};
 const config = require("opendsu").loadApi("config");
-const CacheMixin = require("../utils/PendingCallMixin");
 const constants = require("../moduleConstants");
 
 const IndexedDBCache = require("./IndexeDBCache").IndexedDBCache;
@@ -41178,7 +40787,7 @@ module.exports = {
     getMemoryCache,
     getWeakRefMemoryCache
 }
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../utils/PendingCallMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/PendingCallMixin.js","./FSCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/FSCache.js","./IndexeDBCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js","./MemoryCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/MemoryCache.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfig.js":[function(require,module,exports){
+},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./FSCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/FSCache.js","./IndexeDBCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/IndexeDBCache.js","./MemoryCache":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/cache/MemoryCache.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/config/autoConfig.js":[function(require,module,exports){
 const config = require("./index");
 const constants = require("../moduleConstants");
 const system = require("../system");
@@ -41828,7 +41437,7 @@ class JWT {
 			const encodedJWT = [base64UrlEncode(JSON.stringify(this.jwtHeader)), base64UrlEncode(JSON.stringify(this.jwtPayload)), jwtSignature].join('.');
 			callback(undefined, encodedJWT);
 		});
-	};
+	}
 
 	async getEncodedJWTAsync() {
 		return this.asyncMyFunction(this.getEncodedJWT, [...arguments]);
@@ -41851,7 +41460,7 @@ class JWT {
 
 		this.jwtPayload[claimName] = claimValue;
 		callback(undefined, true);
-	};
+	}
 
 	async embedClaimAsync(claimName, claimValue) {
 		return this.asyncMyFunction(this.embedClaim, [...arguments]);
@@ -41869,7 +41478,7 @@ class JWT {
 
 		this.jwtPayload.exp = this.jwtPayload.exp + timeInSeconds * 1000;
 		callback(undefined, true);
-	};
+	}
 
 	async extendExpirationDateAsync(timeInSeconds) {
 		return this.asyncMyFunction(this.extendExpirationDate, [...arguments]);
@@ -42667,7 +42276,7 @@ function registerValidationStrategy(validationStrategyName, implementation) {
  */
 function getValidationStrategy(validationStrategyName) {
     if (!validationStrategies[validationStrategyName]) {
-        return callback(VALIDATION_STRATEGIES.INVALID_VALIDATION_STRATEGY);
+        throw Error(VALIDATION_STRATEGIES.INVALID_VALIDATION_STRATEGY);
     }
 
     return validationStrategies[validationStrategyName];
@@ -42930,7 +42539,7 @@ class JwtVC extends JWT {
 		this.jwtPayload.vc = JSON.parse(JSON.stringify(vc));
 
 		callback(undefined, true);
-	};
+	}
 
 	async embedSubjectClaimAsync(context, type, subjectClaims, subject) {
 		return this.asyncMyFunction(this.embedSubjectClaim, [...arguments]);
@@ -42947,7 +42556,7 @@ class JwtVC extends JWT {
 			this.jwtSignature = result.jwtSignature;
 			this.notifyInstanceReady();
 		});
-	};
+	}
 
 	verifyJWT(rootsOfTrust, callback) {
 		if (typeof rootsOfTrust === 'function') {
@@ -43281,9 +42890,7 @@ const keySSIFactory = keySSIResolver.KeySSIFactory;
 const SSITypes = keySSIResolver.SSITypes;
 const CryptoFunctionTypes = keySSIResolver.CryptoFunctionTypes;
 const jwtUtils = require("./jwt");
-const constants = require("../moduleConstants");
-const config = require("./index");
-const { Mnemonic } = require("./mnemonic");
+const {Mnemonic} = require("./mnemonic");
 
 const templateSeedSSI = keySSIFactory.createType(SSITypes.SEED_SSI);
 templateSeedSSI.load(SSITypes.SEED_SSI, "default");
@@ -43651,13 +43258,63 @@ module.exports = {
     base64URLEncode: base64UrlEncodeJOSE,
     base64URLDecode: base64UrlDecodeJOSE,
     sha256JOSE,
-    joseAPI: require("pskcrypto").joseAPI,
+    joseAPI: require("./jose"),
+    jsonWebTokenAPI: crypto.jsonWebTokenAPI,
     convertKeySSIObjectToMnemonic,
     convertMnemonicToKeySSIIdentifier,
     getRandomSecret
 };
 
-},{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/index.js","./jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jwt.js","./mnemonic":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/mnemonic.js","key-ssi-resolver":"key-ssi-resolver","psk-dbf":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jwt.js":[function(require,module,exports){
+},{"./jose":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jose.js","./jwt":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jwt.js","./mnemonic":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/mnemonic.js","key-ssi-resolver":"key-ssi-resolver","psk-dbf":false,"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jose.js":[function(require,module,exports){
+/**
+ * This module provides functions for creating and verifying HMAC JWTs.
+ * @module jose
+ */
+
+const pskcrypto = require("pskcrypto");
+
+
+/**
+ * Creates a signed HMAC JWT with the provided payload and secret key.
+ * @param {Object} payload - The payload to be included in the JWT.
+ * @param {string} secretKey - The secret key to sign the JWT with.
+ * @returns {Promise} A promise that resolves with the signed JWT.
+ */
+const createSignedHmacJWT = (payload, secretKey) => {
+    if(typeof secretKey === "string"){
+        secretKey = $$.Buffer.from(secretKey);
+    }
+    return new pskcrypto.joseAPI.SignJWT(payload)
+        .setProtectedHeader({alg: 'HS256'})
+        .sign(secretKey);
+}
+
+/**
+ * Creates a new HMAC key.
+ * @returns {Promise} A promise that resolves with the generated secret key.
+ */
+const createHmacKey = async () => {
+    return await pskcrypto.joseAPI.generateSecret('HS256');
+}
+
+/**
+ * Verifies and retrieves the payload of an HMAC JWT.
+ * @param {string} jwt - The JWT to verify.
+ * @param {string} secretKey - The secret key to verify the JWT with.
+ */
+const verifyAndRetrievePayloadHmacJWT = async (jwt, secretKey) => {
+    if(typeof secretKey === "string"){
+        secretKey = $$.Buffer.from(secretKey);
+    }
+    return await pskcrypto.joseAPI.jwtVerify(jwt, secretKey);
+}
+
+module.exports = {
+    createSignedHmacJWT,
+    createHmacKey,
+    verifyAndRetrievePayloadHmacJWT
+}
+},{"pskcrypto":"pskcrypto"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/crypto/jwt.js":[function(require,module,exports){
 const keySSIResolver = require("key-ssi-resolver");
 const cryptoRegistry = keySSIResolver.CryptoAlgorithmsRegistry;
 const SSITypes = keySSIResolver.SSITypes;
@@ -43689,7 +43346,7 @@ templateSeedSSI.load(SSITypes.SEED_SSI, "default");
 
 function encodeBase58(data) {
     return cryptoRegistry.getEncodingFunction(templateSeedSSI)(data).toString();
-};
+}
 
 function decodeBase58(data, keepBuffer) {
     const decodedValue = cryptoRegistry.getDecodingFunction(templateSeedSSI)(data);
@@ -43697,7 +43354,7 @@ function decodeBase58(data, keepBuffer) {
         return decodedValue;
     }
     return decodedValue ? decodedValue.toString() : null;
-};
+}
 
 function nowEpochSeconds() {
     return Math.floor(new Date().getTime() / 1000);
@@ -43967,7 +43624,7 @@ const verifyDID_JWT = ({jwt, rootOfTrustVerificationStrategy, verifySignature}, 
             if (verifyError) return callback(verifyError);
 
             const {header, body, signatureInput, signature} = jwtContent;
-            const {iss: did, publicKey} = body;
+            const {iss: did} = body;
 
             const openDSU = require("opendsu");
             const crypto = openDSU.loadAPI("crypto");
@@ -44228,8 +43885,7 @@ const Mnemonic = function (language) {
     function init() {
         wordlist = WORDLISTS[language];
         if (wordlist.length != RADIX) {
-            err = 'Wordlist should contain ' + RADIX + ' words, but it contains ' + wordlist.length + ' words.';
-            throw err;
+            throw Error('Wordlist should contain ' + RADIX + ' words, but it contains ' + wordlist.length + ' words.');
         }
     }
 
@@ -44481,7 +44137,7 @@ function BasicDB(storageStrategy, conflictSolvingStrategy, options) {
     }
 
     function getDefaultCallback(message, tableName, key) {
-        return function (err, res) {
+        return function (err) {
             if (err) {
                 reportUserRelevantError(message + ` with errors in table ${tableName} for key ${key}`, err);
             } else {
@@ -44987,8 +44643,6 @@ module.exports = {
 
 },{"../../keyssi":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/keyssi/index.js","../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/index.js":[function(require,module,exports){
 let util = require("./impl/DSUDBUtil")
-const {SingleDSUStorageStrategy} = require("./storageStrategies/SingleDSUStorageStrategy");
-const {TimestampMergingStrategy: ConflictStrategy} = require("./conflictSolvingStrategies/timestampMergingStrategy");
 const logger = $$.getLogger("opendsu", "db");
 function getBasicDB(storageStrategy, conflictSolvingStrategy, options) {
     let BasicDB = require("./impl/BasicDB");
@@ -45126,9 +44780,6 @@ function MemoryStorageStrategy() {
     const operators = require("./operators");
     let volatileMemory = {}
     let self = this
-    let storageDSU, afterInitialisation;
-    let dbName;
-
     ObservableMixin(this);
 
     function getTable(tableName) {
@@ -45325,7 +44976,7 @@ function MemoryStorageStrategy() {
         callback(undefined);
     }
 
-    this.safeBeginBatchAsync = async (wait) => {
+    this.safeBeginBatchAsync = async () => {
 
     }
 
@@ -45578,10 +45229,8 @@ module.exports = SingleDSURecordStorageStrategy;
 const ObservableMixin = require("../../utils/ObservableMixin");
 const SingleDSURecordStorageStrategy = require("./SingleDSURecordStorageStrategy");
 function SingleDSUStorageStrategy(recordStorageStrategy) {
-    let volatileMemory = {}
     let self = this
     let storageDSU;
-    let shareableSSI;
     let dbName;
 
     ObservableMixin(this);
@@ -46218,7 +45867,6 @@ module.exports.SingleDSUStorageStrategy = SingleDSUStorageStrategy;
 
 },{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","./Query":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/Query.js","./SingleDSURecordStorageStrategy":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/SingleDSURecordStorageStrategy.js","./operators":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/operators.js","./utils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/utils.js","buffer":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/db/storageStrategies/VersionlessRecordStorageStrategy.js":[function(require,module,exports){
 function VersionlessRecordStorageStrategy(rootDSU) {
-    const DATA_PATH = "data";
     const openDSU = require("opendsu");
     const resolver = openDSU.loadAPI("resolver");
 
@@ -46930,7 +46578,7 @@ function AppBuilderService(environment, opts) {
     }
 
     this.loadWallet = function(secrets, callback){
-        parseSecrets(true, secrets, (err, keyGenArgs, publicSecrets) => {
+        parseSecrets(true, secrets, (err, keyGenArgs) => {
             if (err)
                 return callback(err);
             createWalletSSI(keyGenArgs, (err, keySSI) => {
@@ -46963,7 +46611,7 @@ function BuildWallet() {
     let writableDSU;
 
     const __ensureEnvIsInitialised = (writableDSU, callback) => {
-        writableDSU.readFile("/environment.json", async (err, env) => {
+        writableDSU.readFile("/environment.json", async (err) => {
             //TODO: check if env is a valid JSON
             if (err) {
                 try {
@@ -47536,7 +47184,7 @@ class Command {
                 let arg = parsedArgs.shift();
                 if (!arg)
                     return callback(undefined, bar);
-                return self._runCommand(arg, bar, options, (err, dsu) => err
+                return self._runCommand(arg, bar, options, (err) => err
                     ? _err(`Could iterate over Command ${self.constructor.name} with args ${JSON.stringify(arg)}`, err, callback)
                     : iterator(args, callback));
             }
@@ -47849,7 +47497,7 @@ const _getKeyType = function(dsuType){
  * @param {string[]} arg
  * @param {function(err, KeySSI)} callback
  */
-_createSSI = function(varStore, arg, callback){
+const _createSSI = function(varStore, arg, callback){
     const argToArray = (arg) => {
         return `${arg.type} ${arg.domain} ${typeof arg.args === 'string' ? arg.args : JSON.stringify(arg.hint ? {
             hint: arg.hint,
@@ -47866,7 +47514,7 @@ _createSSI = function(varStore, arg, callback){
  * @param {object} opts DSU Creation Options
  * @param {function(err, Archive)} callback
  */
-_createWalletDSU = function(varStore, arg, opts, callback){
+const _createWalletDSU = function(varStore, arg, opts, callback){
     _createSSI(varStore, arg, (err, keySSI) => {
         _getResolver().createDSUForExistingSSI(keySSI, opts, (err, dsu) => {
             if (err)
@@ -47882,7 +47530,7 @@ _createWalletDSU = function(varStore, arg, opts, callback){
  * @param {object} opts DSU Creation Options
  * @param {function(err, Archive)} callback
  */
-_createDSU = function(varStore, arg, opts, callback){
+const _createDSU = function(varStore, arg, opts, callback){
     _createSSI(varStore, arg, (err, keySSI) => {
         _getResolver().createDSU(keySSI, opts, (err, dsu) => {
             if (err)
@@ -47898,7 +47546,7 @@ _createDSU = function(varStore, arg, opts, callback){
  * @param {object} opts DSU Creation Options
  * @param {function(err, Archive)} callback
  */
-_createConstDSU = function(varStore, arg,opts , callback){
+const _createConstDSU = function(varStore, arg,opts , callback){
     _createSSI(varStore, arg, (err, keySSI) => {
         _getResolver().createDSUForExistingSSI(keySSI, opts, (err, dsu) => {
             if (err)
@@ -47908,9 +47556,6 @@ _createConstDSU = function(varStore, arg,opts , callback){
     });
 }
 
-_getDSUFactory = function(isConst, isWallet){
-    return isConst ? (isWallet ? _createWalletDSU : _createConstDSU) : _createDSU;
-}
 
 /**
  * creates a new DSU of the provided type and with the provided key gen arguments
@@ -49580,7 +49225,7 @@ function CloudEnclaveClient(clientDID, remoteDID, requestTimeout) {
     }
 
     this.getDID = (callback) => {
-        callback(undefined, did);
+        callback(undefined, clientDID);
     }
 
     this.grantReadAccess = (forDID, resource, callback) => {
@@ -49619,7 +49264,7 @@ function CloudEnclaveClient(clientDID, remoteDID, requestTimeout) {
 
         this.commandsMap.get(commandID).timeout = timeout;
 
-        this.clientDIDDocument.sendMessage(command, this.remoteDIDDocument, (err, res) => {
+        this.clientDIDDocument.sendMessage(command, this.remoteDIDDocument, (err) => {
             console.log("Sent command with id " + commandID);
             if (err) {
                 console.log(err);
@@ -50028,7 +49673,6 @@ function VersionlessDSUEnclave(keySSI, did) {
     const constants = require("../constants/constants");
     const db = openDSU.loadAPI("db");
     const resolver = openDSU.loadAPI("resolver");
-    const config = openDSU.loadAPI("config");
     const keySSISpace = openDSU.loadAPI("keyssi");
     const DB_NAME = constants.DB_NAMES.WALLET_DB_ENCLAVE;
     const EnclaveMixin = require("../mixins/Enclave_Mixin");
@@ -50246,7 +49890,7 @@ module.exports = WalletDBEnclave;
 },{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../constants/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/constants.js","../mixins/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/index.js":[function(require,module,exports){
 const constants = require("../moduleConstants");
 
-function initialiseWalletDBEnclave(keySSI, did) {
+function initialiseWalletDBEnclave(keySSI) {
     const WalletDBEnclave = require("./impl/WalletDBEnclave");
     return new WalletDBEnclave(keySSI);
 }
@@ -50323,6 +49967,7 @@ function convertWalletDBEnclaveToVersionlessEnclave(walletDBEnclave, callback) {
 
         versionlessEnclave.on("initialised", async () => {
             for (let i = 0; i < tableNames.length; i++) {
+                let records;
                 [error, records] = await $$.call(walletDBEnclave.getAllRecords, undefined, tableNames[i]);
                 if (error) {
                     return callback(error);
@@ -50346,7 +49991,6 @@ function convertWalletDBEnclaveToVersionlessEnclave(walletDBEnclave, callback) {
 
 function convertWalletDBEnclaveToCloudEnclave(walletDBEnclave, cloudEnclaveServerDIO, callback) {
     const openDSU = require("opendsu");
-    const resolver = openDSU.loadAPI("resolver");
     const w3cDidAPI = openDSU.loadAPI("w3cdid");
     const keySSIApi = openDSU.loadAPI("keyssi");
     walletDBEnclave.getAllTableNames(undefined, async (err, tableNames) => {
@@ -50358,7 +50002,7 @@ function convertWalletDBEnclaveToCloudEnclave(walletDBEnclave, cloudEnclaveServe
         let keySSI;
 
         [error, keySSI] = await $$.call(walletDBEnclave.getKeySSI);
-        if (err) {
+        if (error) {
             return callback(error);
         }
 
@@ -50383,6 +50027,7 @@ function convertWalletDBEnclaveToCloudEnclave(walletDBEnclave, cloudEnclaveServe
 
         cloudEnclave.on("initialised", async () => {
             for (let i = 0; i < tableNames.length; i++) {
+                let records;
                 [error, records] = await $$.call(walletDBEnclave.getAllRecords, undefined, tableNames[i]);
                 if (error) {
                     return callback(error);
@@ -50434,7 +50079,7 @@ module.exports = {
 },{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./impl/CloudEnclaveClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/CloudEnclaveClient.js","./impl/LightDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/LightDBEnclave.js","./impl/MemoryEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js","./impl/VersionlessDSUEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/VersionlessDSUEnclave.js","./impl/WalletDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js","./mixins/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js","./mixins/ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/ProxyMixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js":[function(require,module,exports){
 const constants = require("../constants/constants");
 
-function Enclave_Mixin(target, did, keySSI) {
+function Enclave_Mixin(target, did) {
     const openDSU = require("opendsu");
     const keySSISpace = openDSU.loadAPI("keyssi")
     const w3cDID = openDSU.loadAPI("w3cdid")
@@ -51919,7 +51564,6 @@ function OpenDSUSafeCallback(callback) {
 }
 
 let observable = require("./../utils/observable").createObservable();
-let devObservers = [];
 
 function reportUserRelevantError(message, err) {
   genericDispatchEvent(constants.NOTIFICATION_TYPES.ERROR, message, err);
@@ -52100,7 +51744,7 @@ function generateMethodForRequestWithData(httpMethod) {
 			}
 		};
 
-		xhr.onerror = function (e) {
+		xhr.onerror = function () {
 			callback(new Error("A network error occurred"));
 		};
 
@@ -52434,7 +52078,7 @@ function generateMethodForRequestWithData(httpMethod) {
 			if (response.status >= 400) {
 				throw new Error(`An error occurred ${response.statusText}`);
 			}
-			return response.text().catch((err) => {
+			return response.text().catch(() => {
 				// This happens when the response is empty
 				let emptyResponse = {message: ""}
 				return JSON.stringify(emptyResponse);
@@ -52626,7 +52270,6 @@ function PollRequestManager(fetchFunction,  connectionTimeout = 10000, pollingTi
 						let err = Error(response.statusText || "Service unavailable");
 						err.code = 503;
 						throw err;
-						return;
 					}
 
 					return beginSafePeriod();
@@ -52965,7 +52608,7 @@ const we_createConstSSI = (enclave, domain, constString, vn, hint, callback) => 
 };
 
 const createArraySSI = (domain, arr, vn, hint, callback) => {
-    return we_createArraySSI(openDSU.loadAPI("sc").getMainEnclave(), domain, arr, vn, hint);
+    return we_createArraySSI(openDSU.loadAPI("sc").getMainEnclave(), domain, arr, vn, hint, callback);
 }
 
 const we_createArraySSI = (enclave, domain, arr, vn, hint, callback) => {
@@ -53001,7 +52644,7 @@ const createToken = (domain, amountOrSerialNumber, vn, hint, callback) => {
     // the tokenSSI must have the ownershipSSI's public key hash
     // the ownershipSSI must have the tokenSSI's base58 ssi
     const ownershipSSI = keySSIFactory.createType(SSITypes.OWNERSHIP_SSI);
-    ownershipSSI.initialize(domain, undefined, undefined, vn, hint, (err) => {
+    ownershipSSI.initialize(domain, undefined, undefined, vn, hint, () => {
 
         const ownershipPublicKeyHash = ownershipSSI.getPublicKeyHash();
         const ownershipPrivateKey = ownershipSSI.getPrivateKey();
@@ -53175,7 +52818,7 @@ function lockAsync(id, secret, period) {
     return handlePromise(http.fetch(`${originUrl}/lock?id=${id}&secret=${secret}&period=${period}`), "Failed to acquire lock");
 }
 
-function unlockAsync(id, secret, callback) {
+function unlockAsync(id, secret) {
     const originUrl = require("../bdns").getOriginUrl();
     const http = require("../http");
     return handlePromise(http.fetch(`${originUrl}/unlock?id=${id}&secret=${secret}`), "Failed to unlock");
@@ -53209,7 +52852,6 @@ function getApis(){
 module.exports = {defineApi, getApis}
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultApis/index.js":[function(require,module,exports){
 const registry = require("../apisRegistry");
-const {dsuExists} = require("../../resolver");
 
 /*
 * based on jsonIndications Object {attributeName1: "DSU_file_path", attributeName2: "DSU_file_path"}
@@ -53275,7 +52917,7 @@ function promisifyDSUAPIs(dsu) {
     ];
 
     const promisifyHandler = {
-        get: function (target, prop, receiver) {
+        get: function (target, prop) {
             if (promisifyAPIs.indexOf(prop) !== -1) {
                 return $$.promisify(target[prop]);
             }
@@ -53323,7 +52965,7 @@ async function registerDSU(mappingInstance, dsu) {
     dsu.secretBatchId = batchId;
     mappingInstance.registeredDSUs.push(dsu);
     return promisifyDSUAPIs(dsu);
-};
+}
 
 registry.defineApi("testIfDSUExists", async function(keySSI, callback){
     const keySSISpace = require("opendsu").loadApi("keyssi");
@@ -53415,7 +53057,7 @@ registry.defineApi("createDSU", async function (domain, ssiType, options) {
     return await registerDSU(this, dsu);
 });
 
-registry.defineApi("createPathSSI", async function (domain, path, options) {
+registry.defineApi("createPathSSI", async function (domain, path) {
     const scAPI = require("opendsu").loadAPI("sc");
     let enclave;
     try{
@@ -53546,7 +53188,7 @@ registry.defineApi("recoverDSU", function (ssi, recoveryFnc, callback) {
 });
 
 
-},{"../../resolver":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js","../apisRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js":[function(require,module,exports){
+},{"../apisRegistry":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/apisRegistry.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/defaultMappings/index.js":[function(require,module,exports){
 const mappingRegistry = require("./../mappingRegistry.js");
 
 async function validateMessage(message){
@@ -53559,7 +53201,7 @@ async function digestMessage(message){
 
 mappingRegistry.defineMapping(validateMessage, digestMessage);
 },{"./../mappingRegistry.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/mappingRegistry.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/errorsMap.js":[function(require,module,exports){
-errorTypes = {
+const errorTypes = {
   "UNKNOWN": {
     errorCode: 0,
     message: "Unknown error",
@@ -53732,7 +53374,8 @@ module.exports = {
   getErrorKeyByCode,
   getErrorKeyByMessage,
   setErrorMessage,
-  addNewErrorType
+  addNewErrorType,
+  getErrorCodes
 }
 
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/m2dsu/index.js":[function(require,module,exports){
@@ -53826,7 +53469,7 @@ function MappingEngine(storageService, options) {
               if (result && result.status === "rejected") {
                 await $$.promisify(touchedDSUs[i].cancelBatch)(touchedDSUs[i].secretBatchID);
                 let getDSUIdentifier = $$.promisify(touchedDSUs[i].getKeySSIAsString);
-                return reject(errorHandler.createOpenDSUErrorWrapper(`Cancel batch on dsu identified with ${await getDSUIdentifier()}`, error));
+                return reject(errorHandler.createOpenDSUErrorWrapper(`Cancel batch on dsu identified with ${await getDSUIdentifier()}`));
               }
             }
 
@@ -54317,7 +53960,7 @@ function send(keySSI, message, callback) {
         let url = endpoints[0] + `/mq/send-message/${keySSI}`;
         let options = { body: message };
 
-        let request = http.poll(url, options, timeout);
+        let request = http.poll(url, options);
 
         request.then((response) => {
             callback(undefined, response);
@@ -54329,7 +53972,7 @@ function send(keySSI, message, callback) {
 
 let requests = {};
 
-function getHandler(keySSI, timeout) {
+function getHandler(keySSI, timeout, callback) {
     console.log("getHandler method from OpenDSU.loadApi('mq') is absolute. Adapt your code to use the new getMQHandlerForDID");
     let obs = require("../utils/observable").createObservable();
     bdns.getMQEndpoints(keySSI, (err, endpoints) => {
@@ -54338,12 +53981,11 @@ function getHandler(keySSI, timeout) {
         }
 
         let createChannelUrl = endpoints[0] + `/mq/create-channel/${keySSI}`;
-        http.doPost(createChannelUrl, undefined, (err, response) => {
+        http.doPost(createChannelUrl, undefined, (err) => {
             if (err) {
                 if (err.statusCode === 409) {
                     //channels already exists. no problem :D
                 } else {
-                    get
                     obs.dispatch("error", err);
                     return;
                 }
@@ -54635,7 +54277,7 @@ function MQHandler(didDocument, domain, pollingTimeout) {
                         method: "DELETE",
                         headers: { "x-mq-authorization": token }
                     })
-                        .then(response => callback())
+                        .then(() => callback())
                         .catch(e => callback(e));
                 });
             });
@@ -54705,7 +54347,7 @@ function publish(keySSI, message, timeout, callback) {
 
 let requests = new Map();
 
-function getObservableHandler(keySSI, timeout) {
+function getObservableHandler(keySSI, timeout, callback) {
     timeout = timeout || 0;
     let obs = require("../utils/observable").createObservable();
 
@@ -54957,7 +54599,7 @@ class OIDC {
     refreshTokenSet() {
         console.log('refreshSession');
         return this.refreshWithRefreshToken()
-            .catch((err) => this.refreshWithIFrame())
+            .catch(() => this.refreshWithIFrame())
             .catch((err) => {
                 //todo: improve error detection
                 const loginRequired = err.message.includes('login_required');
@@ -55463,23 +55105,6 @@ function parseUrlParams(value) {
 }
 
 
-function parseUrlParamsFallback(value) {
-    const urlParams = {};
-    const a = /\+/g;
-    const r = /([^&;=]+)=?([^&;]*)/g;
-    const decode = function (s) {
-        return decodeURIComponent(s.replace(a, " "))
-    };
-
-    let search;
-    while (search = r.exec(value)) {
-        urlParams[decode(search[1])] = decode(search[2]);
-    }
-
-    return urlParams;
-}
-
-
 function getCurrentLocation() {
     return location.href.substring(location.origin.length)
 }
@@ -55550,8 +55175,6 @@ module.exports = {
     flatPromise
 }
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/oauth/src/util/Storage.js":[function(require,module,exports){
-const {prettyByte} = require("@msgpack/msgpack/dist/utils/prettyByte");
-
 class Storage {
     get(key) {
         return localStorage.getItem(key);
@@ -55589,7 +55212,7 @@ const getStorage = () => {
 module.exports = {
     getStorage
 };
-},{"@msgpack/msgpack/dist/utils/prettyByte":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js":[function(require,module,exports){
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/resolver/index.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const KeySSIResolver = require("key-ssi-resolver");
 const openDSU = require("opendsu");
@@ -55597,7 +55220,7 @@ const keySSISpace = openDSU.loadAPI("keyssi");
 const crypto = openDSU.loadAPI("crypto");
 const constants = require("../moduleConstants");
 
-let {ENVIRONMENT_TYPES, KEY_SSIS} = require("../moduleConstants.js");
+let {ENVIRONMENT_TYPES} = require("../moduleConstants.js");
 const {getWebWorkerBootScript, getNodeWorkerBootScript} = require("./resolver-utils");
 const cache = require("../cache");
 const {createOpenDSUErrorWrapper} = require("../error");
@@ -55804,21 +55427,6 @@ const getDSUVersionHashlink = (keySSI, versionNumber, callback) => {
             callback(undefined, versionHashLink);
         })
     })
-}
-
-const getVersionNumberFromKeySSI = (keySSI) => {
-    let versionNumber;
-    try {
-        versionNumber = parseInt(keySSI.getHint());
-    } catch (e) {
-        return undefined;
-    }
-
-    if (versionNumber < 0) {
-        return undefined;
-    }
-
-    return versionNumber;
 }
 
 const loadDSUVersionBasedOnVersionNumber = (keySSI, versionNumber, callback) => {
@@ -56233,7 +55841,7 @@ module.exports = {
 function getWebWorkerBootScript(dsuKeySSI) {
     const scriptLocation = document.currentScript
         ? document.currentScript
-        : new Error().stack.match(/([^ ^(\n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/gi)[0];
+        : new Error().stack.match(/([^ ^(\n])*([a-z]*:\/\/\/?)*?[a-z0-9/\\]*\.js/gi)[0];
     let blobURL = URL.createObjectURL(
         new Blob(
             [
@@ -56792,7 +56400,7 @@ function SecurityContext(target, PIN) {
             }
             catch (err) {
                 pinNeeded = true;
-                sharedEnclave = new Promise((res, rej) => {
+                sharedEnclave = new Promise((res) => {
                     target.on("pinSet", async () => {
                         await initSharedEnclave();
                         pinNeeded = false;
@@ -57047,7 +56655,7 @@ function SecurityContext(target, PIN) {
 
     target.isPINNeeded = async () => {
 
-        return new Promise((res, rej) => {
+        return new Promise((res) => {
             if (initialised) {
                 res(pinNeeded);
             }
@@ -58634,7 +58242,6 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
     observableMixin(target);
 
     const openDSU = require("opendsu");
-    const dbAPI = openDSU.loadAPI("db");
     const scAPI = openDSU.loadAPI("sc");
     const crypto = openDSU.loadAPI("crypto");
     const keySSISpace = openDSU.loadAPI("keyssi");
@@ -59103,7 +58710,6 @@ function SReadDID_Document(enclave, isInitialisation, seedSSI) {
     const openDSU = require("opendsu");
     const keySSISpace = openDSU.loadAPI("keyssi");
     const resolver = openDSU.loadAPI("resolver");
-    const dbAPI = openDSU.loadAPI("db");
 
     const createSeedDSU = async () => {
         try {
@@ -59208,7 +58814,6 @@ function SSIKeyDID_Document(enclave, isInitialisation, seedSSI) {
     const ObservableMixin = require("../../utils/ObservableMixin");
     ObservableMixin(this);
     const openDSU = require("opendsu");
-    const dbAPI = openDSU.loadAPI("db");
     const keySSISpace = openDSU.loadAPI("keyssi");
     const crypto = openDSU.loadAPI("crypto");
 
@@ -59297,44 +58902,6 @@ module.exports = {
 };
 
 },{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../W3CDID_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/W3CDID_Mixin.js","../didMethodsNames":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didMethodsNames.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/ssiMethods.js":[function(require,module,exports){
-function storeDIDInSC(didDocument, callback) {
-    const securityContext = require("opendsu").loadAPI("sc").getSecurityContext();
-    const __registerDID = () => {
-        securityContext.registerDID(didDocument, (err) => {
-            if (err) {
-                return callback(createOpenDSUErrorWrapper(`failed to register did ${didDocument.getIdentifier()} in security context`, err));
-            }
-
-            callback(null, didDocument);
-        })
-    }
-    if (securityContext.isInitialised()) {
-        __registerDID();
-    } else {
-        securityContext.on("initialised", () => {
-            __registerDID()
-        })
-    }
-}
-
-const openDSU = require("opendsu");
-const KeyDIDDocument = require("./SSIKeyDID_Document");
-const dbAPI = openDSU.loadAPI("db")
-const __ensureEnclaveExistsThenExecute = (fn, enclave, ...args) => {
-    if (typeof enclave === "undefined") {
-        dbAPI.getMainEnclave((err, mainEnclave) => {
-            if (err) {
-                return callback(err);
-            }
-
-            enclave = mainEnclave;
-            fn(mainEnclave, ...args);
-        })
-    } else {
-        fn(enclave, ...args);
-    }
-}
-
 function SReadDID_Method() {
     let SReadDID_Document = require("./SReadDID_Document");
     this.create = (enclave, seedSSI, callback) => {
@@ -59465,7 +59032,7 @@ module.exports = {
     create_GroupDID_Method
 }
 
-},{"./GroupDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./NameDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./SReadDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","./SSIKeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SSIKeyDID_Document.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js":[function(require,module,exports){
+},{"./GroupDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/GroupDID_Document.js","./NameDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/NameDID_Document.js","./SReadDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SReadDID_Document.js","./SSIKeyDID_Document":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/didssi/SSIKeyDID_Document.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/w3cdid/hubs/CommunicationHub.js":[function(require,module,exports){
 let didDocuments = {};
 
 function CommunicationHub() {
@@ -60342,7 +59909,7 @@ module.exports = {
 function getWebWorkerBootScript() {
     const scriptLocation = document.currentScript
         ? document.currentScript
-        : new Error().stack.match(/([^ ^(\n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/gi)[0];
+        : new Error().stack.match(/([^ ^(\n])*([a-z]*:\/\/\/?)*?[a-z0-9/\\]*\.js/gi)[0];
     return URL.createObjectURL(
         new Blob(
             [
@@ -61252,11 +60819,7603 @@ function Cache(options) {
 
 module.exports = Cache;
 
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/index.js":[function(require,module,exports){
+module.exports = {
+    compactDecrypt: require('./jwe/compact/decrypt.js').compactDecrypt,
+    flattenedDecrypt: require('./jwe/flattened/decrypt.js').flattenedDecrypt,
+    generalDecrypt: require('./jwe/general/decrypt.js').generalDecrypt,
+    compactVerify: require('./jws/compact/verify.js').compactVerify,
+    flattenedVerify: require('./jws/flattened/verify.js').flattenedVerify,
+    generalVerify: require('./jws/general/verify.js').generalVerify,
+    jwtVerify: require('./jwt/verify.js').jwtVerify,
+    jwtDecrypt: require('./jwt/decrypt.js').jwtDecrypt,
+    CompactEncrypt: require('./jwe/compact/encrypt.js').CompactEncrypt,
+    FlattenedEncrypt: require('./jwe/flattened/encrypt.js').FlattenedEncrypt,
+    CompactSign: require('./jws/compact/sign.js').CompactSign,
+    FlattenedSign: require('./jws/flattened/sign.js').FlattenedSign,
+    GeneralSign: require('./jws/general/sign.js').GeneralSign,
+    SignJWT: require('./jwt/sign.js').SignJWT,
+    EncryptJWT: require('./jwt/encrypt.js').EncryptJWT,
+    calculateJwkThumbprint: require('./jwk/thumbprint.js').calculateJwkThumbprint,
+    EmbeddedJWK: require('./jwk/embedded.js').EmbeddedJWK,
+    createRemoteJWKSet: require('./jwks/remote.js').createRemoteJWKSet,
+    UnsecuredJWT: require('./jwt/unsecured.js').UnsecuredJWT,
+    exportPKCS8: require('./key/export.js').exportPKCS8,
+    exportSPKI: require('./key/export.js').exportSPKI,
+    exportJWK: require('./key/export.js').exportJWK,
+    importSPKI: require('./key/import.js').importSPKI,
+    importPKCS8: require('./key/import.js').importPKCS8,
+    importX509: require('./key/import.js').importX509,
+    importJWK: require('./key/import.js').importJWK,
+    decodeProtectedHeader: require('./util/decode_protected_header.js').decodeProtectedHeader,
+    errors: require('./util/errors.js'),
+    generateKeyPair: require('./key/generate_key_pair.js').generateKeyPair,
+    generateSecret: require('./key/generate_secret.js').generateSecret,
+    base64url: require('./util/base64url.js'),
+}
+},{"./jwe/compact/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/compact/decrypt.js","./jwe/compact/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/compact/encrypt.js","./jwe/flattened/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/flattened/decrypt.js","./jwe/flattened/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/flattened/encrypt.js","./jwe/general/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/general/decrypt.js","./jwk/embedded.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwk/embedded.js","./jwk/thumbprint.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwk/thumbprint.js","./jwks/remote.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwks/remote.js","./jws/compact/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/compact/sign.js","./jws/compact/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/compact/verify.js","./jws/flattened/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/flattened/sign.js","./jws/flattened/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/flattened/verify.js","./jws/general/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/general/sign.js","./jws/general/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/general/verify.js","./jwt/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/decrypt.js","./jwt/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/encrypt.js","./jwt/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/sign.js","./jwt/unsecured.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/unsecured.js","./jwt/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/verify.js","./key/export.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/export.js","./key/generate_key_pair.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/generate_key_pair.js","./key/generate_secret.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/generate_secret.js","./key/import.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/import.js","./util/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/base64url.js","./util/decode_protected_header.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/decode_protected_header.js","./util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/compact/decrypt.js":[function(require,module,exports){
+const {flattenedDecrypt} = require('../flattened/decrypt.js');
+const {JWEInvalid} = require('../../util/errors.js');
+module.exports.compactDecrypt = async function compactDecrypt(jwe, key, options) {
+    if (jwe instanceof Uint8Array) {
+        jwe = jwe.toString();
+    }
+    if (typeof jwe !== 'string') {
+        throw new JWEInvalid('Compact JWE must be a string or Uint8Array');
+    }
+    const { 0: protectedHeader, 1: encryptedKey, 2: iv, 3: ciphertext, 4: tag, length, } = jwe.split('.');
+    if (length !== 5) {
+        throw new JWEInvalid('Invalid Compact JWE');
+    }
+    const decrypted = await flattenedDecrypt({
+        ciphertext: (ciphertext || undefined),
+        iv: (iv || undefined),
+        protected: protectedHeader || undefined,
+        tag: (tag || undefined),
+        encrypted_key: encryptedKey || undefined,
+    }, key, options);
+    const result = { plaintext: decrypted.plaintext, protectedHeader: decrypted.protectedHeader };
+    if (typeof key === 'function') {
+        return { ...result, key: decrypted.key };
+    }
+    return result;
+}
+
+},{"../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","../flattened/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/flattened/decrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/compact/encrypt.js":[function(require,module,exports){
+const {FlattenedEncrypt} = require('../flattened/encrypt.js');
+class CompactEncrypt {
+    constructor(plaintext) {
+        this._flattened = new FlattenedEncrypt(plaintext);
+    }
+    setContentEncryptionKey(cek) {
+        this._flattened.setContentEncryptionKey(cek);
+        return this;
+    }
+    setInitializationVector(iv) {
+        this._flattened.setInitializationVector(iv);
+        return this;
+    }
+    setProtectedHeader(protectedHeader) {
+        this._flattened.setProtectedHeader(protectedHeader);
+        return this;
+    }
+    setKeyManagementParameters(parameters) {
+        this._flattened.setKeyManagementParameters(parameters);
+        return this;
+    }
+    async encrypt(key, options) {
+        const jwe = await this._flattened.encrypt(key, options);
+        return [jwe.protected, jwe.encrypted_key, jwe.iv, jwe.ciphertext, jwe.tag].join('.');
+    }
+}
+
+module.exports.CompactEncrypt = CompactEncrypt;
+},{"../flattened/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/flattened/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/flattened/decrypt.js":[function(require,module,exports){
+const {decode: base64url} = require('../../runtime/base64url.js');
+const decrypt = require('../../runtime/decrypt.js');
+const {inflate} = require('../../runtime/zlib.js');
+const {JOSEAlgNotAllowed, JOSENotSupported, JWEInvalid} = require('../../util/errors.js');
+const isDisjoint = require('../../lib/is_disjoint.js');
+const isObject = require('../../lib/is_object.js');
+const decryptKeyManagement = require('../../lib/decrypt_key_management.js');
+const {concat} = require('../../lib/buffer_utils.js');
+const generateCek = require('../../lib/cek.js');
+const validateCrit = require('../../lib/validate_crit.js');
+const validateAlgorithms = require('../../lib/validate_algorithms.js');
+module.exports.flattenedDecrypt = async function flattenedDecrypt(jwe, key, options) {
+    var _a;
+    if (!isObject(jwe)) {
+        throw new JWEInvalid('Flattened JWE must be an object');
+    }
+    if (jwe.protected === undefined && jwe.header === undefined && jwe.unprotected === undefined) {
+        throw new JWEInvalid('JOSE Header missing');
+    }
+    if (typeof jwe.iv !== 'string') {
+        throw new JWEInvalid('JWE Initialization Vector missing or incorrect type');
+    }
+    if (typeof jwe.ciphertext !== 'string') {
+        throw new JWEInvalid('JWE Ciphertext missing or incorrect type');
+    }
+    if (typeof jwe.tag !== 'string') {
+        throw new JWEInvalid('JWE Authentication Tag missing or incorrect type');
+    }
+    if (jwe.protected !== undefined && typeof jwe.protected !== 'string') {
+        throw new JWEInvalid('JWE Protected Header incorrect type');
+    }
+    if (jwe.encrypted_key !== undefined && typeof jwe.encrypted_key !== 'string') {
+        throw new JWEInvalid('JWE Encrypted Key incorrect type');
+    }
+    if (jwe.aad !== undefined && typeof jwe.aad !== 'string') {
+        throw new JWEInvalid('JWE AAD incorrect type');
+    }
+    if (jwe.header !== undefined && !isObject(jwe.header)) {
+        throw new JWEInvalid('JWE Shared Unprotected Header incorrect type');
+    }
+    if (jwe.unprotected !== undefined && !isObject(jwe.unprotected)) {
+        throw new JWEInvalid('JWE Per-Recipient Unprotected Header incorrect type');
+    }
+    let parsedProt;
+    if (jwe.protected) {
+        const protectedHeader = base64url(jwe.protected);
+        try {
+            parsedProt = JSON.parse(protectedHeader.toString());
+        }
+        catch (_b) {
+            throw new JWEInvalid('JWE Protected Header is invalid');
+        }
+    }
+    if (!isDisjoint(parsedProt, jwe.header, jwe.unprotected)) {
+        throw new JWEInvalid('JWE Protected, JWE Unprotected Header, and JWE Per-Recipient Unprotected Header Parameter names must be disjoint');
+    }
+    const joseHeader = {
+        ...parsedProt,
+        ...jwe.header,
+        ...jwe.unprotected,
+    };
+    validateCrit(JWEInvalid, new Map(), options === null || options === void 0 ? void 0 : options.crit, parsedProt, joseHeader);
+    if (joseHeader.zip !== undefined) {
+        if (!parsedProt || !parsedProt.zip) {
+            throw new JWEInvalid('JWE "zip" (Compression Algorithm) Header MUST be integrity protected');
+        }
+        if (joseHeader.zip !== 'DEF') {
+            throw new JOSENotSupported('Unsupported JWE "zip" (Compression Algorithm) Header Parameter value');
+        }
+    }
+    const { alg, enc } = joseHeader;
+    if (typeof alg !== 'string' || !alg) {
+        throw new JWEInvalid('missing JWE Algorithm (alg) in JWE Header');
+    }
+    if (typeof enc !== 'string' || !enc) {
+        throw new JWEInvalid('missing JWE Encryption Algorithm (enc) in JWE Header');
+    }
+    const keyManagementAlgorithms = options && validateAlgorithms('keyManagementAlgorithms', options.keyManagementAlgorithms);
+    const contentEncryptionAlgorithms = options &&
+        validateAlgorithms('contentEncryptionAlgorithms', options.contentEncryptionAlgorithms);
+    if (keyManagementAlgorithms && !keyManagementAlgorithms.has(alg)) {
+        throw new JOSEAlgNotAllowed('"alg" (Algorithm) Header Parameter not allowed');
+    }
+    if (contentEncryptionAlgorithms && !contentEncryptionAlgorithms.has(enc)) {
+        throw new JOSEAlgNotAllowed('"enc" (Encryption Algorithm) Header Parameter not allowed');
+    }
+    let encryptedKey;
+    if (jwe.encrypted_key !== undefined) {
+        encryptedKey = base64url(jwe.encrypted_key);
+    }
+    let resolvedKey = false;
+    if (typeof key === 'function') {
+        key = await key(parsedProt, jwe);
+        resolvedKey = true;
+    }
+    let cek;
+    try {
+        cek = await decryptKeyManagement(alg, key, encryptedKey, joseHeader);
+    }
+    catch (err) {
+        if (err instanceof TypeError) {
+            throw err;
+        }
+        cek = generateCek(enc);
+    }
+    const iv = base64url(jwe.iv);
+    const tag = base64url(jwe.tag);
+    const protectedHeader = $$.Buffer.from((_a = jwe.protected) !== null && _a !== void 0 ? _a : '');
+    let additionalData;
+    if (jwe.aad !== undefined) {
+        additionalData = concat(protectedHeader, $$.Buffer.from('.'), $$.Buffer.from(jwe.aad));
+    }
+    else {
+        additionalData = protectedHeader;
+    }
+    let plaintext = await decrypt(enc, cek, base64url(jwe.ciphertext), iv, tag, additionalData);
+    if (joseHeader.zip === 'DEF') {
+        plaintext = await ((options === null || options === void 0 ? void 0 : options.inflateRaw) || inflate)(plaintext);
+    }
+    const result = { plaintext };
+    if (jwe.protected !== undefined) {
+        result.protectedHeader = parsedProt;
+    }
+    if (jwe.aad !== undefined) {
+        result.additionalAuthenticatedData = base64url(jwe.aad);
+    }
+    if (jwe.unprotected !== undefined) {
+        result.sharedUnprotectedHeader = jwe.unprotected;
+    }
+    if (jwe.header !== undefined) {
+        result.unprotectedHeader = jwe.header;
+    }
+    if (resolvedKey) {
+        return { ...result, key };
+    }
+    return result;
+}
+
+},{"../../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/buffer_utils.js","../../lib/cek.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/cek.js","../../lib/decrypt_key_management.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/decrypt_key_management.js","../../lib/is_disjoint.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_disjoint.js","../../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","../../lib/validate_algorithms.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/validate_algorithms.js","../../lib/validate_crit.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/validate_crit.js","../../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","../../runtime/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/decrypt.js","../../runtime/zlib.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/zlib.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/flattened/encrypt.js":[function(require,module,exports){
+const {encode: base64url} = require('../../runtime/base64url.js');
+const encrypt = require('../../runtime/encrypt.js');
+const {deflate} = require('../../runtime/zlib.js');
+const generateIv = require('../../lib/iv.js');
+const encryptKeyManagement = require('../../lib/encrypt_key_management.js');
+const {JOSENotSupported, JWEInvalid} = require('../../util/errors.js');
+const isDisjoint = require('../../lib/is_disjoint.js');
+const {concat} = require('../../lib/buffer_utils.js');
+const validateCrit = require('../../lib/validate_crit.js');
+class FlattenedEncrypt {
+    constructor(plaintext) {
+        if (!(plaintext instanceof Uint8Array)) {
+            throw new TypeError('plaintext must be an instance of Uint8Array');
+        }
+        this._plaintext = plaintext;
+    }
+    setKeyManagementParameters(parameters) {
+        if (this._keyManagementParameters) {
+            throw new TypeError('setKeyManagementParameters can only be called once');
+        }
+        this._keyManagementParameters = parameters;
+        return this;
+    }
+    setProtectedHeader(protectedHeader) {
+        if (this._protectedHeader) {
+            throw new TypeError('setProtectedHeader can only be called once');
+        }
+        this._protectedHeader = protectedHeader;
+        return this;
+    }
+    setSharedUnprotectedHeader(sharedUnprotectedHeader) {
+        if (this._sharedUnprotectedHeader) {
+            throw new TypeError('setSharedUnprotectedHeader can only be called once');
+        }
+        this._sharedUnprotectedHeader = sharedUnprotectedHeader;
+        return this;
+    }
+    setUnprotectedHeader(unprotectedHeader) {
+        if (this._unprotectedHeader) {
+            throw new TypeError('setUnprotectedHeader can only be called once');
+        }
+        this._unprotectedHeader = unprotectedHeader;
+        return this;
+    }
+    setAdditionalAuthenticatedData(aad) {
+        this._aad = aad;
+        return this;
+    }
+    setContentEncryptionKey(cek) {
+        if (this._cek) {
+            throw new TypeError('setContentEncryptionKey can only be called once');
+        }
+        this._cek = cek;
+        return this;
+    }
+    setInitializationVector(iv) {
+        if (this._iv) {
+            throw new TypeError('setInitializationVector can only be called once');
+        }
+        this._iv = iv;
+        return this;
+    }
+    async encrypt(key, options) {
+        if (!this._protectedHeader && !this._unprotectedHeader && !this._sharedUnprotectedHeader) {
+            throw new JWEInvalid('either setProtectedHeader, setUnprotectedHeader, or sharedUnprotectedHeader must be called before #encrypt()');
+        }
+        if (!isDisjoint(this._protectedHeader, this._unprotectedHeader, this._sharedUnprotectedHeader)) {
+            throw new JWEInvalid('JWE Shared Protected, JWE Shared Unprotected and JWE Per-Recipient Header Parameter names must be disjoint');
+        }
+        const joseHeader = {
+            ...this._protectedHeader,
+            ...this._unprotectedHeader,
+            ...this._sharedUnprotectedHeader,
+        };
+        validateCrit(JWEInvalid, new Map(), options === null || options === void 0 ? void 0 : options.crit, this._protectedHeader, joseHeader);
+        if (joseHeader.zip !== undefined) {
+            if (!this._protectedHeader || !this._protectedHeader.zip) {
+                throw new JWEInvalid('JWE "zip" (Compression Algorithm) Header MUST be integrity protected');
+            }
+            if (joseHeader.zip !== 'DEF') {
+                throw new JOSENotSupported('Unsupported JWE "zip" (Compression Algorithm) Header Parameter value');
+            }
+        }
+        const { alg, enc } = joseHeader;
+        if (typeof alg !== 'string' || !alg) {
+            throw new JWEInvalid('JWE "alg" (Algorithm) Header Parameter missing or invalid');
+        }
+        if (typeof enc !== 'string' || !enc) {
+            throw new JWEInvalid('JWE "enc" (Encryption Algorithm) Header Parameter missing or invalid');
+        }
+        let encryptedKey;
+        if (alg === 'dir') {
+            if (this._cek) {
+                throw new TypeError('setContentEncryptionKey cannot be called when using Direct Encryption');
+            }
+        }
+        else if (alg === 'ECDH-ES') {
+            if (this._cek) {
+                throw new TypeError('setContentEncryptionKey cannot be called when using Direct Key Agreement');
+            }
+        }
+        let cek;
+        {
+            let parameters;
+            ({ cek, encryptedKey, parameters } = await encryptKeyManagement(alg, enc, key, this._cek, this._keyManagementParameters));
+            if (parameters) {
+                if (!this._protectedHeader) {
+                    this.setProtectedHeader(parameters);
+                }
+                else {
+                    this._protectedHeader = { ...this._protectedHeader, ...parameters };
+                }
+            }
+        }
+        this._iv || (this._iv = generateIv(enc));
+        let additionalData;
+        let protectedHeader;
+        let aadMember;
+        if (this._protectedHeader) {
+            protectedHeader = $$.Buffer.from(base64url(JSON.stringify(this._protectedHeader)));
+        }
+        else {
+            protectedHeader = $$.Buffer.from('');
+        }
+        if (this._aad) {
+            aadMember = base64url(this._aad);
+            additionalData = concat(protectedHeader, $$.Buffer.from('.'), $$.Buffer.from(aadMember));
+        }
+        else {
+            additionalData = protectedHeader;
+        }
+        let ciphertext;
+        let tag;
+        if (joseHeader.zip === 'DEF') {
+            const deflated = await ((options === null || options === void 0 ? void 0 : options.deflateRaw) || deflate)(this._plaintext);
+            ({ ciphertext, tag } = await encrypt(enc, deflated, cek, this._iv, additionalData));
+        }
+        else {
+            
+            ({ ciphertext, tag } = await encrypt(enc, this._plaintext, cek, this._iv, additionalData));
+        }
+        const jwe = {
+            ciphertext: base64url(ciphertext),
+            iv: base64url(this._iv),
+            tag: base64url(tag),
+        };
+        if (encryptedKey) {
+            jwe.encrypted_key = base64url(encryptedKey);
+        }
+        if (aadMember) {
+            jwe.aad = aadMember;
+        }
+        if (this._protectedHeader) {
+            jwe.protected = protectedHeader.toString();
+        }
+        if (this._sharedUnprotectedHeader) {
+            jwe.unprotected = this._sharedUnprotectedHeader;
+        }
+        if (this._unprotectedHeader) {
+            jwe.header = this._unprotectedHeader;
+        }
+        return jwe;
+    }
+}
+
+module.exports.FlattenedEncrypt = FlattenedEncrypt;
+},{"../../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/buffer_utils.js","../../lib/encrypt_key_management.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/encrypt_key_management.js","../../lib/is_disjoint.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_disjoint.js","../../lib/iv.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/iv.js","../../lib/validate_crit.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/validate_crit.js","../../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","../../runtime/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/encrypt.js","../../runtime/zlib.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/zlib.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/general/decrypt.js":[function(require,module,exports){
+const {flattenedDecrypt} = require('../flattened/decrypt.js');
+const {JWEDecryptionFailed, JWEInvalid} = require('../../util/errors.js');
+const isObject = require('../../lib/is_object.js');
+module.exports.generalDecrypt = async function generalDecrypt(jwe, key, options) {
+    if (!isObject(jwe)) {
+        throw new JWEInvalid('General JWE must be an object');
+    }
+    if (!Array.isArray(jwe.recipients) || !jwe.recipients.every(isObject)) {
+        throw new JWEInvalid('JWE Recipients missing or incorrect type');
+    }
+    for (const recipient of jwe.recipients) {
+        try {
+            return await flattenedDecrypt({
+                aad: jwe.aad,
+                ciphertext: jwe.ciphertext,
+                encrypted_key: recipient.encrypted_key,
+                header: recipient.header,
+                iv: jwe.iv,
+                protected: jwe.protected,
+                tag: jwe.tag,
+                unprotected: jwe.unprotected,
+            }, key, options);
+        }
+        catch (_a) {
+        }
+    }
+    throw new JWEDecryptionFailed();
+}
+
+},{"../../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","../flattened/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/flattened/decrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwk/embedded.js":[function(require,module,exports){
+const {importJWK} = require('../key/import.js');
+const isObject = require('../lib/is_object.js');
+const {JWSInvalid} = require('../util/errors.js');
+module.exports.EmbeddedJWK =  async function EmbeddedJWK(protectedHeader, token) {
+    const joseHeader = {
+        ...protectedHeader,
+        ...token.header,
+    };
+    if (!isObject(joseHeader.jwk)) {
+        throw new JWSInvalid('"jwk" (JSON Web Key) Header Parameter must be a JSON object');
+    }
+    const key = await importJWK({ ...joseHeader.jwk, ext: true }, joseHeader.alg, true);
+    if (key instanceof Uint8Array || key.type !== 'public') {
+        throw new JWSInvalid('"jwk" (JSON Web Key) Header Parameter must be a public key');
+    }
+    return key;
+}
+
+},{"../key/import.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/import.js","../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwk/thumbprint.js":[function(require,module,exports){
+const digest = require('../runtime/digest.js');
+const {encode: base64url} = require('../runtime/base64url.js');
+const {JOSENotSupported, JWKInvalid} = require('../util/errors.js');
+const isObject = require('../lib/is_object.js');
+const check = (value, description) => {
+    if (typeof value !== 'string' || !value) {
+        throw new JWKInvalid(`${description} missing or invalid`);
+    }
+};
+module.exports.calculateJwkThumbprint = async function calculateJwkThumbprint(jwk, digestAlgorithm = 'sha256') {
+    if (!isObject(jwk)) {
+        throw new TypeError('JWK must be an object');
+    }
+    let components;
+    switch (jwk.kty) {
+        case 'EC':
+            check(jwk.crv, '"crv" (Curve) Parameter');
+            check(jwk.x, '"x" (X Coordinate) Parameter');
+            check(jwk.y, '"y" (Y Coordinate) Parameter');
+            components = {crv: jwk.crv, kty: jwk.kty, x: jwk.x, y: jwk.y};
+            break;
+        case 'OKP':
+            check(jwk.crv, '"crv" (Subtype of Key Pair) Parameter');
+            check(jwk.x, '"x" (Public Key) Parameter');
+            components = {crv: jwk.crv, kty: jwk.kty, x: jwk.x};
+            break;
+        case 'RSA':
+            check(jwk.e, '"e" (Exponent) Parameter');
+            check(jwk.n, '"n" (Modulus) Parameter');
+            components = {e: jwk.e, kty: jwk.kty, n: jwk.n};
+            break;
+        case 'oct':
+            check(jwk.k, '"k" (Key Value) Parameter');
+            components = {k: jwk.k, kty: jwk.kty};
+            break;
+        default:
+            throw new JOSENotSupported('"kty" (Key Type) Parameter missing or unsupported');
+    }
+    const data = $$.Buffer.from(JSON.stringify(components));
+    return base64url(await digest(digestAlgorithm, data));
+}
+
+},{"../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","../runtime/digest.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/digest.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwks/remote.js":[function(require,module,exports){
+const fetchJwks = require('../runtime/fetch_jwks.js');
+const {importJWK} = require('../key/import.js');
+const {JWKSInvalid, JOSENotSupported, JWKSNoMatchingKey, JWKSMultipleMatchingKeys,} = require('../util/errors.js');
+const isObject = require('../lib/is_object.js');
+
+function getKtyFromAlg(alg) {
+    switch (typeof alg === 'string' && alg.substr(0, 2)) {
+        case 'RS':
+        case 'PS':
+            return 'RSA';
+        case 'ES':
+            return 'EC';
+        case 'Ed':
+            return 'OKP';
+        default:
+            throw new JOSENotSupported('Unsupported "alg" value for a JSON Web Key Set');
+    }
+}
+
+function isJWKLike(key) {
+    return isObject(key);
+}
+
+class RemoteJWKSet {
+    constructor(url, options) {
+        this._cached = new WeakMap();
+        if (!(url instanceof URL)) {
+            throw new TypeError('url must be an instance of URL');
+        }
+        this._url = new URL(url.href);
+        this._options = {agent: options === null || options === void 0 ? void 0 : options.agent};
+        this._timeoutDuration =
+            typeof (options === null || options === void 0 ? void 0 : options.timeoutDuration) === 'number' ? options === null || options === void 0 ? void 0 : options.timeoutDuration : 5000;
+        this._cooldownDuration =
+            typeof (options === null || options === void 0 ? void 0 : options.cooldownDuration) === 'number' ? options === null || options === void 0 ? void 0 : options.cooldownDuration : 30000;
+    }
+
+    coolingDown() {
+        if (!this._cooldownStarted) {
+            return false;
+        }
+        return Date.now() < this._cooldownStarted + this._cooldownDuration;
+    }
+
+    async getKey(protectedHeader) {
+        if (!this._jwks) {
+            await this.reload();
+        }
+        const candidates = this._jwks.keys.filter((jwk) => {
+            let candidate = jwk.kty === getKtyFromAlg(protectedHeader.alg);
+            if (candidate && typeof protectedHeader.kid === 'string') {
+                candidate = protectedHeader.kid === jwk.kid;
+            }
+            if (candidate && typeof jwk.alg === 'string') {
+                candidate = protectedHeader.alg === jwk.alg;
+            }
+            if (candidate && typeof jwk.use === 'string') {
+                candidate = jwk.use === 'sig';
+            }
+            if (candidate && Array.isArray(jwk.key_ops)) {
+                candidate = jwk.key_ops.includes('verify');
+            }
+            if (candidate && protectedHeader.alg === 'EdDSA') {
+                candidate = jwk.crv === 'Ed25519' || jwk.crv === 'Ed448';
+            }
+            if (candidate) {
+                switch (protectedHeader.alg) {
+                    case 'ES256':
+                        candidate = jwk.crv === 'P-256';
+                        break;
+                    case 'ES256K':
+                        candidate = jwk.crv === 'secp256k1';
+                        break;
+                    case 'ES384':
+                        candidate = jwk.crv === 'P-384';
+                        break;
+                    case 'ES512':
+                        candidate = jwk.crv === 'P-521';
+                        break;
+                    default:
+                }
+            }
+            return candidate;
+        });
+        const {0: jwk, length} = candidates;
+        if (length === 0) {
+            if (this.coolingDown() === false) {
+                await this.reload();
+                return this.getKey(protectedHeader);
+            }
+            throw new JWKSNoMatchingKey();
+        } else if (length !== 1) {
+            throw new JWKSMultipleMatchingKeys();
+        }
+        const cached = this._cached.get(jwk) || this._cached.set(jwk, {}).get(jwk);
+        if (cached[protectedHeader.alg] === undefined) {
+            const keyObject = await importJWK({...jwk, ext: true}, protectedHeader.alg);
+            if (keyObject instanceof Uint8Array || keyObject.type !== 'public') {
+                throw new JWKSInvalid('JSON Web Key Set members must be public keys');
+            }
+            cached[protectedHeader.alg] = keyObject;
+        }
+        return cached[protectedHeader.alg];
+    }
+
+    async reload() {
+        if (!this._pendingFetch) {
+            this._pendingFetch = fetchJwks(this._url, this._timeoutDuration, this._options)
+                .then((json) => {
+                    if (typeof json !== 'object' ||
+                        !json ||
+                        !Array.isArray(json.keys) ||
+                        !json.keys.every(isJWKLike)) {
+                        throw new JWKSInvalid('JSON Web Key Set malformed');
+                    }
+                    this._jwks = {keys: json.keys};
+                    this._cooldownStarted = Date.now();
+                    this._pendingFetch = undefined;
+                })
+                .catch((err) => {
+                    this._pendingFetch = undefined;
+                    throw err;
+                });
+        }
+        await this._pendingFetch;
+    }
+}
+
+module.exports.createRemoteJWKSet = function createRemoteJWKSet(url, options) {
+    return RemoteJWKSet.prototype.getKey.bind(new RemoteJWKSet(url, options));
+};
+
+},{"../key/import.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/import.js","../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","../runtime/fetch_jwks.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/fetch_jwks.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/compact/sign.js":[function(require,module,exports){
+const {FlattenedSign} = require('../flattened/sign.js');
+class CompactSign {
+    constructor(payload) {
+        this._flattened = new FlattenedSign(payload);
+    }
+    setProtectedHeader(protectedHeader) {
+        this._flattened.setProtectedHeader(protectedHeader);
+        return this;
+    }
+    async sign(key, options) {
+        const jws = await this._flattened.sign(key, options);
+        if (jws.payload === undefined) {
+            throw new TypeError('use the flattened module for creating JWS with b64: false');
+        }
+        return `${jws.protected}.${jws.payload}.${jws.signature}`;
+    }
+}
+
+module.exports.CompactSign = CompactSign;
+},{"../flattened/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/flattened/sign.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/compact/verify.js":[function(require,module,exports){
+const {flattenedVerify} = require('../flattened/verify.js');
+const {JWSInvalid} = require('../../util/errors.js');
+module.exports.compactVerify =  async function compactVerify(jws, key, options) {
+    if (jws instanceof Uint8Array) {
+        jws = jws.toString();
+    }
+    if (typeof jws !== 'string') {
+        throw new JWSInvalid('Compact JWS must be a string or Uint8Array');
+    }
+    const { 0: protectedHeader, 1: payload, 2: signature, length } = jws.split('.');
+    if (length !== 3) {
+        throw new JWSInvalid('Invalid Compact JWS');
+    }
+    const verified = await flattenedVerify({
+        payload: (payload || undefined),
+        protected: protectedHeader || undefined,
+        signature: (signature || undefined),
+    }, key, options);
+    const result = { payload: verified.payload, protectedHeader: verified.protectedHeader };
+    if (typeof key === 'function') {
+        return { ...result, key: verified.key };
+    }
+    return result;
+}
+
+},{"../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","../flattened/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/flattened/verify.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/flattened/sign.js":[function(require,module,exports){
+const {encode: base64url} = require('../../runtime/base64url.js');
+const sign = require('../../runtime/sign.js');
+const isDisjoint = require('../../lib/is_disjoint.js');
+const {JWSInvalid} = require('../../util/errors.js');
+const checkKeyType = require('../../lib/check_key_type.js');
+const validateCrit = require('../../lib/validate_crit.js');
+class FlattenedSign {
+    constructor(payload) {
+        if (!(payload instanceof Uint8Array)) {
+            throw new TypeError('payload must be an instance of Uint8Array');
+        }
+        this._payload = payload;
+    }
+    setProtectedHeader(protectedHeader) {
+        if (this._protectedHeader) {
+            throw new TypeError('setProtectedHeader can only be called once');
+        }
+        this._protectedHeader = protectedHeader;
+        return this;
+    }
+    setUnprotectedHeader(unprotectedHeader) {
+        if (this._unprotectedHeader) {
+            throw new TypeError('setUnprotectedHeader can only be called once');
+        }
+        this._unprotectedHeader = unprotectedHeader;
+        return this;
+    }
+    async sign(key, options) {
+        if (!this._protectedHeader && !this._unprotectedHeader) {
+            throw new JWSInvalid('either setProtectedHeader or setUnprotectedHeader must be called before #sign()');
+        }
+        if (!isDisjoint(this._protectedHeader, this._unprotectedHeader)) {
+            throw new JWSInvalid('JWS Protected and JWS Unprotected Header Parameter names must be disjoint');
+        }
+        const joseHeader = {
+            ...this._protectedHeader,
+            ...this._unprotectedHeader,
+        };
+        const extensions = validateCrit(JWSInvalid, new Map([['b64', true]]), options === null || options === void 0 ? void 0 : options.crit, this._protectedHeader, joseHeader);
+        let b64 = true;
+        if (extensions.has('b64')) {
+            b64 = this._protectedHeader.b64;
+            if (typeof b64 !== 'boolean') {
+                throw new JWSInvalid('The "b64" (base64url-encode payload) Header Parameter must be a boolean');
+            }
+        }
+        const { alg } = joseHeader;
+        if (typeof alg !== 'string' || !alg) {
+            throw new JWSInvalid('JWS "alg" (Algorithm) Header Parameter missing or invalid');
+        }
+        checkKeyType(alg, key, 'sign');
+        let payload = this._payload;
+        if (b64) {
+            payload = $$.Buffer.from(base64url(payload));
+        }
+        let protectedHeader;
+        if (this._protectedHeader) {
+            protectedHeader = $$.Buffer.from(base64url(JSON.stringify(this._protectedHeader)));
+        }
+        else {
+            protectedHeader = $$.Buffer.from('');
+        }
+        const data = concat(protectedHeader, $$.Buffer.from('.'), payload);
+        const signature = await sign(alg, key, data);
+        const jws = {
+            signature: base64url(signature),
+            payload: '',
+        };
+        if (b64) {
+            jws.payload = payload.toString();
+        }
+        if (this._unprotectedHeader) {
+            jws.header = this._unprotectedHeader;
+        }
+        if (this._protectedHeader) {
+            jws.protected = protectedHeader.toString();
+        }
+        return jws;
+    }
+}
+
+module.exports.FlattenedSign = FlattenedSign;
+},{"../../lib/check_key_type.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/check_key_type.js","../../lib/is_disjoint.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_disjoint.js","../../lib/validate_crit.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/validate_crit.js","../../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","../../runtime/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/sign.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/flattened/verify.js":[function(require,module,exports){
+const {decode: base64url} = require('../../runtime/base64url.js');
+const verify = require('../../runtime/verify.js');
+const {JOSEAlgNotAllowed, JWSInvalid, JWSSignatureVerificationFailed} = require('../../util/errors.js');
+const {concat} = require('../../lib/buffer_utils.js');
+const isDisjoint = require('../../lib/is_disjoint.js');
+const isObject = require('../../lib/is_object.js');
+const checkKeyType = require('../../lib/check_key_type.js');
+const validateCrit = require('../../lib/validate_crit.js');
+const validateAlgorithms = require('../../lib/validate_algorithms.js');
+module.exports.flattenedVerify = async function flattenedVerify(jws, key, options) {
+    var _a;
+    if (!isObject(jws)) {
+        throw new JWSInvalid('Flattened JWS must be an object');
+    }
+    if (jws.protected === undefined && jws.header === undefined) {
+        throw new JWSInvalid('Flattened JWS must have either of the "protected" or "header" members');
+    }
+    if (jws.protected !== undefined && typeof jws.protected !== 'string') {
+        throw new JWSInvalid('JWS Protected Header incorrect type');
+    }
+    if (jws.payload === undefined) {
+        throw new JWSInvalid('JWS Payload missing');
+    }
+    if (typeof jws.signature !== 'string') {
+        throw new JWSInvalid('JWS Signature missing or incorrect type');
+    }
+    if (jws.header !== undefined && !isObject(jws.header)) {
+        throw new JWSInvalid('JWS Unprotected Header incorrect type');
+    }
+    let parsedProt = {};
+    if (jws.protected) {
+        const protectedHeader = base64url(jws.protected);
+        try {
+            parsedProt = JSON.parse(protectedHeader.toString());
+        }
+        catch (_b) {
+            throw new JWSInvalid('JWS Protected Header is invalid');
+        }
+    }
+    if (!isDisjoint(parsedProt, jws.header)) {
+        throw new JWSInvalid('JWS Protected and JWS Unprotected Header Parameter names must be disjoint');
+    }
+    const joseHeader = {
+        ...parsedProt,
+        ...jws.header,
+    };
+    const extensions = validateCrit(JWSInvalid, new Map([['b64', true]]), options === null || options === void 0 ? void 0 : options.crit, parsedProt, joseHeader);
+    let b64 = true;
+    if (extensions.has('b64')) {
+        b64 = parsedProt.b64;
+        if (typeof b64 !== 'boolean') {
+            throw new JWSInvalid('The "b64" (base64url-encode payload) Header Parameter must be a boolean');
+        }
+    }
+    const { alg } = joseHeader;
+    if (typeof alg !== 'string' || !alg) {
+        throw new JWSInvalid('JWS "alg" (Algorithm) Header Parameter missing or invalid');
+    }
+    const algorithms = options && validateAlgorithms('algorithms', options.algorithms);
+    if (algorithms && !algorithms.has(alg)) {
+        throw new JOSEAlgNotAllowed('"alg" (Algorithm) Header Parameter not allowed');
+    }
+    if (b64) {
+        if (typeof jws.payload !== 'string') {
+            throw new JWSInvalid('JWS Payload must be a string');
+        }
+    }
+    else if (typeof jws.payload !== 'string' && !(jws.payload instanceof Uint8Array)) {
+        throw new JWSInvalid('JWS Payload must be a string or an Uint8Array instance');
+    }
+    let resolvedKey = false;
+    if (typeof key === 'function') {
+        key = await key(parsedProt, jws);
+        resolvedKey = true;
+    }
+    checkKeyType(alg, key, 'verify');
+    const data = concat($$.Buffer.from((_a = jws.protected) !== null && _a !== void 0 ? _a : ''), $$.Buffer.from('.'), typeof jws.payload === 'string' ? $$.Buffer.from(jws.payload) : jws.payload);
+    const signature = base64url(jws.signature);
+    const verified = await verify(alg, key, signature, data);
+    if (!verified) {
+        throw new JWSSignatureVerificationFailed();
+    }
+    let payload;
+    if (b64) {
+        payload = base64url(jws.payload);
+    }
+    else if (typeof jws.payload === 'string') {
+        payload = $$.Buffer.from(jws.payload);
+    }
+    else {
+        payload = jws.payload;
+    }
+    const result = { payload };
+    if (jws.protected !== undefined) {
+        result.protectedHeader = parsedProt;
+    }
+    if (jws.header !== undefined) {
+        result.unprotectedHeader = jws.header;
+    }
+    if (resolvedKey) {
+        return { ...result, key };
+    }
+    return result;
+}
+
+},{"../../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/buffer_utils.js","../../lib/check_key_type.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/check_key_type.js","../../lib/is_disjoint.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_disjoint.js","../../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","../../lib/validate_algorithms.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/validate_algorithms.js","../../lib/validate_crit.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/validate_crit.js","../../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","../../runtime/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/verify.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/general/sign.js":[function(require,module,exports){
+const {FlattenedSign} = require('../flattened/sign.js');
+const {JWSInvalid} = require('../../util/errors.js');
+const signatureRef = new WeakMap();
+class IndividualSignature {
+    setProtectedHeader(protectedHeader) {
+        if (this._protectedHeader) {
+            throw new TypeError('setProtectedHeader can only be called once');
+        }
+        this._protectedHeader = protectedHeader;
+        return this;
+    }
+    setUnprotectedHeader(unprotectedHeader) {
+        if (this._unprotectedHeader) {
+            throw new TypeError('setUnprotectedHeader can only be called once');
+        }
+        this._unprotectedHeader = unprotectedHeader;
+        return this;
+    }
+    set _protectedHeader(value) {
+        signatureRef.get(this).protectedHeader = value;
+    }
+    get _protectedHeader() {
+        return signatureRef.get(this).protectedHeader;
+    }
+    set _unprotectedHeader(value) {
+        signatureRef.get(this).unprotectedHeader = value;
+    }
+    get _unprotectedHeader() {
+        return signatureRef.get(this).unprotectedHeader;
+    }
+}
+class GeneralSign {
+    constructor(payload) {
+        this._signatures = [];
+        this._payload = payload;
+    }
+    addSignature(key, options) {
+        const signature = new IndividualSignature();
+        signatureRef.set(signature, { key, options });
+        this._signatures.push(signature);
+        return signature;
+    }
+    async sign() {
+        if (!this._signatures.length) {
+            throw new JWSInvalid('at least one signature must be added');
+        }
+        const jws = {
+            signatures: [],
+            payload: '',
+        };
+        let payloads = new Set();
+        await Promise.all(this._signatures.map(async (sig) => {
+            const { protectedHeader, unprotectedHeader, options, key } = signatureRef.get(sig);
+            const flattened = new FlattenedSign(this._payload);
+            if (protectedHeader) {
+                flattened.setProtectedHeader(protectedHeader);
+            }
+            if (unprotectedHeader) {
+                flattened.setUnprotectedHeader(unprotectedHeader);
+            }
+            const { payload, ...rest } = await flattened.sign(key, options);
+            payloads.add(payload);
+            jws.payload = payload;
+            jws.signatures.push(rest);
+        }));
+        if (payloads.size !== 1) {
+            throw new JWSInvalid('inconsistent use of JWS Unencoded Payload Option (RFC7797)');
+        }
+        return jws;
+    }
+}
+
+module.exports.GeneralSign = GeneralSign;
+},{"../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","../flattened/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/flattened/sign.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/general/verify.js":[function(require,module,exports){
+const {flattenedVerify} = require('../flattened/verify.js');
+const {JWSInvalid, JWSSignatureVerificationFailed} = require('../../util/errors.js');
+const isObject = require('../../lib/is_object.js');
+module.exports.generalVerify = async function generalVerify(jws, key, options) {
+    if (!isObject(jws)) {
+        throw new JWSInvalid('General JWS must be an object');
+    }
+    if (!Array.isArray(jws.signatures) || !jws.signatures.every(isObject)) {
+        throw new JWSInvalid('JWS Signatures missing or incorrect type');
+    }
+    for (const signature of jws.signatures) {
+        try {
+            return await flattenedVerify({
+                header: signature.header,
+                payload: jws.payload,
+                protected: signature.protected,
+                signature: signature.signature,
+            }, key, options);
+        } catch (_a) {
+        }
+    }
+    throw new JWSSignatureVerificationFailed();
+}
+
+},{"../../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","../flattened/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/flattened/verify.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/decrypt.js":[function(require,module,exports){
+const {compactDecrypt} = require('../jwe/compact/decrypt.js');
+const jwtPayload = require('../lib/jwt_claims_set.js');
+const {JWTClaimValidationFailed} = require('../util/errors.js');
+module.exports.jwtDecrypt = async function jwtDecrypt(jwt, key, options) {
+    const decrypted = await compactDecrypt(jwt, key, options);
+    const payload = jwtPayload(decrypted.protectedHeader, decrypted.plaintext, options);
+    const {protectedHeader} = decrypted;
+    if (protectedHeader.iss !== undefined && protectedHeader.iss !== payload.iss) {
+        throw new JWTClaimValidationFailed('replicated "iss" claim header parameter mismatch', 'iss', 'mismatch');
+    }
+    if (protectedHeader.sub !== undefined && protectedHeader.sub !== payload.sub) {
+        throw new JWTClaimValidationFailed('replicated "sub" claim header parameter mismatch', 'sub', 'mismatch');
+    }
+    if (protectedHeader.aud !== undefined &&
+        JSON.stringify(protectedHeader.aud) !== JSON.stringify(payload.aud)) {
+        throw new JWTClaimValidationFailed('replicated "aud" claim header parameter mismatch', 'aud', 'mismatch');
+    }
+    const result = {payload, protectedHeader};
+    if (typeof key === 'function') {
+        return {...result, key: decrypted.key};
+    }
+    return result;
+}
+
+},{"../jwe/compact/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/compact/decrypt.js","../lib/jwt_claims_set.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/jwt_claims_set.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/encrypt.js":[function(require,module,exports){
+const {CompactEncrypt} = require('../jwe/compact/encrypt.js');
+const {ProduceJWT} = require('./produce.js');
+class EncryptJWT extends ProduceJWT {
+    setProtectedHeader(protectedHeader) {
+        if (this._protectedHeader) {
+            throw new TypeError('setProtectedHeader can only be called once');
+        }
+        this._protectedHeader = protectedHeader;
+        return this;
+    }
+    setKeyManagementParameters(parameters) {
+        if (this._keyManagementParameters) {
+            throw new TypeError('setKeyManagementParameters can only be called once');
+        }
+        this._keyManagementParameters = parameters;
+        return this;
+    }
+    setContentEncryptionKey(cek) {
+        if (this._cek) {
+            throw new TypeError('setContentEncryptionKey can only be called once');
+        }
+        this._cek = cek;
+        return this;
+    }
+    setInitializationVector(iv) {
+        if (this._iv) {
+            throw new TypeError('setInitializationVector can only be called once');
+        }
+        this._iv = iv;
+        return this;
+    }
+    replicateIssuerAsHeader() {
+        this._replicateIssuerAsHeader = true;
+        return this;
+    }
+    replicateSubjectAsHeader() {
+        this._replicateSubjectAsHeader = true;
+        return this;
+    }
+    replicateAudienceAsHeader() {
+        this._replicateAudienceAsHeader = true;
+        return this;
+    }
+    async encrypt(key, options) {
+        const enc = new CompactEncrypt($$.Buffer.from(JSON.stringify(this._payload)));
+        if (this._replicateIssuerAsHeader) {
+            this._protectedHeader = { ...this._protectedHeader, iss: this._payload.iss };
+        }
+        if (this._replicateSubjectAsHeader) {
+            this._protectedHeader = { ...this._protectedHeader, sub: this._payload.sub };
+        }
+        if (this._replicateAudienceAsHeader) {
+            this._protectedHeader = { ...this._protectedHeader, aud: this._payload.aud };
+        }
+        enc.setProtectedHeader(this._protectedHeader);
+        if (this._iv) {
+            enc.setInitializationVector(this._iv);
+        }
+        if (this._cek) {
+            enc.setContentEncryptionKey(this._cek);
+        }
+        if (this._keyManagementParameters) {
+            enc.setKeyManagementParameters(this._keyManagementParameters);
+        }
+        return enc.encrypt(key, options);
+    }
+}
+
+module.exports.EncryptJWT = EncryptJWT;
+},{"../jwe/compact/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwe/compact/encrypt.js","./produce.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/produce.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/produce.js":[function(require,module,exports){
+const epoch = require('../lib/epoch.js');
+const isObject = require('../lib/is_object.js');
+const secs = require('../lib/secs.js');
+class ProduceJWT {
+    constructor(payload) {
+        if (!isObject(payload)) {
+            throw new TypeError('JWT Claims Set MUST be an object');
+        }
+        this._payload = payload;
+    }
+    setIssuer(issuer) {
+        this._payload = { ...this._payload, iss: issuer };
+        return this;
+    }
+    setSubject(subject) {
+        this._payload = { ...this._payload, sub: subject };
+        return this;
+    }
+    setAudience(audience) {
+        this._payload = { ...this._payload, aud: audience };
+        return this;
+    }
+    setJti(jwtId) {
+        this._payload = { ...this._payload, jti: jwtId };
+        return this;
+    }
+    setNotBefore(input) {
+        if (typeof input === 'number') {
+            this._payload = { ...this._payload, nbf: input };
+        }
+        else {
+            this._payload = { ...this._payload, nbf: epoch(new Date()) + secs(input) };
+        }
+        return this;
+    }
+    setExpirationTime(input) {
+        if (typeof input === 'number') {
+            this._payload = { ...this._payload, exp: input };
+        }
+        else {
+            this._payload = { ...this._payload, exp: epoch(new Date()) + secs(input) };
+        }
+        return this;
+    }
+    setIssuedAt(input) {
+        if (typeof input === 'undefined') {
+            this._payload = { ...this._payload, iat: epoch(new Date()) };
+        }
+        else {
+            this._payload = { ...this._payload, iat: input };
+        }
+        return this;
+    }
+}
+
+module.exports.ProduceJWT = ProduceJWT;
+},{"../lib/epoch.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/epoch.js","../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","../lib/secs.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/secs.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/sign.js":[function(require,module,exports){
+const {CompactSign} = require('../jws/compact/sign.js');
+const {JWTInvalid} = require('../util/errors.js');
+const {encoder} = require('../lib/buffer_utils.js');
+const {ProduceJWT} = require('./produce.js');
+
+class SignJWT extends ProduceJWT {
+    setProtectedHeader(protectedHeader) {
+        this._protectedHeader = protectedHeader;
+        return this;
+    }
+
+    async sign(key, options) {
+        var _a;
+        const sig = new CompactSign($$.Buffer.from(JSON.stringify(this._payload)));
+        sig.setProtectedHeader(this._protectedHeader);
+        if (Array.isArray((_a = this._protectedHeader) === null || _a === void 0 ? void 0 : _a.crit) &&
+            this._protectedHeader.crit.includes('b64') &&
+            this._protectedHeader.b64 === false) {
+            throw new JWTInvalid('JWTs MUST NOT use unencoded payload');
+        }
+        return sig.sign(key, options);
+    }
+}
+
+module.exports.SignJWT = SignJWT;
+},{"../jws/compact/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/compact/sign.js","../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/buffer_utils.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./produce.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/produce.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/unsecured.js":[function(require,module,exports){
+const base64url = require('../runtime/base64url.js');
+const {JWTInvalid} = require('../util/errors.js');
+const jwtPayload = require('../lib/jwt_claims_set.js');
+const {ProduceJWT} = require('./produce.js');
+
+class UnsecuredJWT extends ProduceJWT {
+    encode() {
+        const header = base64url.encode(JSON.stringify({alg: 'none'}));
+        const payload = base64url.encode(JSON.stringify(this._payload));
+        return `${header}.${payload}.`;
+    }
+
+    static decode(jwt, options) {
+        if (typeof jwt !== 'string') {
+            throw new JWTInvalid('Unsecured JWT must be a string');
+        }
+        const {0: encodedHeader, 1: encodedPayload, 2: signature, length} = jwt.split('.');
+        if (length !== 3 || signature !== '') {
+            throw new JWTInvalid('Invalid Unsecured JWT');
+        }
+        let header;
+        try {
+            header = JSON.parse(base64url.decode(encodedHeader).toString());
+            if (header.alg !== 'none')
+                throw new Error();
+        } catch (_a) {
+            throw new JWTInvalid('Invalid Unsecured JWT');
+        }
+        const payload = jwtPayload(header, base64url.decode(encodedPayload), options);
+        return {payload, header};
+    }
+}
+
+module.exports.UnsecuredJWT = UnsecuredJWT;
+},{"../lib/jwt_claims_set.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/jwt_claims_set.js","../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./produce.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/produce.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jwt/verify.js":[function(require,module,exports){
+const {compactVerify} = require('../jws/compact/verify.js');
+const jwtPayload = require('../lib/jwt_claims_set.js');
+const {JWTInvalid} = require('../util/errors.js');
+module.exports.jwtVerify = async function jwtVerify(jwt, key, options) {
+    var _a;
+    const verified = await compactVerify(jwt, key, options);
+    if (((_a = verified.protectedHeader.crit) === null || _a === void 0 ? void 0 : _a.includes('b64')) && verified.protectedHeader.b64 === false) {
+        throw new JWTInvalid('JWTs MUST NOT use unencoded payload');
+    }
+    const payload = jwtPayload(verified.protectedHeader, verified.payload, options);
+    const result = { payload, protectedHeader: verified.protectedHeader };
+    if (typeof key === 'function') {
+        return { ...result, key: verified.key };
+    }
+    return result;
+}
+
+},{"../jws/compact/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/jws/compact/verify.js","../lib/jwt_claims_set.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/jwt_claims_set.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/export.js":[function(require,module,exports){
+const {toSPKI: exportPublic} = require('../runtime/asn1.js');
+const {toPKCS8: exportPrivate} = require('../runtime/asn1.js');
+const keyToJWK = require('../runtime/key_to_jwk.js');
+
+module.exports.exportSPKI = function exportSPKI(key) {
+    return exportPublic(key);
+}
+
+module.exports.exportPKCS8 = function exportPKCS8(key) {
+    return exportPrivate(key);
+}
+
+module.exports.exportJWK = function exportJWK(key) {
+    return keyToJWK(key);
+}
+
+},{"../runtime/asn1.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/asn1.js","../runtime/key_to_jwk.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/key_to_jwk.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/generate_key_pair.js":[function(require,module,exports){
+const {generateKeyPair: generate} = require('../runtime/generate.js');
+module.exports.generateKeyPair = async function generateKeyPair(alg, options) {
+    return generate(alg, options);
+}
+
+},{"../runtime/generate.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/generate.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/generate_secret.js":[function(require,module,exports){
+const {generateSecret: generate} = require('../runtime/generate.js');
+module.exports.generateSecret = async function generateSecret(alg, options) {
+    return generate(alg, options);
+};
+
+},{"../runtime/generate.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/generate.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/import.js":[function(require,module,exports){
+const {decode: decodeBase64URL, encodeBase64, decodeBase64} = require('../runtime/base64url.js');
+const {fromSPKI: importPublic} = require('../runtime/asn1.js');
+const {fromPKCS8: importPrivate} = require('../runtime/asn1.js');
+const asKeyObject = require('../runtime/jwk_to_key.js');
+const {JOSENotSupported} = require('../util/errors.js');
+const formatPEM = require('../lib/format_pem.js');
+const isObject = require('../lib/is_object.js');
+function getElement(seq) {
+    let result = [];
+    let next = 0;
+    while (next < seq.length) {
+        let nextPart = parseElement(seq.subarray(next));
+        result.push(nextPart);
+        next += nextPart.byteLength;
+    }
+    return result;
+}
+function parseElement(bytes) {
+    let position = 0;
+    let tag = bytes[0] & 0x1f;
+    position++;
+    if (tag === 0x1f) {
+        tag = 0;
+        while (bytes[position] >= 0x80) {
+            tag = tag * 128 + bytes[position] - 0x80;
+            position++;
+        }
+        tag = tag * 128 + bytes[position] - 0x80;
+        position++;
+    }
+    let length = 0;
+    if (bytes[position] < 0x80) {
+        length = bytes[position];
+        position++;
+    }
+    else {
+        let numberOfDigits = bytes[position] & 0x7f;
+        position++;
+        length = 0;
+        for (let i = 0; i < numberOfDigits; i++) {
+            length = length * 256 + bytes[position];
+            position++;
+        }
+    }
+    if (length === 0x80) {
+        length = 0;
+        while (bytes[position + length] !== 0 || bytes[position + length + 1] !== 0) {
+            length++;
+        }
+        const byteLength = position + length + 2;
+        return {
+            byteLength,
+            contents: bytes.subarray(position, position + length),
+            raw: bytes.subarray(0, byteLength),
+        };
+    }
+    const byteLength = position + length;
+    return {
+        byteLength,
+        contents: bytes.subarray(position, byteLength),
+        raw: bytes.subarray(0, byteLength),
+    };
+}
+function spkiFromX509(buf) {
+    return encodeBase64(getElement(getElement(parseElement(buf).contents)[0].contents)[6].raw);
+}
+function getSPKI(x509) {
+    const pem = x509.replace(/(?:-----(?:BEGIN|END) CERTIFICATE-----|\s)/g, '');
+    const raw = decodeBase64(pem);
+    return formatPEM(spkiFromX509(raw), 'PUBLIC KEY');
+}
+async function importSPKI(spki, alg, options) {
+    if (typeof spki !== 'string' || spki.indexOf('-----BEGIN PUBLIC KEY-----') !== 0) {
+        throw new TypeError('"spki" must be SPKI formatted string');
+    }
+    return importPublic(spki, alg, options);
+}
+async function importX509(x509, alg, options) {
+    if (typeof x509 !== 'string' || x509.indexOf('-----BEGIN CERTIFICATE-----') !== 0) {
+        throw new TypeError('"x509" must be X.509 formatted string');
+    }
+    const spki = getSPKI(x509);
+    return importPublic(spki, alg, options);
+}
+async function importPKCS8(pkcs8, alg, options) {
+    if (typeof pkcs8 !== 'string' || pkcs8.indexOf('-----BEGIN PRIVATE KEY-----') !== 0) {
+        throw new TypeError('"pkcs8" must be PCKS8 formatted string');
+    }
+    return importPrivate(pkcs8, alg, options);
+}
+async function importJWK(jwk, alg, octAsKeyObject) {
+    if (!isObject(jwk)) {
+        throw new TypeError('JWK must be an object');
+    }
+    alg || (alg = jwk.alg);
+    if (typeof alg !== 'string' || !alg) {
+        throw new TypeError('"alg" argument is required when "jwk.alg" is not present');
+    }
+    switch (jwk.kty) {
+        case 'oct':
+            if (typeof jwk.k !== 'string' || !jwk.k) {
+                throw new TypeError('missing "k" (Key Value) Parameter value');
+            }
+            octAsKeyObject !== null && octAsKeyObject !== void 0 ? octAsKeyObject : (octAsKeyObject = jwk.ext !== true);
+            if (octAsKeyObject) {
+                return asKeyObject({ ...jwk, alg, ext: false });
+            }
+            return decodeBase64URL(jwk.k);
+        case 'RSA':
+            if (jwk.oth !== undefined) {
+                throw new JOSENotSupported('RSA JWK "oth" (Other Primes Info) Parameter value is not supported');
+            }
+        case 'EC':
+        case 'OKP':
+            return asKeyObject({ ...jwk, alg });
+        default:
+            throw new JOSENotSupported('Unsupported "kty" (Key Type) Parameter value');
+    }
+}
+
+module.exports = {
+    importSPKI,
+    importX509,
+    importPKCS8,
+    importJWK
+}
+},{"../lib/format_pem.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/format_pem.js","../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","../runtime/asn1.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/asn1.js","../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","../runtime/jwk_to_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/jwk_to_key.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/aesgcmkw.js":[function(require,module,exports){
+const encrypt = require('../runtime/encrypt.js');
+const decrypt = require('../runtime/decrypt.js');
+const generateIv = require('./iv.js');
+const {encode: base64url} = require('../runtime/base64url.js');
+module.exports.wrap = async function wrap(alg, key, cek, iv) {
+    const jweAlgorithm = alg.substr(0, 7);
+    iv || (iv = generateIv(jweAlgorithm));
+    const {ciphertext: encryptedKey, tag} = await encrypt(jweAlgorithm, cek, key, iv, new Uint8Array(0));
+    return {encryptedKey, iv: base64url(iv), tag: base64url(tag)};
+}
+module.exports.unwrap = async function unwrap(alg, key, encryptedKey, iv, tag) {
+    const jweAlgorithm = alg.substr(0, 7);
+    return decrypt(jweAlgorithm, key, encryptedKey, iv, tag, new Uint8Array(0));
+}
+
+},{"../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","../runtime/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/decrypt.js","../runtime/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/encrypt.js","./iv.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/iv.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/buffer_utils.js":[function(require,module,exports){
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+const MAX_INT32 = 2 ** 32;
+
+function concat(...buffers) {
+    const size = buffers.reduce((acc, {length}) => acc + length, 0);
+    const buf = new Uint8Array(size);
+    let i = 0;
+    buffers.forEach((buffer) => {
+        buf.set(buffer, i);
+        i += buffer.length;
+    });
+    return buf;
+}
+
+function p2s(alg, p2sInput) {
+    return concat($$.Buffer.from(alg), new Uint8Array([0]), p2sInput);
+}
+
+function writeUInt32BE(buf, value, offset) {
+    if (value < 0 || value >= MAX_INT32) {
+        throw new RangeError(`value must be >= 0 and <= ${MAX_INT32 - 1}. Received ${value}`);
+    }
+    buf.set([value >>> 24, value >>> 16, value >>> 8, value & 0xff], offset);
+}
+
+function uint64be(value) {
+    const high = Math.floor(value / MAX_INT32);
+    const low = value % MAX_INT32;
+    const buf = new Uint8Array(8);
+    writeUInt32BE(buf, high, 0);
+    writeUInt32BE(buf, low, 4);
+    return buf;
+}
+
+function uint32be(value) {
+    const buf = new Uint8Array(4);
+    writeUInt32BE(buf, value);
+    return buf;
+}
+
+async function concatKdf(digest, secret, bits, value) {
+    const iterations = Math.ceil((bits >> 3) / 32);
+    let res;
+    for (let iter = 1; iter <= iterations; iter++) {
+        const buf = new Uint8Array(4 + secret.length + value.length);
+        buf.set(uint32be(iter));
+        buf.set(secret, 4);
+        buf.set(value, 4 + secret.length);
+        if (!res) {
+            res = await digest('sha256', buf);
+        } else {
+            res = concat(res, await digest('sha256', buf));
+        }
+    }
+    res = res.slice(0, bits >> 3);
+    return res;
+}
+
+module.exports = {
+    encoder,
+    decoder,
+    uint64be,
+    uint32be,
+    p2s,
+    concatKdf,
+    concat
+}
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/cek.js":[function(require,module,exports){
+const {JOSENotSupported} = require('../util/errors.js');
+const crypto = require("crypto");
+module.exports.bitLength = function bitLength(alg) {
+    switch (alg) {
+        case 'A128CBC-HS256':
+            return 256;
+        case 'A192CBC-HS384':
+            return 384;
+        case 'A256CBC-HS512':
+            return 512;
+        case 'A128GCM':
+            return 128;
+        case 'A192GCM':
+            return 192;
+        case 'A256GCM':
+            return 256;
+        default:
+            throw new JOSENotSupported(`Unsupported JWE Algorithm: ${alg}`);
+    }
+}
+module.exports = (alg) => crypto.randomBytes(module.exports.bitLength(alg) >> 3);
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/check_iv_length.js":[function(require,module,exports){
+const {JWEInvalid} = require('../util/errors.js');
+const {bitLength} = require('./iv.js');
+const checkIvLength = (enc, iv) => {
+    if (iv.length << 3 !== bitLength(enc)) {
+        throw new JWEInvalid('Invalid Initialization Vector length');
+    }
+};
+module.exports = checkIvLength;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./iv.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/iv.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/check_key_type.js":[function(require,module,exports){
+const invalidKeyInput = require('./invalid_key_input.js');
+const isKeyLike = require('../runtime/is_key_like.js');
+const types = isKeyLike.types;
+const symmetricTypeCheck = (key) => {
+    if (key instanceof Uint8Array)
+        return;
+    if (!isKeyLike(key)) {
+        throw new TypeError(invalidKeyInput(key, ...types, 'Uint8Array'));
+    }
+    if (key.type !== 'secret') {
+        throw new TypeError(`${types.join(' or ')} instances for symmetric algorithms must be of type "secret"`);
+    }
+};
+const asymmetricTypeCheck = (key, usage) => {
+    if (!isKeyLike(key)) {
+        throw new TypeError(invalidKeyInput(key, ...types));
+    }
+    if (key.type === 'secret') {
+        throw new TypeError(`${types.join(' or ')} instances for asymmetric algorithms must not be of type "secret"`);
+    }
+    if (usage === 'sign' && key.type === 'public') {
+        throw new TypeError(`${types.join(' or ')} instances for asymmetric algorithm signing must be of type "private"`);
+    }
+    if (usage === 'decrypt' && key.type === 'public') {
+        throw new TypeError(`${types.join(' or ')} instances for asymmetric algorithm decryption must be of type "private"`);
+    }
+    if (key.algorithm && usage === 'verify' && key.type === 'private') {
+        throw new TypeError(`${types.join(' or ')} instances for asymmetric algorithm verifying must be of type "public"`);
+    }
+    if (key.algorithm && usage === 'encrypt' && key.type === 'private') {
+        throw new TypeError(`${types.join(' or ')} instances for asymmetric algorithm encryption must be of type "public"`);
+    }
+};
+const checkKeyType = (alg, key, usage) => {
+    const symmetric = alg.startsWith('HS') ||
+        alg === 'dir' ||
+        alg.startsWith('PBES2') ||
+        /^A\d{3}(?:GCM)?KW$/.test(alg);
+    if (symmetric) {
+        symmetricTypeCheck(key);
+    } else {
+        asymmetricTypeCheck(key, usage);
+    }
+};
+module.exports = checkKeyType;
+
+},{"../runtime/is_key_like.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/is_key_like.js","./invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/check_p2s.js":[function(require,module,exports){
+const {JWEInvalid} = require('../util/errors.js');
+module.exports = function checkP2s(p2s) {
+    if (!(p2s instanceof Uint8Array) || p2s.length < 8) {
+        throw new JWEInvalid('PBES2 Salt Input must be 8 or more octets');
+    }
+}
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/crypto_key.js":[function(require,module,exports){
+const {isCloudflareWorkers, isNodeJs} = require('../runtime/global.js');
+
+function unusable(name, prop = 'algorithm.name') {
+    return new TypeError(`CryptoKey does not support this operation, its ${prop} must be ${name}`);
+}
+
+function isAlgorithm(algorithm, name) {
+    return algorithm.name === name;
+}
+
+function getHashLength(hash) {
+    return parseInt(hash.name.substr(4), 10);
+}
+
+function getNamedCurve(alg) {
+    switch (alg) {
+        case 'ES256':
+            return 'P-256';
+        case 'ES384':
+            return 'P-384';
+        case 'ES512':
+            return 'P-521';
+        default:
+            throw new Error('unreachable');
+    }
+}
+
+function checkUsage(key, usages) {
+    if (usages.length && !usages.some((expected) => key.usages.includes(expected))) {
+        let msg = 'CryptoKey does not support this operation, its usages must include ';
+        if (usages.length > 2) {
+            const last = usages.pop();
+            msg += `one of ${usages.join(', ')}, or ${last}.`;
+        } else if (usages.length === 2) {
+            msg += `one of ${usages[0]} or ${usages[1]}.`;
+        } else {
+            msg += `${usages[0]}.`;
+        }
+        throw new TypeError(msg);
+    }
+}
+
+module.exports.checkSigCryptoKey = function checkSigCryptoKey(key, alg, ...usages) {
+    switch (alg) {
+        case 'HS256':
+        case 'HS384':
+        case 'HS512': {
+            if (!isAlgorithm(key.algorithm, 'HMAC'))
+                throw unusable('HMAC');
+            const expected = parseInt(alg.substr(2), 10);
+            const actual = getHashLength(key.algorithm.hash);
+            if (actual !== expected)
+                throw unusable(`SHA-${expected}`, 'algorithm.hash');
+            break;
+        }
+        case 'RS256':
+        case 'RS384':
+        case 'RS512': {
+            if (!isAlgorithm(key.algorithm, 'RSASSA-PKCS1-v1_5'))
+                throw unusable('RSASSA-PKCS1-v1_5');
+            const expected = parseInt(alg.substr(2), 10);
+            const actual = getHashLength(key.algorithm.hash);
+            if (actual !== expected)
+                throw unusable(`SHA-${expected}`, 'algorithm.hash');
+            break;
+        }
+        case 'PS256':
+        case 'PS384':
+        case 'PS512': {
+            if (!isAlgorithm(key.algorithm, 'RSA-PSS'))
+                throw unusable('RSA-PSS');
+            const expected = parseInt(alg.substr(2), 10);
+            const actual = getHashLength(key.algorithm.hash);
+            if (actual !== expected)
+                throw unusable(`SHA-${expected}`, 'algorithm.hash');
+            break;
+        }
+        case isNodeJs() && 'EdDSA': {
+            if (key.algorithm.name !== 'NODE-ED25519' && key.algorithm.name !== 'NODE-ED448')
+                throw unusable('NODE-ED25519 or NODE-ED448');
+            break;
+        }
+        case isCloudflareWorkers() && 'EdDSA': {
+            if (!isAlgorithm(key.algorithm, 'NODE-ED25519'))
+                throw unusable('NODE-ED25519');
+            break;
+        }
+        case 'ES256':
+        case 'ES384':
+        case 'ES512': {
+            if (!isAlgorithm(key.algorithm, 'ECDSA'))
+                throw unusable('ECDSA');
+            const expected = getNamedCurve(alg);
+            const actual = key.algorithm.namedCurve;
+            if (actual !== expected)
+                throw unusable(expected, 'algorithm.namedCurve');
+            break;
+        }
+        default:
+            throw new TypeError('CryptoKey does not support this operation');
+    }
+    checkUsage(key, usages);
+}
+module.exports.checkEncCryptoKey = function checkEncCryptoKey(key, alg, ...usages) {
+    switch (alg) {
+        case 'A128GCM':
+        case 'A192GCM':
+        case 'A256GCM': {
+            if (!isAlgorithm(key.algorithm, 'AES-GCM'))
+                throw unusable('AES-GCM');
+            const expected = parseInt(alg.substr(1, 3), 10);
+            const actual = key.algorithm.length;
+            if (actual !== expected)
+                throw unusable(expected, 'algorithm.length');
+            break;
+        }
+        case 'A128KW':
+        case 'A192KW':
+        case 'A256KW': {
+            if (!isAlgorithm(key.algorithm, 'AES-KW'))
+                throw unusable('AES-KW');
+            const expected = parseInt(alg.substr(1, 3), 10);
+            const actual = key.algorithm.length;
+            if (actual !== expected)
+                throw unusable(expected, 'algorithm.length');
+            break;
+        }
+        case 'ECDH-ES':
+            if (!isAlgorithm(key.algorithm, 'ECDH'))
+                throw unusable('ECDH');
+            break;
+        case 'PBES2-HS256+A128KW':
+        case 'PBES2-HS384+A192KW':
+        case 'PBES2-HS512+A256KW':
+            if (!isAlgorithm(key.algorithm, 'PBKDF2'))
+                throw unusable('PBKDF2');
+            break;
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512': {
+            if (!isAlgorithm(key.algorithm, 'RSA-OAEP'))
+                throw unusable('RSA-OAEP');
+            const expected = parseInt(alg.substr(9), 10) || 1;
+            const actual = getHashLength(key.algorithm.hash);
+            if (actual !== expected)
+                throw unusable(`SHA-${expected}`, 'algorithm.hash');
+            break;
+        }
+        default:
+            throw new TypeError('CryptoKey does not support this operation');
+    }
+    checkUsage(key, usages);
+}
+
+},{"../runtime/global.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/global.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/decrypt_key_management.js":[function(require,module,exports){
+const {unwrap: aesKw} = require('../runtime/aeskw.js');
+const ECDH = require('../runtime/ecdhes.js');
+const {decrypt: pbes2Kw} = require('../runtime/pbes2kw.js');
+const {decrypt: rsaEs} = require('../runtime/rsaes.js');
+const {decode: base64url} = require('../runtime/base64url.js');
+const {JOSENotSupported, JWEInvalid} = require('../util/errors.js');
+const {bitLength: cekLength} = require('../lib/cek.js');
+const {importJWK} = require('../key/import.js');
+const checkKeyType = require('./check_key_type.js');
+const isObject = require('./is_object.js');
+const {unwrap: aesGcmKw} = require('./aesgcmkw.js');
+async function decryptKeyManagement(alg, key, encryptedKey, joseHeader) {
+    checkKeyType(alg, key, 'decrypt');
+    switch (alg) {
+        case 'dir': {
+            if (encryptedKey !== undefined)
+                throw new JWEInvalid('Encountered unexpected JWE Encrypted Key');
+            return key;
+        }
+        case 'ECDH-ES':
+            if (encryptedKey !== undefined)
+                throw new JWEInvalid('Encountered unexpected JWE Encrypted Key');
+        case 'ECDH-ES+A128KW':
+        case 'ECDH-ES+A192KW':
+        case 'ECDH-ES+A256KW': {
+            if (!isObject(joseHeader.epk))
+                throw new JWEInvalid(`JOSE Header "epk" (Ephemeral Public Key) missing or invalid`);
+            if (!ECDH.ecdhAllowed(key))
+                throw new JOSENotSupported('ECDH-ES with the provided key is not allowed or not supported by your javascript runtime');
+            const epk = await importJWK(joseHeader.epk, alg);
+            let partyUInfo;
+            let partyVInfo;
+            if (joseHeader.apu !== undefined) {
+                if (typeof joseHeader.apu !== 'string')
+                    throw new JWEInvalid(`JOSE Header "apu" (Agreement PartyUInfo) invalid`);
+                partyUInfo = base64url(joseHeader.apu);
+            }
+            if (joseHeader.apv !== undefined) {
+                if (typeof joseHeader.apv !== 'string')
+                    throw new JWEInvalid(`JOSE Header "apv" (Agreement PartyVInfo) invalid`);
+                partyVInfo = base64url(joseHeader.apv);
+            }
+            const sharedSecret = await ECDH.deriveKey(epk, key, alg === 'ECDH-ES' ? joseHeader.enc : alg, parseInt(alg.substr(-5, 3), 10) || cekLength(joseHeader.enc), partyUInfo, partyVInfo);
+            if (alg === 'ECDH-ES')
+                return sharedSecret;
+            if (encryptedKey === undefined)
+                throw new JWEInvalid('JWE Encrypted Key missing');
+            return aesKw(alg.substr(-6), sharedSecret, encryptedKey);
+        }
+        case 'RSA1_5':
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512': {
+            if (encryptedKey === undefined)
+                throw new JWEInvalid('JWE Encrypted Key missing');
+            return rsaEs(alg, key, encryptedKey);
+        }
+        case 'PBES2-HS256+A128KW':
+        case 'PBES2-HS384+A192KW':
+        case 'PBES2-HS512+A256KW': {
+            if (encryptedKey === undefined)
+                throw new JWEInvalid('JWE Encrypted Key missing');
+            if (typeof joseHeader.p2c !== 'number')
+                throw new JWEInvalid(`JOSE Header "p2c" (PBES2 Count) missing or invalid`);
+            if (typeof joseHeader.p2s !== 'string')
+                throw new JWEInvalid(`JOSE Header "p2s" (PBES2 Salt) missing or invalid`);
+            return pbes2Kw(alg, key, encryptedKey, joseHeader.p2c, base64url(joseHeader.p2s));
+        }
+        case 'A128KW':
+        case 'A192KW':
+        case 'A256KW': {
+            if (encryptedKey === undefined)
+                throw new JWEInvalid('JWE Encrypted Key missing');
+            return aesKw(alg, key, encryptedKey);
+        }
+        case 'A128GCMKW':
+        case 'A192GCMKW':
+        case 'A256GCMKW': {
+            if (encryptedKey === undefined)
+                throw new JWEInvalid('JWE Encrypted Key missing');
+            if (typeof joseHeader.iv !== 'string')
+                throw new JWEInvalid(`JOSE Header "iv" (Initialization Vector) missing or invalid`);
+            if (typeof joseHeader.tag !== 'string')
+                throw new JWEInvalid(`JOSE Header "tag" (Authentication Tag) missing or invalid`);
+            const iv = base64url(joseHeader.iv);
+            const tag = base64url(joseHeader.tag);
+            return aesGcmKw(alg, key, encryptedKey, iv, tag);
+        }
+        default: {
+            throw new JOSENotSupported('Invalid or unsupported "alg" (JWE Algorithm) header value');
+        }
+    }
+}
+module.exports = decryptKeyManagement;
+
+},{"../key/import.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/import.js","../lib/cek.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/cek.js","../runtime/aeskw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/aeskw.js","../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","../runtime/ecdhes.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/ecdhes.js","../runtime/pbes2kw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/pbes2kw.js","../runtime/rsaes.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/rsaes.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./aesgcmkw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/aesgcmkw.js","./check_key_type.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/check_key_type.js","./is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/encrypt_key_management.js":[function(require,module,exports){
+const {wrap: aesKw} = require('../runtime/aeskw.js');
+const ECDH = require('../runtime/ecdhes.js');
+const {encrypt: pbes2Kw} = require('../runtime/pbes2kw.js');
+const {encrypt: rsaEs} = require('../runtime/rsaes.js');
+const {encode: base64url} = require('../runtime/base64url.js');
+const generateCek = require('../lib/cek.js');
+const {JOSENotSupported} = require('../util/errors.js');
+const {exportJWK} = require('../key/export.js');
+const checkKeyType = require('./check_key_type.js');
+const {wrap: aesGcmKw} = require('./aesgcmkw.js');
+
+async function encryptKeyManagement(alg, enc, key, providedCek, providedParameters = {}) {
+    let encryptedKey;
+    let parameters;
+    let cek;
+    checkKeyType(alg, key, 'encrypt');
+    switch (alg) {
+        case 'dir': {
+            cek = key;
+            break;
+        }
+        case 'ECDH-ES':
+        case 'ECDH-ES+A128KW':
+        case 'ECDH-ES+A192KW':
+        case 'ECDH-ES+A256KW': {
+            if (!ECDH.ecdhAllowed(key)) {
+                throw new JOSENotSupported('ECDH-ES with the provided key is not allowed or not supported by your javascript runtime');
+            }
+            const {apu, apv} = providedParameters;
+            let {epk: ephemeralKey} = providedParameters;
+            ephemeralKey || (ephemeralKey = await ECDH.generateEpk(key));
+            const {x, y, crv, kty} = await exportJWK(ephemeralKey);
+            const sharedSecret = await ECDH.deriveKey(key, ephemeralKey, alg === 'ECDH-ES' ? enc : alg, parseInt(alg.substr(-5, 3), 10) || generateCek.bitLength(enc), apu, apv);
+            parameters = {epk: {x, y, crv, kty}};
+            if (apu)
+                parameters.apu = base64url(apu);
+            if (apv)
+                parameters.apv = base64url(apv);
+            if (alg === 'ECDH-ES') {
+                cek = sharedSecret;
+                break;
+            }
+            cek = providedCek || generateCek(enc);
+            const kwAlg = alg.substr(-6);
+            encryptedKey = await aesKw(kwAlg, sharedSecret, cek);
+            break;
+        }
+        case 'RSA1_5':
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512': {
+            cek = providedCek || generateCek(enc);
+            encryptedKey = await rsaEs(alg, key, cek);
+            break;
+        }
+        case 'PBES2-HS256+A128KW':
+        case 'PBES2-HS384+A192KW':
+        case 'PBES2-HS512+A256KW': {
+            cek = providedCek || generateCek(enc);
+            const {p2c, p2s} = providedParameters;
+            ({encryptedKey, ...parameters} = await pbes2Kw(alg, key, cek, p2c, p2s));
+            break;
+        }
+        case 'A128KW':
+        case 'A192KW':
+        case 'A256KW': {
+            cek = providedCek || generateCek(enc);
+            encryptedKey = await aesKw(alg, key, cek);
+            break;
+        }
+        case 'A128GCMKW':
+        case 'A192GCMKW':
+        case 'A256GCMKW': {
+            cek = providedCek || generateCek(enc);
+            const {iv} = providedParameters;
+            ({encryptedKey, ...parameters} = await aesGcmKw(alg, key, cek, iv));
+            break;
+        }
+        default: {
+            throw new JOSENotSupported('Invalid or unsupported "alg" (JWE Algorithm) header value');
+        }
+    }
+    return {cek, encryptedKey, parameters};
+}
+
+module.exports = encryptKeyManagement;
+
+},{"../key/export.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/key/export.js","../lib/cek.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/cek.js","../runtime/aeskw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/aeskw.js","../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","../runtime/ecdhes.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/ecdhes.js","../runtime/pbes2kw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/pbes2kw.js","../runtime/rsaes.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/rsaes.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./aesgcmkw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/aesgcmkw.js","./check_key_type.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/check_key_type.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/epoch.js":[function(require,module,exports){
+module.exports = (date) => Math.floor(date.getTime() / 1000);
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/format_pem.js":[function(require,module,exports){
+module.exports = (b64, descriptor) => {
+    const newlined = (b64.match(/.{1,64}/g) || []).join('\n');
+    return `-----BEGIN ${descriptor}-----\n${newlined}\n-----END ${descriptor}-----`;
+};
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js":[function(require,module,exports){
+module.exports = (actual, ...types) => {
+    let msg = 'Key must be ';
+    if (types.length > 2) {
+        const last = types.pop();
+        msg += `one of type ${types.join(', ')}, or ${last}.`;
+    }
+    else if (types.length === 2) {
+        msg += `one of type ${types[0]} or ${types[1]}.`;
+    }
+    else {
+        msg += `of type ${types[0]}.`;
+    }
+    if (actual == null) {
+        msg += ` Received ${actual}`;
+    }
+    else if (typeof actual === 'function' && actual.name) {
+        msg += ` Received function ${actual.name}`;
+    }
+    else if (typeof actual === 'object' && actual != null) {
+        if (actual.constructor && actual.constructor.name) {
+            msg += ` Received an instance of ${actual.constructor.name}`;
+        }
+    }
+    return msg;
+};
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_disjoint.js":[function(require,module,exports){
+const isDisjoint = (...headers) => {
+    const sources = headers.filter(Boolean);
+    if (sources.length === 0 || sources.length === 1) {
+        return true;
+    }
+    let acc;
+    for (const header of sources) {
+        const parameters = Object.keys(header);
+        if (!acc || acc.size === 0) {
+            acc = new Set(parameters);
+            continue;
+        }
+        for (const parameter of parameters) {
+            if (acc.has(parameter)) {
+                return false;
+            }
+            acc.add(parameter);
+        }
+    }
+    return true;
+};
+module.exports = isDisjoint;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js":[function(require,module,exports){
+function isObjectLike(value) {
+    return typeof value === 'object' && value !== null;
+}
+module.exports = function isObject(input) {
+    if (!isObjectLike(input) || Object.prototype.toString.call(input) !== '[object Object]') {
+        return false;
+    }
+    if (Object.getPrototypeOf(input) === null) {
+        return true;
+    }
+    let proto = input;
+    while (Object.getPrototypeOf(proto) !== null) {
+        proto = Object.getPrototypeOf(proto);
+    }
+    return Object.getPrototypeOf(input) === proto;
+}
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/iv.js":[function(require,module,exports){
+const {JOSENotSupported} = require('../util/errors.js');
+const crypto = require("crypto");
+module.exports.bitLength = function bitLength(alg) {
+    switch (alg) {
+        case 'A128CBC-HS256':
+            return 128;
+        case 'A128GCM':
+            return 96;
+        case 'A128GCMKW':
+            return 96;
+        case 'A192CBC-HS384':
+            return 128;
+        case 'A192GCM':
+            return 96;
+        case 'A192GCMKW':
+            return 96;
+        case 'A256CBC-HS512':
+            return 128;
+        case 'A256GCM':
+            return 96;
+        case 'A256GCMKW':
+            return 96;
+        default:
+            throw new JOSENotSupported(`Unsupported JWE Algorithm: ${alg}`);
+    }
+}
+module.exports = (alg) => crypto.randomBytes(module.exports.bitLength(alg) >> 3);
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/jwt_claims_set.js":[function(require,module,exports){
+const {JWTClaimValidationFailed, JWTExpired, JWTInvalid} = require('../util/errors.js');
+const epoch = require('./epoch.js');
+const secs = require('./secs.js');
+const isObject = require('./is_object.js');
+const normalizeTyp = (value) => value.toLowerCase().replace(/^application\//, '');
+const checkAudiencePresence = (audPayload, audOption) => {
+    if (typeof audPayload === 'string') {
+        return audOption.includes(audPayload);
+    }
+    if (Array.isArray(audPayload)) {
+        return audOption.some(Set.prototype.has.bind(new Set(audPayload)));
+    }
+    return false;
+};
+module.exports = (protectedHeader, encodedPayload, options = {}) => {
+    const { typ } = options;
+    if (typ &&
+        (typeof protectedHeader.typ !== 'string' ||
+            normalizeTyp(protectedHeader.typ) !== normalizeTyp(typ))) {
+        throw new JWTClaimValidationFailed('unexpected "typ" JWT header value', 'typ', 'check_failed');
+    }
+    let payload;
+    try {
+        payload = JSON.parse(encodedPayload.toString());
+    }
+    catch (_a) {
+    }
+    if (!isObject(payload)) {
+        throw new JWTInvalid('JWT Claims Set must be a top-level JSON object');
+    }
+    const { issuer } = options;
+    if (issuer && !(Array.isArray(issuer) ? issuer : [issuer]).includes(payload.iss)) {
+        throw new JWTClaimValidationFailed('unexpected "iss" claim value', 'iss', 'check_failed');
+    }
+    const { subject } = options;
+    if (subject && payload.sub !== subject) {
+        throw new JWTClaimValidationFailed('unexpected "sub" claim value', 'sub', 'check_failed');
+    }
+    const { audience } = options;
+    if (audience &&
+        !checkAudiencePresence(payload.aud, typeof audience === 'string' ? [audience] : audience)) {
+        throw new JWTClaimValidationFailed('unexpected "aud" claim value', 'aud', 'check_failed');
+    }
+    let tolerance;
+    switch (typeof options.clockTolerance) {
+        case 'string':
+            tolerance = secs(options.clockTolerance);
+            break;
+        case 'number':
+            tolerance = options.clockTolerance;
+            break;
+        case 'undefined':
+            tolerance = 0;
+            break;
+        default:
+            throw new TypeError('Invalid clockTolerance option type');
+    }
+    const { currentDate } = options;
+    const now = epoch(currentDate || new Date());
+    if (payload.iat !== undefined || options.maxTokenAge) {
+        if (typeof payload.iat !== 'number') {
+            throw new JWTClaimValidationFailed('"iat" claim must be a number', 'iat', 'invalid');
+        }
+        if (payload.exp === undefined && payload.iat > now + tolerance) {
+            throw new JWTClaimValidationFailed('"iat" claim timestamp check failed (it should be in the past)', 'iat', 'check_failed');
+        }
+    }
+    if (payload.nbf !== undefined) {
+        if (typeof payload.nbf !== 'number') {
+            throw new JWTClaimValidationFailed('"nbf" claim must be a number', 'nbf', 'invalid');
+        }
+        if (payload.nbf > now + tolerance) {
+            throw new JWTClaimValidationFailed('"nbf" claim timestamp check failed', 'nbf', 'check_failed');
+        }
+    }
+    if (payload.exp !== undefined) {
+        if (typeof payload.exp !== 'number') {
+            throw new JWTClaimValidationFailed('"exp" claim must be a number', 'exp', 'invalid');
+        }
+        if (payload.exp <= now - tolerance) {
+            throw new JWTExpired('"exp" claim timestamp check failed', 'exp', 'check_failed');
+        }
+    }
+    if (options.maxTokenAge) {
+        const age = now - payload.iat;
+        const max = typeof options.maxTokenAge === 'number' ? options.maxTokenAge : secs(options.maxTokenAge);
+        if (age - tolerance > max) {
+            throw new JWTExpired('"iat" claim timestamp check failed (too far in the past)', 'iat', 'check_failed');
+        }
+        if (age < 0 - tolerance) {
+            throw new JWTClaimValidationFailed('"iat" claim timestamp check failed (it should be in the past)', 'iat', 'check_failed');
+        }
+    }
+    return payload;
+};
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./epoch.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/epoch.js","./is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","./secs.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/secs.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/secs.js":[function(require,module,exports){
+const minute = 60;
+const hour = minute * 60;
+const day = hour * 24;
+const week = day * 7;
+const year = day * 365.25;
+const REGEX = /^(\d+|\d+\.\d+) ?(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)$/i;
+module.exports = (str) => {
+    const matched = REGEX.exec(str);
+    if (!matched) {
+        throw new TypeError('Invalid time period format');
+    }
+    const value = parseFloat(matched[1]);
+    const unit = matched[2].toLowerCase();
+    switch (unit) {
+        case 'sec':
+        case 'secs':
+        case 'second':
+        case 'seconds':
+        case 's':
+            return Math.round(value);
+        case 'minute':
+        case 'minutes':
+        case 'min':
+        case 'mins':
+        case 'm':
+            return Math.round(value * minute);
+        case 'hour':
+        case 'hours':
+        case 'hr':
+        case 'hrs':
+        case 'h':
+            return Math.round(value * hour);
+        case 'day':
+        case 'days':
+        case 'd':
+            return Math.round(value * day);
+        case 'week':
+        case 'weeks':
+        case 'w':
+            return Math.round(value * week);
+        default:
+            return Math.round(value * year);
+    }
+};
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/validate_algorithms.js":[function(require,module,exports){
+const validateAlgorithms = (option, algorithms) => {
+    if (algorithms !== undefined &&
+        (!Array.isArray(algorithms) || algorithms.some((s) => typeof s !== 'string'))) {
+        throw new TypeError(`"${option}" option must be an array of strings`);
+    }
+    if (!algorithms) {
+        return undefined;
+    }
+    return new Set(algorithms);
+};
+module.exports = validateAlgorithms;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/validate_crit.js":[function(require,module,exports){
+const {JOSENotSupported} = require('../util/errors.js');
+function validateCrit(Err, recognizedDefault, recognizedOption, protectedHeader, joseHeader) {
+    if (joseHeader.crit !== undefined && protectedHeader.crit === undefined) {
+        throw new Err('"crit" (Critical) Header Parameter MUST be integrity protected');
+    }
+    if (!protectedHeader || protectedHeader.crit === undefined) {
+        return new Set();
+    }
+    if (!Array.isArray(protectedHeader.crit) ||
+        protectedHeader.crit.length === 0 ||
+        protectedHeader.crit.some((input) => typeof input !== 'string' || input.length === 0)) {
+        throw new Err('"crit" (Critical) Header Parameter MUST be an array of non-empty strings when present');
+    }
+    let recognized;
+    if (recognizedOption !== undefined) {
+        recognized = new Map([...Object.entries(recognizedOption), ...recognizedDefault.entries()]);
+    }
+    else {
+        recognized = recognizedDefault;
+    }
+    for (const parameter of protectedHeader.crit) {
+        if (!recognized.has(parameter)) {
+            throw new JOSENotSupported(`Extension Header Parameter "${parameter}" is not recognized`);
+        }
+        if (joseHeader[parameter] === undefined) {
+            throw new Err(`Extension Header Parameter "${parameter}" is missing`);
+        }
+        else if (recognized.get(parameter) && protectedHeader[parameter] === undefined) {
+            throw new Err(`Extension Header Parameter "${parameter}" MUST be integrity protected`);
+        }
+    }
+    return new Set(protectedHeader.crit);
+}
+module.exports = validateCrit;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/aeskw.js":[function(require,module,exports){
+const bogusWebCrypto = require('./bogus.js');
+const crypto = require('./webcrypto.js');
+const {checkEncCryptoKey} = require('../lib/crypto_key.js');
+const invalidKeyInput = require('../lib/invalid_key_input.js');
+
+function checkKeySize(key, alg) {
+    if (key.algorithm.length !== parseInt(alg.substr(1, 3), 10)) {
+        throw new TypeError(`Invalid key size for alg: ${alg}`);
+    }
+}
+
+function getCryptoKey(key, alg, usage) {
+    if (crypto.isCryptoKey(key)) {
+        checkEncCryptoKey(key, alg, usage);
+        return key;
+    }
+    if (key instanceof Uint8Array) {
+        return crypto.subtle.importKey('raw', key, 'AES-KW', true, [usage]);
+    }
+    throw new TypeError(invalidKeyInput(key, 'CryptoKey', 'Uint8Array'));
+}
+
+const wrap = async (alg, key, cek) => {
+    const cryptoKey = await getCryptoKey(key, alg, 'wrapKey');
+    checkKeySize(cryptoKey, alg);
+    const cryptoKeyCek = await crypto.subtle.importKey('raw', cek, ...bogusWebCrypto);
+    return new Uint8Array(await crypto.subtle.wrapKey('raw', cryptoKeyCek, cryptoKey, 'AES-KW'));
+};
+const unwrap = async (alg, key, encryptedKey) => {
+    const cryptoKey = await getCryptoKey(key, alg, 'unwrapKey');
+    checkKeySize(cryptoKey, alg);
+    const cryptoKeyCek = await crypto.subtle.unwrapKey('raw', encryptedKey, cryptoKey, 'AES-KW', ...bogusWebCrypto);
+    return new Uint8Array(await crypto.subtle.exportKey('raw', cryptoKeyCek));
+};
+
+module.exports = {
+    wrap,
+    unwrap
+}
+},{"../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js","./bogus.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/bogus.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/asn1.js":[function(require,module,exports){
+const globalThis = require('./global.js');
+const crypto = require('./webcrypto.js');
+const invalidKeyInput = require('../lib/invalid_key_input.js');
+const {encodeBase64} = require('./base64url.js');
+const formatPEM = require('../lib/format_pem.js');
+const {JOSENotSupported} = require('../util/errors.js');
+const genericExport = async (keyType, keyFormat, key) => {
+    if (!crypto.isCryptoKey(key)) {
+        throw new TypeError(invalidKeyInput(key, 'CryptoKey'));
+    }
+    if (!key.extractable) {
+        throw new TypeError('CryptoKey is not extractable');
+    }
+    if (key.type !== keyType) {
+        throw new TypeError(`key is not a ${keyType} key`);
+    }
+    return formatPEM(encodeBase64(new Uint8Array(await crypto.subtle.Key(keyFormat, key))), `${keyType.toUpperCase()} KEY`);
+};
+const toSPKI = (key) => {
+    return genericExport('public', 'spki', key);
+};
+const toPKCS8 = (key) => {
+    return genericExport('private', 'pkcs8', key);
+};
+const getNamedCurve = (keyData) => {
+    const keyDataStr = keyData.toString();
+    switch (true) {
+        case keyDataStr.includes(new Uint8Array([
+            0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce,
+            0x3d, 0x03, 0x01, 0x07,
+        ]).toString()):
+            return 'P-256';
+        case keyDataStr.includes(new Uint8Array([
+            0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, 0x06, 0x05, 0x2b, 0x81, 0x04, 0x00,
+            0x22,
+        ]).toString()):
+            return 'P-384';
+        case keyDataStr.includes(new Uint8Array([
+            0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, 0x06, 0x05, 0x2b, 0x81, 0x04, 0x00,
+            0x23,
+        ]).toString()):
+            return 'P-521';
+        case (globalThis.isCloudflareWorkers() || globalThis.isNodeJs()) &&
+        keyDataStr.includes(new Uint8Array([0x06, 0x03, 0x2b, 0x65, 0x70]).toString()):
+            return 'Ed25519';
+        case isNodeJs() &&
+        keyDataStr.includes(new Uint8Array([0x06, 0x03, 0x2b, 0x65, 0x71]).toString()):
+            return 'Ed448';
+        default:
+            throw new JOSENotSupported('Invalid or unsupported EC Key Curve or OKP Key Sub Type');
+    }
+};
+const genericImport = async (replace, keyFormat, pem, alg, options) => {
+    var _a;
+    let algorithm;
+    let keyUsages;
+    const keyData = new Uint8Array(globalThis
+        .atob(pem.replace(replace, ''))
+        .split('')
+        .map((c) => c.charCodeAt(0)));
+    const isPublic = keyFormat === 'spki';
+    switch (alg) {
+        case 'PS256':
+        case 'PS384':
+        case 'PS512':
+            algorithm = {name: 'RSA-PSS', hash: `SHA-${alg.substr(-3)}`};
+            keyUsages = isPublic ? ['verify'] : ['sign'];
+            break;
+        case 'RS256':
+        case 'RS384':
+        case 'RS512':
+            algorithm = {name: 'RSASSA-PKCS1-v1_5', hash: `SHA-${alg.substr(-3)}`};
+            keyUsages = isPublic ? ['verify'] : ['sign'];
+            break;
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512':
+            algorithm = {
+                name: 'RSA-OAEP',
+                hash: `SHA-${parseInt(alg.substr(-3), 10) || 1}`,
+            };
+            keyUsages = isPublic ? ['encrypt', 'wrapKey'] : ['decrypt', 'unwrapKey'];
+            break;
+        case 'ES256':
+            algorithm = {name: 'ECDSA', namedCurve: 'P-256'};
+            keyUsages = isPublic ? ['verify'] : ['sign'];
+            break;
+        case 'ES384':
+            algorithm = {name: 'ECDSA', namedCurve: 'P-384'};
+            keyUsages = isPublic ? ['verify'] : ['sign'];
+            break;
+        case 'ES512':
+            algorithm = {name: 'ECDSA', namedCurve: 'P-521'};
+            keyUsages = isPublic ? ['verify'] : ['sign'];
+            break;
+        case 'ECDH-ES':
+        case 'ECDH-ES+A128KW':
+        case 'ECDH-ES+A192KW':
+        case 'ECDH-ES+A256KW':
+            algorithm = {name: 'ECDH', namedCurve: getNamedCurve(keyData)};
+            keyUsages = isPublic ? [] : ['deriveBits'];
+            break;
+        case (globalThis.isCloudflareWorkers() || globalThis.isNodeJs()) && 'EdDSA':
+            const namedCurve = getNamedCurve(keyData).toUpperCase();
+            algorithm = {name: `NODE-${namedCurve}`, namedCurve: `NODE-${namedCurve}`};
+            keyUsages = isPublic ? ['verify'] : ['sign'];
+            break;
+        default:
+            throw new JOSENotSupported('Invalid or unsupported "alg" (Algorithm) value');
+    }
+    return crypto.subtle.importKey(keyFormat, keyData, algorithm, (_a = options === null || options === void 0 ? void 0 : options.extractable) !== null && _a !== void 0 ? _a : false, keyUsages);
+};
+const fromPKCS8 = (pem, alg, options) => {
+    return genericImport(/(?:-----(?:BEGIN|END) PRIVATE KEY-----|\s)/g, 'pkcs8', pem, alg, options);
+};
+const fromSPKI = (pem, alg, options) => {
+    return genericImport(/(?:-----(?:BEGIN|END) PUBLIC KEY-----|\s)/g, 'spki', pem, alg, options);
+};
+
+module.exports = {
+    toSPKI,
+    toPKCS8,
+    fromSPKI,
+    fromPKCS8
+}
+},{"../lib/format_pem.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/format_pem.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","./global.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/global.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js":[function(require,module,exports){
+const encodeBase64 = (input) => {
+    return $$.Buffer.from(input).toString("base64");
+};
+const encode = (input) => {
+    return encodeBase64(input).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+};
+const decodeBase64 = (encoded) => {
+    return $$.Buffer.from(encoded, "base64").toString();
+};
+const decode = (input) => {
+    let encoded = input;
+    if ($$.Buffer.isBuffer(encoded)) {
+        encoded = encoded.toString();
+    }
+    encoded = encoded.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '');
+    try {
+        return decodeBase64(encoded);
+    }
+    catch (_a) {
+        throw new TypeError('The input to be decoded is not correctly encoded.');
+    }
+};
+
+module.exports = {
+    encodeBase64,
+    encode,
+    decodeBase64,
+    decode
+}
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/bogus.js":[function(require,module,exports){
+const bogusWebCrypto = [
+    { hash: 'SHA-256', name: 'HMAC' },
+    true,
+    ['sign'],
+];
+module.exports = bogusWebCrypto;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/check_cek_length.js":[function(require,module,exports){
+const {JWEInvalid} = require('../util/errors.js');
+const checkCekLength = (cek, expected) => {
+    if (cek.length << 3 !== expected) {
+        throw new JWEInvalid('Invalid Content Encryption Key length');
+    }
+};
+module.exports = checkCekLength;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/check_key_length.js":[function(require,module,exports){
+module.exports = (alg, key) => {
+    if (alg.startsWith('HS')) {
+        const bitlen = parseInt(alg.substr(-3), 10);
+        const { length } = key.algorithm;
+        if (typeof length !== 'number' || length < bitlen) {
+            throw new TypeError(`${alg} requires symmetric keys to be ${bitlen} bits or larger`);
+        }
+    }
+    if (alg.startsWith('RS') || alg.startsWith('PS')) {
+        const { modulusLength } = key.algorithm;
+        if (typeof modulusLength !== 'number' || modulusLength < 2048) {
+            throw new TypeError(`${alg} requires key modulusLength to be 2048 bits or larger`);
+        }
+    }
+};
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/decrypt.js":[function(require,module,exports){
+const {concat, uint64be} = require('../lib/buffer_utils.js');
+const checkIvLength = require('../lib/check_iv_length.js');
+const checkCekLength = require('./check_cek_length.js');
+const timingSafeEqual = require('./timing_safe_equal.js');
+const {JOSENotSupported, JWEDecryptionFailed} = require('../util/errors.js');
+const crypto = require('./webcrypto.js');
+const {checkEncCryptoKey} = require('../lib/crypto_key.js');
+const invalidKeyInput = require('../lib/invalid_key_input.js');
+
+async function cbcDecrypt(enc, cek, ciphertext, iv, tag, aad) {
+    if (!(cek instanceof Uint8Array)) {
+        throw new TypeError(invalidKeyInput(cek, 'Uint8Array'));
+    }
+    const keySize = parseInt(enc.substr(1, 3), 10);
+    const encKey = await crypto.subtle.importKey('raw', cek.subarray(keySize >> 3), 'AES-CBC', false, ['decrypt']);
+    const macKey = await crypto.subtle.importKey('raw', cek.subarray(0, keySize >> 3), {
+        hash: `SHA-${keySize << 1}`,
+        name: 'HMAC',
+    }, false, ['sign']);
+    const macData = concat(aad, iv, ciphertext, uint64be(aad.length << 3));
+    const expectedTag = new Uint8Array((await crypto.subtle.sign('HMAC', macKey, macData)).slice(0, keySize >> 3));
+    let macCheckPassed;
+    try {
+        macCheckPassed = timingSafeEqual(tag, expectedTag);
+    } catch (_a) {
+    }
+    if (!macCheckPassed) {
+        throw new JWEDecryptionFailed();
+    }
+    let plaintext;
+    try {
+        plaintext = new Uint8Array(await crypto.subtle.decrypt({iv, name: 'AES-CBC'}, encKey, ciphertext));
+    } catch (_b) {
+    }
+    if (!plaintext) {
+        throw new JWEDecryptionFailed();
+    }
+    return plaintext;
+}
+
+async function gcmDecrypt(enc, cek, ciphertext, iv, tag, aad) {
+    let encKey;
+    if (cek instanceof Uint8Array) {
+        encKey = await crypto.subtle.importKey('raw', cek, 'AES-GCM', false, ['decrypt']);
+    } else {
+        checkEncCryptoKey(cek, enc, 'decrypt');
+        encKey = cek;
+    }
+    try {
+        return new Uint8Array(await crypto.subtle.decrypt({
+            additionalData: aad,
+            iv,
+            name: 'AES-GCM',
+            tagLength: 128,
+        }, encKey, concat(ciphertext, tag)));
+    } catch (_a) {
+        throw new JWEDecryptionFailed();
+    }
+}
+
+const decrypt = async (enc, cek, ciphertext, iv, tag, aad) => {
+    if (!crypto.isCryptoKey(cek) && !(cek instanceof Uint8Array)) {
+        throw new TypeError(invalidKeyInput(cek, 'CryptoKey', 'Uint8Array'));
+    }
+    checkIvLength(enc, iv);
+    switch (enc) {
+        case 'A128CBC-HS256':
+        case 'A192CBC-HS384':
+        case 'A256CBC-HS512':
+            if (cek instanceof Uint8Array)
+                checkCekLength(cek, parseInt(enc.substr(-3), 10));
+            return cbcDecrypt(enc, cek, ciphertext, iv, tag, aad);
+        case 'A128GCM':
+        case 'A192GCM':
+        case 'A256GCM':
+            if (cek instanceof Uint8Array)
+                checkCekLength(cek, parseInt(enc.substr(1, 3), 10));
+            return gcmDecrypt(enc, cek, ciphertext, iv, tag, aad);
+        default:
+            throw new JOSENotSupported('Unsupported JWE Content Encryption Algorithm');
+    }
+};
+module.exports = decrypt;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/buffer_utils.js","../lib/check_iv_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/check_iv_length.js","../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./check_cek_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/check_cek_length.js","./timing_safe_equal.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/timing_safe_equal.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/digest.js":[function(require,module,exports){
+const crypto = require('./webcrypto.js');
+const digest = async (algorithm, data) => {
+    const subtleDigest = `SHA-${algorithm.substr(-3)}`;
+    return new Uint8Array(await crypto.subtle.digest(subtleDigest, data));
+};
+module.exports = digest;
+
+},{"./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/ecdhes.js":[function(require,module,exports){
+const { concat, uint32be, lengthAndInput, concatKdf} = require('../lib/buffer_utils.js');
+const crypto = require('./webcrypto.js');
+const {checkEncCryptoKey} = require('../lib/crypto_key.js');
+const digest = require('./digest.js');
+const invalidKeyInput = require('../lib/invalid_key_input.js');
+ const deriveKey = async (publicKey, privateKey, algorithm, keyLength, apu = new Uint8Array(0), apv = new Uint8Array(0)) => {
+    if (!crypto.isCryptoKey(publicKey)) {
+        throw new TypeError(invalidKeyInput(publicKey, 'CryptoKey'));
+    }
+    checkEncCryptoKey(publicKey, 'ECDH-ES');
+    if (!crypto.isCryptoKey(privateKey)) {
+        throw new TypeError(invalidKeyInput(privateKey, 'CryptoKey'));
+    }
+    checkEncCryptoKey(privateKey, 'ECDH-ES', 'deriveBits', 'deriveKey');
+    const value = concat(lengthAndInput($$.Buffer.from(algorithm)), lengthAndInput(apu), lengthAndInput(apv), uint32be(keyLength));
+    if (!privateKey.usages.includes('deriveBits')) {
+        throw new TypeError('ECDH-ES private key "usages" must include "deriveBits"');
+    }
+    const sharedSecret = new Uint8Array(await crypto.subtle.deriveBits({
+        name: 'ECDH',
+        public: publicKey,
+    }, privateKey, Math.ceil(parseInt(privateKey.algorithm.namedCurve.substr(-3), 10) / 8) <<
+        3));
+    return concatKdf(digest, sharedSecret, keyLength, value);
+};
+ const generateEpk = async (key) => {
+    if (!crypto.isCryptoKey(key)) {
+        throw new TypeError(invalidKeyInput(key, 'CryptoKey'));
+    }
+    return (await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: key.algorithm.namedCurve }, true, ['deriveBits'])).privateKey;
+};
+ const ecdhAllowed = (key) => {
+    if (!crypto.isCryptoKey(key)) {
+        throw new TypeError(invalidKeyInput(key, 'CryptoKey'));
+    }
+    return ['P-256', 'P-384', 'P-521'].includes(key.algorithm.namedCurve);
+};
+
+module.exports = {
+    deriveKey,
+    generateEpk,
+    ecdhAllowed
+}
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/buffer_utils.js","../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js","./digest.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/digest.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/encrypt.js":[function(require,module,exports){
+const {concat, uint64be} = require('../lib/buffer_utils.js');
+const checkIvLength = require('../lib/check_iv_length.js');
+const checkCekLength = require('./check_cek_length.js');
+const crypto = require('./webcrypto.js');
+const {checkEncCryptoKey} = require('../lib/crypto_key.js');
+const invalidKeyInput = require('../lib/invalid_key_input.js');
+const {JOSENotSupported} = require('../util/errors.js');
+
+async function cbcEncrypt(enc, plaintext, cek, iv, aad) {
+    if (!(cek instanceof Uint8Array)) {
+        throw new TypeError(invalidKeyInput(cek, 'Uint8Array'));
+    }
+    const keySize = parseInt(enc.substr(1, 3), 10);
+    const encKey = await crypto.subtle.importKey('raw', cek.subarray(keySize >> 3), 'AES-CBC', false, ['encrypt']);
+    const macKey = await crypto.subtle.importKey('raw', cek.subarray(0, keySize >> 3), {
+        hash: `SHA-${keySize << 1}`,
+        name: 'HMAC',
+    }, false, ['sign']);
+    const ciphertext = new Uint8Array(await crypto.subtle.encrypt({
+        iv,
+        name: 'AES-CBC',
+    }, encKey, plaintext));
+    const macData = concat(aad, iv, ciphertext, uint64be(aad.length << 3));
+    const tag = new Uint8Array((await crypto.subtle.sign('HMAC', macKey, macData)).slice(0, keySize >> 3));
+    return {ciphertext, tag};
+}
+
+async function gcmEncrypt(enc, plaintext, cek, iv, aad) {
+    let encKey;
+    if (cek instanceof Uint8Array) {
+        encKey = await crypto.subtle.importKey('raw', cek, 'AES-GCM', false, ['encrypt']);
+    } else {
+        checkEncCryptoKey(cek, enc, 'encrypt');
+        encKey = cek;
+    }
+    const encrypted = new Uint8Array(await crypto.subtle.encrypt({
+        additionalData: aad,
+        iv,
+        name: 'AES-GCM',
+        tagLength: 128,
+    }, encKey, plaintext));
+    const tag = encrypted.slice(-16);
+    const ciphertext = encrypted.slice(0, -16);
+    return {ciphertext, tag};
+}
+
+const encrypt = async (enc, plaintext, cek, iv, aad) => {
+    if (!crypto.isCryptoKey(cek) && !(cek instanceof Uint8Array)) {
+        throw new TypeError(invalidKeyInput(cek, 'CryptoKey', 'Uint8Array'));
+    }
+    checkIvLength(enc, iv);
+    switch (enc) {
+        case 'A128CBC-HS256':
+        case 'A192CBC-HS384':
+        case 'A256CBC-HS512':
+            if (cek instanceof Uint8Array)
+                checkCekLength(cek, parseInt(enc.substr(-3), 10));
+            return cbcEncrypt(enc, plaintext, cek, iv, aad);
+        case 'A128GCM':
+        case 'A192GCM':
+        case 'A256GCM':
+            if (cek instanceof Uint8Array)
+                checkCekLength(cek, parseInt(enc.substr(1, 3), 10));
+            return gcmEncrypt(enc, plaintext, cek, iv, aad);
+        default:
+            throw new JOSENotSupported('Unsupported JWE Content Encryption Algorithm');
+    }
+};
+module.exports = encrypt;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/buffer_utils.js","../lib/check_iv_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/check_iv_length.js","../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./check_cek_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/check_cek_length.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/fetch_jwks.js":[function(require,module,exports){
+const {JOSEError, JWKSTimeout} = require('../util/errors.js');
+const globalThis = require('./global.js');
+const http = require("opendsu").loadAPI("http");
+const fetchJwks = async (url, timeout) => {
+    let controller;
+    let id;
+    let timedOut = false;
+    if (typeof AbortController === 'function') {
+        controller = new AbortController();
+        id = setTimeout(() => {
+            timedOut = true;
+            controller.abort();
+        }, timeout);
+    }
+    const response = await http
+        .fetch(url.href, {
+            signal: controller ? controller.signal : undefined,
+            redirect: 'manual',
+            method: 'GET',
+            ...(!globalThis.isCloudflareWorkers()
+                ? {
+                    referrerPolicy: 'no-referrer',
+                    credentials: 'omit',
+                    mode: 'cors',
+                }
+                : undefined),
+        })
+        .catch((err) => {
+            if (timedOut)
+                throw new JWKSTimeout();
+            throw err;
+        });
+    if (id !== undefined)
+        clearTimeout(id);
+    if (response.statusCode !== 200) {
+        throw new JOSEError('Expected 200 OK = require( the JSON Web Key Set HTTP response');
+    }
+    try {
+        return await response.json();
+    } catch (_a) {
+        throw new JOSEError('Failed to parse the JSON Web Key Set HTTP response:JSON');
+    }
+};
+module.exports = fetchJwks;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./global.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/global.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/generate.js":[function(require,module,exports){
+const {isCloudflareWorkers, isNodeJs} = require('./global.js');
+const webcrypto = require('./webcrypto.js');
+const {JOSENotSupported} = require('../util/errors.js');
+const crypto = require("crypto");
+async function generateSecret(alg, options) {
+    var _a;
+    let length;
+    let algorithm;
+    let keyUsages;
+    switch (alg) {
+        case 'HS256':
+        case 'HS384':
+        case 'HS512':
+            length = parseInt(alg.substr(-3), 10);
+            algorithm = {name: 'HMAC', hash: `SHA-${length}`, length};
+            keyUsages = ['sign', 'verify'];
+            break;
+        case 'A128CBC-HS256':
+        case 'A192CBC-HS384':
+        case 'A256CBC-HS512':
+            length = parseInt(alg.substr(-3), 10);
+            return crypto.randomBytes(length >> 3);
+        case 'A128KW':
+        case 'A192KW':
+        case 'A256KW':
+            length = parseInt(alg.substring(1, 4), 10);
+            algorithm = {name: 'AES-KW', length};
+            keyUsages = ['wrapKey', 'unwrapKey'];
+            break;
+        case 'A128GCMKW':
+        case 'A192GCMKW':
+        case 'A256GCMKW':
+        case 'A128GCM':
+        case 'A192GCM':
+        case 'A256GCM':
+            length = parseInt(alg.substring(1, 4), 10);
+            algorithm = {name: 'AES-GCM', length};
+            keyUsages = ['encrypt', 'decrypt'];
+            break;
+        default:
+            throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
+    }
+    return webcrypto.subtle.generateKey(algorithm, (_a = options === null || options === void 0 ? void 0 : options.extractable) !== null && _a !== void 0 ? _a : false, keyUsages);
+}
+
+function getModulusLengthOption(options) {
+    var _a;
+    const modulusLength = (_a = options === null || options === void 0 ? void 0 : options.modulusLength) !== null && _a !== void 0 ? _a : 2048;
+    if (typeof modulusLength !== 'number' || modulusLength < 2048) {
+        throw new JOSENotSupported('Invalid or unsupported modulusLength option provided, 2048 bits or larger keys must be used');
+    }
+    return modulusLength;
+}
+
+async function generateKeyPair(alg, options) {
+    var _a, _b;
+    let algorithm;
+    let keyUsages;
+    switch (alg) {
+        case 'PS256':
+        case 'PS384':
+        case 'PS512':
+            algorithm = {
+                name: 'RSA-PSS',
+                hash: `SHA-${alg.substr(-3)}`,
+                publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+                modulusLength: getModulusLengthOption(options),
+            };
+            keyUsages = ['sign', 'verify'];
+            break;
+        case 'RS256':
+        case 'RS384':
+        case 'RS512':
+            algorithm = {
+                name: 'RSASSA-PKCS1-v1_5',
+                hash: `SHA-${alg.substr(-3)}`,
+                publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+                modulusLength: getModulusLengthOption(options),
+            };
+            keyUsages = ['sign', 'verify'];
+            break;
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512':
+            algorithm = {
+                name: 'RSA-OAEP',
+                hash: `SHA-${parseInt(alg.substr(-3), 10) || 1}`,
+                publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+                modulusLength: getModulusLengthOption(options),
+            };
+            keyUsages = ['decrypt', 'unwrapKey', 'encrypt', 'wrapKey'];
+            break;
+        case 'ES256':
+            algorithm = {name: 'ECDSA', namedCurve: 'P-256'};
+            keyUsages = ['sign', 'verify'];
+            break;
+        case 'ES384':
+            algorithm = {name: 'ECDSA', namedCurve: 'P-384'};
+            keyUsages = ['sign', 'verify'];
+            break;
+        case 'ES512':
+            algorithm = {name: 'ECDSA', namedCurve: 'P-521'};
+            keyUsages = ['sign', 'verify'];
+            break;
+        case (isCloudflareWorkers() || isNodeJs()) && 'EdDSA':
+            switch (options === null || options === void 0 ? void 0 : options.crv) {
+                case undefined:
+                case 'Ed25519':
+                    algorithm = {name: 'NODE-ED25519', namedCurve: 'NODE-ED25519'};
+                    keyUsages = ['sign', 'verify'];
+                    break;
+                case isNodeJs() && 'Ed448':
+                    algorithm = {name: 'NODE-ED448', namedCurve: 'NODE-ED448'};
+                    keyUsages = ['sign', 'verify'];
+                    break;
+                default:
+                    throw new JOSENotSupported('Invalid or unsupported crv option provided, supported values are Ed25519 and Ed448');
+            }
+            break;
+        case 'ECDH-ES':
+        case 'ECDH-ES+A128KW':
+        case 'ECDH-ES+A192KW':
+        case 'ECDH-ES+A256KW':
+            algorithm = {
+                name: 'ECDH',
+                namedCurve: (_a = options === null || options === void 0 ? void 0 : options.crv) !== null && _a !== void 0 ? _a : 'P-256'
+            };
+            keyUsages = ['deriveKey', 'deriveBits'];
+            break;
+        default:
+            throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
+    }
+    return (webcrypto.subtle.generateKey(algorithm, (_b = options === null || options === void 0 ? void 0 : options.extractable) !== null && _b !== void 0 ? _b : false, keyUsages));
+}
+
+module.exports = {
+    generateSecret,
+    generateKeyPair
+}
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./global.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/global.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/get_sign_verify_key.js":[function(require,module,exports){
+const crypto = require('./webcrypto.js');
+const {checkSigCryptoKey} = require('../lib/crypto_key.js');
+const invalidKeyInput = require('../lib/invalid_key_input.js');
+module.exports = function getCryptoKey(alg, key, usage) {
+    if (crypto.isCryptoKey(key)) {
+        checkSigCryptoKey(key, alg, usage);
+        return key;
+    }
+    if (key instanceof Uint8Array) {
+        if (!alg.startsWith('HS')) {
+            throw new TypeError(invalidKeyInput(key, 'CryptoKey'));
+        }
+        return crypto.subtle.importKey('raw', key, {hash: `SHA-${alg.substr(-3)}`, name: 'HMAC'}, false, [usage]);
+    }
+    throw new TypeError(invalidKeyInput(key, 'CryptoKey', 'Uint8Array'));
+}
+
+},{"../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/global.js":[function(require,module,exports){
+function getGlobal() {
+    if (typeof globalThis !== 'undefined')
+        return globalThis;
+    if (typeof self !== 'undefined')
+        return self;
+    if (typeof window !== 'undefined')
+        return window;
+    throw new Error('unable to locate global object');
+}
+
+module.exports = getGlobal();
+module.exports.isCloudflareWorkers = function isCloudflareWorkers() {
+    try {
+        return getGlobal().WebSocketPair !== undefined;
+    } catch (_a) {
+        return false;
+    }
+}
+module.exports.isNodeJs = function isNodeJs() {
+    var _a, _b;
+    try {
+        return ((_b = (_a = getGlobal().process) === null || _a === void 0 ? void 0 : _a.versions) === null || _b === void 0 ? void 0 : _b.node) !== undefined;
+    } catch (_c) {
+        return false;
+    }
+}
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/is_key_like.js":[function(require,module,exports){
+const {isCryptoKey} = require('./webcrypto.js');
+module.exports = (key) => {
+    return isCryptoKey(key);
+};
+module.exports.types = ['CryptoKey'];
+
+},{"./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/jwk_to_key.js":[function(require,module,exports){
+const {isCloudflareWorkers, isNodeJs} = require('./global.js');
+const crypto = require('./webcrypto.js');
+const {JOSENotSupported} = require('../util/errors.js');
+const {decode: base64url} = require('./base64url.js');
+function subtleMapping(jwk) {
+    let algorithm;
+    let keyUsages;
+    switch (jwk.kty) {
+        case 'oct': {
+            switch (jwk.alg) {
+                case 'HS256':
+                case 'HS384':
+                case 'HS512':
+                    algorithm = { name: 'HMAC', hash: `SHA-${jwk.alg.substr(-3)}` };
+                    keyUsages = ['sign', 'verify'];
+                    break;
+                case 'A128CBC-HS256':
+                case 'A192CBC-HS384':
+                case 'A256CBC-HS512':
+                    throw new JOSENotSupported(`${jwk.alg} keys cannot be imported:CryptoKey instances`);
+                case 'A128GCM':
+                case 'A192GCM':
+                case 'A256GCM':
+                case 'A128GCMKW':
+                case 'A192GCMKW':
+                case 'A256GCMKW':
+                    algorithm = { name: 'AES-GCM' };
+                    keyUsages = ['encrypt', 'decrypt'];
+                    break;
+                case 'A128KW':
+                case 'A192KW':
+                case 'A256KW':
+                    algorithm = { name: 'AES-KW' };
+                    keyUsages = ['wrapKey', 'unwrapKey'];
+                    break;
+                case 'PBES2-HS256+A128KW':
+                case 'PBES2-HS384+A192KW':
+                case 'PBES2-HS512+A256KW':
+                    algorithm = { name: 'PBKDF2' };
+                    keyUsages = ['deriveBits'];
+                    break;
+                default:
+                    throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
+            }
+            break;
+        }
+        case 'RSA': {
+            switch (jwk.alg) {
+                case 'PS256':
+                case 'PS384':
+                case 'PS512':
+                    algorithm = { name: 'RSA-PSS', hash: `SHA-${jwk.alg.substr(-3)}` };
+                    keyUsages = jwk.d ? ['sign'] : ['verify'];
+                    break;
+                case 'RS256':
+                case 'RS384':
+                case 'RS512':
+                    algorithm = { name: 'RSASSA-PKCS1-v1_5', hash: `SHA-${jwk.alg.substr(-3)}` };
+                    keyUsages = jwk.d ? ['sign'] : ['verify'];
+                    break;
+                case 'RSA-OAEP':
+                case 'RSA-OAEP-256':
+                case 'RSA-OAEP-384':
+                case 'RSA-OAEP-512':
+                    algorithm = {
+                        name: 'RSA-OAEP',
+                        hash: `SHA-${parseInt(jwk.alg.substr(-3), 10) || 1}`,
+                    };
+                    keyUsages = jwk.d ? ['decrypt', 'unwrapKey'] : ['encrypt', 'wrapKey'];
+                    break;
+                default:
+                    throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
+            }
+            break;
+        }
+        case 'EC': {
+            switch (jwk.alg) {
+                case 'ES256':
+                    algorithm = { name: 'ECDSA', namedCurve: 'P-256' };
+                    keyUsages = jwk.d ? ['sign'] : ['verify'];
+                    break;
+                case 'ES384':
+                    algorithm = { name: 'ECDSA', namedCurve: 'P-384' };
+                    keyUsages = jwk.d ? ['sign'] : ['verify'];
+                    break;
+                case 'ES512':
+                    algorithm = { name: 'ECDSA', namedCurve: 'P-521' };
+                    keyUsages = jwk.d ? ['sign'] : ['verify'];
+                    break;
+                case 'ECDH-ES':
+                case 'ECDH-ES+A128KW':
+                case 'ECDH-ES+A192KW':
+                case 'ECDH-ES+A256KW':
+                    algorithm = { name: 'ECDH', namedCurve: jwk.crv };
+                    keyUsages = jwk.d ? ['deriveBits'] : [];
+                    break;
+                default:
+                    throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
+            }
+            break;
+        }
+        case (isCloudflareWorkers() || isNodeJs()) && 'OKP':
+            if (jwk.alg !== 'EdDSA') {
+                throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
+            }
+            switch (jwk.crv) {
+                case 'Ed25519':
+                    algorithm = { name: 'NODE-ED25519', namedCurve: 'NODE-ED25519' };
+                    keyUsages = jwk.d ? ['sign'] : ['verify'];
+                    break;
+                case isNodeJs() && 'Ed448':
+                    algorithm = { name: 'NODE-ED448', namedCurve: 'NODE-ED448' };
+                    keyUsages = jwk.d ? ['sign'] : ['verify'];
+                    break;
+                default:
+                    throw new JOSENotSupported('Invalid or unsupported JWK "crv" (Subtype of Key Pair) Parameter value');
+            }
+            break;
+        default:
+            throw new JOSENotSupported('Invalid or unsupported JWK "kty" (Key Type) Parameter value');
+    }
+    return { algorithm, keyUsages };
+}
+const parse = async (jwk) => {
+    var _a, _b;
+    const { algorithm, keyUsages } = subtleMapping(jwk);
+    const rest = [
+        algorithm,
+        (_a = jwk.ext) !== null && _a !== void 0 ? _a : false,
+        (_b = jwk.key_ops) !== null && _b !== void 0 ? _b : keyUsages,
+    ];
+    if (algorithm.name === 'PBKDF2') {
+        return crypto.subtle.importKey('raw', base64url(jwk.k), ...rest);
+    }
+    const keyData = { ...jwk };
+    delete keyData.alg;
+    return crypto.subtle.importKey('jwk', keyData, ...rest);
+};
+module.exports = parse;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","./global.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/global.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/key_to_jwk.js":[function(require,module,exports){
+const crypto = require('./webcrypto.js');
+const invalidKeyInput = require('../lib/invalid_key_input.js');
+const {encode: base64url} = require('./base64url.js');
+const keyToJWK = async (key) => {
+    if (key instanceof Uint8Array) {
+        return {
+            kty: 'oct',
+            k: base64url(key),
+        };
+    }
+    if (!crypto.isCryptoKey(key)) {
+        throw new TypeError(invalidKeyInput(key, 'CryptoKey', 'Uint8Array'));
+    }
+    if (!key.extractable) {
+        throw new TypeError('non-extractable CryptoKey cannot be exported:a JWK');
+    }
+    const {...jwk } = await crypto.subtle.exportKey('jwk', key);
+    return jwk;
+};
+module.exports = keyToJWK;
+
+},{"../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js","./base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/pbes2kw.js":[function(require,module,exports){
+const {p2s: concatSalt} = require('../lib/buffer_utils.js');
+const {encode: base64url} = require('./base64url.js');
+const {wrap, unwrap} = require('./aeskw.js');
+const checkP2s = require('../lib/check_p2s.js');
+const webcrypto = require('./webcrypto.js');
+const crypto = require("crypto");
+const {checkEncCryptoKey} = require('../lib/crypto_key.js');
+const invalidKeyInput = require('../lib/invalid_key_input.js');
+
+function getCryptoKey(key, alg) {
+    if (key instanceof Uint8Array) {
+        return webcrypto.subtle.importKey('raw', key, 'PBKDF2', false, ['deriveBits']);
+    }
+    if (webcrypto.isCryptoKey(key)) {
+        checkEncCryptoKey(key, alg, 'deriveBits', 'deriveKey');
+        return key;
+    }
+    throw new TypeError(invalidKeyInput(key, 'CryptoKey', 'Uint8Array'));
+}
+
+async function deriveKey(p2s, alg, p2c, key) {
+    checkP2s(p2s);
+    const salt = concatSalt(alg, p2s);
+    const keylen = parseInt(alg.substr(13, 3), 10);
+    const subtleAlg = {
+        hash: `SHA-${alg.substr(8, 3)}`,
+        iterations: p2c,
+        name: 'PBKDF2',
+        salt,
+    };
+    const wrapAlg = {
+        length: keylen,
+        name: 'AES-KW',
+    };
+    const cryptoKey = await getCryptoKey(key, alg);
+    if (cryptoKey.usages.includes('deriveBits')) {
+        return new Uint8Array(await webcrypto.subtle.deriveBits(subtleAlg, cryptoKey, keylen));
+    }
+    if (cryptoKey.usages.includes('deriveKey')) {
+        return webcrypto.subtle.deriveKey(subtleAlg, cryptoKey, wrapAlg, false, ['wrapKey', 'unwrapKey']);
+    }
+    throw new TypeError('PBKDF2 key "usages" must include "deriveBits" or "deriveKey"');
+}
+
+const encrypt = async (alg, key, cek, p2c = Math.floor(Math.random() * 2049) + 2048, p2s = crypto.randomBytes(16)) => {
+    const derived = await deriveKey(p2s, alg, p2c, key);
+    const encryptedKey = await wrap(alg.substr(-6), derived, cek);
+    return {encryptedKey, p2c, p2s: base64url(p2s)};
+};
+const decrypt = async (alg, key, encryptedKey, p2c, p2s) => {
+    const derived = await deriveKey(p2s, alg, p2c, key);
+    return unwrap(alg.substr(-6), derived, encryptedKey);
+};
+
+module.exports = {
+    encrypt,
+    decrypt
+}
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/buffer_utils.js","../lib/check_p2s.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/check_p2s.js","../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js","./aeskw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/aeskw.js","./base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/rsaes.js":[function(require,module,exports){
+const subtleAlgorithm = require('./subtle_rsaes.js');
+const bogusWebCrypto = require('./bogus.js');
+const crypto = require('./webcrypto.js');
+const {checkEncCryptoKey} = require('../lib/crypto_key.js');
+const checkKeyLength = require('./check_key_length.js');
+const invalidKeyInput = require('../lib/invalid_key_input.js');
+const encrypt = async (alg, key, cek) => {
+    if (!crypto.isCryptoKey(key)) {
+        throw new TypeError(invalidKeyInput(key, 'CryptoKey'));
+    }
+    checkEncCryptoKey(key, alg, 'encrypt', 'wrapKey');
+    checkKeyLength(alg, key);
+    if (key.usages.includes('encrypt')) {
+        return new Uint8Array(await crypto.subtle.encrypt(subtleAlgorithm(alg), key, cek));
+    }
+    if (key.usages.includes('wrapKey')) {
+        const cryptoKeyCek = await crypto.subtle.importKey('raw', cek, ...bogusWebCrypto);
+        return new Uint8Array(await crypto.subtle.wrapKey('raw', cryptoKeyCek, key, subtleAlgorithm(alg)));
+    }
+    throw new TypeError('RSA-OAEP key "usages" must include "encrypt" or "wrapKey" for this operation');
+};
+const decrypt = async (alg, key, encryptedKey) => {
+    if (!crypto.isCryptoKey(key)) {
+        throw new TypeError(invalidKeyInput(key, 'CryptoKey'));
+    }
+    checkEncCryptoKey(key, alg, 'decrypt', 'unwrapKey');
+    checkKeyLength(alg, key);
+    if (key.usages.includes('decrypt')) {
+        return new Uint8Array(await crypto.subtle.decrypt(subtleAlgorithm(alg), key, encryptedKey));
+    }
+    if (key.usages.includes('unwrapKey')) {
+        const cryptoKeyCek = await crypto.subtle.unwrapKey('raw', encryptedKey, key, subtleAlgorithm(alg), ...bogusWebCrypto);
+        return new Uint8Array(await crypto.subtle.exportKey('raw', cryptoKeyCek));
+    }
+    throw new TypeError('RSA-OAEP key "usages" must include "decrypt" or "unwrapKey" for this operation');
+};
+
+module.exports = {
+    encrypt,
+    decrypt
+}
+},{"../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/invalid_key_input.js","./bogus.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/bogus.js","./check_key_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/check_key_length.js","./subtle_rsaes.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/subtle_rsaes.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/sign.js":[function(require,module,exports){
+const subtleAlgorithm = require('./subtle_dsa.js');
+const crypto = require('./webcrypto.js');
+const checkKeyLength = require('./check_key_length.js');
+const getSignKey = require('./get_sign_verify_key.js');
+const sign = async (alg, key, data) => {
+    const cryptoKey = await getSignKey(alg, key, 'sign');
+    checkKeyLength(alg, cryptoKey);
+    const signature = await crypto.subtle.sign(subtleAlgorithm(alg, cryptoKey.algorithm.namedCurve), cryptoKey, data);
+    return new Uint8Array(signature);
+};
+module.exports = sign;
+
+},{"./check_key_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/check_key_length.js","./get_sign_verify_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/get_sign_verify_key.js","./subtle_dsa.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/subtle_dsa.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/subtle_dsa.js":[function(require,module,exports){
+const {isCloudflareWorkers, isNodeJs} = require('./global.js');
+const {JOSENotSupported} = require('../util/errors.js');
+module.exports = function subtleDsa(alg, namedCurve) {
+    const length = parseInt(alg.substr(-3), 10);
+    switch (alg) {
+        case 'HS256':
+        case 'HS384':
+        case 'HS512':
+            return { hash: `SHA-${length}`, name: 'HMAC' };
+        case 'PS256':
+        case 'PS384':
+        case 'PS512':
+            return { hash: `SHA-${length}`, name: 'RSA-PSS', saltLength: length >> 3 };
+        case 'RS256':
+        case 'RS384':
+        case 'RS512':
+            return { hash: `SHA-${length}`, name: 'RSASSA-PKCS1-v1_5' };
+        case 'ES256':
+        case 'ES384':
+        case 'ES512':
+            return { hash: `SHA-${length}`, name: 'ECDSA', namedCurve };
+        case (isCloudflareWorkers() || isNodeJs()) && 'EdDSA':
+            return { name: namedCurve, namedCurve };
+        default:
+            throw new JOSENotSupported(`alg ${alg} is not supported either by JOSE or your javascript runtime`);
+    }
+}
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js","./global.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/global.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/subtle_rsaes.js":[function(require,module,exports){
+const {JOSENotSupported} = require('../util/errors.js');
+module.exports = function subtleRsaEs(alg) {
+    switch (alg) {
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512':
+            return 'RSA-OAEP';
+        default:
+            throw new JOSENotSupported(`alg ${alg} is not supported either by JOSE or your javascript runtime`);
+    }
+}
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/timing_safe_equal.js":[function(require,module,exports){
+const timingSafeEqual = (a, b) => {
+    if (!(a instanceof Uint8Array)) {
+        throw new TypeError('First argument must be a buffer');
+    }
+    if (!(b instanceof Uint8Array)) {
+        throw new TypeError('Second argument must be a buffer');
+    }
+    if (a.length !== b.length) {
+        throw new TypeError('Input buffers must have the same length');
+    }
+    const len = a.length;
+    let out = 0;
+    let i = -1;
+    while (++i < len) {
+        out |= a[i] ^ b[i];
+    }
+    return out === 0;
+};
+module.exports = timingSafeEqual;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/verify.js":[function(require,module,exports){
+const subtleAlgorithm = require('./subtle_dsa.js');
+const crypto = require('./webcrypto.js');
+const checkKeyLength = require('./check_key_length.js');
+const getVerifyKey = require('./get_sign_verify_key.js');
+const verify = async (alg, key, signature, data) => {
+    const cryptoKey = await getVerifyKey(alg, key, 'verify');
+    checkKeyLength(alg, cryptoKey);
+    const algorithm = subtleAlgorithm(alg, cryptoKey.algorithm.namedCurve);
+    try {
+        return await crypto.subtle.verify(algorithm, cryptoKey, signature, data);
+    }
+    catch (_a) {
+        return false;
+    }
+};
+module.exports = verify;
+
+},{"./check_key_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/check_key_length.js","./get_sign_verify_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/get_sign_verify_key.js","./subtle_dsa.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/subtle_dsa.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/webcrypto.js":[function(require,module,exports){
+let globalThis = require('./global.js');
+const isNodeJs = globalThis.isNodeJs();
+globalThis = isNodeJs ? require("crypto").webcrypto : globalThis;
+module.exports = isNodeJs ? globalThis : globalThis.crypto;
+module.exports.isCryptoKey = function isCryptoKey(key) {
+    if (typeof globalThis.CryptoKey === 'undefined') {
+        return false;
+    }
+    return key != null && key instanceof globalThis.CryptoKey;
+}
+
+},{"./global.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/global.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/zlib.js":[function(require,module,exports){
+const {JOSENotSupported} = require('../util/errors.js');
+const inflate = async () => {
+    throw new JOSENotSupported('JWE "zip" (Compression Algorithm) Header Parameter is not supported by your javascript runtime. You need to use the `inflateRaw` decrypt option to provide Inflate Raw implementation.');
+};
+const deflate = async () => {
+    throw new JOSENotSupported('JWE "zip" (Compression Algorithm) Header Parameter is not supported by your javascript runtime. You need to use the `deflateRaw` encrypt option to provide Deflate Raw implementation.');
+};
+
+module.exports = {
+    inflate,
+    deflate
+}
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/base64url.js":[function(require,module,exports){
+const base64url = require('../runtime/base64url.js');
+const encode = base64url.encode;
+const decode = base64url.decode;
+module.exports = {
+    encode,
+    decode
+}
+},{"../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/runtime/base64url.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/decode_protected_header.js":[function(require,module,exports){
+const {decode: base64url} = require('./base64url.js');
+const isObject = require('../lib/is_object.js');
+module.exports.decodeProtectedHeader = function decodeProtectedHeader(token) {
+    let protectedB64u;
+    if (typeof token === 'string') {
+        const parts = token.split('.');
+        if (parts.length === 3 || parts.length === 5) {
+            
+            [protectedB64u] = parts;
+        }
+    } else if (typeof token === 'object' && token) {
+        if ('protected' in token) {
+            protectedB64u = token.protected;
+        } else {
+            throw new TypeError('Token does not contain a Protected Header');
+        }
+    }
+    try {
+        if (typeof protectedB64u !== 'string' || !protectedB64u) {
+            throw new Error();
+        }
+        const result = JSON.parse(base64url(protectedB64u).toString());
+        if (!isObject(result)) {
+            throw new Error();
+        }
+        return result;
+    } catch (_a) {
+        throw new TypeError('Invalid Token or Protected Header formatting');
+    }
+}
+
+},{"../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/lib/is_object.js","./base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/base64url.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/util/errors.js":[function(require,module,exports){
+ class JOSEError extends Error {
+    constructor(message) {
+        var _a;
+        super(message);
+        this.code = 'ERR_JOSE_GENERIC';
+        this.name = this.constructor.name;
+        (_a = Error.captureStackTrace) === null || _a === void 0 ? void 0 : _a.call(Error, this, this.constructor);
+    }
+
+    static get code() {
+        return 'ERR_JOSE_GENERIC';
+    }
+}
+
+ class JWTClaimValidationFailed extends JOSEError {
+    constructor(message, claim = 'unspecified', reason = 'unspecified') {
+        super(message);
+        this.code = 'ERR_JWT_CLAIM_VALIDATION_FAILED';
+        this.claim = claim;
+        this.reason = reason;
+    }
+
+    static get code() {
+        return 'ERR_JWT_CLAIM_VALIDATION_FAILED';
+    }
+}
+
+ class JWTExpired extends JOSEError {
+    constructor(message, claim = 'unspecified', reason = 'unspecified') {
+        super(message);
+        this.code = 'ERR_JWT_EXPIRED';
+        this.claim = claim;
+        this.reason = reason;
+    }
+
+    static get code() {
+        return 'ERR_JWT_EXPIRED';
+    }
+}
+
+ class JOSEAlgNotAllowed extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JOSE_ALG_NOT_ALLOWED';
+    }
+
+    static get code() {
+        return 'ERR_JOSE_ALG_NOT_ALLOWED';
+    }
+}
+
+ class JOSENotSupported extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JOSE_NOT_SUPPORTED';
+    }
+
+    static get code() {
+        return 'ERR_JOSE_NOT_SUPPORTED';
+    }
+}
+
+ class JWEDecryptionFailed extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWE_DECRYPTION_FAILED';
+        this.message = 'decryption operation failed';
+    }
+
+    static get code() {
+        return 'ERR_JWE_DECRYPTION_FAILED';
+    }
+}
+
+ class JWEInvalid extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWE_INVALID';
+    }
+
+    static get code() {
+        return 'ERR_JWE_INVALID';
+    }
+}
+
+ class JWSInvalid extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWS_INVALID';
+    }
+
+    static get code() {
+        return 'ERR_JWS_INVALID';
+    }
+}
+
+ class JWTInvalid extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWT_INVALID';
+    }
+
+    static get code() {
+        return 'ERR_JWT_INVALID';
+    }
+}
+
+ class JWKInvalid extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWK_INVALID';
+    }
+
+    static get code() {
+        return 'ERR_JWK_INVALID';
+    }
+}
+
+ class JWKSInvalid extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWKS_INVALID';
+    }
+
+    static get code() {
+        return 'ERR_JWKS_INVALID';
+    }
+}
+
+ class JWKSNoMatchingKey extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWKS_NO_MATCHING_KEY';
+        this.message = 'no applicable key found in the JSON Web Key Set';
+    }
+
+    static get code() {
+        return 'ERR_JWKS_NO_MATCHING_KEY';
+    }
+}
+
+ class JWKSMultipleMatchingKeys extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWKS_MULTIPLE_MATCHING_KEYS';
+        this.message = 'multiple matching keys found in the JSON Web Key Set';
+    }
+
+    static get code() {
+        return 'ERR_JWKS_MULTIPLE_MATCHING_KEYS';
+    }
+}
+
+ class JWKSTimeout extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWKS_TIMEOUT';
+        this.message = 'request timed out';
+    }
+
+    static get code() {
+        return 'ERR_JWKS_TIMEOUT';
+    }
+}
+
+ class JWSSignatureVerificationFailed extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED';
+        this.message = 'signature verification failed';
+    }
+
+    static get code() {
+        return 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED';
+    }
+}
+
+module.exports = {
+    JOSEError,
+    JWTClaimValidationFailed,
+    JWTExpired,
+    JOSEAlgNotAllowed,
+    JOSENotSupported,
+    JWEDecryptionFailed,
+    JWEInvalid,
+    JWSInvalid,
+    JWTInvalid,
+    JWKInvalid,
+    JWKSInvalid,
+    JWKSNoMatchingKey,
+    JWKSMultipleMatchingKeys,
+    JWKSTimeout,
+    JWSSignatureVerificationFailed
+}
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/index.js":[function(require,module,exports){
+if ($$.environmentType === "browser") {
+    module.exports = require("./browser");
+} else {
+    module.exports = require("./node");
+}
+},{"./browser":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/browser/index.js","./node":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/index.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/index.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.base64url = exports.generateSecret = exports.generateKeyPair = exports.errors = exports.decodeProtectedHeader = exports.importJWK = exports.importX509 = exports.importPKCS8 = exports.importSPKI = exports.exportJWK = exports.exportSPKI = exports.exportPKCS8 = exports.UnsecuredJWT = exports.createRemoteJWKSet = exports.EmbeddedJWK = exports.calculateJwkThumbprint = exports.EncryptJWT = exports.SignJWT = exports.GeneralSign = exports.FlattenedSign = exports.CompactSign = exports.FlattenedEncrypt = exports.CompactEncrypt = exports.jwtDecrypt = exports.jwtVerify = exports.generalVerify = exports.flattenedVerify = exports.compactVerify = exports.generalDecrypt = exports.flattenedDecrypt = exports.compactDecrypt = void 0;
+var decrypt_js_1 = require("./jwe/compact/decrypt.js");
+Object.defineProperty(exports, "compactDecrypt", { enumerable: true, get: function () { return decrypt_js_1.compactDecrypt; } });
+var decrypt_js_2 = require("./jwe/flattened/decrypt.js");
+Object.defineProperty(exports, "flattenedDecrypt", { enumerable: true, get: function () { return decrypt_js_2.flattenedDecrypt; } });
+var decrypt_js_3 = require("./jwe/general/decrypt.js");
+Object.defineProperty(exports, "generalDecrypt", { enumerable: true, get: function () { return decrypt_js_3.generalDecrypt; } });
+var verify_js_1 = require("./jws/compact/verify.js");
+Object.defineProperty(exports, "compactVerify", { enumerable: true, get: function () { return verify_js_1.compactVerify; } });
+var verify_js_2 = require("./jws/flattened/verify.js");
+Object.defineProperty(exports, "flattenedVerify", { enumerable: true, get: function () { return verify_js_2.flattenedVerify; } });
+var verify_js_3 = require("./jws/general/verify.js");
+Object.defineProperty(exports, "generalVerify", { enumerable: true, get: function () { return verify_js_3.generalVerify; } });
+var verify_js_4 = require("./jwt/verify.js");
+Object.defineProperty(exports, "jwtVerify", { enumerable: true, get: function () { return verify_js_4.jwtVerify; } });
+var decrypt_js_4 = require("./jwt/decrypt.js");
+Object.defineProperty(exports, "jwtDecrypt", { enumerable: true, get: function () { return decrypt_js_4.jwtDecrypt; } });
+var encrypt_js_1 = require("./jwe/compact/encrypt.js");
+Object.defineProperty(exports, "CompactEncrypt", { enumerable: true, get: function () { return encrypt_js_1.CompactEncrypt; } });
+var encrypt_js_2 = require("./jwe/flattened/encrypt.js");
+Object.defineProperty(exports, "FlattenedEncrypt", { enumerable: true, get: function () { return encrypt_js_2.FlattenedEncrypt; } });
+var sign_js_1 = require("./jws/compact/sign.js");
+Object.defineProperty(exports, "CompactSign", { enumerable: true, get: function () { return sign_js_1.CompactSign; } });
+var sign_js_2 = require("./jws/flattened/sign.js");
+Object.defineProperty(exports, "FlattenedSign", { enumerable: true, get: function () { return sign_js_2.FlattenedSign; } });
+var sign_js_3 = require("./jws/general/sign.js");
+Object.defineProperty(exports, "GeneralSign", { enumerable: true, get: function () { return sign_js_3.GeneralSign; } });
+var sign_js_4 = require("./jwt/sign.js");
+Object.defineProperty(exports, "SignJWT", { enumerable: true, get: function () { return sign_js_4.SignJWT; } });
+var encrypt_js_3 = require("./jwt/encrypt.js");
+Object.defineProperty(exports, "EncryptJWT", { enumerable: true, get: function () { return encrypt_js_3.EncryptJWT; } });
+var thumbprint_js_1 = require("./jwk/thumbprint.js");
+Object.defineProperty(exports, "calculateJwkThumbprint", { enumerable: true, get: function () { return thumbprint_js_1.calculateJwkThumbprint; } });
+var embedded_js_1 = require("./jwk/embedded.js");
+Object.defineProperty(exports, "EmbeddedJWK", { enumerable: true, get: function () { return embedded_js_1.EmbeddedJWK; } });
+var remote_js_1 = require("./jwks/remote.js");
+Object.defineProperty(exports, "createRemoteJWKSet", { enumerable: true, get: function () { return remote_js_1.createRemoteJWKSet; } });
+var unsecured_js_1 = require("./jwt/unsecured.js");
+Object.defineProperty(exports, "UnsecuredJWT", { enumerable: true, get: function () { return unsecured_js_1.UnsecuredJWT; } });
+var export_js_1 = require("./key/export.js");
+Object.defineProperty(exports, "exportPKCS8", { enumerable: true, get: function () { return export_js_1.exportPKCS8; } });
+Object.defineProperty(exports, "exportSPKI", { enumerable: true, get: function () { return export_js_1.exportSPKI; } });
+Object.defineProperty(exports, "exportJWK", { enumerable: true, get: function () { return export_js_1.exportJWK; } });
+var import_js_1 = require("./key/import.js");
+Object.defineProperty(exports, "importSPKI", { enumerable: true, get: function () { return import_js_1.importSPKI; } });
+Object.defineProperty(exports, "importPKCS8", { enumerable: true, get: function () { return import_js_1.importPKCS8; } });
+Object.defineProperty(exports, "importX509", { enumerable: true, get: function () { return import_js_1.importX509; } });
+Object.defineProperty(exports, "importJWK", { enumerable: true, get: function () { return import_js_1.importJWK; } });
+var decode_protected_header_js_1 = require("./util/decode_protected_header.js");
+Object.defineProperty(exports, "decodeProtectedHeader", { enumerable: true, get: function () { return decode_protected_header_js_1.decodeProtectedHeader; } });
+exports.errors = require("./util/errors.js");
+var generate_key_pair_js_1 = require("./key/generate_key_pair.js");
+Object.defineProperty(exports, "generateKeyPair", { enumerable: true, get: function () { return generate_key_pair_js_1.generateKeyPair; } });
+var generate_secret_js_1 = require("./key/generate_secret.js");
+Object.defineProperty(exports, "generateSecret", { enumerable: true, get: function () { return generate_secret_js_1.generateSecret; } });
+exports.base64url = require("./util/base64url.js");
+
+},{"./jwe/compact/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/compact/decrypt.js","./jwe/compact/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/compact/encrypt.js","./jwe/flattened/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/flattened/decrypt.js","./jwe/flattened/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/flattened/encrypt.js","./jwe/general/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/general/decrypt.js","./jwk/embedded.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwk/embedded.js","./jwk/thumbprint.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwk/thumbprint.js","./jwks/remote.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwks/remote.js","./jws/compact/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/compact/sign.js","./jws/compact/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/compact/verify.js","./jws/flattened/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/flattened/sign.js","./jws/flattened/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/flattened/verify.js","./jws/general/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/general/sign.js","./jws/general/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/general/verify.js","./jwt/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/decrypt.js","./jwt/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/encrypt.js","./jwt/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/sign.js","./jwt/unsecured.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/unsecured.js","./jwt/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/verify.js","./key/export.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/export.js","./key/generate_key_pair.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/generate_key_pair.js","./key/generate_secret.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/generate_secret.js","./key/import.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/import.js","./util/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/base64url.js","./util/decode_protected_header.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/decode_protected_header.js","./util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/compact/decrypt.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.compactDecrypt = void 0;
+const decrypt_js_1 = require("../flattened/decrypt.js");
+const errors_js_1 = require("../../util/errors.js");
+const buffer_utils_js_1 = require("../../lib/buffer_utils.js");
+async function compactDecrypt(jwe, key, options) {
+    if (jwe instanceof Uint8Array) {
+        jwe = buffer_utils_js_1.decoder.decode(jwe);
+    }
+    if (typeof jwe !== 'string') {
+        throw new errors_js_1.JWEInvalid('Compact JWE must be a string or Uint8Array');
+    }
+    const { 0: protectedHeader, 1: encryptedKey, 2: iv, 3: ciphertext, 4: tag, length, } = jwe.split('.');
+    if (length !== 5) {
+        throw new errors_js_1.JWEInvalid('Invalid Compact JWE');
+    }
+    const decrypted = await (0, decrypt_js_1.flattenedDecrypt)({
+        ciphertext: (ciphertext || undefined),
+        iv: (iv || undefined),
+        protected: protectedHeader || undefined,
+        tag: (tag || undefined),
+        encrypted_key: encryptedKey || undefined,
+    }, key, options);
+    const result = { plaintext: decrypted.plaintext, protectedHeader: decrypted.protectedHeader };
+    if (typeof key === 'function') {
+        return { ...result, key: decrypted.key };
+    }
+    return result;
+}
+exports.compactDecrypt = compactDecrypt;
+
+},{"../../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","../flattened/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/flattened/decrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/compact/encrypt.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CompactEncrypt = void 0;
+const encrypt_js_1 = require("../flattened/encrypt.js");
+class CompactEncrypt {
+    constructor(plaintext) {
+        this._flattened = new encrypt_js_1.FlattenedEncrypt(plaintext);
+    }
+    setContentEncryptionKey(cek) {
+        this._flattened.setContentEncryptionKey(cek);
+        return this;
+    }
+    setInitializationVector(iv) {
+        this._flattened.setInitializationVector(iv);
+        return this;
+    }
+    setProtectedHeader(protectedHeader) {
+        this._flattened.setProtectedHeader(protectedHeader);
+        return this;
+    }
+    setKeyManagementParameters(parameters) {
+        this._flattened.setKeyManagementParameters(parameters);
+        return this;
+    }
+    async encrypt(key, options) {
+        const jwe = await this._flattened.encrypt(key, options);
+        return [jwe.protected, jwe.encrypted_key, jwe.iv, jwe.ciphertext, jwe.tag].join('.');
+    }
+}
+exports.CompactEncrypt = CompactEncrypt;
+
+},{"../flattened/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/flattened/encrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/flattened/decrypt.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.flattenedDecrypt = void 0;
+const base64url_js_1 = require("../../runtime/base64url.js");
+const decrypt_js_1 = require("../../runtime/decrypt.js");
+const zlib_js_1 = require("../../runtime/zlib.js");
+const errors_js_1 = require("../../util/errors.js");
+const is_disjoint_js_1 = require("../../lib/is_disjoint.js");
+const is_object_js_1 = require("../../lib/is_object.js");
+const decrypt_key_management_js_1 = require("../../lib/decrypt_key_management.js");
+const buffer_utils_js_1 = require("../../lib/buffer_utils.js");
+const cek_js_1 = require("../../lib/cek.js");
+const validate_crit_js_1 = require("../../lib/validate_crit.js");
+const validate_algorithms_js_1 = require("../../lib/validate_algorithms.js");
+async function flattenedDecrypt(jwe, key, options) {
+    var _a;
+    if (!(0, is_object_js_1.default)(jwe)) {
+        throw new errors_js_1.JWEInvalid('Flattened JWE must be an object');
+    }
+    if (jwe.protected === undefined && jwe.header === undefined && jwe.unprotected === undefined) {
+        throw new errors_js_1.JWEInvalid('JOSE Header missing');
+    }
+    if (typeof jwe.iv !== 'string') {
+        throw new errors_js_1.JWEInvalid('JWE Initialization Vector missing or incorrect type');
+    }
+    if (typeof jwe.ciphertext !== 'string') {
+        throw new errors_js_1.JWEInvalid('JWE Ciphertext missing or incorrect type');
+    }
+    if (typeof jwe.tag !== 'string') {
+        throw new errors_js_1.JWEInvalid('JWE Authentication Tag missing or incorrect type');
+    }
+    if (jwe.protected !== undefined && typeof jwe.protected !== 'string') {
+        throw new errors_js_1.JWEInvalid('JWE Protected Header incorrect type');
+    }
+    if (jwe.encrypted_key !== undefined && typeof jwe.encrypted_key !== 'string') {
+        throw new errors_js_1.JWEInvalid('JWE Encrypted Key incorrect type');
+    }
+    if (jwe.aad !== undefined && typeof jwe.aad !== 'string') {
+        throw new errors_js_1.JWEInvalid('JWE AAD incorrect type');
+    }
+    if (jwe.header !== undefined && !(0, is_object_js_1.default)(jwe.header)) {
+        throw new errors_js_1.JWEInvalid('JWE Shared Unprotected Header incorrect type');
+    }
+    if (jwe.unprotected !== undefined && !(0, is_object_js_1.default)(jwe.unprotected)) {
+        throw new errors_js_1.JWEInvalid('JWE Per-Recipient Unprotected Header incorrect type');
+    }
+    let parsedProt;
+    if (jwe.protected) {
+        const protectedHeader = (0, base64url_js_1.decode)(jwe.protected);
+        try {
+            parsedProt = JSON.parse(buffer_utils_js_1.decoder.decode(protectedHeader));
+        }
+        catch {
+            throw new errors_js_1.JWEInvalid('JWE Protected Header is invalid');
+        }
+    }
+    if (!(0, is_disjoint_js_1.default)(parsedProt, jwe.header, jwe.unprotected)) {
+        throw new errors_js_1.JWEInvalid('JWE Protected, JWE Unprotected Header, and JWE Per-Recipient Unprotected Header Parameter names must be disjoint');
+    }
+    const joseHeader = {
+        ...parsedProt,
+        ...jwe.header,
+        ...jwe.unprotected,
+    };
+    (0, validate_crit_js_1.default)(errors_js_1.JWEInvalid, new Map(), options === null || options === void 0 ? void 0 : options.crit, parsedProt, joseHeader);
+    if (joseHeader.zip !== undefined) {
+        if (!parsedProt || !parsedProt.zip) {
+            throw new errors_js_1.JWEInvalid('JWE "zip" (Compression Algorithm) Header MUST be integrity protected');
+        }
+        if (joseHeader.zip !== 'DEF') {
+            throw new errors_js_1.JOSENotSupported('Unsupported JWE "zip" (Compression Algorithm) Header Parameter value');
+        }
+    }
+    const { alg, enc } = joseHeader;
+    if (typeof alg !== 'string' || !alg) {
+        throw new errors_js_1.JWEInvalid('missing JWE Algorithm (alg) in JWE Header');
+    }
+    if (typeof enc !== 'string' || !enc) {
+        throw new errors_js_1.JWEInvalid('missing JWE Encryption Algorithm (enc) in JWE Header');
+    }
+    const keyManagementAlgorithms = options && (0, validate_algorithms_js_1.default)('keyManagementAlgorithms', options.keyManagementAlgorithms);
+    const contentEncryptionAlgorithms = options &&
+        (0, validate_algorithms_js_1.default)('contentEncryptionAlgorithms', options.contentEncryptionAlgorithms);
+    if (keyManagementAlgorithms && !keyManagementAlgorithms.has(alg)) {
+        throw new errors_js_1.JOSEAlgNotAllowed('"alg" (Algorithm) Header Parameter not allowed');
+    }
+    if (contentEncryptionAlgorithms && !contentEncryptionAlgorithms.has(enc)) {
+        throw new errors_js_1.JOSEAlgNotAllowed('"enc" (Encryption Algorithm) Header Parameter not allowed');
+    }
+    let encryptedKey;
+    if (jwe.encrypted_key !== undefined) {
+        encryptedKey = (0, base64url_js_1.decode)(jwe.encrypted_key);
+    }
+    let resolvedKey = false;
+    if (typeof key === 'function') {
+        key = await key(parsedProt, jwe);
+        resolvedKey = true;
+    }
+    let cek;
+    try {
+        cek = await (0, decrypt_key_management_js_1.default)(alg, key, encryptedKey, joseHeader);
+    }
+    catch (err) {
+        if (err instanceof TypeError) {
+            throw err;
+        }
+        cek = (0, cek_js_1.default)(enc);
+    }
+    const iv = (0, base64url_js_1.decode)(jwe.iv);
+    const tag = (0, base64url_js_1.decode)(jwe.tag);
+    const protectedHeader = buffer_utils_js_1.encoder.encode((_a = jwe.protected) !== null && _a !== void 0 ? _a : '');
+    let additionalData;
+    if (jwe.aad !== undefined) {
+        additionalData = (0, buffer_utils_js_1.concat)(protectedHeader, buffer_utils_js_1.encoder.encode('.'), buffer_utils_js_1.encoder.encode(jwe.aad));
+    }
+    else {
+        additionalData = protectedHeader;
+    }
+    let plaintext = await (0, decrypt_js_1.default)(enc, cek, (0, base64url_js_1.decode)(jwe.ciphertext), iv, tag, additionalData);
+    if (joseHeader.zip === 'DEF') {
+        plaintext = await ((options === null || options === void 0 ? void 0 : options.inflateRaw) || zlib_js_1.inflate)(plaintext);
+    }
+    const result = { plaintext };
+    if (jwe.protected !== undefined) {
+        result.protectedHeader = parsedProt;
+    }
+    if (jwe.aad !== undefined) {
+        result.additionalAuthenticatedData = (0, base64url_js_1.decode)(jwe.aad);
+    }
+    if (jwe.unprotected !== undefined) {
+        result.sharedUnprotectedHeader = jwe.unprotected;
+    }
+    if (jwe.header !== undefined) {
+        result.unprotectedHeader = jwe.header;
+    }
+    if (resolvedKey) {
+        return { ...result, key };
+    }
+    return result;
+}
+exports.flattenedDecrypt = flattenedDecrypt;
+
+},{"../../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../../lib/cek.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/cek.js","../../lib/decrypt_key_management.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/decrypt_key_management.js","../../lib/is_disjoint.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_disjoint.js","../../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","../../lib/validate_algorithms.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/validate_algorithms.js","../../lib/validate_crit.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/validate_crit.js","../../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","../../runtime/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/decrypt.js","../../runtime/zlib.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/zlib.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/flattened/encrypt.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FlattenedEncrypt = void 0;
+const base64url_js_1 = require("../../runtime/base64url.js");
+const encrypt_js_1 = require("../../runtime/encrypt.js");
+const zlib_js_1 = require("../../runtime/zlib.js");
+const iv_js_1 = require("../../lib/iv.js");
+const encrypt_key_management_js_1 = require("../../lib/encrypt_key_management.js");
+const errors_js_1 = require("../../util/errors.js");
+const is_disjoint_js_1 = require("../../lib/is_disjoint.js");
+const buffer_utils_js_1 = require("../../lib/buffer_utils.js");
+const validate_crit_js_1 = require("../../lib/validate_crit.js");
+class FlattenedEncrypt {
+    constructor(plaintext) {
+        if (!(plaintext instanceof Uint8Array)) {
+            throw new TypeError('plaintext must be an instance of Uint8Array');
+        }
+        this._plaintext = plaintext;
+    }
+    setKeyManagementParameters(parameters) {
+        if (this._keyManagementParameters) {
+            throw new TypeError('setKeyManagementParameters can only be called once');
+        }
+        this._keyManagementParameters = parameters;
+        return this;
+    }
+    setProtectedHeader(protectedHeader) {
+        if (this._protectedHeader) {
+            throw new TypeError('setProtectedHeader can only be called once');
+        }
+        this._protectedHeader = protectedHeader;
+        return this;
+    }
+    setSharedUnprotectedHeader(sharedUnprotectedHeader) {
+        if (this._sharedUnprotectedHeader) {
+            throw new TypeError('setSharedUnprotectedHeader can only be called once');
+        }
+        this._sharedUnprotectedHeader = sharedUnprotectedHeader;
+        return this;
+    }
+    setUnprotectedHeader(unprotectedHeader) {
+        if (this._unprotectedHeader) {
+            throw new TypeError('setUnprotectedHeader can only be called once');
+        }
+        this._unprotectedHeader = unprotectedHeader;
+        return this;
+    }
+    setAdditionalAuthenticatedData(aad) {
+        this._aad = aad;
+        return this;
+    }
+    setContentEncryptionKey(cek) {
+        if (this._cek) {
+            throw new TypeError('setContentEncryptionKey can only be called once');
+        }
+        this._cek = cek;
+        return this;
+    }
+    setInitializationVector(iv) {
+        if (this._iv) {
+            throw new TypeError('setInitializationVector can only be called once');
+        }
+        this._iv = iv;
+        return this;
+    }
+    async encrypt(key, options) {
+        if (!this._protectedHeader && !this._unprotectedHeader && !this._sharedUnprotectedHeader) {
+            throw new errors_js_1.JWEInvalid('either setProtectedHeader, setUnprotectedHeader, or sharedUnprotectedHeader must be called before #encrypt()');
+        }
+        if (!(0, is_disjoint_js_1.default)(this._protectedHeader, this._unprotectedHeader, this._sharedUnprotectedHeader)) {
+            throw new errors_js_1.JWEInvalid('JWE Shared Protected, JWE Shared Unprotected and JWE Per-Recipient Header Parameter names must be disjoint');
+        }
+        const joseHeader = {
+            ...this._protectedHeader,
+            ...this._unprotectedHeader,
+            ...this._sharedUnprotectedHeader,
+        };
+        (0, validate_crit_js_1.default)(errors_js_1.JWEInvalid, new Map(), options === null || options === void 0 ? void 0 : options.crit, this._protectedHeader, joseHeader);
+        if (joseHeader.zip !== undefined) {
+            if (!this._protectedHeader || !this._protectedHeader.zip) {
+                throw new errors_js_1.JWEInvalid('JWE "zip" (Compression Algorithm) Header MUST be integrity protected');
+            }
+            if (joseHeader.zip !== 'DEF') {
+                throw new errors_js_1.JOSENotSupported('Unsupported JWE "zip" (Compression Algorithm) Header Parameter value');
+            }
+        }
+        const { alg, enc } = joseHeader;
+        if (typeof alg !== 'string' || !alg) {
+            throw new errors_js_1.JWEInvalid('JWE "alg" (Algorithm) Header Parameter missing or invalid');
+        }
+        if (typeof enc !== 'string' || !enc) {
+            throw new errors_js_1.JWEInvalid('JWE "enc" (Encryption Algorithm) Header Parameter missing or invalid');
+        }
+        let encryptedKey;
+        if (alg === 'dir') {
+            if (this._cek) {
+                throw new TypeError('setContentEncryptionKey cannot be called when using Direct Encryption');
+            }
+        }
+        else if (alg === 'ECDH-ES') {
+            if (this._cek) {
+                throw new TypeError('setContentEncryptionKey cannot be called when using Direct Key Agreement');
+            }
+        }
+        let cek;
+        {
+            let parameters;
+            ({ cek, encryptedKey, parameters } = await (0, encrypt_key_management_js_1.default)(alg, enc, key, this._cek, this._keyManagementParameters));
+            if (parameters) {
+                if (!this._protectedHeader) {
+                    this.setProtectedHeader(parameters);
+                }
+                else {
+                    this._protectedHeader = { ...this._protectedHeader, ...parameters };
+                }
+            }
+        }
+        this._iv || (this._iv = (0, iv_js_1.default)(enc));
+        let additionalData;
+        let protectedHeader;
+        let aadMember;
+        if (this._protectedHeader) {
+            protectedHeader = buffer_utils_js_1.encoder.encode((0, base64url_js_1.encode)(JSON.stringify(this._protectedHeader)));
+        }
+        else {
+            protectedHeader = buffer_utils_js_1.encoder.encode('');
+        }
+        if (this._aad) {
+            aadMember = (0, base64url_js_1.encode)(this._aad);
+            additionalData = (0, buffer_utils_js_1.concat)(protectedHeader, buffer_utils_js_1.encoder.encode('.'), buffer_utils_js_1.encoder.encode(aadMember));
+        }
+        else {
+            additionalData = protectedHeader;
+        }
+        let ciphertext;
+        let tag;
+        if (joseHeader.zip === 'DEF') {
+            const deflated = await ((options === null || options === void 0 ? void 0 : options.deflateRaw) || zlib_js_1.deflate)(this._plaintext);
+            ({ ciphertext, tag } = await (0, encrypt_js_1.default)(enc, deflated, cek, this._iv, additionalData));
+        }
+        else {
+            
+            ({ ciphertext, tag } = await (0, encrypt_js_1.default)(enc, this._plaintext, cek, this._iv, additionalData));
+        }
+        const jwe = {
+            ciphertext: (0, base64url_js_1.encode)(ciphertext),
+            iv: (0, base64url_js_1.encode)(this._iv),
+            tag: (0, base64url_js_1.encode)(tag),
+        };
+        if (encryptedKey) {
+            jwe.encrypted_key = (0, base64url_js_1.encode)(encryptedKey);
+        }
+        if (aadMember) {
+            jwe.aad = aadMember;
+        }
+        if (this._protectedHeader) {
+            jwe.protected = buffer_utils_js_1.decoder.decode(protectedHeader);
+        }
+        if (this._sharedUnprotectedHeader) {
+            jwe.unprotected = this._sharedUnprotectedHeader;
+        }
+        if (this._unprotectedHeader) {
+            jwe.header = this._unprotectedHeader;
+        }
+        return jwe;
+    }
+}
+exports.FlattenedEncrypt = FlattenedEncrypt;
+
+},{"../../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../../lib/encrypt_key_management.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/encrypt_key_management.js","../../lib/is_disjoint.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_disjoint.js","../../lib/iv.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/iv.js","../../lib/validate_crit.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/validate_crit.js","../../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","../../runtime/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/encrypt.js","../../runtime/zlib.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/zlib.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/general/decrypt.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generalDecrypt = void 0;
+const decrypt_js_1 = require("../flattened/decrypt.js");
+const errors_js_1 = require("../../util/errors.js");
+const is_object_js_1 = require("../../lib/is_object.js");
+async function generalDecrypt(jwe, key, options) {
+    if (!(0, is_object_js_1.default)(jwe)) {
+        throw new errors_js_1.JWEInvalid('General JWE must be an object');
+    }
+    if (!Array.isArray(jwe.recipients) || !jwe.recipients.every(is_object_js_1.default)) {
+        throw new errors_js_1.JWEInvalid('JWE Recipients missing or incorrect type');
+    }
+    for (const recipient of jwe.recipients) {
+        try {
+            return await (0, decrypt_js_1.flattenedDecrypt)({
+                aad: jwe.aad,
+                ciphertext: jwe.ciphertext,
+                encrypted_key: recipient.encrypted_key,
+                header: recipient.header,
+                iv: jwe.iv,
+                protected: jwe.protected,
+                tag: jwe.tag,
+                unprotected: jwe.unprotected,
+            }, key, options);
+        }
+        catch {
+        }
+    }
+    throw new errors_js_1.JWEDecryptionFailed();
+}
+exports.generalDecrypt = generalDecrypt;
+
+},{"../../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","../flattened/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/flattened/decrypt.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwk/embedded.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EmbeddedJWK = void 0;
+const import_js_1 = require("../key/import.js");
+const is_object_js_1 = require("../lib/is_object.js");
+const errors_js_1 = require("../util/errors.js");
+async function EmbeddedJWK(protectedHeader, token) {
+    const joseHeader = {
+        ...protectedHeader,
+        ...token.header,
+    };
+    if (!(0, is_object_js_1.default)(joseHeader.jwk)) {
+        throw new errors_js_1.JWSInvalid('"jwk" (JSON Web Key) Header Parameter must be a JSON object');
+    }
+    const key = await (0, import_js_1.importJWK)({ ...joseHeader.jwk, ext: true }, joseHeader.alg, true);
+    if (key instanceof Uint8Array || key.type !== 'public') {
+        throw new errors_js_1.JWSInvalid('"jwk" (JSON Web Key) Header Parameter must be a public key');
+    }
+    return key;
+}
+exports.EmbeddedJWK = EmbeddedJWK;
+
+},{"../key/import.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/import.js","../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwk/thumbprint.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.calculateJwkThumbprint = void 0;
+const digest_js_1 = require("../runtime/digest.js");
+const base64url_js_1 = require("../runtime/base64url.js");
+const errors_js_1 = require("../util/errors.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const is_object_js_1 = require("../lib/is_object.js");
+const check = (value, description) => {
+    if (typeof value !== 'string' || !value) {
+        throw new errors_js_1.JWKInvalid(`${description} missing or invalid`);
+    }
+};
+async function calculateJwkThumbprint(jwk, digestAlgorithm = 'sha256') {
+    if (!(0, is_object_js_1.default)(jwk)) {
+        throw new TypeError('JWK must be an object');
+    }
+    let components;
+    switch (jwk.kty) {
+        case 'EC':
+            check(jwk.crv, '"crv" (Curve) Parameter');
+            check(jwk.x, '"x" (X Coordinate) Parameter');
+            check(jwk.y, '"y" (Y Coordinate) Parameter');
+            components = { crv: jwk.crv, kty: jwk.kty, x: jwk.x, y: jwk.y };
+            break;
+        case 'OKP':
+            check(jwk.crv, '"crv" (Subtype of Key Pair) Parameter');
+            check(jwk.x, '"x" (Public Key) Parameter');
+            components = { crv: jwk.crv, kty: jwk.kty, x: jwk.x };
+            break;
+        case 'RSA':
+            check(jwk.e, '"e" (Exponent) Parameter');
+            check(jwk.n, '"n" (Modulus) Parameter');
+            components = { e: jwk.e, kty: jwk.kty, n: jwk.n };
+            break;
+        case 'oct':
+            check(jwk.k, '"k" (Key Value) Parameter');
+            components = { k: jwk.k, kty: jwk.kty };
+            break;
+        default:
+            throw new errors_js_1.JOSENotSupported('"kty" (Key Type) Parameter missing or unsupported');
+    }
+    const data = buffer_utils_js_1.encoder.encode(JSON.stringify(components));
+    return (0, base64url_js_1.encode)(await (0, digest_js_1.default)(digestAlgorithm, data));
+}
+exports.calculateJwkThumbprint = calculateJwkThumbprint;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","../runtime/digest.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/digest.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwks/remote.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createRemoteJWKSet = void 0;
+const fetch_jwks_js_1 = require("../runtime/fetch_jwks.js");
+const import_js_1 = require("../key/import.js");
+const errors_js_1 = require("../util/errors.js");
+const is_object_js_1 = require("../lib/is_object.js");
+function getKtyFromAlg(alg) {
+    switch (typeof alg === 'string' && alg.substr(0, 2)) {
+        case 'RS':
+        case 'PS':
+            return 'RSA';
+        case 'ES':
+            return 'EC';
+        case 'Ed':
+            return 'OKP';
+        default:
+            throw new errors_js_1.JOSENotSupported('Unsupported "alg" value for a JSON Web Key Set');
+    }
+}
+function isJWKLike(key) {
+    return (0, is_object_js_1.default)(key);
+}
+class RemoteJWKSet {
+    constructor(url, options) {
+        this._cached = new WeakMap();
+        if (!(url instanceof URL)) {
+            throw new TypeError('url must be an instance of URL');
+        }
+        this._url = new URL(url.href);
+        this._options = { agent: options === null || options === void 0 ? void 0 : options.agent };
+        this._timeoutDuration =
+            typeof (options === null || options === void 0 ? void 0 : options.timeoutDuration) === 'number' ? options === null || options === void 0 ? void 0 : options.timeoutDuration : 5000;
+        this._cooldownDuration =
+            typeof (options === null || options === void 0 ? void 0 : options.cooldownDuration) === 'number' ? options === null || options === void 0 ? void 0 : options.cooldownDuration : 30000;
+    }
+    coolingDown() {
+        if (!this._cooldownStarted) {
+            return false;
+        }
+        return Date.now() < this._cooldownStarted + this._cooldownDuration;
+    }
+    async getKey(protectedHeader) {
+        if (!this._jwks) {
+            await this.reload();
+        }
+        const candidates = this._jwks.keys.filter((jwk) => {
+            let candidate = jwk.kty === getKtyFromAlg(protectedHeader.alg);
+            if (candidate && typeof protectedHeader.kid === 'string') {
+                candidate = protectedHeader.kid === jwk.kid;
+            }
+            if (candidate && typeof jwk.alg === 'string') {
+                candidate = protectedHeader.alg === jwk.alg;
+            }
+            if (candidate && typeof jwk.use === 'string') {
+                candidate = jwk.use === 'sig';
+            }
+            if (candidate && Array.isArray(jwk.key_ops)) {
+                candidate = jwk.key_ops.includes('verify');
+            }
+            if (candidate && protectedHeader.alg === 'EdDSA') {
+                candidate = jwk.crv === 'Ed25519' || jwk.crv === 'Ed448';
+            }
+            if (candidate) {
+                switch (protectedHeader.alg) {
+                    case 'ES256':
+                        candidate = jwk.crv === 'P-256';
+                        break;
+                    case 'ES256K':
+                        candidate = jwk.crv === 'secp256k1';
+                        break;
+                    case 'ES384':
+                        candidate = jwk.crv === 'P-384';
+                        break;
+                    case 'ES512':
+                        candidate = jwk.crv === 'P-521';
+                        break;
+                    default:
+                }
+            }
+            return candidate;
+        });
+        const { 0: jwk, length } = candidates;
+        if (length === 0) {
+            if (this.coolingDown() === false) {
+                await this.reload();
+                return this.getKey(protectedHeader);
+            }
+            throw new errors_js_1.JWKSNoMatchingKey();
+        }
+        else if (length !== 1) {
+            throw new errors_js_1.JWKSMultipleMatchingKeys();
+        }
+        const cached = this._cached.get(jwk) || this._cached.set(jwk, {}).get(jwk);
+        if (cached[protectedHeader.alg] === undefined) {
+            const keyObject = await (0, import_js_1.importJWK)({ ...jwk, ext: true }, protectedHeader.alg);
+            if (keyObject instanceof Uint8Array || keyObject.type !== 'public') {
+                throw new errors_js_1.JWKSInvalid('JSON Web Key Set members must be public keys');
+            }
+            cached[protectedHeader.alg] = keyObject;
+        }
+        return cached[protectedHeader.alg];
+    }
+    async reload() {
+        if (!this._pendingFetch) {
+            this._pendingFetch = (0, fetch_jwks_js_1.default)(this._url, this._timeoutDuration, this._options)
+                .then((json) => {
+                if (typeof json !== 'object' ||
+                    !json ||
+                    !Array.isArray(json.keys) ||
+                    !json.keys.every(isJWKLike)) {
+                    throw new errors_js_1.JWKSInvalid('JSON Web Key Set malformed');
+                }
+                this._jwks = { keys: json.keys };
+                this._cooldownStarted = Date.now();
+                this._pendingFetch = undefined;
+            })
+                .catch((err) => {
+                this._pendingFetch = undefined;
+                throw err;
+            });
+        }
+        await this._pendingFetch;
+    }
+}
+function createRemoteJWKSet(url, options) {
+    return RemoteJWKSet.prototype.getKey.bind(new RemoteJWKSet(url, options));
+}
+exports.createRemoteJWKSet = createRemoteJWKSet;
+
+},{"../key/import.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/import.js","../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","../runtime/fetch_jwks.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/fetch_jwks.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/compact/sign.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CompactSign = void 0;
+const sign_js_1 = require("../flattened/sign.js");
+class CompactSign {
+    constructor(payload) {
+        this._flattened = new sign_js_1.FlattenedSign(payload);
+    }
+    setProtectedHeader(protectedHeader) {
+        this._flattened.setProtectedHeader(protectedHeader);
+        return this;
+    }
+    async sign(key, options) {
+        const jws = await this._flattened.sign(key, options);
+        if (jws.payload === undefined) {
+            throw new TypeError('use the flattened module for creating JWS with b64: false');
+        }
+        return `${jws.protected}.${jws.payload}.${jws.signature}`;
+    }
+}
+exports.CompactSign = CompactSign;
+
+},{"../flattened/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/flattened/sign.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/compact/verify.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.compactVerify = void 0;
+const verify_js_1 = require("../flattened/verify.js");
+const errors_js_1 = require("../../util/errors.js");
+const buffer_utils_js_1 = require("../../lib/buffer_utils.js");
+async function compactVerify(jws, key, options) {
+    if (jws instanceof Uint8Array) {
+        jws = buffer_utils_js_1.decoder.decode(jws);
+    }
+    if (typeof jws !== 'string') {
+        throw new errors_js_1.JWSInvalid('Compact JWS must be a string or Uint8Array');
+    }
+    const { 0: protectedHeader, 1: payload, 2: signature, length } = jws.split('.');
+    if (length !== 3) {
+        throw new errors_js_1.JWSInvalid('Invalid Compact JWS');
+    }
+    const verified = await (0, verify_js_1.flattenedVerify)({
+        payload: (payload || undefined),
+        protected: protectedHeader || undefined,
+        signature: (signature || undefined),
+    }, key, options);
+    const result = { payload: verified.payload, protectedHeader: verified.protectedHeader };
+    if (typeof key === 'function') {
+        return { ...result, key: verified.key };
+    }
+    return result;
+}
+exports.compactVerify = compactVerify;
+
+},{"../../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","../flattened/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/flattened/verify.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/flattened/sign.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FlattenedSign = void 0;
+const base64url_js_1 = require("../../runtime/base64url.js");
+const sign_js_1 = require("../../runtime/sign.js");
+const is_disjoint_js_1 = require("../../lib/is_disjoint.js");
+const errors_js_1 = require("../../util/errors.js");
+const buffer_utils_js_1 = require("../../lib/buffer_utils.js");
+const check_key_type_js_1 = require("../../lib/check_key_type.js");
+const validate_crit_js_1 = require("../../lib/validate_crit.js");
+class FlattenedSign {
+    constructor(payload) {
+        if (!(payload instanceof Uint8Array)) {
+            throw new TypeError('payload must be an instance of Uint8Array');
+        }
+        this._payload = payload;
+    }
+    setProtectedHeader(protectedHeader) {
+        if (this._protectedHeader) {
+            throw new TypeError('setProtectedHeader can only be called once');
+        }
+        this._protectedHeader = protectedHeader;
+        return this;
+    }
+    setUnprotectedHeader(unprotectedHeader) {
+        if (this._unprotectedHeader) {
+            throw new TypeError('setUnprotectedHeader can only be called once');
+        }
+        this._unprotectedHeader = unprotectedHeader;
+        return this;
+    }
+    async sign(key, options) {
+        if (!this._protectedHeader && !this._unprotectedHeader) {
+            throw new errors_js_1.JWSInvalid('either setProtectedHeader or setUnprotectedHeader must be called before #sign()');
+        }
+        if (!(0, is_disjoint_js_1.default)(this._protectedHeader, this._unprotectedHeader)) {
+            throw new errors_js_1.JWSInvalid('JWS Protected and JWS Unprotected Header Parameter names must be disjoint');
+        }
+        const joseHeader = {
+            ...this._protectedHeader,
+            ...this._unprotectedHeader,
+        };
+        const extensions = (0, validate_crit_js_1.default)(errors_js_1.JWSInvalid, new Map([['b64', true]]), options === null || options === void 0 ? void 0 : options.crit, this._protectedHeader, joseHeader);
+        let b64 = true;
+        if (extensions.has('b64')) {
+            b64 = this._protectedHeader.b64;
+            if (typeof b64 !== 'boolean') {
+                throw new errors_js_1.JWSInvalid('The "b64" (base64url-encode payload) Header Parameter must be a boolean');
+            }
+        }
+        const { alg } = joseHeader;
+        if (typeof alg !== 'string' || !alg) {
+            throw new errors_js_1.JWSInvalid('JWS "alg" (Algorithm) Header Parameter missing or invalid');
+        }
+        (0, check_key_type_js_1.default)(alg, key, 'sign');
+        let payload = this._payload;
+        if (b64) {
+            payload = buffer_utils_js_1.encoder.encode((0, base64url_js_1.encode)(payload));
+        }
+        let protectedHeader;
+        if (this._protectedHeader) {
+            protectedHeader = buffer_utils_js_1.encoder.encode((0, base64url_js_1.encode)(JSON.stringify(this._protectedHeader)));
+        }
+        else {
+            protectedHeader = buffer_utils_js_1.encoder.encode('');
+        }
+        const data = (0, buffer_utils_js_1.concat)(protectedHeader, buffer_utils_js_1.encoder.encode('.'), payload);
+        const signature = await (0, sign_js_1.default)(alg, key, data);
+        const jws = {
+            signature: (0, base64url_js_1.encode)(signature),
+            payload: '',
+        };
+        if (b64) {
+            jws.payload = buffer_utils_js_1.decoder.decode(payload);
+        }
+        if (this._unprotectedHeader) {
+            jws.header = this._unprotectedHeader;
+        }
+        if (this._protectedHeader) {
+            jws.protected = buffer_utils_js_1.decoder.decode(protectedHeader);
+        }
+        return jws;
+    }
+}
+exports.FlattenedSign = FlattenedSign;
+
+},{"../../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../../lib/check_key_type.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/check_key_type.js","../../lib/is_disjoint.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_disjoint.js","../../lib/validate_crit.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/validate_crit.js","../../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","../../runtime/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/sign.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/flattened/verify.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.flattenedVerify = void 0;
+const base64url_js_1 = require("../../runtime/base64url.js");
+const verify_js_1 = require("../../runtime/verify.js");
+const errors_js_1 = require("../../util/errors.js");
+const buffer_utils_js_1 = require("../../lib/buffer_utils.js");
+const is_disjoint_js_1 = require("../../lib/is_disjoint.js");
+const is_object_js_1 = require("../../lib/is_object.js");
+const check_key_type_js_1 = require("../../lib/check_key_type.js");
+const validate_crit_js_1 = require("../../lib/validate_crit.js");
+const validate_algorithms_js_1 = require("../../lib/validate_algorithms.js");
+async function flattenedVerify(jws, key, options) {
+    var _a;
+    if (!(0, is_object_js_1.default)(jws)) {
+        throw new errors_js_1.JWSInvalid('Flattened JWS must be an object');
+    }
+    if (jws.protected === undefined && jws.header === undefined) {
+        throw new errors_js_1.JWSInvalid('Flattened JWS must have either of the "protected" or "header" members');
+    }
+    if (jws.protected !== undefined && typeof jws.protected !== 'string') {
+        throw new errors_js_1.JWSInvalid('JWS Protected Header incorrect type');
+    }
+    if (jws.payload === undefined) {
+        throw new errors_js_1.JWSInvalid('JWS Payload missing');
+    }
+    if (typeof jws.signature !== 'string') {
+        throw new errors_js_1.JWSInvalid('JWS Signature missing or incorrect type');
+    }
+    if (jws.header !== undefined && !(0, is_object_js_1.default)(jws.header)) {
+        throw new errors_js_1.JWSInvalid('JWS Unprotected Header incorrect type');
+    }
+    let parsedProt = {};
+    if (jws.protected) {
+        const protectedHeader = (0, base64url_js_1.decode)(jws.protected);
+        try {
+            parsedProt = JSON.parse(buffer_utils_js_1.decoder.decode(protectedHeader));
+        }
+        catch {
+            throw new errors_js_1.JWSInvalid('JWS Protected Header is invalid');
+        }
+    }
+    if (!(0, is_disjoint_js_1.default)(parsedProt, jws.header)) {
+        throw new errors_js_1.JWSInvalid('JWS Protected and JWS Unprotected Header Parameter names must be disjoint');
+    }
+    const joseHeader = {
+        ...parsedProt,
+        ...jws.header,
+    };
+    const extensions = (0, validate_crit_js_1.default)(errors_js_1.JWSInvalid, new Map([['b64', true]]), options === null || options === void 0 ? void 0 : options.crit, parsedProt, joseHeader);
+    let b64 = true;
+    if (extensions.has('b64')) {
+        b64 = parsedProt.b64;
+        if (typeof b64 !== 'boolean') {
+            throw new errors_js_1.JWSInvalid('The "b64" (base64url-encode payload) Header Parameter must be a boolean');
+        }
+    }
+    const { alg } = joseHeader;
+    if (typeof alg !== 'string' || !alg) {
+        throw new errors_js_1.JWSInvalid('JWS "alg" (Algorithm) Header Parameter missing or invalid');
+    }
+    const algorithms = options && (0, validate_algorithms_js_1.default)('algorithms', options.algorithms);
+    if (algorithms && !algorithms.has(alg)) {
+        throw new errors_js_1.JOSEAlgNotAllowed('"alg" (Algorithm) Header Parameter not allowed');
+    }
+    if (b64) {
+        if (typeof jws.payload !== 'string') {
+            throw new errors_js_1.JWSInvalid('JWS Payload must be a string');
+        }
+    }
+    else if (typeof jws.payload !== 'string' && !(jws.payload instanceof Uint8Array)) {
+        throw new errors_js_1.JWSInvalid('JWS Payload must be a string or an Uint8Array instance');
+    }
+    let resolvedKey = false;
+    if (typeof key === 'function') {
+        key = await key(parsedProt, jws);
+        resolvedKey = true;
+    }
+    (0, check_key_type_js_1.default)(alg, key, 'verify');
+    const data = (0, buffer_utils_js_1.concat)(buffer_utils_js_1.encoder.encode((_a = jws.protected) !== null && _a !== void 0 ? _a : ''), buffer_utils_js_1.encoder.encode('.'), typeof jws.payload === 'string' ? buffer_utils_js_1.encoder.encode(jws.payload) : jws.payload);
+    const signature = (0, base64url_js_1.decode)(jws.signature);
+    const verified = await (0, verify_js_1.default)(alg, key, signature, data);
+    if (!verified) {
+        throw new errors_js_1.JWSSignatureVerificationFailed();
+    }
+    let payload;
+    if (b64) {
+        payload = (0, base64url_js_1.decode)(jws.payload);
+    }
+    else if (typeof jws.payload === 'string') {
+        payload = buffer_utils_js_1.encoder.encode(jws.payload);
+    }
+    else {
+        payload = jws.payload;
+    }
+    const result = { payload };
+    if (jws.protected !== undefined) {
+        result.protectedHeader = parsedProt;
+    }
+    if (jws.header !== undefined) {
+        result.unprotectedHeader = jws.header;
+    }
+    if (resolvedKey) {
+        return { ...result, key };
+    }
+    return result;
+}
+exports.flattenedVerify = flattenedVerify;
+
+},{"../../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../../lib/check_key_type.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/check_key_type.js","../../lib/is_disjoint.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_disjoint.js","../../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","../../lib/validate_algorithms.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/validate_algorithms.js","../../lib/validate_crit.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/validate_crit.js","../../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","../../runtime/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/verify.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/general/sign.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.GeneralSign = void 0;
+const sign_js_1 = require("../flattened/sign.js");
+const errors_js_1 = require("../../util/errors.js");
+const signatureRef = new WeakMap();
+class IndividualSignature {
+    setProtectedHeader(protectedHeader) {
+        if (this._protectedHeader) {
+            throw new TypeError('setProtectedHeader can only be called once');
+        }
+        this._protectedHeader = protectedHeader;
+        return this;
+    }
+    setUnprotectedHeader(unprotectedHeader) {
+        if (this._unprotectedHeader) {
+            throw new TypeError('setUnprotectedHeader can only be called once');
+        }
+        this._unprotectedHeader = unprotectedHeader;
+        return this;
+    }
+    set _protectedHeader(value) {
+        signatureRef.get(this).protectedHeader = value;
+    }
+    get _protectedHeader() {
+        return signatureRef.get(this).protectedHeader;
+    }
+    set _unprotectedHeader(value) {
+        signatureRef.get(this).unprotectedHeader = value;
+    }
+    get _unprotectedHeader() {
+        return signatureRef.get(this).unprotectedHeader;
+    }
+}
+class GeneralSign {
+    constructor(payload) {
+        this._signatures = [];
+        this._payload = payload;
+    }
+    addSignature(key, options) {
+        const signature = new IndividualSignature();
+        signatureRef.set(signature, { key, options });
+        this._signatures.push(signature);
+        return signature;
+    }
+    async sign() {
+        if (!this._signatures.length) {
+            throw new errors_js_1.JWSInvalid('at least one signature must be added');
+        }
+        const jws = {
+            signatures: [],
+            payload: '',
+        };
+        let payloads = new Set();
+        await Promise.all(this._signatures.map(async (sig) => {
+            const { protectedHeader, unprotectedHeader, options, key } = signatureRef.get(sig);
+            const flattened = new sign_js_1.FlattenedSign(this._payload);
+            if (protectedHeader) {
+                flattened.setProtectedHeader(protectedHeader);
+            }
+            if (unprotectedHeader) {
+                flattened.setUnprotectedHeader(unprotectedHeader);
+            }
+            const { payload, ...rest } = await flattened.sign(key, options);
+            payloads.add(payload);
+            jws.payload = payload;
+            jws.signatures.push(rest);
+        }));
+        if (payloads.size !== 1) {
+            throw new errors_js_1.JWSInvalid('inconsistent use of JWS Unencoded Payload Option (RFC7797)');
+        }
+        return jws;
+    }
+}
+exports.GeneralSign = GeneralSign;
+
+},{"../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","../flattened/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/flattened/sign.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/general/verify.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generalVerify = void 0;
+const verify_js_1 = require("../flattened/verify.js");
+const errors_js_1 = require("../../util/errors.js");
+const is_object_js_1 = require("../../lib/is_object.js");
+async function generalVerify(jws, key, options) {
+    if (!(0, is_object_js_1.default)(jws)) {
+        throw new errors_js_1.JWSInvalid('General JWS must be an object');
+    }
+    if (!Array.isArray(jws.signatures) || !jws.signatures.every(is_object_js_1.default)) {
+        throw new errors_js_1.JWSInvalid('JWS Signatures missing or incorrect type');
+    }
+    for (const signature of jws.signatures) {
+        try {
+            return await (0, verify_js_1.flattenedVerify)({
+                header: signature.header,
+                payload: jws.payload,
+                protected: signature.protected,
+                signature: signature.signature,
+            }, key, options);
+        }
+        catch {
+        }
+    }
+    throw new errors_js_1.JWSSignatureVerificationFailed();
+}
+exports.generalVerify = generalVerify;
+
+},{"../../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","../../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","../flattened/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/flattened/verify.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/decrypt.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.jwtDecrypt = void 0;
+const decrypt_js_1 = require("../jwe/compact/decrypt.js");
+const jwt_claims_set_js_1 = require("../lib/jwt_claims_set.js");
+const errors_js_1 = require("../util/errors.js");
+async function jwtDecrypt(jwt, key, options) {
+    const decrypted = await (0, decrypt_js_1.compactDecrypt)(jwt, key, options);
+    const payload = (0, jwt_claims_set_js_1.default)(decrypted.protectedHeader, decrypted.plaintext, options);
+    const { protectedHeader } = decrypted;
+    if (protectedHeader.iss !== undefined && protectedHeader.iss !== payload.iss) {
+        throw new errors_js_1.JWTClaimValidationFailed('replicated "iss" claim header parameter mismatch', 'iss', 'mismatch');
+    }
+    if (protectedHeader.sub !== undefined && protectedHeader.sub !== payload.sub) {
+        throw new errors_js_1.JWTClaimValidationFailed('replicated "sub" claim header parameter mismatch', 'sub', 'mismatch');
+    }
+    if (protectedHeader.aud !== undefined &&
+        JSON.stringify(protectedHeader.aud) !== JSON.stringify(payload.aud)) {
+        throw new errors_js_1.JWTClaimValidationFailed('replicated "aud" claim header parameter mismatch', 'aud', 'mismatch');
+    }
+    const result = { payload, protectedHeader };
+    if (typeof key === 'function') {
+        return { ...result, key: decrypted.key };
+    }
+    return result;
+}
+exports.jwtDecrypt = jwtDecrypt;
+
+},{"../jwe/compact/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/compact/decrypt.js","../lib/jwt_claims_set.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/jwt_claims_set.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/encrypt.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EncryptJWT = void 0;
+const encrypt_js_1 = require("../jwe/compact/encrypt.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const produce_js_1 = require("./produce.js");
+class EncryptJWT extends produce_js_1.ProduceJWT {
+    setProtectedHeader(protectedHeader) {
+        if (this._protectedHeader) {
+            throw new TypeError('setProtectedHeader can only be called once');
+        }
+        this._protectedHeader = protectedHeader;
+        return this;
+    }
+    setKeyManagementParameters(parameters) {
+        if (this._keyManagementParameters) {
+            throw new TypeError('setKeyManagementParameters can only be called once');
+        }
+        this._keyManagementParameters = parameters;
+        return this;
+    }
+    setContentEncryptionKey(cek) {
+        if (this._cek) {
+            throw new TypeError('setContentEncryptionKey can only be called once');
+        }
+        this._cek = cek;
+        return this;
+    }
+    setInitializationVector(iv) {
+        if (this._iv) {
+            throw new TypeError('setInitializationVector can only be called once');
+        }
+        this._iv = iv;
+        return this;
+    }
+    replicateIssuerAsHeader() {
+        this._replicateIssuerAsHeader = true;
+        return this;
+    }
+    replicateSubjectAsHeader() {
+        this._replicateSubjectAsHeader = true;
+        return this;
+    }
+    replicateAudienceAsHeader() {
+        this._replicateAudienceAsHeader = true;
+        return this;
+    }
+    async encrypt(key, options) {
+        const enc = new encrypt_js_1.CompactEncrypt(buffer_utils_js_1.encoder.encode(JSON.stringify(this._payload)));
+        if (this._replicateIssuerAsHeader) {
+            this._protectedHeader = { ...this._protectedHeader, iss: this._payload.iss };
+        }
+        if (this._replicateSubjectAsHeader) {
+            this._protectedHeader = { ...this._protectedHeader, sub: this._payload.sub };
+        }
+        if (this._replicateAudienceAsHeader) {
+            this._protectedHeader = { ...this._protectedHeader, aud: this._payload.aud };
+        }
+        enc.setProtectedHeader(this._protectedHeader);
+        if (this._iv) {
+            enc.setInitializationVector(this._iv);
+        }
+        if (this._cek) {
+            enc.setContentEncryptionKey(this._cek);
+        }
+        if (this._keyManagementParameters) {
+            enc.setKeyManagementParameters(this._keyManagementParameters);
+        }
+        return enc.encrypt(key, options);
+    }
+}
+exports.EncryptJWT = EncryptJWT;
+
+},{"../jwe/compact/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwe/compact/encrypt.js","../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","./produce.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/produce.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/produce.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ProduceJWT = void 0;
+const epoch_js_1 = require("../lib/epoch.js");
+const is_object_js_1 = require("../lib/is_object.js");
+const secs_js_1 = require("../lib/secs.js");
+class ProduceJWT {
+    constructor(payload) {
+        if (!(0, is_object_js_1.default)(payload)) {
+            throw new TypeError('JWT Claims Set MUST be an object');
+        }
+        this._payload = payload;
+    }
+    setIssuer(issuer) {
+        this._payload = { ...this._payload, iss: issuer };
+        return this;
+    }
+    setSubject(subject) {
+        this._payload = { ...this._payload, sub: subject };
+        return this;
+    }
+    setAudience(audience) {
+        this._payload = { ...this._payload, aud: audience };
+        return this;
+    }
+    setJti(jwtId) {
+        this._payload = { ...this._payload, jti: jwtId };
+        return this;
+    }
+    setNotBefore(input) {
+        if (typeof input === 'number') {
+            this._payload = { ...this._payload, nbf: input };
+        }
+        else {
+            this._payload = { ...this._payload, nbf: (0, epoch_js_1.default)(new Date()) + (0, secs_js_1.default)(input) };
+        }
+        return this;
+    }
+    setExpirationTime(input) {
+        if (typeof input === 'number') {
+            this._payload = { ...this._payload, exp: input };
+        }
+        else {
+            this._payload = { ...this._payload, exp: (0, epoch_js_1.default)(new Date()) + (0, secs_js_1.default)(input) };
+        }
+        return this;
+    }
+    setIssuedAt(input) {
+        if (typeof input === 'undefined') {
+            this._payload = { ...this._payload, iat: (0, epoch_js_1.default)(new Date()) };
+        }
+        else {
+            this._payload = { ...this._payload, iat: input };
+        }
+        return this;
+    }
+}
+exports.ProduceJWT = ProduceJWT;
+
+},{"../lib/epoch.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/epoch.js","../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","../lib/secs.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/secs.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/sign.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SignJWT = void 0;
+const sign_js_1 = require("../jws/compact/sign.js");
+const errors_js_1 = require("../util/errors.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const produce_js_1 = require("./produce.js");
+class SignJWT extends produce_js_1.ProduceJWT {
+    setProtectedHeader(protectedHeader) {
+        this._protectedHeader = protectedHeader;
+        return this;
+    }
+    async sign(key, options) {
+        var _a;
+        const sig = new sign_js_1.CompactSign(buffer_utils_js_1.encoder.encode(JSON.stringify(this._payload)));
+        sig.setProtectedHeader(this._protectedHeader);
+        if (Array.isArray((_a = this._protectedHeader) === null || _a === void 0 ? void 0 : _a.crit) &&
+            this._protectedHeader.crit.includes('b64') &&
+            this._protectedHeader.b64 === false) {
+            throw new errors_js_1.JWTInvalid('JWTs MUST NOT use unencoded payload');
+        }
+        return sig.sign(key, options);
+    }
+}
+exports.SignJWT = SignJWT;
+
+},{"../jws/compact/sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/compact/sign.js","../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./produce.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/produce.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/unsecured.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UnsecuredJWT = void 0;
+const base64url = require("../runtime/base64url.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const errors_js_1 = require("../util/errors.js");
+const jwt_claims_set_js_1 = require("../lib/jwt_claims_set.js");
+const produce_js_1 = require("./produce.js");
+class UnsecuredJWT extends produce_js_1.ProduceJWT {
+    encode() {
+        const header = base64url.encode(JSON.stringify({ alg: 'none' }));
+        const payload = base64url.encode(JSON.stringify(this._payload));
+        return `${header}.${payload}.`;
+    }
+    static decode(jwt, options) {
+        if (typeof jwt !== 'string') {
+            throw new errors_js_1.JWTInvalid('Unsecured JWT must be a string');
+        }
+        const { 0: encodedHeader, 1: encodedPayload, 2: signature, length } = jwt.split('.');
+        if (length !== 3 || signature !== '') {
+            throw new errors_js_1.JWTInvalid('Invalid Unsecured JWT');
+        }
+        let header;
+        try {
+            header = JSON.parse(buffer_utils_js_1.decoder.decode(base64url.decode(encodedHeader)));
+            if (header.alg !== 'none')
+                throw new Error();
+        }
+        catch {
+            throw new errors_js_1.JWTInvalid('Invalid Unsecured JWT');
+        }
+        const payload = (0, jwt_claims_set_js_1.default)(header, base64url.decode(encodedPayload), options);
+        return { payload, header };
+    }
+}
+exports.UnsecuredJWT = UnsecuredJWT;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../lib/jwt_claims_set.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/jwt_claims_set.js","../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./produce.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/produce.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jwt/verify.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.jwtVerify = void 0;
+const verify_js_1 = require("../jws/compact/verify.js");
+const jwt_claims_set_js_1 = require("../lib/jwt_claims_set.js");
+const errors_js_1 = require("../util/errors.js");
+async function jwtVerify(jwt, key, options) {
+    var _a;
+    const verified = await (0, verify_js_1.compactVerify)(jwt, key, options);
+    if (((_a = verified.protectedHeader.crit) === null || _a === void 0 ? void 0 : _a.includes('b64')) && verified.protectedHeader.b64 === false) {
+        throw new errors_js_1.JWTInvalid('JWTs MUST NOT use unencoded payload');
+    }
+    const payload = (0, jwt_claims_set_js_1.default)(verified.protectedHeader, verified.payload, options);
+    const result = { payload, protectedHeader: verified.protectedHeader };
+    if (typeof key === 'function') {
+        return { ...result, key: verified.key };
+    }
+    return result;
+}
+exports.jwtVerify = jwtVerify;
+
+},{"../jws/compact/verify.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/jws/compact/verify.js","../lib/jwt_claims_set.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/jwt_claims_set.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/export.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.exportJWK = exports.exportPKCS8 = exports.exportSPKI = void 0;
+const asn1_js_1 = require("../runtime/asn1.js");
+const asn1_js_2 = require("../runtime/asn1.js");
+const key_to_jwk_js_1 = require("../runtime/key_to_jwk.js");
+async function exportSPKI(key) {
+    return (0, asn1_js_1.toSPKI)(key);
+}
+exports.exportSPKI = exportSPKI;
+async function exportPKCS8(key) {
+    return (0, asn1_js_2.toPKCS8)(key);
+}
+exports.exportPKCS8 = exportPKCS8;
+async function exportJWK(key) {
+    return (0, key_to_jwk_js_1.default)(key);
+}
+exports.exportJWK = exportJWK;
+
+},{"../runtime/asn1.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/asn1.js","../runtime/key_to_jwk.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/key_to_jwk.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/generate_key_pair.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateKeyPair = void 0;
+const generate_js_1 = require("../runtime/generate.js");
+async function generateKeyPair(alg, options) {
+    return (0, generate_js_1.generateKeyPair)(alg, options);
+}
+exports.generateKeyPair = generateKeyPair;
+
+},{"../runtime/generate.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/generate.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/generate_secret.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateSecret = void 0;
+const generate_js_1 = require("../runtime/generate.js");
+async function generateSecret(alg, options) {
+    return (0, generate_js_1.generateSecret)(alg, options);
+}
+exports.generateSecret = generateSecret;
+
+},{"../runtime/generate.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/generate.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/import.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.importJWK = exports.importPKCS8 = exports.importX509 = exports.importSPKI = void 0;
+const base64url_js_1 = require("../runtime/base64url.js");
+const asn1_js_1 = require("../runtime/asn1.js");
+const asn1_js_2 = require("../runtime/asn1.js");
+const jwk_to_key_js_1 = require("../runtime/jwk_to_key.js");
+const errors_js_1 = require("../util/errors.js");
+const format_pem_js_1 = require("../lib/format_pem.js");
+const is_object_js_1 = require("../lib/is_object.js");
+function getElement(seq) {
+    let result = [];
+    let next = 0;
+    while (next < seq.length) {
+        let nextPart = parseElement(seq.subarray(next));
+        result.push(nextPart);
+        next += nextPart.byteLength;
+    }
+    return result;
+}
+function parseElement(bytes) {
+    let position = 0;
+    let tag = bytes[0] & 0x1f;
+    position++;
+    if (tag === 0x1f) {
+        tag = 0;
+        while (bytes[position] >= 0x80) {
+            tag = tag * 128 + bytes[position] - 0x80;
+            position++;
+        }
+        tag = tag * 128 + bytes[position] - 0x80;
+        position++;
+    }
+    let length = 0;
+    if (bytes[position] < 0x80) {
+        length = bytes[position];
+        position++;
+    }
+    else {
+        let numberOfDigits = bytes[position] & 0x7f;
+        position++;
+        length = 0;
+        for (let i = 0; i < numberOfDigits; i++) {
+            length = length * 256 + bytes[position];
+            position++;
+        }
+    }
+    if (length === 0x80) {
+        length = 0;
+        while (bytes[position + length] !== 0 || bytes[position + length + 1] !== 0) {
+            length++;
+        }
+        const byteLength = position + length + 2;
+        return {
+            byteLength,
+            contents: bytes.subarray(position, position + length),
+            raw: bytes.subarray(0, byteLength),
+        };
+    }
+    const byteLength = position + length;
+    return {
+        byteLength,
+        contents: bytes.subarray(position, byteLength),
+        raw: bytes.subarray(0, byteLength),
+    };
+}
+function spkiFromX509(buf) {
+    return (0, base64url_js_1.encodeBase64)(getElement(getElement(parseElement(buf).contents)[0].contents)[6].raw);
+}
+function getSPKI(x509) {
+    const pem = x509.replace(/(?:-----(?:BEGIN|END) CERTIFICATE-----|\s)/g, '');
+    const raw = (0, base64url_js_1.decodeBase64)(pem);
+    return (0, format_pem_js_1.default)(spkiFromX509(raw), 'PUBLIC KEY');
+}
+async function importSPKI(spki, alg, options) {
+    if (typeof spki !== 'string' || spki.indexOf('-----BEGIN PUBLIC KEY-----') !== 0) {
+        throw new TypeError('"spki" must be SPKI formatted string');
+    }
+    return (0, asn1_js_1.fromSPKI)(spki, alg, options);
+}
+exports.importSPKI = importSPKI;
+async function importX509(x509, alg, options) {
+    if (typeof x509 !== 'string' || x509.indexOf('-----BEGIN CERTIFICATE-----') !== 0) {
+        throw new TypeError('"x509" must be X.509 formatted string');
+    }
+    const spki = getSPKI(x509);
+    return (0, asn1_js_1.fromSPKI)(spki, alg, options);
+}
+exports.importX509 = importX509;
+async function importPKCS8(pkcs8, alg, options) {
+    if (typeof pkcs8 !== 'string' || pkcs8.indexOf('-----BEGIN PRIVATE KEY-----') !== 0) {
+        throw new TypeError('"pkcs8" must be PCKS8 formatted string');
+    }
+    return (0, asn1_js_2.fromPKCS8)(pkcs8, alg, options);
+}
+exports.importPKCS8 = importPKCS8;
+async function importJWK(jwk, alg, octAsKeyObject) {
+    if (!(0, is_object_js_1.default)(jwk)) {
+        throw new TypeError('JWK must be an object');
+    }
+    alg || (alg = jwk.alg);
+    if (typeof alg !== 'string' || !alg) {
+        throw new TypeError('"alg" argument is required when "jwk.alg" is not present');
+    }
+    switch (jwk.kty) {
+        case 'oct':
+            if (typeof jwk.k !== 'string' || !jwk.k) {
+                throw new TypeError('missing "k" (Key Value) Parameter value');
+            }
+            octAsKeyObject !== null && octAsKeyObject !== void 0 ? octAsKeyObject : (octAsKeyObject = jwk.ext !== true);
+            if (octAsKeyObject) {
+                return (0, jwk_to_key_js_1.default)({ ...jwk, alg, ext: false });
+            }
+            return (0, base64url_js_1.decode)(jwk.k);
+        case 'RSA':
+            if (jwk.oth !== undefined) {
+                throw new errors_js_1.JOSENotSupported('RSA JWK "oth" (Other Primes Info) Parameter value is not supported');
+            }
+        case 'EC':
+        case 'OKP':
+            return (0, jwk_to_key_js_1.default)({ ...jwk, alg });
+        default:
+            throw new errors_js_1.JOSENotSupported('Unsupported "kty" (Key Type) Parameter value');
+    }
+}
+exports.importJWK = importJWK;
+
+},{"../lib/format_pem.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/format_pem.js","../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","../runtime/asn1.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/asn1.js","../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","../runtime/jwk_to_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/jwk_to_key.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/aesgcmkw.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.unwrap = exports.wrap = void 0;
+const encrypt_js_1 = require("../runtime/encrypt.js");
+const decrypt_js_1 = require("../runtime/decrypt.js");
+const iv_js_1 = require("./iv.js");
+const base64url_js_1 = require("../runtime/base64url.js");
+async function wrap(alg, key, cek, iv) {
+    const jweAlgorithm = alg.substr(0, 7);
+    iv || (iv = (0, iv_js_1.default)(jweAlgorithm));
+    const { ciphertext: encryptedKey, tag } = await (0, encrypt_js_1.default)(jweAlgorithm, cek, key, iv, new Uint8Array(0));
+    return { encryptedKey, iv: (0, base64url_js_1.encode)(iv), tag: (0, base64url_js_1.encode)(tag) };
+}
+exports.wrap = wrap;
+async function unwrap(alg, key, encryptedKey, iv, tag) {
+    const jweAlgorithm = alg.substr(0, 7);
+    return (0, decrypt_js_1.default)(jweAlgorithm, key, encryptedKey, iv, tag, new Uint8Array(0));
+}
+exports.unwrap = unwrap;
+
+},{"../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","../runtime/decrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/decrypt.js","../runtime/encrypt.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/encrypt.js","./iv.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/iv.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.concatKdf = exports.lengthAndInput = exports.uint32be = exports.uint64be = exports.p2s = exports.concat = exports.decoder = exports.encoder = void 0;
+exports.encoder = new TextEncoder();
+exports.decoder = new TextDecoder();
+const MAX_INT32 = 2 ** 32;
+function concat(...buffers) {
+    const size = buffers.reduce((acc, { length }) => acc + length, 0);
+    const buf = new Uint8Array(size);
+    let i = 0;
+    buffers.forEach((buffer) => {
+        buf.set(buffer, i);
+        i += buffer.length;
+    });
+    return buf;
+}
+exports.concat = concat;
+function p2s(alg, p2sInput) {
+    return concat(exports.encoder.encode(alg), new Uint8Array([0]), p2sInput);
+}
+exports.p2s = p2s;
+function writeUInt32BE(buf, value, offset) {
+    if (value < 0 || value >= MAX_INT32) {
+        throw new RangeError(`value must be >= 0 and <= ${MAX_INT32 - 1}. Received ${value}`);
+    }
+    buf.set([value >>> 24, value >>> 16, value >>> 8, value & 0xff], offset);
+}
+function uint64be(value) {
+    const high = Math.floor(value / MAX_INT32);
+    const low = value % MAX_INT32;
+    const buf = new Uint8Array(8);
+    writeUInt32BE(buf, high, 0);
+    writeUInt32BE(buf, low, 4);
+    return buf;
+}
+exports.uint64be = uint64be;
+function uint32be(value) {
+    const buf = new Uint8Array(4);
+    writeUInt32BE(buf, value);
+    return buf;
+}
+exports.uint32be = uint32be;
+function lengthAndInput(input) {
+    return concat(uint32be(input.length), input);
+}
+exports.lengthAndInput = lengthAndInput;
+async function concatKdf(digest, secret, bits, value) {
+    const iterations = Math.ceil((bits >> 3) / 32);
+    let res;
+    for (let iter = 1; iter <= iterations; iter++) {
+        const buf = new Uint8Array(4 + secret.length + value.length);
+        buf.set(uint32be(iter));
+        buf.set(secret, 4);
+        buf.set(value, 4 + secret.length);
+        if (!res) {
+            res = await digest('sha256', buf);
+        }
+        else {
+            res = concat(res, await digest('sha256', buf));
+        }
+    }
+    res = res.slice(0, bits >> 3);
+    return res;
+}
+exports.concatKdf = concatKdf;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/cek.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.bitLength = void 0;
+const errors_js_1 = require("../util/errors.js");
+const random_js_1 = require("../runtime/random.js");
+function bitLength(alg) {
+    switch (alg) {
+        case 'A128CBC-HS256':
+            return 256;
+        case 'A192CBC-HS384':
+            return 384;
+        case 'A256CBC-HS512':
+            return 512;
+        case 'A128GCM':
+            return 128;
+        case 'A192GCM':
+            return 192;
+        case 'A256GCM':
+            return 256;
+        default:
+            throw new errors_js_1.JOSENotSupported(`Unsupported JWE Algorithm: ${alg}`);
+    }
+}
+exports.bitLength = bitLength;
+exports.default = (alg) => (0, random_js_1.default)(new Uint8Array(bitLength(alg) >> 3));
+
+},{"../runtime/random.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/random.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/check_iv_length.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const errors_js_1 = require("../util/errors.js");
+const iv_js_1 = require("./iv.js");
+const checkIvLength = (enc, iv) => {
+    if (iv.length << 3 !== (0, iv_js_1.bitLength)(enc)) {
+        throw new errors_js_1.JWEInvalid('Invalid Initialization Vector length');
+    }
+};
+exports.default = checkIvLength;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./iv.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/iv.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/check_key_type.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const invalid_key_input_js_1 = require("./invalid_key_input.js");
+const is_key_like_js_1 = require("../runtime/is_key_like.js");
+const symmetricTypeCheck = (key) => {
+    if (key instanceof Uint8Array)
+        return;
+    if (!(0, is_key_like_js_1.default)(key)) {
+        throw new TypeError((0, invalid_key_input_js_1.default)(key, ...is_key_like_js_1.types, 'Uint8Array'));
+    }
+    if (key.type !== 'secret') {
+        throw new TypeError(`${is_key_like_js_1.types.join(' or ')} instances for symmetric algorithms must be of type "secret"`);
+    }
+};
+const asymmetricTypeCheck = (key, usage) => {
+    if (!(0, is_key_like_js_1.default)(key)) {
+        throw new TypeError((0, invalid_key_input_js_1.default)(key, ...is_key_like_js_1.types));
+    }
+    if (key.type === 'secret') {
+        throw new TypeError(`${is_key_like_js_1.types.join(' or ')} instances for asymmetric algorithms must not be of type "secret"`);
+    }
+    if (usage === 'sign' && key.type === 'public') {
+        throw new TypeError(`${is_key_like_js_1.types.join(' or ')} instances for asymmetric algorithm signing must be of type "private"`);
+    }
+    if (usage === 'decrypt' && key.type === 'public') {
+        throw new TypeError(`${is_key_like_js_1.types.join(' or ')} instances for asymmetric algorithm decryption must be of type "private"`);
+    }
+    if (key.algorithm && usage === 'verify' && key.type === 'private') {
+        throw new TypeError(`${is_key_like_js_1.types.join(' or ')} instances for asymmetric algorithm verifying must be of type "public"`);
+    }
+    if (key.algorithm && usage === 'encrypt' && key.type === 'private') {
+        throw new TypeError(`${is_key_like_js_1.types.join(' or ')} instances for asymmetric algorithm encryption must be of type "public"`);
+    }
+};
+const checkKeyType = (alg, key, usage) => {
+    const symmetric = alg.startsWith('HS') ||
+        alg === 'dir' ||
+        alg.startsWith('PBES2') ||
+        /^A\d{3}(?:GCM)?KW$/.test(alg);
+    if (symmetric) {
+        symmetricTypeCheck(key);
+    }
+    else {
+        asymmetricTypeCheck(key, usage);
+    }
+};
+exports.default = checkKeyType;
+
+},{"../runtime/is_key_like.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_like.js","./invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/check_p2s.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const errors_js_1 = require("../util/errors.js");
+function checkP2s(p2s) {
+    if (!(p2s instanceof Uint8Array) || p2s.length < 8) {
+        throw new errors_js_1.JWEInvalid('PBES2 Salt Input must be 8 or more octets');
+    }
+}
+exports.default = checkP2s;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/crypto_key.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.checkEncCryptoKey = exports.checkSigCryptoKey = void 0;
+const global_js_1 = require("../runtime/global.js");
+function unusable(name, prop = 'algorithm.name') {
+    return new TypeError(`CryptoKey does not support this operation, its ${prop} must be ${name}`);
+}
+function isAlgorithm(algorithm, name) {
+    return algorithm.name === name;
+}
+function getHashLength(hash) {
+    return parseInt(hash.name.substr(4), 10);
+}
+function getNamedCurve(alg) {
+    switch (alg) {
+        case 'ES256':
+            return 'P-256';
+        case 'ES384':
+            return 'P-384';
+        case 'ES512':
+            return 'P-521';
+        default:
+            throw new Error('unreachable');
+    }
+}
+function checkUsage(key, usages) {
+    if (usages.length && !usages.some((expected) => key.usages.includes(expected))) {
+        let msg = 'CryptoKey does not support this operation, its usages must include ';
+        if (usages.length > 2) {
+            const last = usages.pop();
+            msg += `one of ${usages.join(', ')}, or ${last}.`;
+        }
+        else if (usages.length === 2) {
+            msg += `one of ${usages[0]} or ${usages[1]}.`;
+        }
+        else {
+            msg += `${usages[0]}.`;
+        }
+        throw new TypeError(msg);
+    }
+}
+function checkSigCryptoKey(key, alg, ...usages) {
+    switch (alg) {
+        case 'HS256':
+        case 'HS384':
+        case 'HS512': {
+            if (!isAlgorithm(key.algorithm, 'HMAC'))
+                throw unusable('HMAC');
+            const expected = parseInt(alg.substr(2), 10);
+            const actual = getHashLength(key.algorithm.hash);
+            if (actual !== expected)
+                throw unusable(`SHA-${expected}`, 'algorithm.hash');
+            break;
+        }
+        case 'RS256':
+        case 'RS384':
+        case 'RS512': {
+            if (!isAlgorithm(key.algorithm, 'RSASSA-PKCS1-v1_5'))
+                throw unusable('RSASSA-PKCS1-v1_5');
+            const expected = parseInt(alg.substr(2), 10);
+            const actual = getHashLength(key.algorithm.hash);
+            if (actual !== expected)
+                throw unusable(`SHA-${expected}`, 'algorithm.hash');
+            break;
+        }
+        case 'PS256':
+        case 'PS384':
+        case 'PS512': {
+            if (!isAlgorithm(key.algorithm, 'RSA-PSS'))
+                throw unusable('RSA-PSS');
+            const expected = parseInt(alg.substr(2), 10);
+            const actual = getHashLength(key.algorithm.hash);
+            if (actual !== expected)
+                throw unusable(`SHA-${expected}`, 'algorithm.hash');
+            break;
+        }
+        case (0, global_js_1.isNodeJs)() && 'EdDSA': {
+            if (key.algorithm.name !== 'NODE-ED25519' && key.algorithm.name !== 'NODE-ED448')
+                throw unusable('NODE-ED25519 or NODE-ED448');
+            break;
+        }
+        case (0, global_js_1.isCloudflareWorkers)() && 'EdDSA': {
+            if (!isAlgorithm(key.algorithm, 'NODE-ED25519'))
+                throw unusable('NODE-ED25519');
+            break;
+        }
+        case 'ES256':
+        case 'ES384':
+        case 'ES512': {
+            if (!isAlgorithm(key.algorithm, 'ECDSA'))
+                throw unusable('ECDSA');
+            const expected = getNamedCurve(alg);
+            const actual = key.algorithm.namedCurve;
+            if (actual !== expected)
+                throw unusable(expected, 'algorithm.namedCurve');
+            break;
+        }
+        default:
+            throw new TypeError('CryptoKey does not support this operation');
+    }
+    checkUsage(key, usages);
+}
+exports.checkSigCryptoKey = checkSigCryptoKey;
+function checkEncCryptoKey(key, alg, ...usages) {
+    switch (alg) {
+        case 'A128GCM':
+        case 'A192GCM':
+        case 'A256GCM': {
+            if (!isAlgorithm(key.algorithm, 'AES-GCM'))
+                throw unusable('AES-GCM');
+            const expected = parseInt(alg.substr(1, 3), 10);
+            const actual = key.algorithm.length;
+            if (actual !== expected)
+                throw unusable(expected, 'algorithm.length');
+            break;
+        }
+        case 'A128KW':
+        case 'A192KW':
+        case 'A256KW': {
+            if (!isAlgorithm(key.algorithm, 'AES-KW'))
+                throw unusable('AES-KW');
+            const expected = parseInt(alg.substr(1, 3), 10);
+            const actual = key.algorithm.length;
+            if (actual !== expected)
+                throw unusable(expected, 'algorithm.length');
+            break;
+        }
+        case 'ECDH-ES':
+            if (!isAlgorithm(key.algorithm, 'ECDH'))
+                throw unusable('ECDH');
+            break;
+        case 'PBES2-HS256+A128KW':
+        case 'PBES2-HS384+A192KW':
+        case 'PBES2-HS512+A256KW':
+            if (!isAlgorithm(key.algorithm, 'PBKDF2'))
+                throw unusable('PBKDF2');
+            break;
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512': {
+            if (!isAlgorithm(key.algorithm, 'RSA-OAEP'))
+                throw unusable('RSA-OAEP');
+            const expected = parseInt(alg.substr(9), 10) || 1;
+            const actual = getHashLength(key.algorithm.hash);
+            if (actual !== expected)
+                throw unusable(`SHA-${expected}`, 'algorithm.hash');
+            break;
+        }
+        default:
+            throw new TypeError('CryptoKey does not support this operation');
+    }
+    checkUsage(key, usages);
+}
+exports.checkEncCryptoKey = checkEncCryptoKey;
+
+},{"../runtime/global.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/global.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/decrypt_key_management.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const aeskw_js_1 = require("../runtime/aeskw.js");
+const ECDH = require("../runtime/ecdhes.js");
+const pbes2kw_js_1 = require("../runtime/pbes2kw.js");
+const rsaes_js_1 = require("../runtime/rsaes.js");
+const base64url_js_1 = require("../runtime/base64url.js");
+const errors_js_1 = require("../util/errors.js");
+const cek_js_1 = require("../lib/cek.js");
+const import_js_1 = require("../key/import.js");
+const check_key_type_js_1 = require("./check_key_type.js");
+const is_object_js_1 = require("./is_object.js");
+const aesgcmkw_js_1 = require("./aesgcmkw.js");
+async function decryptKeyManagement(alg, key, encryptedKey, joseHeader) {
+    (0, check_key_type_js_1.default)(alg, key, 'decrypt');
+    switch (alg) {
+        case 'dir': {
+            if (encryptedKey !== undefined)
+                throw new errors_js_1.JWEInvalid('Encountered unexpected JWE Encrypted Key');
+            return key;
+        }
+        case 'ECDH-ES':
+            if (encryptedKey !== undefined)
+                throw new errors_js_1.JWEInvalid('Encountered unexpected JWE Encrypted Key');
+        case 'ECDH-ES+A128KW':
+        case 'ECDH-ES+A192KW':
+        case 'ECDH-ES+A256KW': {
+            if (!(0, is_object_js_1.default)(joseHeader.epk))
+                throw new errors_js_1.JWEInvalid(`JOSE Header "epk" (Ephemeral Public Key) missing or invalid`);
+            if (!ECDH.ecdhAllowed(key))
+                throw new errors_js_1.JOSENotSupported('ECDH-ES with the provided key is not allowed or not supported by your javascript runtime');
+            const epk = await (0, import_js_1.importJWK)(joseHeader.epk, alg);
+            let partyUInfo;
+            let partyVInfo;
+            if (joseHeader.apu !== undefined) {
+                if (typeof joseHeader.apu !== 'string')
+                    throw new errors_js_1.JWEInvalid(`JOSE Header "apu" (Agreement PartyUInfo) invalid`);
+                partyUInfo = (0, base64url_js_1.decode)(joseHeader.apu);
+            }
+            if (joseHeader.apv !== undefined) {
+                if (typeof joseHeader.apv !== 'string')
+                    throw new errors_js_1.JWEInvalid(`JOSE Header "apv" (Agreement PartyVInfo) invalid`);
+                partyVInfo = (0, base64url_js_1.decode)(joseHeader.apv);
+            }
+            const sharedSecret = await ECDH.deriveKey(epk, key, alg === 'ECDH-ES' ? joseHeader.enc : alg, parseInt(alg.substr(-5, 3), 10) || (0, cek_js_1.bitLength)(joseHeader.enc), partyUInfo, partyVInfo);
+            if (alg === 'ECDH-ES')
+                return sharedSecret;
+            if (encryptedKey === undefined)
+                throw new errors_js_1.JWEInvalid('JWE Encrypted Key missing');
+            return (0, aeskw_js_1.unwrap)(alg.substr(-6), sharedSecret, encryptedKey);
+        }
+        case 'RSA1_5':
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512': {
+            if (encryptedKey === undefined)
+                throw new errors_js_1.JWEInvalid('JWE Encrypted Key missing');
+            return (0, rsaes_js_1.decrypt)(alg, key, encryptedKey);
+        }
+        case 'PBES2-HS256+A128KW':
+        case 'PBES2-HS384+A192KW':
+        case 'PBES2-HS512+A256KW': {
+            if (encryptedKey === undefined)
+                throw new errors_js_1.JWEInvalid('JWE Encrypted Key missing');
+            if (typeof joseHeader.p2c !== 'number')
+                throw new errors_js_1.JWEInvalid(`JOSE Header "p2c" (PBES2 Count) missing or invalid`);
+            if (typeof joseHeader.p2s !== 'string')
+                throw new errors_js_1.JWEInvalid(`JOSE Header "p2s" (PBES2 Salt) missing or invalid`);
+            return (0, pbes2kw_js_1.decrypt)(alg, key, encryptedKey, joseHeader.p2c, (0, base64url_js_1.decode)(joseHeader.p2s));
+        }
+        case 'A128KW':
+        case 'A192KW':
+        case 'A256KW': {
+            if (encryptedKey === undefined)
+                throw new errors_js_1.JWEInvalid('JWE Encrypted Key missing');
+            return (0, aeskw_js_1.unwrap)(alg, key, encryptedKey);
+        }
+        case 'A128GCMKW':
+        case 'A192GCMKW':
+        case 'A256GCMKW': {
+            if (encryptedKey === undefined)
+                throw new errors_js_1.JWEInvalid('JWE Encrypted Key missing');
+            if (typeof joseHeader.iv !== 'string')
+                throw new errors_js_1.JWEInvalid(`JOSE Header "iv" (Initialization Vector) missing or invalid`);
+            if (typeof joseHeader.tag !== 'string')
+                throw new errors_js_1.JWEInvalid(`JOSE Header "tag" (Authentication Tag) missing or invalid`);
+            const iv = (0, base64url_js_1.decode)(joseHeader.iv);
+            const tag = (0, base64url_js_1.decode)(joseHeader.tag);
+            return (0, aesgcmkw_js_1.unwrap)(alg, key, encryptedKey, iv, tag);
+        }
+        default: {
+            throw new errors_js_1.JOSENotSupported('Invalid or unsupported "alg" (JWE Algorithm) header value');
+        }
+    }
+}
+exports.default = decryptKeyManagement;
+
+},{"../key/import.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/import.js","../lib/cek.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/cek.js","../runtime/aeskw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/aeskw.js","../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","../runtime/ecdhes.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/ecdhes.js","../runtime/pbes2kw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/pbes2kw.js","../runtime/rsaes.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/rsaes.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./aesgcmkw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/aesgcmkw.js","./check_key_type.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/check_key_type.js","./is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/encrypt_key_management.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const aeskw_js_1 = require("../runtime/aeskw.js");
+const ECDH = require("../runtime/ecdhes.js");
+const pbes2kw_js_1 = require("../runtime/pbes2kw.js");
+const rsaes_js_1 = require("../runtime/rsaes.js");
+const base64url_js_1 = require("../runtime/base64url.js");
+const cek_js_1 = require("../lib/cek.js");
+const errors_js_1 = require("../util/errors.js");
+const export_js_1 = require("../key/export.js");
+const check_key_type_js_1 = require("./check_key_type.js");
+const aesgcmkw_js_1 = require("./aesgcmkw.js");
+async function encryptKeyManagement(alg, enc, key, providedCek, providedParameters = {}) {
+    let encryptedKey;
+    let parameters;
+    let cek;
+    (0, check_key_type_js_1.default)(alg, key, 'encrypt');
+    switch (alg) {
+        case 'dir': {
+            cek = key;
+            break;
+        }
+        case 'ECDH-ES':
+        case 'ECDH-ES+A128KW':
+        case 'ECDH-ES+A192KW':
+        case 'ECDH-ES+A256KW': {
+            if (!ECDH.ecdhAllowed(key)) {
+                throw new errors_js_1.JOSENotSupported('ECDH-ES with the provided key is not allowed or not supported by your javascript runtime');
+            }
+            const { apu, apv } = providedParameters;
+            let { epk: ephemeralKey } = providedParameters;
+            ephemeralKey || (ephemeralKey = await ECDH.generateEpk(key));
+            const { x, y, crv, kty } = await (0, export_js_1.exportJWK)(ephemeralKey);
+            const sharedSecret = await ECDH.deriveKey(key, ephemeralKey, alg === 'ECDH-ES' ? enc : alg, parseInt(alg.substr(-5, 3), 10) || (0, cek_js_1.bitLength)(enc), apu, apv);
+            parameters = { epk: { x, y, crv, kty } };
+            if (apu)
+                parameters.apu = (0, base64url_js_1.encode)(apu);
+            if (apv)
+                parameters.apv = (0, base64url_js_1.encode)(apv);
+            if (alg === 'ECDH-ES') {
+                cek = sharedSecret;
+                break;
+            }
+            cek = providedCek || (0, cek_js_1.default)(enc);
+            const kwAlg = alg.substr(-6);
+            encryptedKey = await (0, aeskw_js_1.wrap)(kwAlg, sharedSecret, cek);
+            break;
+        }
+        case 'RSA1_5':
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512': {
+            cek = providedCek || (0, cek_js_1.default)(enc);
+            encryptedKey = await (0, rsaes_js_1.encrypt)(alg, key, cek);
+            break;
+        }
+        case 'PBES2-HS256+A128KW':
+        case 'PBES2-HS384+A192KW':
+        case 'PBES2-HS512+A256KW': {
+            cek = providedCek || (0, cek_js_1.default)(enc);
+            const { p2c, p2s } = providedParameters;
+            ({ encryptedKey, ...parameters } = await (0, pbes2kw_js_1.encrypt)(alg, key, cek, p2c, p2s));
+            break;
+        }
+        case 'A128KW':
+        case 'A192KW':
+        case 'A256KW': {
+            cek = providedCek || (0, cek_js_1.default)(enc);
+            encryptedKey = await (0, aeskw_js_1.wrap)(alg, key, cek);
+            break;
+        }
+        case 'A128GCMKW':
+        case 'A192GCMKW':
+        case 'A256GCMKW': {
+            cek = providedCek || (0, cek_js_1.default)(enc);
+            const { iv } = providedParameters;
+            ({ encryptedKey, ...parameters } = await (0, aesgcmkw_js_1.wrap)(alg, key, cek, iv));
+            break;
+        }
+        default: {
+            throw new errors_js_1.JOSENotSupported('Invalid or unsupported "alg" (JWE Algorithm) header value');
+        }
+    }
+    return { cek, encryptedKey, parameters };
+}
+exports.default = encryptKeyManagement;
+
+},{"../key/export.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/key/export.js","../lib/cek.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/cek.js","../runtime/aeskw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/aeskw.js","../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","../runtime/ecdhes.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/ecdhes.js","../runtime/pbes2kw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/pbes2kw.js","../runtime/rsaes.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/rsaes.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./aesgcmkw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/aesgcmkw.js","./check_key_type.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/check_key_type.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/epoch.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = (date) => Math.floor(date.getTime() / 1000);
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/format_pem.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = (b64, descriptor) => {
+    const newlined = (b64.match(/.{1,64}/g) || []).join('\n');
+    return `-----BEGIN ${descriptor}-----\n${newlined}\n-----END ${descriptor}-----`;
+};
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = (actual, ...types) => {
+    let msg = 'Key must be ';
+    if (types.length > 2) {
+        const last = types.pop();
+        msg += `one of type ${types.join(', ')}, or ${last}.`;
+    }
+    else if (types.length === 2) {
+        msg += `one of type ${types[0]} or ${types[1]}.`;
+    }
+    else {
+        msg += `of type ${types[0]}.`;
+    }
+    if (actual == null) {
+        msg += ` Received ${actual}`;
+    }
+    else if (typeof actual === 'function' && actual.name) {
+        msg += ` Received function ${actual.name}`;
+    }
+    else if (typeof actual === 'object' && actual != null) {
+        if (actual.constructor && actual.constructor.name) {
+            msg += ` Received an instance of ${actual.constructor.name}`;
+        }
+    }
+    return msg;
+};
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_disjoint.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const isDisjoint = (...headers) => {
+    const sources = headers.filter(Boolean);
+    if (sources.length === 0 || sources.length === 1) {
+        return true;
+    }
+    let acc;
+    for (const header of sources) {
+        const parameters = Object.keys(header);
+        if (!acc || acc.size === 0) {
+            acc = new Set(parameters);
+            continue;
+        }
+        for (const parameter of parameters) {
+            if (acc.has(parameter)) {
+                return false;
+            }
+            acc.add(parameter);
+        }
+    }
+    return true;
+};
+exports.default = isDisjoint;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+function isObjectLike(value) {
+    return typeof value === 'object' && value !== null;
+}
+function isObject(input) {
+    if (!isObjectLike(input) || Object.prototype.toString.call(input) !== '[object Object]') {
+        return false;
+    }
+    if (Object.getPrototypeOf(input) === null) {
+        return true;
+    }
+    let proto = input;
+    while (Object.getPrototypeOf(proto) !== null) {
+        proto = Object.getPrototypeOf(proto);
+    }
+    return Object.getPrototypeOf(input) === proto;
+}
+exports.default = isObject;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/iv.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.bitLength = void 0;
+const errors_js_1 = require("../util/errors.js");
+const random_js_1 = require("../runtime/random.js");
+function bitLength(alg) {
+    switch (alg) {
+        case 'A128CBC-HS256':
+            return 128;
+        case 'A128GCM':
+            return 96;
+        case 'A128GCMKW':
+            return 96;
+        case 'A192CBC-HS384':
+            return 128;
+        case 'A192GCM':
+            return 96;
+        case 'A192GCMKW':
+            return 96;
+        case 'A256CBC-HS512':
+            return 128;
+        case 'A256GCM':
+            return 96;
+        case 'A256GCMKW':
+            return 96;
+        default:
+            throw new errors_js_1.JOSENotSupported(`Unsupported JWE Algorithm: ${alg}`);
+    }
+}
+exports.bitLength = bitLength;
+exports.default = (alg) => (0, random_js_1.default)(new Uint8Array(bitLength(alg) >> 3));
+
+},{"../runtime/random.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/random.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/jwt_claims_set.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const errors_js_1 = require("../util/errors.js");
+const buffer_utils_js_1 = require("./buffer_utils.js");
+const epoch_js_1 = require("./epoch.js");
+const secs_js_1 = require("./secs.js");
+const is_object_js_1 = require("./is_object.js");
+const normalizeTyp = (value) => value.toLowerCase().replace(/^application\//, '');
+const checkAudiencePresence = (audPayload, audOption) => {
+    if (typeof audPayload === 'string') {
+        return audOption.includes(audPayload);
+    }
+    if (Array.isArray(audPayload)) {
+        return audOption.some(Set.prototype.has.bind(new Set(audPayload)));
+    }
+    return false;
+};
+exports.default = (protectedHeader, encodedPayload, options = {}) => {
+    const { typ } = options;
+    if (typ &&
+        (typeof protectedHeader.typ !== 'string' ||
+            normalizeTyp(protectedHeader.typ) !== normalizeTyp(typ))) {
+        throw new errors_js_1.JWTClaimValidationFailed('unexpected "typ" JWT header value', 'typ', 'check_failed');
+    }
+    let payload;
+    try {
+        payload = JSON.parse(buffer_utils_js_1.decoder.decode(encodedPayload));
+    }
+    catch {
+    }
+    if (!(0, is_object_js_1.default)(payload)) {
+        throw new errors_js_1.JWTInvalid('JWT Claims Set must be a top-level JSON object');
+    }
+    const { issuer } = options;
+    if (issuer && !(Array.isArray(issuer) ? issuer : [issuer]).includes(payload.iss)) {
+        throw new errors_js_1.JWTClaimValidationFailed('unexpected "iss" claim value', 'iss', 'check_failed');
+    }
+    const { subject } = options;
+    if (subject && payload.sub !== subject) {
+        throw new errors_js_1.JWTClaimValidationFailed('unexpected "sub" claim value', 'sub', 'check_failed');
+    }
+    const { audience } = options;
+    if (audience &&
+        !checkAudiencePresence(payload.aud, typeof audience === 'string' ? [audience] : audience)) {
+        throw new errors_js_1.JWTClaimValidationFailed('unexpected "aud" claim value', 'aud', 'check_failed');
+    }
+    let tolerance;
+    switch (typeof options.clockTolerance) {
+        case 'string':
+            tolerance = (0, secs_js_1.default)(options.clockTolerance);
+            break;
+        case 'number':
+            tolerance = options.clockTolerance;
+            break;
+        case 'undefined':
+            tolerance = 0;
+            break;
+        default:
+            throw new TypeError('Invalid clockTolerance option type');
+    }
+    const { currentDate } = options;
+    const now = (0, epoch_js_1.default)(currentDate || new Date());
+    if (payload.iat !== undefined || options.maxTokenAge) {
+        if (typeof payload.iat !== 'number') {
+            throw new errors_js_1.JWTClaimValidationFailed('"iat" claim must be a number', 'iat', 'invalid');
+        }
+        if (payload.exp === undefined && payload.iat > now + tolerance) {
+            throw new errors_js_1.JWTClaimValidationFailed('"iat" claim timestamp check failed (it should be in the past)', 'iat', 'check_failed');
+        }
+    }
+    if (payload.nbf !== undefined) {
+        if (typeof payload.nbf !== 'number') {
+            throw new errors_js_1.JWTClaimValidationFailed('"nbf" claim must be a number', 'nbf', 'invalid');
+        }
+        if (payload.nbf > now + tolerance) {
+            throw new errors_js_1.JWTClaimValidationFailed('"nbf" claim timestamp check failed', 'nbf', 'check_failed');
+        }
+    }
+    if (payload.exp !== undefined) {
+        if (typeof payload.exp !== 'number') {
+            throw new errors_js_1.JWTClaimValidationFailed('"exp" claim must be a number', 'exp', 'invalid');
+        }
+        if (payload.exp <= now - tolerance) {
+            throw new errors_js_1.JWTExpired('"exp" claim timestamp check failed', 'exp', 'check_failed');
+        }
+    }
+    if (options.maxTokenAge) {
+        const age = now - payload.iat;
+        const max = typeof options.maxTokenAge === 'number' ? options.maxTokenAge : (0, secs_js_1.default)(options.maxTokenAge);
+        if (age - tolerance > max) {
+            throw new errors_js_1.JWTExpired('"iat" claim timestamp check failed (too far in the past)', 'iat', 'check_failed');
+        }
+        if (age < 0 - tolerance) {
+            throw new errors_js_1.JWTClaimValidationFailed('"iat" claim timestamp check failed (it should be in the past)', 'iat', 'check_failed');
+        }
+    }
+    return payload;
+};
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","./epoch.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/epoch.js","./is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","./secs.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/secs.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/secs.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const minute = 60;
+const hour = minute * 60;
+const day = hour * 24;
+const week = day * 7;
+const year = day * 365.25;
+const REGEX = /^(\d+|\d+\.\d+) ?(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)$/i;
+exports.default = (str) => {
+    const matched = REGEX.exec(str);
+    if (!matched) {
+        throw new TypeError('Invalid time period format');
+    }
+    const value = parseFloat(matched[1]);
+    const unit = matched[2].toLowerCase();
+    switch (unit) {
+        case 'sec':
+        case 'secs':
+        case 'second':
+        case 'seconds':
+        case 's':
+            return Math.round(value);
+        case 'minute':
+        case 'minutes':
+        case 'min':
+        case 'mins':
+        case 'm':
+            return Math.round(value * minute);
+        case 'hour':
+        case 'hours':
+        case 'hr':
+        case 'hrs':
+        case 'h':
+            return Math.round(value * hour);
+        case 'day':
+        case 'days':
+        case 'd':
+            return Math.round(value * day);
+        case 'week':
+        case 'weeks':
+        case 'w':
+            return Math.round(value * week);
+        default:
+            return Math.round(value * year);
+    }
+};
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/validate_algorithms.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const validateAlgorithms = (option, algorithms) => {
+    if (algorithms !== undefined &&
+        (!Array.isArray(algorithms) || algorithms.some((s) => typeof s !== 'string'))) {
+        throw new TypeError(`"${option}" option must be an array of strings`);
+    }
+    if (!algorithms) {
+        return undefined;
+    }
+    return new Set(algorithms);
+};
+exports.default = validateAlgorithms;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/validate_crit.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const errors_js_1 = require("../util/errors.js");
+function validateCrit(Err, recognizedDefault, recognizedOption, protectedHeader, joseHeader) {
+    if (joseHeader.crit !== undefined && protectedHeader.crit === undefined) {
+        throw new Err('"crit" (Critical) Header Parameter MUST be integrity protected');
+    }
+    if (!protectedHeader || protectedHeader.crit === undefined) {
+        return new Set();
+    }
+    if (!Array.isArray(protectedHeader.crit) ||
+        protectedHeader.crit.length === 0 ||
+        protectedHeader.crit.some((input) => typeof input !== 'string' || input.length === 0)) {
+        throw new Err('"crit" (Critical) Header Parameter MUST be an array of non-empty strings when present');
+    }
+    let recognized;
+    if (recognizedOption !== undefined) {
+        recognized = new Map([...Object.entries(recognizedOption), ...recognizedDefault.entries()]);
+    }
+    else {
+        recognized = recognizedDefault;
+    }
+    for (const parameter of protectedHeader.crit) {
+        if (!recognized.has(parameter)) {
+            throw new errors_js_1.JOSENotSupported(`Extension Header Parameter "${parameter}" is not recognized`);
+        }
+        if (joseHeader[parameter] === undefined) {
+            throw new Err(`Extension Header Parameter "${parameter}" is missing`);
+        }
+        else if (recognized.get(parameter) && protectedHeader[parameter] === undefined) {
+            throw new Err(`Extension Header Parameter "${parameter}" MUST be integrity protected`);
+        }
+    }
+    return new Set(protectedHeader.crit);
+}
+exports.default = validateCrit;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/aeskw.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.unwrap = exports.wrap = void 0;
+const buffer_1 = require("buffer");
+const crypto_1 = require("crypto");
+const errors_js_1 = require("../util/errors.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const secret_key_js_1 = require("./secret_key.js");
+const webcrypto_js_1 = require("./webcrypto.js");
+const crypto_key_js_1 = require("../lib/crypto_key.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+const invalid_key_input_js_1 = require("../lib/invalid_key_input.js");
+const ciphers_js_1 = require("./ciphers.js");
+function checkKeySize(key, alg) {
+    if (key.symmetricKeySize << 3 !== parseInt(alg.substr(1, 3), 10)) {
+        throw new TypeError(`Invalid key size for alg: ${alg}`);
+    }
+}
+function ensureKeyObject(key, alg, usage) {
+    if ((0, is_key_object_js_1.default)(key)) {
+        return key;
+    }
+    if (key instanceof Uint8Array) {
+        return (0, secret_key_js_1.default)(key);
+    }
+    if ((0, webcrypto_js_1.isCryptoKey)(key)) {
+        (0, crypto_key_js_1.checkEncCryptoKey)(key, alg, usage);
+        return crypto_1.KeyObject.from(key);
+    }
+    throw new TypeError((0, invalid_key_input_js_1.default)(key, 'KeyObject', 'CryptoKey', 'Uint8Array'));
+}
+const wrap = async (alg, key, cek) => {
+    const size = parseInt(alg.substr(1, 3), 10);
+    const algorithm = `aes${size}-wrap`;
+    if (!(0, ciphers_js_1.default)(algorithm)) {
+        throw new errors_js_1.JOSENotSupported(`alg ${alg} is not supported either by JOSE or your javascript runtime`);
+    }
+    const keyObject = ensureKeyObject(key, alg, 'wrapKey');
+    checkKeySize(keyObject, alg);
+    const cipher = (0, crypto_1.createCipheriv)(algorithm, keyObject, buffer_1.Buffer.alloc(8, 0xa6));
+    return (0, buffer_utils_js_1.concat)(cipher.update(cek), cipher.final());
+};
+exports.wrap = wrap;
+const unwrap = async (alg, key, encryptedKey) => {
+    const size = parseInt(alg.substr(1, 3), 10);
+    const algorithm = `aes${size}-wrap`;
+    if (!(0, ciphers_js_1.default)(algorithm)) {
+        throw new errors_js_1.JOSENotSupported(`alg ${alg} is not supported either by JOSE or your javascript runtime`);
+    }
+    const keyObject = ensureKeyObject(key, alg, 'unwrapKey');
+    checkKeySize(keyObject, alg);
+    const cipher = (0, crypto_1.createDecipheriv)(algorithm, keyObject, buffer_1.Buffer.alloc(8, 0xa6));
+    return (0, buffer_utils_js_1.concat)(cipher.update(encryptedKey), cipher.final());
+};
+exports.unwrap = unwrap;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./ciphers.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/ciphers.js","./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js","./secret_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/secret_key.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js","buffer":false,"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/asn1.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fromSPKI = exports.fromPKCS8 = exports.toPKCS8 = exports.toSPKI = void 0;
+const crypto_1 = require("crypto");
+const buffer_1 = require("buffer");
+const webcrypto_js_1 = require("./webcrypto.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+const invalid_key_input_js_1 = require("../lib/invalid_key_input.js");
+const genericExport = (keyType, keyFormat, key) => {
+    let keyObject;
+    if ((0, webcrypto_js_1.isCryptoKey)(key)) {
+        if (!key.extractable) {
+            throw new TypeError('CryptoKey is not extractable');
+        }
+        keyObject = crypto_1.KeyObject.from(key);
+    }
+    else if ((0, is_key_object_js_1.default)(key)) {
+        keyObject = key;
+    }
+    else {
+        throw new TypeError((0, invalid_key_input_js_1.default)(key, 'KeyObject', 'CryptoKey'));
+    }
+    if (keyObject.type !== keyType) {
+        throw new TypeError(`key is not a ${keyType} key`);
+    }
+    return keyObject.export({ format: 'pem', type: keyFormat });
+};
+const toSPKI = (key) => {
+    return genericExport('public', 'spki', key);
+};
+exports.toSPKI = toSPKI;
+const toPKCS8 = (key) => {
+    return genericExport('private', 'pkcs8', key);
+};
+exports.toPKCS8 = toPKCS8;
+const fromPKCS8 = (pem) => (0, crypto_1.createPrivateKey)({
+    key: buffer_1.Buffer.from(pem.replace(/(?:-----(?:BEGIN|END) PRIVATE KEY-----|\s)/g, ''), 'base64'),
+    type: 'pkcs8',
+    format: 'der',
+});
+exports.fromPKCS8 = fromPKCS8;
+const fromSPKI = (pem) => (0, crypto_1.createPublicKey)({
+    key: buffer_1.Buffer.from(pem.replace(/(?:-----(?:BEGIN|END) PUBLIC KEY-----|\s)/g, ''), 'base64'),
+    type: 'spki',
+    format: 'der',
+});
+exports.fromSPKI = fromSPKI;
+
+},{"../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js","./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js","buffer":false,"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/asn1_sequence_decoder.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const tagInteger = 0x02;
+const tagSequence = 0x30;
+class Asn1SequenceDecoder {
+    constructor(buffer) {
+        if (buffer[0] !== tagSequence) {
+            throw new TypeError();
+        }
+        this.buffer = buffer;
+        this.offset = 1;
+        const len = this.decodeLength();
+        if (len !== buffer.length - this.offset) {
+            throw new TypeError();
+        }
+    }
+    decodeLength() {
+        let length = this.buffer[this.offset++];
+        if (length & 0x80) {
+            const nBytes = length & ~0x80;
+            length = 0;
+            for (let i = 0; i < nBytes; i++)
+                length = (length << 8) | this.buffer[this.offset + i];
+            this.offset += nBytes;
+        }
+        return length;
+    }
+    unsignedInteger() {
+        if (this.buffer[this.offset++] !== tagInteger) {
+            throw new TypeError();
+        }
+        let length = this.decodeLength();
+        if (this.buffer[this.offset] === 0) {
+            this.offset++;
+            length--;
+        }
+        const result = this.buffer.slice(this.offset, this.offset + length);
+        this.offset += length;
+        return result;
+    }
+    end() {
+        if (this.offset !== this.buffer.length) {
+            throw new TypeError();
+        }
+    }
+}
+exports.default = Asn1SequenceDecoder;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/asn1_sequence_encoder.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const buffer_1 = require("buffer");
+const errors_js_1 = require("../util/errors.js");
+const tagInteger = 0x02;
+const tagBitStr = 0x03;
+const tagOctStr = 0x04;
+const tagSequence = 0x30;
+const bZero = buffer_1.Buffer.from([0x00]);
+const bTagInteger = buffer_1.Buffer.from([tagInteger]);
+const bTagBitStr = buffer_1.Buffer.from([tagBitStr]);
+const bTagSequence = buffer_1.Buffer.from([tagSequence]);
+const bTagOctStr = buffer_1.Buffer.from([tagOctStr]);
+const encodeLength = (len) => {
+    if (len < 128)
+        return buffer_1.Buffer.from([len]);
+    const buffer = buffer_1.Buffer.alloc(5);
+    buffer.writeUInt32BE(len, 1);
+    let offset = 1;
+    while (buffer[offset] === 0)
+        offset++;
+    buffer[offset - 1] = 0x80 | (5 - offset);
+    return buffer.slice(offset - 1);
+};
+const oids = new Map([
+    ['P-256', buffer_1.Buffer.from('06 08 2A 86 48 CE 3D 03 01 07'.replace(/ /g, ''), 'hex')],
+    ['secp256k1', buffer_1.Buffer.from('06 05 2B 81 04 00 0A'.replace(/ /g, ''), 'hex')],
+    ['P-384', buffer_1.Buffer.from('06 05 2B 81 04 00 22'.replace(/ /g, ''), 'hex')],
+    ['P-521', buffer_1.Buffer.from('06 05 2B 81 04 00 23'.replace(/ /g, ''), 'hex')],
+    ['ecPublicKey', buffer_1.Buffer.from('06 07 2A 86 48 CE 3D 02 01'.replace(/ /g, ''), 'hex')],
+    ['X25519', buffer_1.Buffer.from('06 03 2B 65 6E'.replace(/ /g, ''), 'hex')],
+    ['X448', buffer_1.Buffer.from('06 03 2B 65 6F'.replace(/ /g, ''), 'hex')],
+    ['Ed25519', buffer_1.Buffer.from('06 03 2B 65 70'.replace(/ /g, ''), 'hex')],
+    ['Ed448', buffer_1.Buffer.from('06 03 2B 65 71'.replace(/ /g, ''), 'hex')],
+]);
+class DumbAsn1Encoder {
+    constructor() {
+        this.length = 0;
+        this.elements = [];
+    }
+    oidFor(oid) {
+        const bOid = oids.get(oid);
+        if (!bOid) {
+            throw new errors_js_1.JOSENotSupported('Invalid or unsupported OID');
+        }
+        this.elements.push(bOid);
+        this.length += bOid.length;
+    }
+    zero() {
+        this.elements.push(bTagInteger, buffer_1.Buffer.from([0x01]), bZero);
+        this.length += 3;
+    }
+    one() {
+        this.elements.push(bTagInteger, buffer_1.Buffer.from([0x01]), buffer_1.Buffer.from([0x01]));
+        this.length += 3;
+    }
+    unsignedInteger(integer) {
+        if (integer[0] & 0x80) {
+            const len = encodeLength(integer.length + 1);
+            this.elements.push(bTagInteger, len, bZero, integer);
+            this.length += 2 + len.length + integer.length;
+        }
+        else {
+            let i = 0;
+            while (integer[i] === 0 && (integer[i + 1] & 0x80) === 0)
+                i++;
+            const len = encodeLength(integer.length - i);
+            this.elements.push(bTagInteger, encodeLength(integer.length - i), integer.slice(i));
+            this.length += 1 + len.length + integer.length - i;
+        }
+    }
+    octStr(octStr) {
+        const len = encodeLength(octStr.length);
+        this.elements.push(bTagOctStr, encodeLength(octStr.length), octStr);
+        this.length += 1 + len.length + octStr.length;
+    }
+    bitStr(bitS) {
+        const len = encodeLength(bitS.length + 1);
+        this.elements.push(bTagBitStr, encodeLength(bitS.length + 1), bZero, bitS);
+        this.length += 1 + len.length + bitS.length + 1;
+    }
+    add(seq) {
+        this.elements.push(seq);
+        this.length += seq.length;
+    }
+    end(tag = bTagSequence) {
+        const len = encodeLength(this.length);
+        return buffer_1.Buffer.concat([tag, len, ...this.elements], 1 + len.length + this.length);
+    }
+}
+exports.default = DumbAsn1Encoder;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.decode = exports.encode = exports.encodeBase64 = exports.decodeBase64 = void 0;
+const buffer_1 = require("buffer");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+let encodeImpl;
+function normalize(input) {
+    let encoded = input;
+    if (encoded instanceof Uint8Array) {
+        encoded = buffer_utils_js_1.decoder.decode(encoded);
+    }
+    return encoded;
+}
+if (buffer_1.Buffer.isEncoding('base64url')) {
+    encodeImpl = (input) => buffer_1.Buffer.from(input).toString('base64url');
+}
+else {
+    encodeImpl = (input) => buffer_1.Buffer.from(input).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+const decodeBase64 = (input) => buffer_1.Buffer.from(input, 'base64');
+exports.decodeBase64 = decodeBase64;
+const encodeBase64 = (input) => buffer_1.Buffer.from(input).toString('base64');
+exports.encodeBase64 = encodeBase64;
+exports.encode = encodeImpl;
+const decode = (input) => buffer_1.Buffer.from(normalize(input), 'base64');
+exports.decode = decode;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/cbc_tag.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+function cbcTag(aad, iv, ciphertext, macSize, macKey, keySize) {
+    const macData = (0, buffer_utils_js_1.concat)(aad, iv, ciphertext, (0, buffer_utils_js_1.uint64be)(aad.length << 3));
+    const hmac = (0, crypto_1.createHmac)(`sha${macSize}`, macKey);
+    hmac.update(macData);
+    return hmac.digest().slice(0, keySize >> 3);
+}
+exports.default = cbcTag;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/check_cek_length.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const errors_js_1 = require("../util/errors.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+const checkCekLength = (enc, cek) => {
+    let expected;
+    switch (enc) {
+        case 'A128CBC-HS256':
+        case 'A192CBC-HS384':
+        case 'A256CBC-HS512':
+            expected = parseInt(enc.substr(-3), 10);
+            break;
+        case 'A128GCM':
+        case 'A192GCM':
+        case 'A256GCM':
+            expected = parseInt(enc.substr(1, 3), 10);
+            break;
+        default:
+            throw new errors_js_1.JOSENotSupported(`Content Encryption Algorithm ${enc} is not supported either by JOSE or your javascript runtime`);
+    }
+    if (cek instanceof Uint8Array) {
+        if (cek.length << 3 !== expected) {
+            throw new errors_js_1.JWEInvalid('Invalid Content Encryption Key length');
+        }
+        return;
+    }
+    if ((0, is_key_object_js_1.default)(cek) && cek.type === 'secret') {
+        if (cek.symmetricKeySize << 3 !== expected) {
+            throw new errors_js_1.JWEInvalid('Invalid Content Encryption Key length');
+        }
+        return;
+    }
+    throw new TypeError('Invalid Content Encryption Key type');
+};
+exports.default = checkCekLength;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/check_modulus_length.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.setModulusLength = exports.weakMap = void 0;
+exports.weakMap = new WeakMap();
+const getLength = (buf, index) => {
+    let len = buf.readUInt8(1);
+    if ((len & 0x80) === 0) {
+        if (index === 0) {
+            return len;
+        }
+        return getLength(buf.subarray(2 + len), index - 1);
+    }
+    const num = len & 0x7f;
+    len = 0;
+    for (let i = 0; i < num; i++) {
+        len <<= 8;
+        const j = buf.readUInt8(2 + i);
+        len |= j;
+    }
+    if (index === 0) {
+        return len;
+    }
+    return getLength(buf.subarray(2 + len), index - 1);
+};
+const getLengthOfSeqIndex = (sequence, index) => {
+    const len = sequence.readUInt8(1);
+    if ((len & 0x80) === 0) {
+        return getLength(sequence.subarray(2), index);
+    }
+    const num = len & 0x7f;
+    return getLength(sequence.subarray(2 + num), index);
+};
+const getModulusLength = (key) => {
+    var _a, _b;
+    if (exports.weakMap.has(key)) {
+        return exports.weakMap.get(key);
+    }
+    const modulusLength = (_b = (_a = key.asymmetricKeyDetails) === null || _a === void 0 ? void 0 : _a.modulusLength) !== null && _b !== void 0 ? _b : (getLengthOfSeqIndex(key.export({ format: 'der', type: 'pkcs1' }), key.type === 'private' ? 1 : 0) -
+        1) <<
+        3;
+    exports.weakMap.set(key, modulusLength);
+    return modulusLength;
+};
+const setModulusLength = (keyObject, modulusLength) => {
+    exports.weakMap.set(keyObject, modulusLength);
+};
+exports.setModulusLength = setModulusLength;
+exports.default = (key, alg) => {
+    if (getModulusLength(key) < 2048) {
+        throw new TypeError(`${alg} requires key modulusLength to be 2048 bits or larger`);
+    }
+};
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/ciphers.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+let ciphers;
+exports.default = (algorithm) => {
+    ciphers || (ciphers = new Set((0, crypto_1.getCiphers)()));
+    return ciphers.has(algorithm);
+};
+
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/decrypt.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+const check_iv_length_js_1 = require("../lib/check_iv_length.js");
+const check_cek_length_js_1 = require("./check_cek_length.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const errors_js_1 = require("../util/errors.js");
+const timing_safe_equal_js_1 = require("./timing_safe_equal.js");
+const cbc_tag_js_1 = require("./cbc_tag.js");
+const webcrypto_js_1 = require("./webcrypto.js");
+const crypto_key_js_1 = require("../lib/crypto_key.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+const invalid_key_input_js_1 = require("../lib/invalid_key_input.js");
+const ciphers_js_1 = require("./ciphers.js");
+async function cbcDecrypt(enc, cek, ciphertext, iv, tag, aad) {
+    const keySize = parseInt(enc.substr(1, 3), 10);
+    if ((0, is_key_object_js_1.default)(cek)) {
+        cek = cek.export();
+    }
+    const encKey = cek.subarray(keySize >> 3);
+    const macKey = cek.subarray(0, keySize >> 3);
+    const macSize = parseInt(enc.substr(-3), 10);
+    const algorithm = `aes-${keySize}-cbc`;
+    if (!(0, ciphers_js_1.default)(algorithm)) {
+        throw new errors_js_1.JOSENotSupported(`alg ${enc} is not supported by your javascript runtime`);
+    }
+    const expectedTag = (0, cbc_tag_js_1.default)(aad, iv, ciphertext, macSize, macKey, keySize);
+    let macCheckPassed;
+    try {
+        macCheckPassed = (0, timing_safe_equal_js_1.default)(tag, expectedTag);
+    }
+    catch {
+    }
+    if (!macCheckPassed) {
+        throw new errors_js_1.JWEDecryptionFailed();
+    }
+    let plaintext;
+    try {
+        const cipher = (0, crypto_1.createDecipheriv)(algorithm, encKey, iv);
+        plaintext = (0, buffer_utils_js_1.concat)(cipher.update(ciphertext), cipher.final());
+    }
+    catch {
+    }
+    if (!plaintext) {
+        throw new errors_js_1.JWEDecryptionFailed();
+    }
+    return plaintext;
+}
+async function gcmDecrypt(enc, cek, ciphertext, iv, tag, aad) {
+    const keySize = parseInt(enc.substr(1, 3), 10);
+    const algorithm = `aes-${keySize}-gcm`;
+    if (!(0, ciphers_js_1.default)(algorithm)) {
+        throw new errors_js_1.JOSENotSupported(`alg ${enc} is not supported by your javascript runtime`);
+    }
+    try {
+        const cipher = (0, crypto_1.createDecipheriv)(algorithm, cek, iv, { authTagLength: 16 });
+        cipher.setAuthTag(tag);
+        if (aad.byteLength) {
+            cipher.setAAD(aad, { plaintextLength: ciphertext.length });
+        }
+        return (0, buffer_utils_js_1.concat)(cipher.update(ciphertext), cipher.final());
+    }
+    catch {
+        throw new errors_js_1.JWEDecryptionFailed();
+    }
+}
+const decrypt = async (enc, cek, ciphertext, iv, tag, aad) => {
+    let key;
+    if ((0, webcrypto_js_1.isCryptoKey)(cek)) {
+        (0, crypto_key_js_1.checkEncCryptoKey)(cek, enc, 'decrypt');
+        key = crypto_1.KeyObject.from(cek);
+    }
+    else if (cek instanceof Uint8Array || (0, is_key_object_js_1.default)(cek)) {
+        key = cek;
+    }
+    else {
+        throw new TypeError((0, invalid_key_input_js_1.default)(cek, 'KeyObject', 'CryptoKey', 'Uint8Array'));
+    }
+    (0, check_cek_length_js_1.default)(enc, key);
+    (0, check_iv_length_js_1.default)(enc, iv);
+    switch (enc) {
+        case 'A128CBC-HS256':
+        case 'A192CBC-HS384':
+        case 'A256CBC-HS512':
+            return cbcDecrypt(enc, key, ciphertext, iv, tag, aad);
+        case 'A128GCM':
+        case 'A192GCM':
+        case 'A256GCM':
+            return gcmDecrypt(enc, key, ciphertext, iv, tag, aad);
+        default:
+            throw new errors_js_1.JOSENotSupported('Unsupported JWE Content Encryption Algorithm');
+    }
+};
+exports.default = decrypt;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../lib/check_iv_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/check_iv_length.js","../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./cbc_tag.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/cbc_tag.js","./check_cek_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/check_cek_length.js","./ciphers.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/ciphers.js","./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js","./timing_safe_equal.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/timing_safe_equal.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/digest.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+const digest = (algorithm, data) => (0, crypto_1.createHash)(algorithm).update(data).digest();
+exports.default = digest;
+
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/dsa_digest.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const errors_js_1 = require("../util/errors.js");
+function dsaDigest(alg) {
+    switch (alg) {
+        case 'PS256':
+        case 'RS256':
+        case 'ES256':
+        case 'ES256K':
+            return 'sha256';
+        case 'PS384':
+        case 'RS384':
+        case 'ES384':
+            return 'sha384';
+        case 'PS512':
+        case 'RS512':
+        case 'ES512':
+            return 'sha512';
+        case 'EdDSA':
+            return undefined;
+        default:
+            throw new errors_js_1.JOSENotSupported(`alg ${alg} is not supported either by JOSE or your javascript runtime`);
+    }
+}
+exports.default = dsaDigest;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/ecdhes.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ecdhAllowed = exports.generateEpk = exports.deriveKey = void 0;
+const crypto_1 = require("crypto");
+const util_1 = require("util");
+const get_named_curve_js_1 = require("./get_named_curve.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const digest_js_1 = require("./digest.js");
+const errors_js_1 = require("../util/errors.js");
+const webcrypto_js_1 = require("./webcrypto.js");
+const crypto_key_js_1 = require("../lib/crypto_key.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+const invalid_key_input_js_1 = require("../lib/invalid_key_input.js");
+const generateKeyPair = (0, util_1.promisify)(crypto_1.generateKeyPair);
+const deriveKey = async (publicKee, privateKee, algorithm, keyLength, apu = new Uint8Array(0), apv = new Uint8Array(0)) => {
+    let publicKey;
+    if ((0, webcrypto_js_1.isCryptoKey)(publicKee)) {
+        (0, crypto_key_js_1.checkEncCryptoKey)(publicKee, 'ECDH-ES');
+        publicKey = crypto_1.KeyObject.from(publicKee);
+    }
+    else if ((0, is_key_object_js_1.default)(publicKee)) {
+        publicKey = publicKee;
+    }
+    else {
+        throw new TypeError((0, invalid_key_input_js_1.default)(publicKee, 'KeyObject', 'CryptoKey'));
+    }
+    let privateKey;
+    if ((0, webcrypto_js_1.isCryptoKey)(privateKee)) {
+        (0, crypto_key_js_1.checkEncCryptoKey)(privateKee, 'ECDH-ES', 'deriveBits', 'deriveKey');
+        privateKey = crypto_1.KeyObject.from(privateKee);
+    }
+    else if ((0, is_key_object_js_1.default)(privateKee)) {
+        privateKey = privateKee;
+    }
+    else {
+        throw new TypeError((0, invalid_key_input_js_1.default)(privateKee, 'KeyObject', 'CryptoKey'));
+    }
+    const value = (0, buffer_utils_js_1.concat)((0, buffer_utils_js_1.lengthAndInput)(buffer_utils_js_1.encoder.encode(algorithm)), (0, buffer_utils_js_1.lengthAndInput)(apu), (0, buffer_utils_js_1.lengthAndInput)(apv), (0, buffer_utils_js_1.uint32be)(keyLength));
+    const sharedSecret = (0, crypto_1.diffieHellman)({ privateKey, publicKey });
+    return (0, buffer_utils_js_1.concatKdf)(digest_js_1.default, sharedSecret, keyLength, value);
+};
+exports.deriveKey = deriveKey;
+const generateEpk = async (kee) => {
+    let key;
+    if ((0, webcrypto_js_1.isCryptoKey)(kee)) {
+        key = crypto_1.KeyObject.from(kee);
+    }
+    else if ((0, is_key_object_js_1.default)(kee)) {
+        key = kee;
+    }
+    else {
+        throw new TypeError((0, invalid_key_input_js_1.default)(kee, 'KeyObject', 'CryptoKey'));
+    }
+    switch (key.asymmetricKeyType) {
+        case 'x25519':
+            return (await generateKeyPair('x25519')).privateKey;
+        case 'x448': {
+            return (await generateKeyPair('x448')).privateKey;
+        }
+        case 'ec': {
+            const namedCurve = (0, get_named_curve_js_1.default)(key);
+            return (await generateKeyPair('ec', { namedCurve })).privateKey;
+        }
+        default:
+            throw new errors_js_1.JOSENotSupported('Invalid or unsupported EPK');
+    }
+};
+exports.generateEpk = generateEpk;
+const ecdhAllowed = (key) => ['P-256', 'P-384', 'P-521', 'X25519', 'X448'].includes((0, get_named_curve_js_1.default)(key));
+exports.ecdhAllowed = ecdhAllowed;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./digest.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/digest.js","./get_named_curve.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/get_named_curve.js","./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js","crypto":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/encrypt.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+const check_iv_length_js_1 = require("../lib/check_iv_length.js");
+const check_cek_length_js_1 = require("./check_cek_length.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const cbc_tag_js_1 = require("./cbc_tag.js");
+const webcrypto_js_1 = require("./webcrypto.js");
+const crypto_key_js_1 = require("../lib/crypto_key.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+const invalid_key_input_js_1 = require("../lib/invalid_key_input.js");
+const errors_js_1 = require("../util/errors.js");
+const ciphers_js_1 = require("./ciphers.js");
+async function cbcEncrypt(enc, plaintext, cek, iv, aad) {
+    const keySize = parseInt(enc.substr(1, 3), 10);
+    if ((0, is_key_object_js_1.default)(cek)) {
+        cek = cek.export();
+    }
+    const encKey = cek.subarray(keySize >> 3);
+    const macKey = cek.subarray(0, keySize >> 3);
+    const algorithm = `aes-${keySize}-cbc`;
+    if (!(0, ciphers_js_1.default)(algorithm)) {
+        throw new errors_js_1.JOSENotSupported(`alg ${enc} is not supported by your javascript runtime`);
+    }
+    const cipher = (0, crypto_1.createCipheriv)(algorithm, encKey, iv);
+    const ciphertext = (0, buffer_utils_js_1.concat)(cipher.update(plaintext), cipher.final());
+    const macSize = parseInt(enc.substr(-3), 10);
+    const tag = (0, cbc_tag_js_1.default)(aad, iv, ciphertext, macSize, macKey, keySize);
+    return { ciphertext, tag };
+}
+async function gcmEncrypt(enc, plaintext, cek, iv, aad) {
+    const keySize = parseInt(enc.substr(1, 3), 10);
+    const algorithm = `aes-${keySize}-gcm`;
+    if (!(0, ciphers_js_1.default)(algorithm)) {
+        throw new errors_js_1.JOSENotSupported(`alg ${enc} is not supported by your javascript runtime`);
+    }
+    const cipher = (0, crypto_1.createCipheriv)(algorithm, cek, iv, { authTagLength: 16 });
+    if (aad.byteLength) {
+        cipher.setAAD(aad, { plaintextLength: plaintext.length });
+    }
+    const ciphertext = (0, buffer_utils_js_1.concat)(cipher.update(plaintext), cipher.final());
+    const tag = cipher.getAuthTag();
+    return { ciphertext, tag };
+}
+const encrypt = async (enc, plaintext, cek, iv, aad) => {
+    let key;
+    if ((0, webcrypto_js_1.isCryptoKey)(cek)) {
+        (0, crypto_key_js_1.checkEncCryptoKey)(cek, enc, 'encrypt');
+        key = crypto_1.KeyObject.from(cek);
+    }
+    else if (cek instanceof Uint8Array || (0, is_key_object_js_1.default)(cek)) {
+        key = cek;
+    }
+    else {
+        throw new TypeError((0, invalid_key_input_js_1.default)(cek, 'KeyObject', 'CryptoKey', 'Uint8Array'));
+    }
+    (0, check_cek_length_js_1.default)(enc, key);
+    (0, check_iv_length_js_1.default)(enc, iv);
+    switch (enc) {
+        case 'A128CBC-HS256':
+        case 'A192CBC-HS384':
+        case 'A256CBC-HS512':
+            return cbcEncrypt(enc, plaintext, key, iv, aad);
+        case 'A128GCM':
+        case 'A192GCM':
+        case 'A256GCM':
+            return gcmEncrypt(enc, plaintext, key, iv, aad);
+        default:
+            throw new errors_js_1.JOSENotSupported('Unsupported JWE Content Encryption Algorithm');
+    }
+};
+exports.default = encrypt;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../lib/check_iv_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/check_iv_length.js","../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./cbc_tag.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/cbc_tag.js","./check_cek_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/check_cek_length.js","./ciphers.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/ciphers.js","./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/fetch_jwks.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const http = require("http");
+const https = require("https");
+const events_1 = require("events");
+const errors_js_1 = require("../util/errors.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const fetchJwks = async (url, timeout, options) => {
+    let get;
+    switch (url.protocol) {
+        case 'https:':
+            get = https.get;
+            break;
+        case 'http:':
+            get = http.get;
+            break;
+        default:
+            throw new TypeError('Unsupported URL protocol.');
+    }
+    const { agent } = options;
+    const req = get(url.href, {
+        agent,
+        timeout,
+    });
+    const [response] = (await Promise.race([(0, events_1.once)(req, 'response'), (0, events_1.once)(req, 'timeout')]));
+    if (!response) {
+        req.destroy();
+        throw new errors_js_1.JWKSTimeout();
+    }
+    if (response.statusCode !== 200) {
+        throw new errors_js_1.JOSEError('Expected 200 OK from the JSON Web Key Set HTTP response');
+    }
+    const parts = [];
+    for await (const part of response) {
+        parts.push(part);
+    }
+    try {
+        return JSON.parse(buffer_utils_js_1.decoder.decode((0, buffer_utils_js_1.concat)(...parts)));
+    }
+    catch {
+        throw new errors_js_1.JOSEError('Failed to parse the JSON Web Key Set HTTP response as JSON');
+    }
+};
+exports.default = fetchJwks;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","events":false,"http":false,"https":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/generate.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateKeyPair = exports.generateSecret = void 0;
+const crypto_1 = require("crypto");
+const util_1 = require("util");
+const random_js_1 = require("./random.js");
+const check_modulus_length_js_1 = require("./check_modulus_length.js");
+const errors_js_1 = require("../util/errors.js");
+const generate = (0, util_1.promisify)(crypto_1.generateKeyPair);
+async function generateSecret(alg) {
+    let length;
+    switch (alg) {
+        case 'HS256':
+        case 'HS384':
+        case 'HS512':
+        case 'A128CBC-HS256':
+        case 'A192CBC-HS384':
+        case 'A256CBC-HS512':
+            length = parseInt(alg.substr(-3), 10);
+            break;
+        case 'A128KW':
+        case 'A192KW':
+        case 'A256KW':
+        case 'A128GCMKW':
+        case 'A192GCMKW':
+        case 'A256GCMKW':
+        case 'A128GCM':
+        case 'A192GCM':
+        case 'A256GCM':
+            length = parseInt(alg.substring(1, 4), 10);
+            break;
+        default:
+            throw new errors_js_1.JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
+    }
+    return (0, crypto_1.createSecretKey)((0, random_js_1.default)(new Uint8Array(length >> 3)));
+}
+exports.generateSecret = generateSecret;
+async function generateKeyPair(alg, options) {
+    var _a, _b;
+    switch (alg) {
+        case 'RS256':
+        case 'RS384':
+        case 'RS512':
+        case 'PS256':
+        case 'PS384':
+        case 'PS512':
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512':
+        case 'RSA1_5': {
+            const modulusLength = (_a = options === null || options === void 0 ? void 0 : options.modulusLength) !== null && _a !== void 0 ? _a : 2048;
+            if (typeof modulusLength !== 'number' || modulusLength < 2048) {
+                throw new errors_js_1.JOSENotSupported('Invalid or unsupported modulusLength option provided, 2048 bits or larger keys must be used');
+            }
+            const keypair = await generate('rsa', {
+                modulusLength,
+                publicExponent: 0x10001,
+            });
+            (0, check_modulus_length_js_1.setModulusLength)(keypair.privateKey, modulusLength);
+            (0, check_modulus_length_js_1.setModulusLength)(keypair.publicKey, modulusLength);
+            return keypair;
+        }
+        case 'ES256':
+            return generate('ec', { namedCurve: 'P-256' });
+        case 'ES256K':
+            return generate('ec', { namedCurve: 'secp256k1' });
+        case 'ES384':
+            return generate('ec', { namedCurve: 'P-384' });
+        case 'ES512':
+            return generate('ec', { namedCurve: 'P-521' });
+        case 'EdDSA': {
+            switch (options === null || options === void 0 ? void 0 : options.crv) {
+                case undefined:
+                case 'Ed25519':
+                    return generate('ed25519');
+                case 'Ed448':
+                    return generate('ed448');
+                default:
+                    throw new errors_js_1.JOSENotSupported('Invalid or unsupported crv option provided, supported values are Ed25519 and Ed448');
+            }
+        }
+        case 'ECDH-ES':
+        case 'ECDH-ES+A128KW':
+        case 'ECDH-ES+A192KW':
+        case 'ECDH-ES+A256KW':
+            switch (options === null || options === void 0 ? void 0 : options.crv) {
+                case undefined:
+                case 'P-256':
+                case 'P-384':
+                case 'P-521':
+                    return generate('ec', { namedCurve: (_b = options === null || options === void 0 ? void 0 : options.crv) !== null && _b !== void 0 ? _b : 'P-256' });
+                case 'X25519':
+                    return generate('x25519');
+                case 'X448':
+                    return generate('x448');
+                default:
+                    throw new errors_js_1.JOSENotSupported('Invalid or unsupported crv option provided, supported values are P-256, P-384, P-521, X25519, and X448');
+            }
+        default:
+            throw new errors_js_1.JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
+    }
+}
+exports.generateKeyPair = generateKeyPair;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./check_modulus_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/check_modulus_length.js","./random.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/random.js","crypto":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/get_named_curve.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.setCurve = exports.weakMap = void 0;
+const buffer_1 = require("buffer");
+const crypto_1 = require("crypto");
+const errors_js_1 = require("../util/errors.js");
+const webcrypto_js_1 = require("./webcrypto.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+const invalid_key_input_js_1 = require("../lib/invalid_key_input.js");
+const p256 = buffer_1.Buffer.from([42, 134, 72, 206, 61, 3, 1, 7]);
+const p384 = buffer_1.Buffer.from([43, 129, 4, 0, 34]);
+const p521 = buffer_1.Buffer.from([43, 129, 4, 0, 35]);
+const secp256k1 = buffer_1.Buffer.from([43, 129, 4, 0, 10]);
+exports.weakMap = new WeakMap();
+const namedCurveToJOSE = (namedCurve) => {
+    switch (namedCurve) {
+        case 'prime256v1':
+            return 'P-256';
+        case 'secp384r1':
+            return 'P-384';
+        case 'secp521r1':
+            return 'P-521';
+        case 'secp256k1':
+            return 'secp256k1';
+        default:
+            throw new errors_js_1.JOSENotSupported('Unsupported key curve for this operation');
+    }
+};
+const getNamedCurve = (kee, raw) => {
+    var _a;
+    let key;
+    if ((0, webcrypto_js_1.isCryptoKey)(kee)) {
+        key = crypto_1.KeyObject.from(kee);
+    }
+    else if ((0, is_key_object_js_1.default)(kee)) {
+        key = kee;
+    }
+    else {
+        throw new TypeError((0, invalid_key_input_js_1.default)(kee, 'KeyObject', 'CryptoKey'));
+    }
+    if (key.type === 'secret') {
+        throw new TypeError('only "private" or "public" type keys can be used for this operation');
+    }
+    switch (key.asymmetricKeyType) {
+        case 'ed25519':
+        case 'ed448':
+            return `Ed${key.asymmetricKeyType.substr(2)}`;
+        case 'x25519':
+        case 'x448':
+            return `X${key.asymmetricKeyType.substr(1)}`;
+        case 'ec': {
+            if (exports.weakMap.has(key)) {
+                return exports.weakMap.get(key);
+            }
+            let namedCurve = (_a = key.asymmetricKeyDetails) === null || _a === void 0 ? void 0 : _a.namedCurve;
+            if (!namedCurve && key.type === 'private') {
+                namedCurve = getNamedCurve((0, crypto_1.createPublicKey)(key), true);
+            }
+            else if (!namedCurve) {
+                const buf = key.export({ format: 'der', type: 'spki' });
+                const i = buf[1] < 128 ? 14 : 15;
+                const len = buf[i];
+                const curveOid = buf.slice(i + 1, i + 1 + len);
+                if (curveOid.equals(p256)) {
+                    namedCurve = 'prime256v1';
+                }
+                else if (curveOid.equals(p384)) {
+                    namedCurve = 'secp384r1';
+                }
+                else if (curveOid.equals(p521)) {
+                    namedCurve = 'secp521r1';
+                }
+                else if (curveOid.equals(secp256k1)) {
+                    namedCurve = 'secp256k1';
+                }
+                else {
+                    throw new errors_js_1.JOSENotSupported('Unsupported key curve for this operation');
+                }
+            }
+            if (raw)
+                return namedCurve;
+            const curve = namedCurveToJOSE(namedCurve);
+            exports.weakMap.set(key, curve);
+            return curve;
+        }
+        default:
+            throw new TypeError('Invalid asymmetric key type for this operation');
+    }
+};
+function setCurve(keyObject, curve) {
+    exports.weakMap.set(keyObject, curve);
+}
+exports.setCurve = setCurve;
+exports.default = getNamedCurve;
+
+},{"../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js","buffer":false,"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/get_sign_verify_key.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+const webcrypto_js_1 = require("./webcrypto.js");
+const crypto_key_js_1 = require("../lib/crypto_key.js");
+const secret_key_js_1 = require("./secret_key.js");
+const invalid_key_input_js_1 = require("../lib/invalid_key_input.js");
+function getSignVerifyKey(alg, key, usage) {
+    if (key instanceof Uint8Array) {
+        if (!alg.startsWith('HS')) {
+            throw new TypeError((0, invalid_key_input_js_1.default)(key, 'KeyObject', 'CryptoKey'));
+        }
+        return (0, secret_key_js_1.default)(key);
+    }
+    if (key instanceof crypto_1.KeyObject) {
+        return key;
+    }
+    if ((0, webcrypto_js_1.isCryptoKey)(key)) {
+        (0, crypto_key_js_1.checkSigCryptoKey)(key, alg, usage);
+        return crypto_1.KeyObject.from(key);
+    }
+    throw new TypeError((0, invalid_key_input_js_1.default)(key, 'KeyObject', 'CryptoKey', 'Uint8Array'));
+}
+exports.default = getSignVerifyKey;
+
+},{"../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js","./secret_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/secret_key.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/global.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isNodeJs = exports.isCloudflareWorkers = void 0;
+function isCloudflareWorkers() {
+    return false;
+}
+exports.isCloudflareWorkers = isCloudflareWorkers;
+function isNodeJs() {
+    return true;
+}
+exports.isNodeJs = isNodeJs;
+
+},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/hmac_digest.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const errors_js_1 = require("../util/errors.js");
+function hmacDigest(alg) {
+    switch (alg) {
+        case 'HS256':
+            return 'sha256';
+        case 'HS384':
+            return 'sha384';
+        case 'HS512':
+            return 'sha512';
+        default:
+            throw new errors_js_1.JOSENotSupported(`alg ${alg} is not supported either by JOSE or your javascript runtime`);
+    }
+}
+exports.default = hmacDigest;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_like.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.types = void 0;
+const webcrypto_js_1 = require("./webcrypto.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+exports.default = (key) => (0, is_key_object_js_1.default)(key) || (0, webcrypto_js_1.isCryptoKey)(key);
+const types = ['KeyObject'];
+exports.types = types;
+if (parseInt(process.versions.node) >= 16) {
+    types.push('CryptoKey');
+}
+
+},{"./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+const util = require("util");
+exports.default = util.types.isKeyObject
+    ? (obj) => util.types.isKeyObject(obj)
+    : (obj) => obj != null && obj instanceof crypto_1.KeyObject;
+
+},{"crypto":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/jwk_to_key.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const buffer_1 = require("buffer");
+const crypto_1 = require("crypto");
+const base64url_js_1 = require("./base64url.js");
+const errors_js_1 = require("../util/errors.js");
+const get_named_curve_js_1 = require("./get_named_curve.js");
+const check_modulus_length_js_1 = require("./check_modulus_length.js");
+const asn1_sequence_encoder_js_1 = require("./asn1_sequence_encoder.js");
+const [major, minor] = process.version
+    .substr(1)
+    .split('.')
+    .map((str) => parseInt(str, 10));
+const jwkImportSupported = major >= 16 || (major === 15 && minor >= 12);
+const parse = (jwk) => {
+    if (jwkImportSupported && jwk.kty !== 'oct') {
+        return jwk.d
+            ? (0, crypto_1.createPrivateKey)({ format: 'jwk', key: jwk })
+            : (0, crypto_1.createPublicKey)({ format: 'jwk', key: jwk });
+    }
+    switch (jwk.kty) {
+        case 'oct': {
+            return (0, crypto_1.createSecretKey)((0, base64url_js_1.decode)(jwk.k));
+        }
+        case 'RSA': {
+            const enc = new asn1_sequence_encoder_js_1.default();
+            const isPrivate = jwk.d !== undefined;
+            const modulus = buffer_1.Buffer.from(jwk.n, 'base64');
+            const exponent = buffer_1.Buffer.from(jwk.e, 'base64');
+            if (isPrivate) {
+                enc.zero();
+                enc.unsignedInteger(modulus);
+                enc.unsignedInteger(exponent);
+                enc.unsignedInteger(buffer_1.Buffer.from(jwk.d, 'base64'));
+                enc.unsignedInteger(buffer_1.Buffer.from(jwk.p, 'base64'));
+                enc.unsignedInteger(buffer_1.Buffer.from(jwk.q, 'base64'));
+                enc.unsignedInteger(buffer_1.Buffer.from(jwk.dp, 'base64'));
+                enc.unsignedInteger(buffer_1.Buffer.from(jwk.dq, 'base64'));
+                enc.unsignedInteger(buffer_1.Buffer.from(jwk.qi, 'base64'));
+            }
+            else {
+                enc.unsignedInteger(modulus);
+                enc.unsignedInteger(exponent);
+            }
+            const der = enc.end();
+            const createInput = {
+                key: der,
+                format: 'der',
+                type: 'pkcs1',
+            };
+            const keyObject = isPrivate ? (0, crypto_1.createPrivateKey)(createInput) : (0, crypto_1.createPublicKey)(createInput);
+            (0, check_modulus_length_js_1.setModulusLength)(keyObject, modulus.length << 3);
+            return keyObject;
+        }
+        case 'EC': {
+            const enc = new asn1_sequence_encoder_js_1.default();
+            const isPrivate = jwk.d !== undefined;
+            const pub = buffer_1.Buffer.concat([
+                buffer_1.Buffer.alloc(1, 4),
+                buffer_1.Buffer.from(jwk.x, 'base64'),
+                buffer_1.Buffer.from(jwk.y, 'base64'),
+            ]);
+            if (isPrivate) {
+                enc.zero();
+                const enc$1 = new asn1_sequence_encoder_js_1.default();
+                enc$1.oidFor('ecPublicKey');
+                enc$1.oidFor(jwk.crv);
+                enc.add(enc$1.end());
+                const enc$2 = new asn1_sequence_encoder_js_1.default();
+                enc$2.one();
+                enc$2.octStr(buffer_1.Buffer.from(jwk.d, 'base64'));
+                const enc$3 = new asn1_sequence_encoder_js_1.default();
+                enc$3.bitStr(pub);
+                const f2 = enc$3.end(buffer_1.Buffer.from([0xa1]));
+                enc$2.add(f2);
+                const f = enc$2.end();
+                const enc$4 = new asn1_sequence_encoder_js_1.default();
+                enc$4.add(f);
+                const f3 = enc$4.end(buffer_1.Buffer.from([0x04]));
+                enc.add(f3);
+                const der = enc.end();
+                const keyObject = (0, crypto_1.createPrivateKey)({ key: der, format: 'der', type: 'pkcs8' });
+                (0, get_named_curve_js_1.setCurve)(keyObject, jwk.crv);
+                return keyObject;
+            }
+            const enc$1 = new asn1_sequence_encoder_js_1.default();
+            enc$1.oidFor('ecPublicKey');
+            enc$1.oidFor(jwk.crv);
+            enc.add(enc$1.end());
+            enc.bitStr(pub);
+            const der = enc.end();
+            const keyObject = (0, crypto_1.createPublicKey)({ key: der, format: 'der', type: 'spki' });
+            (0, get_named_curve_js_1.setCurve)(keyObject, jwk.crv);
+            return keyObject;
+        }
+        case 'OKP': {
+            const enc = new asn1_sequence_encoder_js_1.default();
+            const isPrivate = jwk.d !== undefined;
+            if (isPrivate) {
+                enc.zero();
+                const enc$1 = new asn1_sequence_encoder_js_1.default();
+                enc$1.oidFor(jwk.crv);
+                enc.add(enc$1.end());
+                const enc$2 = new asn1_sequence_encoder_js_1.default();
+                enc$2.octStr(buffer_1.Buffer.from(jwk.d, 'base64'));
+                const f = enc$2.end(buffer_1.Buffer.from([0x04]));
+                enc.add(f);
+                const der = enc.end();
+                return (0, crypto_1.createPrivateKey)({ key: der, format: 'der', type: 'pkcs8' });
+            }
+            const enc$1 = new asn1_sequence_encoder_js_1.default();
+            enc$1.oidFor(jwk.crv);
+            enc.add(enc$1.end());
+            enc.bitStr(buffer_1.Buffer.from(jwk.x, 'base64'));
+            const der = enc.end();
+            return (0, crypto_1.createPublicKey)({ key: der, format: 'der', type: 'spki' });
+        }
+        default:
+            throw new errors_js_1.JOSENotSupported('Invalid or unsupported JWK "kty" (Key Type) Parameter value');
+    }
+};
+exports.default = parse;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./asn1_sequence_encoder.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/asn1_sequence_encoder.js","./base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","./check_modulus_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/check_modulus_length.js","./get_named_curve.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/get_named_curve.js","buffer":false,"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/key_to_jwk.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+const base64url_js_1 = require("./base64url.js");
+const asn1_sequence_decoder_js_1 = require("./asn1_sequence_decoder.js");
+const errors_js_1 = require("../util/errors.js");
+const get_named_curve_js_1 = require("./get_named_curve.js");
+const webcrypto_js_1 = require("./webcrypto.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+const invalid_key_input_js_1 = require("../lib/invalid_key_input.js");
+const [major, minor] = process.version
+    .substr(1)
+    .split('.')
+    .map((str) => parseInt(str, 10));
+const jwkExportSupported = major >= 16 || (major === 15 && minor >= 9);
+const keyToJWK = (key) => {
+    let keyObject;
+    if ((0, webcrypto_js_1.isCryptoKey)(key)) {
+        if (!key.extractable) {
+            throw new TypeError('CryptoKey is not extractable');
+        }
+        keyObject = crypto_1.KeyObject.from(key);
+    }
+    else if ((0, is_key_object_js_1.default)(key)) {
+        keyObject = key;
+    }
+    else if (key instanceof Uint8Array) {
+        return {
+            kty: 'oct',
+            k: (0, base64url_js_1.encode)(key),
+        };
+    }
+    else {
+        throw new TypeError((0, invalid_key_input_js_1.default)(key, 'KeyObject', 'CryptoKey', 'Uint8Array'));
+    }
+    if (jwkExportSupported) {
+        return keyObject.export({ format: 'jwk' });
+    }
+    switch (keyObject.type) {
+        case 'secret':
+            return {
+                kty: 'oct',
+                k: (0, base64url_js_1.encode)(keyObject.export()),
+            };
+        case 'private':
+        case 'public': {
+            switch (keyObject.asymmetricKeyType) {
+                case 'rsa': {
+                    const der = keyObject.export({ format: 'der', type: 'pkcs1' });
+                    const dec = new asn1_sequence_decoder_js_1.default(der);
+                    if (keyObject.type === 'private') {
+                        dec.unsignedInteger();
+                    }
+                    const n = (0, base64url_js_1.encode)(dec.unsignedInteger());
+                    const e = (0, base64url_js_1.encode)(dec.unsignedInteger());
+                    let jwk;
+                    if (keyObject.type === 'private') {
+                        jwk = {
+                            d: (0, base64url_js_1.encode)(dec.unsignedInteger()),
+                            p: (0, base64url_js_1.encode)(dec.unsignedInteger()),
+                            q: (0, base64url_js_1.encode)(dec.unsignedInteger()),
+                            dp: (0, base64url_js_1.encode)(dec.unsignedInteger()),
+                            dq: (0, base64url_js_1.encode)(dec.unsignedInteger()),
+                            qi: (0, base64url_js_1.encode)(dec.unsignedInteger()),
+                        };
+                    }
+                    dec.end();
+                    return { kty: 'RSA', n, e, ...jwk };
+                }
+                case 'ec': {
+                    const crv = (0, get_named_curve_js_1.default)(keyObject);
+                    let len;
+                    let offset;
+                    let correction;
+                    switch (crv) {
+                        case 'secp256k1':
+                            len = 64;
+                            offset = 31 + 2;
+                            correction = -1;
+                            break;
+                        case 'P-256':
+                            len = 64;
+                            offset = 34 + 2;
+                            correction = -1;
+                            break;
+                        case 'P-384':
+                            len = 96;
+                            offset = 33 + 2;
+                            correction = -3;
+                            break;
+                        case 'P-521':
+                            len = 132;
+                            offset = 33 + 2;
+                            correction = -3;
+                            break;
+                        default:
+                            throw new errors_js_1.JOSENotSupported('Unsupported curve');
+                    }
+                    if (keyObject.type === 'public') {
+                        const der = keyObject.export({ type: 'spki', format: 'der' });
+                        return {
+                            kty: 'EC',
+                            crv,
+                            x: (0, base64url_js_1.encode)(der.subarray(-len, -len / 2)),
+                            y: (0, base64url_js_1.encode)(der.subarray(-len / 2)),
+                        };
+                    }
+                    const der = keyObject.export({ type: 'pkcs8', format: 'der' });
+                    if (der.length < 100) {
+                        offset += correction;
+                    }
+                    return {
+                        ...keyToJWK((0, crypto_1.createPublicKey)(keyObject)),
+                        d: (0, base64url_js_1.encode)(der.subarray(offset, offset + len / 2)),
+                    };
+                }
+                case 'ed25519':
+                case 'x25519': {
+                    const crv = (0, get_named_curve_js_1.default)(keyObject);
+                    if (keyObject.type === 'public') {
+                        const der = keyObject.export({ type: 'spki', format: 'der' });
+                        return {
+                            kty: 'OKP',
+                            crv,
+                            x: (0, base64url_js_1.encode)(der.subarray(-32)),
+                        };
+                    }
+                    const der = keyObject.export({ type: 'pkcs8', format: 'der' });
+                    return {
+                        ...keyToJWK((0, crypto_1.createPublicKey)(keyObject)),
+                        d: (0, base64url_js_1.encode)(der.subarray(-32)),
+                    };
+                }
+                case 'ed448':
+                case 'x448': {
+                    const crv = (0, get_named_curve_js_1.default)(keyObject);
+                    if (keyObject.type === 'public') {
+                        const der = keyObject.export({ type: 'spki', format: 'der' });
+                        return {
+                            kty: 'OKP',
+                            crv,
+                            x: (0, base64url_js_1.encode)(der.subarray(crv === 'Ed448' ? -57 : -56)),
+                        };
+                    }
+                    const der = keyObject.export({ type: 'pkcs8', format: 'der' });
+                    return {
+                        ...keyToJWK((0, crypto_1.createPublicKey)(keyObject)),
+                        d: (0, base64url_js_1.encode)(der.subarray(crv === 'Ed448' ? -57 : -56)),
+                    };
+                }
+                default:
+                    throw new errors_js_1.JOSENotSupported('Unsupported key asymmetricKeyType');
+            }
+        }
+        default:
+            throw new errors_js_1.JOSENotSupported('Unsupported key type');
+    }
+};
+exports.default = keyToJWK;
+
+},{"../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js","../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./asn1_sequence_decoder.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/asn1_sequence_decoder.js","./base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","./get_named_curve.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/get_named_curve.js","./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/node_key.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+const get_named_curve_js_1 = require("./get_named_curve.js");
+const errors_js_1 = require("../util/errors.js");
+const check_modulus_length_js_1 = require("./check_modulus_length.js");
+const [major, minor] = process.version
+    .substr(1)
+    .split('.')
+    .map((str) => parseInt(str, 10));
+const rsaPssParams = major >= 17 || (major === 16 && minor >= 9);
+const PSS = {
+    padding: crypto_1.constants.RSA_PKCS1_PSS_PADDING,
+    saltLength: crypto_1.constants.RSA_PSS_SALTLEN_DIGEST,
+};
+const ecCurveAlgMap = new Map([
+    ['ES256', 'P-256'],
+    ['ES256K', 'secp256k1'],
+    ['ES384', 'P-384'],
+    ['ES512', 'P-521'],
+]);
+function keyForCrypto(alg, key) {
+    switch (alg) {
+        case 'EdDSA':
+            if (!['ed25519', 'ed448'].includes(key.asymmetricKeyType)) {
+                throw new TypeError('Invalid key for this operation, its asymmetricKeyType must be ed25519 or ed448');
+            }
+            return key;
+        case 'RS256':
+        case 'RS384':
+        case 'RS512':
+            if (key.asymmetricKeyType !== 'rsa') {
+                throw new TypeError('Invalid key for this operation, its asymmetricKeyType must be rsa');
+            }
+            (0, check_modulus_length_js_1.default)(key, alg);
+            return key;
+        case rsaPssParams && 'PS256':
+        case rsaPssParams && 'PS384':
+        case rsaPssParams && 'PS512':
+            if (key.asymmetricKeyType === 'rsa-pss') {
+                const { hashAlgorithm, mgf1HashAlgorithm, saltLength } = key.asymmetricKeyDetails;
+                const length = parseInt(alg.substr(-3), 10);
+                if (hashAlgorithm !== undefined &&
+                    (hashAlgorithm !== `sha${length}` || mgf1HashAlgorithm !== hashAlgorithm)) {
+                    throw new TypeError(`Invalid key for this operation, its RSA-PSS parameters do not meet the requirements of "alg" ${alg}`);
+                }
+                if (saltLength !== undefined && saltLength > length >> 3) {
+                    throw new TypeError(`Invalid key for this operation, its RSA-PSS parameter saltLength does not meet the requirements of "alg" ${alg}`);
+                }
+            }
+            else if (key.asymmetricKeyType !== 'rsa') {
+                throw new TypeError('Invalid key for this operation, its asymmetricKeyType must be rsa or rsa-pss');
+            }
+            (0, check_modulus_length_js_1.default)(key, alg);
+            return { key, ...PSS };
+        case !rsaPssParams && 'PS256':
+        case !rsaPssParams && 'PS384':
+        case !rsaPssParams && 'PS512':
+            if (key.asymmetricKeyType !== 'rsa') {
+                throw new TypeError('Invalid key for this operation, its asymmetricKeyType must be rsa');
+            }
+            (0, check_modulus_length_js_1.default)(key, alg);
+            return { key, ...PSS };
+        case 'ES256':
+        case 'ES256K':
+        case 'ES384':
+        case 'ES512': {
+            if (key.asymmetricKeyType !== 'ec') {
+                throw new TypeError('Invalid key for this operation, its asymmetricKeyType must be ec');
+            }
+            const actual = (0, get_named_curve_js_1.default)(key);
+            const expected = ecCurveAlgMap.get(alg);
+            if (actual !== expected) {
+                throw new TypeError(`Invalid key curve for the algorithm, its curve must be ${expected}, got ${actual}`);
+            }
+            return { dsaEncoding: 'ieee-p1363', key };
+        }
+        default:
+            throw new errors_js_1.JOSENotSupported(`alg ${alg} is not supported either by JOSE or your javascript runtime`);
+    }
+}
+exports.default = keyForCrypto;
+
+},{"../util/errors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js","./check_modulus_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/check_modulus_length.js","./get_named_curve.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/get_named_curve.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/pbes2kw.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.decrypt = exports.encrypt = void 0;
+const util_1 = require("util");
+const crypto_1 = require("crypto");
+const random_js_1 = require("./random.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const base64url_js_1 = require("./base64url.js");
+const aeskw_js_1 = require("./aeskw.js");
+const check_p2s_js_1 = require("../lib/check_p2s.js");
+const webcrypto_js_1 = require("./webcrypto.js");
+const crypto_key_js_1 = require("../lib/crypto_key.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+const invalid_key_input_js_1 = require("../lib/invalid_key_input.js");
+const pbkdf2 = (0, util_1.promisify)(crypto_1.pbkdf2);
+function getPassword(key, alg) {
+    if ((0, is_key_object_js_1.default)(key)) {
+        return key.export();
+    }
+    if (key instanceof Uint8Array) {
+        return key;
+    }
+    if ((0, webcrypto_js_1.isCryptoKey)(key)) {
+        (0, crypto_key_js_1.checkEncCryptoKey)(key, alg, 'deriveBits', 'deriveKey');
+        return crypto_1.KeyObject.from(key).export();
+    }
+    throw new TypeError((0, invalid_key_input_js_1.default)(key, 'KeyObject', 'CryptoKey', 'Uint8Array'));
+}
+const encrypt = async (alg, key, cek, p2c = Math.floor(Math.random() * 2049) + 2048, p2s = (0, random_js_1.default)(new Uint8Array(16))) => {
+    (0, check_p2s_js_1.default)(p2s);
+    const salt = (0, buffer_utils_js_1.p2s)(alg, p2s);
+    const keylen = parseInt(alg.substr(13, 3), 10) >> 3;
+    const password = getPassword(key, alg);
+    const derivedKey = await pbkdf2(password, salt, p2c, keylen, `sha${alg.substr(8, 3)}`);
+    const encryptedKey = await (0, aeskw_js_1.wrap)(alg.substr(-6), derivedKey, cek);
+    return { encryptedKey, p2c, p2s: (0, base64url_js_1.encode)(p2s) };
+};
+exports.encrypt = encrypt;
+const decrypt = async (alg, key, encryptedKey, p2c, p2s) => {
+    (0, check_p2s_js_1.default)(p2s);
+    const salt = (0, buffer_utils_js_1.p2s)(alg, p2s);
+    const keylen = parseInt(alg.substr(13, 3), 10) >> 3;
+    const password = getPassword(key, alg);
+    const derivedKey = await pbkdf2(password, salt, p2c, keylen, `sha${alg.substr(8, 3)}`);
+    return (0, aeskw_js_1.unwrap)(alg.substr(-6), derivedKey, encryptedKey);
+};
+exports.decrypt = decrypt;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../lib/check_p2s.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/check_p2s.js","../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js","./aeskw.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/aeskw.js","./base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js","./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js","./random.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/random.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js","crypto":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/random.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = void 0;
+var crypto_1 = require("crypto");
+Object.defineProperty(exports, "default", { enumerable: true, get: function () { return crypto_1.randomFillSync; } });
+
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/rsaes.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.decrypt = exports.encrypt = void 0;
+const crypto_1 = require("crypto");
+const check_modulus_length_js_1 = require("./check_modulus_length.js");
+const webcrypto_js_1 = require("./webcrypto.js");
+const crypto_key_js_1 = require("../lib/crypto_key.js");
+const is_key_object_js_1 = require("./is_key_object.js");
+const invalid_key_input_js_1 = require("../lib/invalid_key_input.js");
+const checkKey = (key, alg) => {
+    if (key.asymmetricKeyType !== 'rsa') {
+        throw new TypeError('Invalid key for this operation, its asymmetricKeyType must be rsa');
+    }
+    (0, check_modulus_length_js_1.default)(key, alg);
+};
+const resolvePadding = (alg) => {
+    switch (alg) {
+        case 'RSA-OAEP':
+        case 'RSA-OAEP-256':
+        case 'RSA-OAEP-384':
+        case 'RSA-OAEP-512':
+            return crypto_1.constants.RSA_PKCS1_OAEP_PADDING;
+        case 'RSA1_5':
+            return crypto_1.constants.RSA_PKCS1_PADDING;
+        default:
+            return undefined;
+    }
+};
+const resolveOaepHash = (alg) => {
+    switch (alg) {
+        case 'RSA-OAEP':
+            return 'sha1';
+        case 'RSA-OAEP-256':
+            return 'sha256';
+        case 'RSA-OAEP-384':
+            return 'sha384';
+        case 'RSA-OAEP-512':
+            return 'sha512';
+        default:
+            return undefined;
+    }
+};
+function ensureKeyObject(key, alg, ...usages) {
+    if ((0, is_key_object_js_1.default)(key)) {
+        return key;
+    }
+    if ((0, webcrypto_js_1.isCryptoKey)(key)) {
+        (0, crypto_key_js_1.checkEncCryptoKey)(key, alg, ...usages);
+        return crypto_1.KeyObject.from(key);
+    }
+    throw new TypeError((0, invalid_key_input_js_1.default)(key, 'KeyObject', 'CryptoKey'));
+}
+const encrypt = async (alg, key, cek) => {
+    const padding = resolvePadding(alg);
+    const oaepHash = resolveOaepHash(alg);
+    const keyObject = ensureKeyObject(key, alg, 'wrapKey', 'encrypt');
+    checkKey(keyObject, alg);
+    return (0, crypto_1.publicEncrypt)({ key: keyObject, oaepHash, padding }, cek);
+};
+exports.encrypt = encrypt;
+const decrypt = async (alg, key, encryptedKey) => {
+    const padding = resolvePadding(alg);
+    const oaepHash = resolveOaepHash(alg);
+    const keyObject = ensureKeyObject(key, alg, 'unwrapKey', 'decrypt');
+    checkKey(keyObject, alg);
+    return (0, crypto_1.privateDecrypt)({ key: keyObject, oaepHash, padding }, encryptedKey);
+};
+exports.decrypt = decrypt;
+
+},{"../lib/crypto_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/crypto_key.js","../lib/invalid_key_input.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/invalid_key_input.js","./check_modulus_length.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/check_modulus_length.js","./is_key_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/is_key_object.js","./webcrypto.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/secret_key.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+function getSecretKey(key) {
+    let keyObject;
+    if (key instanceof Uint8Array) {
+        keyObject = (0, crypto_1.createSecretKey)(key);
+    }
+    else {
+        keyObject = key;
+    }
+    return keyObject;
+}
+exports.default = getSecretKey;
+
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/sign.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto = require("crypto");
+const util_1 = require("util");
+const dsa_digest_js_1 = require("./dsa_digest.js");
+const hmac_digest_js_1 = require("./hmac_digest.js");
+const node_key_js_1 = require("./node_key.js");
+const get_sign_verify_key_js_1 = require("./get_sign_verify_key.js");
+let oneShotSign;
+if (crypto.sign.length > 3) {
+    oneShotSign = (0, util_1.promisify)(crypto.sign);
+}
+else {
+    oneShotSign = crypto.sign;
+}
+const sign = async (alg, key, data) => {
+    const keyObject = (0, get_sign_verify_key_js_1.default)(alg, key, 'sign');
+    if (alg.startsWith('HS')) {
+        const bitlen = parseInt(alg.substr(-3), 10);
+        if (!keyObject.symmetricKeySize || keyObject.symmetricKeySize << 3 < bitlen) {
+            throw new TypeError(`${alg} requires symmetric keys to be ${bitlen} bits or larger`);
+        }
+        const hmac = crypto.createHmac((0, hmac_digest_js_1.default)(alg), keyObject);
+        hmac.update(data);
+        return hmac.digest();
+    }
+    return oneShotSign((0, dsa_digest_js_1.default)(alg), data, (0, node_key_js_1.default)(alg, keyObject));
+};
+exports.default = sign;
+
+},{"./dsa_digest.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/dsa_digest.js","./get_sign_verify_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/get_sign_verify_key.js","./hmac_digest.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/hmac_digest.js","./node_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/node_key.js","crypto":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/timing_safe_equal.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+const timingSafeEqual = crypto_1.timingSafeEqual;
+exports.default = timingSafeEqual;
+
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/verify.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto = require("crypto");
+const util_1 = require("util");
+const dsa_digest_js_1 = require("./dsa_digest.js");
+const node_key_js_1 = require("./node_key.js");
+const sign_js_1 = require("./sign.js");
+const get_sign_verify_key_js_1 = require("./get_sign_verify_key.js");
+const [major, minor] = process.version
+    .substr(1)
+    .split('.')
+    .map((str) => parseInt(str, 10));
+const oneShotCallbackSupported = major >= 16 || (major === 15 && minor >= 13);
+let oneShotVerify;
+if (crypto.verify.length > 4 && oneShotCallbackSupported) {
+    oneShotVerify = (0, util_1.promisify)(crypto.verify);
+}
+else {
+    oneShotVerify = crypto.verify;
+}
+const verify = async (alg, key, signature, data) => {
+    const keyObject = (0, get_sign_verify_key_js_1.default)(alg, key, 'verify');
+    if (alg.startsWith('HS')) {
+        const expected = await (0, sign_js_1.default)(alg, keyObject, data);
+        const actual = signature;
+        try {
+            return crypto.timingSafeEqual(actual, expected);
+        }
+        catch {
+            return false;
+        }
+    }
+    const algorithm = (0, dsa_digest_js_1.default)(alg);
+    const keyInput = (0, node_key_js_1.default)(alg, keyObject);
+    try {
+        return await oneShotVerify(algorithm, data, keyInput, signature);
+    }
+    catch {
+        return false;
+    }
+};
+exports.default = verify;
+
+},{"./dsa_digest.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/dsa_digest.js","./get_sign_verify_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/get_sign_verify_key.js","./node_key.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/node_key.js","./sign.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/sign.js","crypto":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/webcrypto.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isCryptoKey = void 0;
+const crypto = require("crypto");
+const util = require("util");
+const webcrypto = crypto.webcrypto;
+exports.default = webcrypto;
+exports.isCryptoKey = util.types.isCryptoKey
+    ? (obj) => util.types.isCryptoKey(obj)
+    :
+        (obj) => false;
+
+},{"crypto":false,"util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/zlib.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deflate = exports.inflate = void 0;
+const util_1 = require("util");
+const zlib_1 = require("zlib");
+const inflateRaw = (0, util_1.promisify)(zlib_1.inflateRaw);
+const deflateRaw = (0, util_1.promisify)(zlib_1.deflateRaw);
+const inflate = (input) => inflateRaw(input);
+exports.inflate = inflate;
+const deflate = (input) => deflateRaw(input);
+exports.deflate = deflate;
+
+},{"util":false,"zlib":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/base64url.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.decode = exports.encode = void 0;
+const base64url = require("../runtime/base64url.js");
+exports.encode = base64url.encode;
+exports.decode = base64url.decode;
+
+},{"../runtime/base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/runtime/base64url.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/decode_protected_header.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.decodeProtectedHeader = void 0;
+const base64url_js_1 = require("./base64url.js");
+const buffer_utils_js_1 = require("../lib/buffer_utils.js");
+const is_object_js_1 = require("../lib/is_object.js");
+function decodeProtectedHeader(token) {
+    let protectedB64u;
+    if (typeof token === 'string') {
+        const parts = token.split('.');
+        if (parts.length === 3 || parts.length === 5) {
+            
+            [protectedB64u] = parts;
+        }
+    }
+    else if (typeof token === 'object' && token) {
+        if ('protected' in token) {
+            protectedB64u = token.protected;
+        }
+        else {
+            throw new TypeError('Token does not contain a Protected Header');
+        }
+    }
+    try {
+        if (typeof protectedB64u !== 'string' || !protectedB64u) {
+            throw new Error();
+        }
+        const result = JSON.parse(buffer_utils_js_1.decoder.decode((0, base64url_js_1.decode)(protectedB64u)));
+        if (!(0, is_object_js_1.default)(result)) {
+            throw new Error();
+        }
+        return result;
+    }
+    catch {
+        throw new TypeError('Invalid Token or Protected Header formatting');
+    }
+}
+exports.decodeProtectedHeader = decodeProtectedHeader;
+
+},{"../lib/buffer_utils.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/buffer_utils.js","../lib/is_object.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/lib/is_object.js","./base64url.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/base64url.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/node/util/errors.js":[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.JWSSignatureVerificationFailed = exports.JWKSTimeout = exports.JWKSMultipleMatchingKeys = exports.JWKSNoMatchingKey = exports.JWKSInvalid = exports.JWKInvalid = exports.JWTInvalid = exports.JWSInvalid = exports.JWEInvalid = exports.JWEDecryptionFailed = exports.JOSENotSupported = exports.JOSEAlgNotAllowed = exports.JWTExpired = exports.JWTClaimValidationFailed = exports.JOSEError = void 0;
+class JOSEError extends Error {
+    constructor(message) {
+        var _a;
+        super(message);
+        this.code = 'ERR_JOSE_GENERIC';
+        this.name = this.constructor.name;
+        (_a = Error.captureStackTrace) === null || _a === void 0 ? void 0 : _a.call(Error, this, this.constructor);
+    }
+    static get code() {
+        return 'ERR_JOSE_GENERIC';
+    }
+}
+exports.JOSEError = JOSEError;
+class JWTClaimValidationFailed extends JOSEError {
+    constructor(message, claim = 'unspecified', reason = 'unspecified') {
+        super(message);
+        this.code = 'ERR_JWT_CLAIM_VALIDATION_FAILED';
+        this.claim = claim;
+        this.reason = reason;
+    }
+    static get code() {
+        return 'ERR_JWT_CLAIM_VALIDATION_FAILED';
+    }
+}
+exports.JWTClaimValidationFailed = JWTClaimValidationFailed;
+class JWTExpired extends JOSEError {
+    constructor(message, claim = 'unspecified', reason = 'unspecified') {
+        super(message);
+        this.code = 'ERR_JWT_EXPIRED';
+        this.claim = claim;
+        this.reason = reason;
+    }
+    static get code() {
+        return 'ERR_JWT_EXPIRED';
+    }
+}
+exports.JWTExpired = JWTExpired;
+class JOSEAlgNotAllowed extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JOSE_ALG_NOT_ALLOWED';
+    }
+    static get code() {
+        return 'ERR_JOSE_ALG_NOT_ALLOWED';
+    }
+}
+exports.JOSEAlgNotAllowed = JOSEAlgNotAllowed;
+class JOSENotSupported extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JOSE_NOT_SUPPORTED';
+    }
+    static get code() {
+        return 'ERR_JOSE_NOT_SUPPORTED';
+    }
+}
+exports.JOSENotSupported = JOSENotSupported;
+class JWEDecryptionFailed extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWE_DECRYPTION_FAILED';
+        this.message = 'decryption operation failed';
+    }
+    static get code() {
+        return 'ERR_JWE_DECRYPTION_FAILED';
+    }
+}
+exports.JWEDecryptionFailed = JWEDecryptionFailed;
+class JWEInvalid extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWE_INVALID';
+    }
+    static get code() {
+        return 'ERR_JWE_INVALID';
+    }
+}
+exports.JWEInvalid = JWEInvalid;
+class JWSInvalid extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWS_INVALID';
+    }
+    static get code() {
+        return 'ERR_JWS_INVALID';
+    }
+}
+exports.JWSInvalid = JWSInvalid;
+class JWTInvalid extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWT_INVALID';
+    }
+    static get code() {
+        return 'ERR_JWT_INVALID';
+    }
+}
+exports.JWTInvalid = JWTInvalid;
+class JWKInvalid extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWK_INVALID';
+    }
+    static get code() {
+        return 'ERR_JWK_INVALID';
+    }
+}
+exports.JWKInvalid = JWKInvalid;
+class JWKSInvalid extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWKS_INVALID';
+    }
+    static get code() {
+        return 'ERR_JWKS_INVALID';
+    }
+}
+exports.JWKSInvalid = JWKSInvalid;
+class JWKSNoMatchingKey extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWKS_NO_MATCHING_KEY';
+        this.message = 'no applicable key found in the JSON Web Key Set';
+    }
+    static get code() {
+        return 'ERR_JWKS_NO_MATCHING_KEY';
+    }
+}
+exports.JWKSNoMatchingKey = JWKSNoMatchingKey;
+class JWKSMultipleMatchingKeys extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWKS_MULTIPLE_MATCHING_KEYS';
+        this.message = 'multiple matching keys found in the JSON Web Key Set';
+    }
+    static get code() {
+        return 'ERR_JWKS_MULTIPLE_MATCHING_KEYS';
+    }
+}
+exports.JWKSMultipleMatchingKeys = JWKSMultipleMatchingKeys;
+class JWKSTimeout extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWKS_TIMEOUT';
+        this.message = 'request timed out';
+    }
+    static get code() {
+        return 'ERR_JWKS_TIMEOUT';
+    }
+}
+exports.JWKSTimeout = JWKSTimeout;
+class JWSSignatureVerificationFailed extends JOSEError {
+    constructor() {
+        super(...arguments);
+        this.code = 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED';
+        this.message = 'signature verification failed';
+    }
+    static get code() {
+        return 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED';
+    }
+}
+exports.JWSSignatureVerificationFailed = JWSSignatureVerificationFailed;
+
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/common/index.js":[function(require,module,exports){
 'use strict';
 
 const mycrypto = require('../crypto')
-const config = require('../config')
 const crypto = require('crypto');
 
 // Prevent benign malleability
@@ -61357,7 +68516,7 @@ module.exports = {
     convertKeysToKeyObjects
 }
 
-},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js":[function(require,module,exports){
+},{"../crypto":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js":[function(require,module,exports){
 module.exports = {
     curveName: 'secp256k1',
     encodingFormat: 'base64',
@@ -61377,8 +68536,6 @@ module.exports = {
 'use strict';
 
 const crypto = require('crypto');
-const config = require('../config')
-
 
 function symmetricEncrypt(key, plaintext, iv, options) {
     if (key.length !== options.symmetricCipherKeySize) {
@@ -61411,7 +68568,7 @@ module.exports = {
     symmetricDecrypt
 }
 
-},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js":[function(require,module,exports){
+},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/digitalsig.js":[function(require,module,exports){
 'use strict';
 
 const crypto = require('crypto');
@@ -61551,7 +68708,6 @@ module.exports = {
 'use strict';
 
 const crypto = require('crypto');
-const config = require('../config');
 
 function computeKMAC(key, data, options) {
     if (key.length !== options.macKeySize) {
@@ -61574,10 +68730,9 @@ module.exports = {
     verifyKMAC
 }
 
-},{"../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js":[function(require,module,exports){
+},{"./index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/index.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkdeserializer.js":[function(require,module,exports){
 'use strict';
 
-const crypto = require('crypto')
 const config = require('../config');
 
 function PublicKeyDeserializer() {
@@ -61608,7 +68763,7 @@ function PublicKeyDeserializer() {
 
 module.exports = new PublicKeyDeserializer()
 
-},{"../../lib/ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js":[function(require,module,exports){
+},{"../../lib/ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","../config":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/config.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/crypto/pkserializer.js":[function(require,module,exports){
 const config = require('../config');
 
 function PublicKeySerializer() {
@@ -62639,7 +69794,7 @@ function checkIsPublicKey(key) {
     if (typeof key.export !== 'function') {
         throw typeError(MSG_INVALID_VERIFIER_KEY);
     }
-};
+}
 
 function checkIsPrivateKey(key) {
     if ($$.Buffer.isBuffer(key)) {
@@ -62655,7 +69810,7 @@ function checkIsPrivateKey(key) {
     }
 
     throw typeError(MSG_INVALID_SIGNER_KEY);
-};
+}
 
 function checkIsSecretKey(key) {
     if ($$.Buffer.isBuffer(key)) {
@@ -63858,8 +71013,6 @@ module.exports = function (jwtString, secretOrPublicKey, options, callback) {
     });
 };
 },{"./decode":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/decode.js","./jwkToPemConverter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jwkToPemConverter/index.js","./jws":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/jws/index.js","./lib/JsonWebTokenError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/JsonWebTokenError.js","./lib/NotBeforeError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/NotBeforeError.js","./lib/TokenExpiredError":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/TokenExpiredError.js","./lib/timespan":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/lib/timespan.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js":[function(require,module,exports){
-const utils = require("./utils/cryptoUtils");
-
 function ECKeyGenerator() {
     const crypto = require('crypto');
     const KeyEncoder = require('./keyEncoder');
@@ -64222,7 +71375,8 @@ function PskCrypto() {
     this.ecies_decrypt_kmac = ecies.ecies_decrypt_kmac;
     this.ecies_encrypt_ds = ecies.ecies_encrypt_ds;
     this.ecies_decrypt_ds = ecies.ecies_decrypt_ds;
-    this.joseAPI = require("../jsonWebToken");
+    this.jsonWebTokenAPI = require("../jsonWebToken");
+    this.joseAPI = require("../jose");
     this.pskBase64Encode = utils.base64Encode;
     this.pskBase64Decode = utils.base64Decode;
 }
@@ -64231,7 +71385,7 @@ module.exports = new PskCrypto();
 
 
 
-},{"../js-mutual-auth-ecies/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js","../jsonWebToken":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js","../signsensusDS/ssutil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js","./ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","./PskEncryption":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js","./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","./utils/eth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js":[function(require,module,exports){
+},{"../jose":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jose/index.js","../js-mutual-auth-ecies/index":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/js-mutual-auth-ecies/index.js","../jsonWebToken":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/jsonWebToken/index.js","../signsensusDS/ssutil":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/signsensusDS/ssutil.js","./ECKeyGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/ECKeyGenerator.js","./PskEncryption":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js","./utils/cryptoUtils":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js","./utils/eth":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/eth.js","crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/PskEncryption.js":[function(require,module,exports){
 function PskEncryption(algorithm) {
     const crypto = require("crypto");
     const utils = require("./utils/cryptoUtils");
@@ -64356,7 +71510,7 @@ function Entity(name, body) {
 
   this.decoders = {};
   this.encoders = {};
-};
+}
 
 Entity.prototype._createNamed = function createNamed(base) {
   var named;
@@ -64863,7 +72017,7 @@ Node.prototype._decode = function decode(input) {
     // Unwrap implicit and normal values
     if (state.use === null && state.choice === null) {
       if (state.any)
-        var save = input.save();
+        save = input.save();
       var body = this._decodeTag(
         input,
         state.implicit !== null ? state.implicit : state.tag,
@@ -64895,7 +72049,7 @@ Node.prototype._decode = function decode(input) {
         child._decode(input);
       });
       if (fail)
-        return err;
+        return fail;
     }
   }
 
@@ -65012,7 +72166,6 @@ Node.prototype._encodeValue = function encode(data, reporter, parent) {
     return state.children[0]._encode(data, reporter || new Reporter());
 
   var result = null;
-  var present = true;
 
   // Set reporter to share it with a child class
   this.reporter = reporter;
@@ -65024,9 +72177,6 @@ Node.prototype._encodeValue = function encode(data, reporter, parent) {
     else
       return;
   }
-
-  // For error reporting
-  var prevKey;
 
   // Encode children first
   var content = null;
@@ -65082,7 +72232,7 @@ Node.prototype._encodeValue = function encode(data, reporter, parent) {
   }
 
   // Encode data itself
-  var result;
+  result;
   if (!state.any && state.choice === null) {
     var tag = state.implicit !== null ? state.implicit : state.tag;
     var cls = state.implicit === null ? 'universal' : 'context';
@@ -65233,7 +72383,7 @@ Reporter.prototype.wrapResult = function wrapResult(result) {
 function ReporterError(path, msg) {
   this.path = path;
   this.rethrow(msg);
-};
+}
 inherits(ReporterError, Error);
 
 ReporterError.prototype.rethrow = function rethrow(msg) {
@@ -65350,7 +72500,7 @@ BN.prototype._init = function init(number, base, endian) {
     return new ArrayType(size);
   };
 
-  BN.prototype._toArrayLikeLE = function _toArrayLikeLE (res, byteLength) {
+  BN.prototype._toArrayLikeLE = function _toArrayLikeLE (res) {
     var position = 0;
     var carry = 0;
 
@@ -65386,7 +72536,7 @@ BN.prototype._init = function init(number, base, endian) {
     }
   };
 
-  BN.prototype._toArrayLikeBE = function _toArrayLikeBE (res, byteLength) {
+  BN.prototype._toArrayLikeBE = function _toArrayLikeBE (res) {
     var position = res.length - 1;
     var carry = 0;
 
@@ -67769,7 +74919,7 @@ function DERDecoder(entity) {
   // Construct base tree
   this.tree = new DERNode();
   this.tree._init(entity.body);
-};
+}
 module.exports = DERDecoder;
 
 DERDecoder.prototype.decode = function decode(data, options) {
@@ -68053,13 +75203,12 @@ decoders.pem = require('./pem');
 },{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/pem.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 
-const asn1 = require('../asn1');
 const DERDecoder = require('./der');
 
 function PEMDecoder(entity) {
     DERDecoder.call(this, entity);
     this.enc = 'pem';
-};
+}
 inherits(PEMDecoder, DERDecoder);
 module.exports = PEMDecoder;
 
@@ -68095,16 +75244,15 @@ PEMDecoder.prototype.decode = function decode(data, options) {
 
     const base64 = lines.slice(start + 1, end).join('');
     // Remove excessive symbols
-    base64.replace(/[^a-z0-9\+\/=]+/gi, '');
+    base64.replace(/[^a-z0-9+/=]+/gi, '');
     const input = $$.Buffer.from(base64, 'base64');
     return DERDecoder.prototype.decode.call(this, input, options);
 };
 
-},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/decoders/der.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js":[function(require,module,exports){
 const inherits = require('util').inherits;
 const asn1 = require('../asn1');
 const base = asn1.base;
-const bignum = asn1.bignum;
 
 // Import DER constants
 const der = asn1.constants.der;
@@ -68379,13 +75527,12 @@ encoders.pem = require('./pem');
 },{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","./pem":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/pem.js":[function(require,module,exports){
 var inherits = require('util').inherits;
 
-var asn1 = require('../asn1');
 var DEREncoder = require('./der');
 
 function PEMEncoder(entity) {
   DEREncoder.call(this, entity);
   this.enc = 'pem';
-};
+}
 inherits(PEMEncoder, DEREncoder);
 module.exports = PEMEncoder;
 
@@ -68400,7 +75547,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
   return out.join('\n');
 };
 
-},{"../asn1":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/asn1.js","./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js":[function(require,module,exports){
+},{"./der":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/asn1/encoders/der.js","util":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/keyEncoder.js":[function(require,module,exports){
 'use strict'
 
 const asn1 = require('./asn1/asn1');
@@ -68477,7 +75624,7 @@ KeyEncoder.prototype.privateKeyObject = function (rawPrivateKey, rawPublicKey, e
     return privateKeyObject
 };
 
-KeyEncoder.prototype.publicKeyObject = function (rawPublicKey, encodingFormat = "hex") {
+KeyEncoder.prototype.publicKeyObject = function (rawPublicKey) {
     return {
         algorithm: {
             id: this.algorithmID,
@@ -68741,96 +75888,6 @@ for (let i = 0; i < ALPHABET.length; i++) {
     BASE_MAP[ALPHABET[i]] = i;
 }
 
-function encode(source) {
-    if (typeof source !== "string") {
-        source = source.toString();
-    }
-    let digits = [];
-    let length = 0;
-    let b64 = '';
-    for (let i = 0; i <= source.length; i += 3) {
-        let number = 0;
-        let j;
-        for (j = i; j < i + 3 && j < source.length; j++) {
-            number = number * 256 + source.charCodeAt(j);
-        }
-
-        if (j % 3 === 1) {
-            number *= 16;
-        } else if (j % 3 === 2) {
-            number *= 4;
-        }
-
-        let previousLength = length;
-        while (number > 0) {
-            digits[length] = number % 64;
-            length++;
-            number = Math.floor(number / 64);
-        }
-        for (let k = previousLength; k < length; k++) {
-            b64 += ALPHABET[digits[length + previousLength - 1 - k]];
-        }
-    }
-    let paddingLength = 0;
-    if (length % 4 > 0) {
-        paddingLength = 4 - length % 4;
-    }
-    for (let i = 0; i < paddingLength; i++) {
-        b64 += "=";
-    }
-    return b64;
-}
-
-function decode(source) {
-    if (typeof source !== "string") {
-        source = source.toString();
-    }
-    let paddingLength = 0;
-    for (let i = 0; i < source.length; i++) {
-        if (source.charAt(i) === "=") {
-            paddingLength++;
-        }
-    }
-    let digits = [];
-    let length = 0;
-    let rest = (source.length - paddingLength) % 4;
-    let size = (source.length - paddingLength - rest) * 3 / 4;
-    if (paddingLength === 2) {
-        size++;
-    } else if (paddingLength === 1) {
-        size += 2;
-    }
-
-    let b256 = '';
-    for (let i = 0; i <= source.length - paddingLength; i += 4) {
-        let number = 0;
-        let j;
-        for (j = i; j < i + 4 && j < source.length - paddingLength - 1; j++) {
-            number = number * 64 + BASE_MAP[source.charAt(j)];
-        }
-
-        if (j % 4 === 1) {
-            number = number * 4 + Math.floor(BASE_MAP[source.charAt(j)] / 16);
-        } else if (j % 4 === 2) {
-            number = number * 16 + Math.floor(BASE_MAP[source.charAt(j)] / 4);
-        } else if (j % 4 === 3) {
-            number = number * 64 + BASE_MAP[source.charAt(j)];
-        }
-
-        let previousLength = length;
-        while (length - previousLength < 3 && length < size) {
-            digits[length] = number % 256;
-            length++;
-            number = Math.floor(number / 256);
-        }
-        for (let k = previousLength; k < length; k++) {
-            b256 += String.fromCharCode(digits[length + previousLength - 1 - k]);
-        }
-    }
-
-    return Buffer.from(b256);
-}
-
 function encodeBase64(data) {
     if (!Buffer.isBuffer(data)) {
         data = Buffer.from(data);
@@ -68856,7 +75913,6 @@ module.exports = {
 },{"buffer":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/pskcrypto/lib/utils/cryptoUtils.js":[function(require,module,exports){
 const base58 = require('./base58');
 const base64 = require('./base64');
-const keyEncoder = require("../keyEncoder");
 
 const keySizes = [128, 192, 256];
 const authenticationModes = ["ocb", "ccm", "gcm"];
@@ -69199,7 +76255,7 @@ exports.hashStringArray = function (counter, arr, payloadSize){
     }
 
     hash.update(result);
-    var result = hash.digest('hex');
+    result = hash.digest('hex');
     return result;
 }
 
@@ -69219,16 +76275,15 @@ function dumpMember(obj){
 
     switch(type){
         case "number":
-        case "string":return obj.toString(); break;
-        case "object": return exports.dumpObjectForHashing(obj); break;
-        case "boolean": return  obj? "true": "false"; break;
+        case "string":return obj.toString();
+        case "object": return exports.dumpObjectForHashing(obj);
+        case "boolean": return  obj? "true": "false";
         case "array":
             var result = "";
             for(var i=0; i < obj.length; i++){
                 result += exports.dumpObjectForHashing(obj[i]);
             }
             return result;
-            break;
         default:
             throw new Error("Type " +  type + " cannot be cryptographically digested");
     }
@@ -70136,15 +77191,15 @@ function TaskCounter(finalCallback) {
 	}
 
 	function callCallback() {
-	    if(errors && errors.length === 0) {
-	        errors = undefined;
-        }
+		if(errors && errors.length === 0) {
+			errors = undefined;
+		}
 
-	    if(results && results.length === 0) {
-	        results = undefined;
-        }
+		if(results && results.length === 0) {
+			results = undefined;
+		}
 
-        finalCallback(errors, results);
+		finalCallback(errors, results);
     }
 
 	return {
@@ -70200,14 +77255,14 @@ exports.jsonToNative = function(serialisedValues, result){
     for(let v in serialisedValues.publicVars){
         result.publicVars[v] = serialisedValues.publicVars[v];
 
-    };
+    }
     for(let l in serialisedValues.privateVars){
         result.privateVars[l] = serialisedValues.privateVars[l];
-    };
+    }
 
     for(let i in OwM.prototype.getMetaFrom(serialisedValues)){
         OwM.prototype.setMetaFor(result, i, OwM.prototype.getMetaFrom(serialisedValues, i));
-    };
+    }
 
 };
 },{"./OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
@@ -70588,7 +77643,7 @@ function encode(buffer) {
         .replace(/\+/g, '')
         .replace(/\//g, '')
         .replace(/=+$/, '');
-};
+}
 
 function stampWithTime(buf, salt, msalt){
     if(!salt){
@@ -71414,8 +78469,6 @@ function lazyAsyncDeepTreeChecker(root, getChildren, checkFunction, returnCallBa
 }
 
 function Concern(concernName, persistence, exceptionalRulesFunction, afterCheckFunction){
-    var self = this;
-
     this.grant = function(zoneId, resourceId, callback){
         persistence.grant(concernName,zoneId, resourceId, callback);
     }
@@ -71437,13 +78490,12 @@ function Concern(concernName, persistence, exceptionalRulesFunction, afterCheckF
      */
 
     this.allow1 = function(zoneId, resourceId, callback){
-        var self = this;
         var allParentZones = persistence.loadZoneParents.async(zoneId);
-
+        var exceptionAllow;
         if(exceptionalRulesFunction){
-            var exceptionAllow = exceptionalRulesFunction.async(zoneId, resourceId);
+            exceptionAllow = exceptionalRulesFunction.async(zoneId, resourceId);
         } else {
-            var exceptionAllow = false;
+            exceptionAllow = false;
         }
 
         (function(allParentZones, exceptionAllow){
@@ -71479,7 +78531,7 @@ function Concern(concernName, persistence, exceptionalRulesFunction, afterCheckF
                 o[arr1[i]] = true;
             }
 
-            for(var i = 0, l = arr2.length; i<l; i++ ){
+            for(i = 0, l = arr2.length; i<l; i++ ){
                 if(o[arr2[i]]) {
                     return true;
                 }
@@ -71508,8 +78560,6 @@ function Concern(concernName, persistence, exceptionalRulesFunction, afterCheckF
     }
 
     this.allow = function(zoneId, resourceId, callback){
-        var self = this;
-
         if(exceptionalRulesFunction){
             exceptionalRulesFunction(zoneId,resourceId,function(err,favorableException){
                 if(err){
@@ -71564,7 +78614,7 @@ function Concern(concernName, persistence, exceptionalRulesFunction, afterCheckF
                 o[arr1[i]] = true;
             }
 
-            for(var i = 0, l = arr2.length; i<l; i++ ){
+            for(i = 0, l = arr2.length; i<l; i++ ){
                 if(o[arr2[i]]) {
                     return true;
                 }
@@ -71598,12 +78648,12 @@ module.exports.createConcern = function(concernName, persistence, exceptionalRul
 const logger = $$.getLogger("HttpServer", "apihub");
 
 process.on('uncaughtException', err => {
-	logger.critical('There was an uncaught error', err, err.message, err.stack);
+    logger.critical('There was an uncaught error', err, err.message, err.stack);
 });
 
-process.on('SIGTERM', (signal)=>{
-	process.shuttingDown = true;
-	logger.info('Received signal:', signal, ". Activating the gracefulTerminationWatcher.");
+process.on('SIGTERM', (signal) => {
+    process.shuttingDown = true;
+    logger.info('Received signal:', signal, ". Activating the gracefulTerminationWatcher.");
 });
 
 const httpWrapper = require('./libs/http-wrapper');
@@ -71611,286 +78661,289 @@ const Server = httpWrapper.Server;
 
 const CHECK_FOR_RESTART_COMMAND_FILE_INTERVAL = 500;
 
-(function loadDefaultComponents(){
-	//next require lines are only for browserify build purpose
-	// Remove mock
-	require('./components/admin');
-	require('./components/config');
-	require('./components/bricking');
-	require('./components/anchoring');
-	require('./components/bdns');
-	/*require('./components/fileManager');
-	require('./components/bricksFabric');*/
-	require('./components/staticServer');
-	require('./components/keySsiNotifications');
-	require('./components/debugLogger');
-	require('./components/mqHub');
-	require('./components/secrets');
-	require('./components/mainDSU');
-	require('./components/cloudWallet');
-	require('./components/versionlessDSU');
-	require('./components/stream');
-	require('./components/requestForwarder');
-	require('./components/lightDBEnclave');
-	require("./components/activeComponents");
-	//end
+(function loadDefaultComponents() {
+    //next require lines are only for browserify build purpose
+    // Remove mock
+    require('./components/admin');
+    require('./components/config');
+    require('./components/bricking');
+    require('./components/anchoring');
+    require('./components/bdns');
+    /*require('./components/fileManager');
+    require('./components/bricksFabric');*/
+    require('./components/staticServer');
+    require('./components/keySsiNotifications');
+    require('./components/debugLogger');
+    require('./components/mqHub');
+    require('./components/secrets');
+    require('./components/mainDSU');
+    require('./components/cloudWallet');
+    require('./components/versionlessDSU');
+    require('./components/stream');
+    require('./components/requestForwarder');
+    require('./components/lightDBEnclave');
+    require("./components/activeComponents");
+    //end
 })();
 
-function HttpServer({ listeningPort, rootFolder, sslConfig, dynamicPort, restartIntervalCheck, retryTimeout }, callback) {
-	if(typeof restartIntervalCheck === "undefined"){
-		restartIntervalCheck = CHECK_FOR_RESTART_COMMAND_FILE_INTERVAL;
-	}
-	let port = listeningPort || 8080;
-	const conf =  require('./config').getConfig();
-	const server = new Server(sslConfig);
-	server.config = conf;
-	server.rootFolder = rootFolder;
-	server.timeout = conf.timeout || (60 * 1000) + 1000;
-	server.requestTimeout = conf.requestTimeout || 300 * 1000;
+function HttpServer({listeningPort, rootFolder, sslConfig, dynamicPort, restartIntervalCheck, retryTimeout}, callback) {
+    if (typeof restartIntervalCheck === "undefined") {
+        restartIntervalCheck = CHECK_FOR_RESTART_COMMAND_FILE_INTERVAL;
+    }
+    let port = listeningPort || 8080;
+    const conf = require('./config').getConfig();
+    const server = new Server(sslConfig);
+    server.config = conf;
+    server.rootFolder = rootFolder;
+    server.timeout = conf.timeout || (60 * 1000) + 1000;
+    server.requestTimeout = conf.requestTimeout || 300 * 1000;
 
-	server.keepAliveTimeout = conf.keepAliveTimeout || (60 * 1000) + 1000;
+    server.keepAliveTimeout = conf.keepAliveTimeout || (60 * 1000) + 1000;
 
-	server.getHeadHandler = function(handler){
-		return function(req, res, next){
-			res.write = function(){
+    server.getHeadHandler = function (handler) {
+        return function (req, res, next) {
+            res.write = function () {
 
-			}
-			let originalEnd = res.end;
-			res.end = function(){
-				originalEnd.call(res);
-			}
+            }
+            let originalEnd = res.end;
+            res.end = function () {
+                originalEnd.call(res);
+            }
 
-			handler(req, res, next);
-		}
-	}
+            handler(req, res, next);
+        }
+    }
 
-	let permanentWarnings = [];
-	server.registerPermanentWarning = (componentName, error)=>{
-		permanentWarnings.push({componentName, error});
-	}
+    let permanentWarnings = [];
+    server.registerPermanentWarning = (componentName, error) => {
+        permanentWarnings.push({componentName, error});
+    }
 
-	let displayPermanentWarnings = function(){
-		for (let warning of permanentWarnings){
-			let {error, componentName} = warning;
-			logger.warning(`Component ${componentName} has an permanent warning!`, error);
-		}
-	}
+    let displayPermanentWarnings = function () {
+        for (let warning of permanentWarnings) {
+            let {error, componentName} = warning;
+            logger.warning(`Component ${componentName} has an permanent warning!`, error);
+        }
+    }
 
-	server.use((req, res, next)=>{
-		if(permanentWarnings.length){
-			logger.warning("The server seems to be in a wrong state!", `${permanentWarnings.length} warning(s):`);
-			displayPermanentWarnings();
-		}
-		next();
-	});
+    server.use((req, res, next) => {
+        if (permanentWarnings.length) {
+            logger.warning("The server seems to be in a wrong state!", `${permanentWarnings.length} warning(s):`);
+            displayPermanentWarnings();
+        }
+        next();
+    });
 
-	let listenCallback = (err) => {
-		if (err) {
-			if (!dynamicPort && callback) {
-				return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to listen on port <${port}>`, err));
-			}
-			if(dynamicPort && error.code === 'EADDRINUSE'){
-				logger.debug(`Port ${port} is already in use. Trying to find another one...`);
-				function getRandomPort() {
-					const min = 9000;
-					const max = 65535;
-					return Math.floor(Math.random() * (max - min) + min);
-				}
-				port = getRandomPort();
-				if(Number.isInteger(dynamicPort)){
-					dynamicPort -= 1;
-				}
-				let timeValue = retryTimeout || CHECK_FOR_RESTART_COMMAND_FILE_INTERVAL;
-				setTimeout(bootup, timeValue);
-			}else{
-			    logger.error(err);
-			}
-		}
-	};
+    let listenCallback = (err) => {
+        if (err) {
+            if (!dynamicPort && callback) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to listen on port <${port}>`, err));
+            }
+            if (dynamicPort && err.code === 'EADDRINUSE') {
+                logger.debug(`Port ${port} is already in use. Trying to find another one...`);
 
-	function bootup(){
-		logger.debug(`Trying to listen on port ${port}`);
-		server.listen(port, conf.host, listenCallback);
-	}
+                function getRandomPort() {
+                    const min = 9000;
+                    const max = 65535;
+                    return Math.floor(Math.random() * (max - min) + min);
+                }
 
-	bootup();
+                port = getRandomPort();
+                if (Number.isInteger(dynamicPort)) {
+                    dynamicPort -= 1;
+                }
+                let timeValue = retryTimeout || CHECK_FOR_RESTART_COMMAND_FILE_INTERVAL;
+                setTimeout(bootup, timeValue);
+            } else {
+                logger.error(err);
+            }
+        }
+    };
 
-	if(restartIntervalCheck){
-		setInterval(function(){
-			let restartServerFile = server.rootFolder + '/needServerRestart';
-			const fsname = "fs";
-			const fs = require(fsname);
-			fs.readFile(restartServerFile, function(error, content) {
-				if (!error && content.toString() !== "") {
-					logger.debug(`### Preparing to restart because of the request done by file: <${restartServerFile}> File content: ${content}`);
-					server.close();
-					server.listen(port, conf.host, () => {
-						fs.writeFile(restartServerFile, "", function(){
-							//we don't care about this file.. we just clear it's content the prevent recursive restarts
-							logger.debug(`### Restart operation finished.`);
-						});
-					});
-				}
-			});
-		}, restartIntervalCheck);
-	}
+    function bootup() {
+        logger.debug(`Trying to listen on port ${port}`);
+        server.listen(port, conf.host, listenCallback);
+    }
 
-	server.on('listening', bindFinished);
-	server.on('error', listenCallback);
+    bootup();
 
-	let accessControlAllowHeaders = new Set();
-	accessControlAllowHeaders.add("Content-Type");
-	accessControlAllowHeaders.add("Content-Length");
-	accessControlAllowHeaders.add("X-Content-Length");
-	accessControlAllowHeaders.add("Access-Control-Allow-Origin");
-	accessControlAllowHeaders.add("User-Agent");
-	accessControlAllowHeaders.add("Authorization");
-	accessControlAllowHeaders.add("ETag");
+    if (restartIntervalCheck) {
+        setInterval(function () {
+            let restartServerFile = server.rootFolder + '/needServerRestart';
+            const fsname = "fs";
+            const fs = require(fsname);
+            fs.readFile(restartServerFile, function (error, content) {
+                if (!error && content.toString() !== "") {
+                    logger.debug(`### Preparing to restart because of the request done by file: <${restartServerFile}> File content: ${content}`);
+                    server.close();
+                    server.listen(port, conf.host, () => {
+                        fs.writeFile(restartServerFile, "", function () {
+                            //we don't care about this file.. we just clear it's content the prevent recursive restarts
+                            logger.debug(`### Restart operation finished.`);
+                        });
+                    });
+                }
+            });
+        }, restartIntervalCheck);
+    }
 
-	server.registerAccessControlAllowHeaders = function(headers){
-		if(headers){
-			if(Array.isArray(headers)){
-				for(let i=0; i<headers.length; i++){
-					accessControlAllowHeaders.add(headers[i]);
-				}
-			}else{
-				accessControlAllowHeaders.add(headers);
-			}
-		}
-	}
+    server.on('listening', bindFinished);
+    server.on('error', listenCallback);
 
-	server.getAccessControlAllowHeadersAsString = function(){
-		let headers = "";
-		let notFirst = false;
-		for(let header of accessControlAllowHeaders){
-			if(notFirst){
-				headers += ", ";
-			}
-			notFirst = true;
-			headers += header;
-		}
-		return headers;
-	}
+    let accessControlAllowHeaders = new Set();
+    accessControlAllowHeaders.add("Content-Type");
+    accessControlAllowHeaders.add("Content-Length");
+    accessControlAllowHeaders.add("X-Content-Length");
+    accessControlAllowHeaders.add("Access-Control-Allow-Origin");
+    accessControlAllowHeaders.add("User-Agent");
+    accessControlAllowHeaders.add("Authorization");
+    accessControlAllowHeaders.add("ETag");
 
-	function bindFinished(err) {
-		if (err) {
-			logger.error(err);
-			if (callback) {
-				return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to bind on port <${port}>`, err));
-			}
-			return;
-		}
+    server.registerAccessControlAllowHeaders = function (headers) {
+        if (headers) {
+            if (Array.isArray(headers)) {
+                for (let i = 0; i < headers.length; i++) {
+                    accessControlAllowHeaders.add(headers[i]);
+                }
+            } else {
+                accessControlAllowHeaders.add(headers);
+            }
+        }
+    }
 
-		registerEndpoints(callback);
-	}
+    server.getAccessControlAllowHeadersAsString = function () {
+        let headers = "";
+        let notFirst = false;
+        for (let header of accessControlAllowHeaders) {
+            if (notFirst) {
+                headers += ", ";
+            }
+            notFirst = true;
+            headers += header;
+        }
+        return headers;
+    }
 
-	let endpointsAlreadyRegistered = false;
-	function registerEndpoints(callback) {
-		//The purpose of this flag is to prevent endpoints registering again
-		//in case of a restart requested by file needServerRestart present in rootFolder
-		if(endpointsAlreadyRegistered){
-			return ;
-		}
-		endpointsAlreadyRegistered = true;
-		server.use(function (req, res, next) {
-			res.setHeader('Access-Control-Allow-Origin', req.headers.origin || req.headers.host || "*");
-			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-			res.setHeader('Access-Control-Allow-Headers', server.getAccessControlAllowHeadersAsString());
-			res.setHeader('Access-Control-Allow-Credentials', true);
-			next();
-		});
+    function bindFinished(err) {
+        if (err) {
+            logger.error(err);
+            if (callback) {
+                return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed to bind on port <${port}>`, err));
+            }
+            return;
+        }
 
-		server.options('/*', function (req, res) {
-			const headers = {};
-			//origin header maybe missing (eg. Postman call or proxy that doesn't forward the origin header etc.)
-			if(req.headers.origin){
-				headers['Access-Control-Allow-Origin'] = req.headers.origin;
-			}else{
-				headers['Access-Control-Allow-Origin'] = '*';
-			}
-			headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS';
-			headers['Access-Control-Allow-Credentials'] = true;
-			headers['Access-Control-Max-Age'] = '3600'; //one hour
-			headers['Access-Control-Allow-Headers'] = server.getAccessControlAllowHeadersAsString();
+        registerEndpoints(callback);
+    }
 
-			if(conf.CORS){
-				logger.debug("Applying custom CORS headers");
-				for(let prop in conf.CORS){
-					headers[prop] = conf.CORS[prop];
-				}
-			}
+    let endpointsAlreadyRegistered = false;
 
-			res.writeHead(200, headers);
-			res.end();
+    function registerEndpoints(callback) {
+        //The purpose of this flag is to prevent endpoints registering again
+        //in case of a restart requested by file needServerRestart present in rootFolder
+        if (endpointsAlreadyRegistered) {
+            return;
+        }
+        endpointsAlreadyRegistered = true;
+        server.use(function (req, res, next) {
+            res.setHeader('Access-Control-Allow-Origin', req.headers.origin || req.headers.host || "*");
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', server.getAccessControlAllowHeadersAsString());
+            res.setHeader('Access-Control-Allow-Credentials', true);
+            next();
+        });
+
+        server.options('/*', function (req, res) {
+            const headers = {};
+            //origin header maybe missing (eg. Postman call or proxy that doesn't forward the origin header etc.)
+            if (req.headers.origin) {
+                headers['Access-Control-Allow-Origin'] = req.headers.origin;
+            } else {
+                headers['Access-Control-Allow-Origin'] = '*';
+            }
+            headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS';
+            headers['Access-Control-Allow-Credentials'] = true;
+            headers['Access-Control-Max-Age'] = '3600'; //one hour
+            headers['Access-Control-Allow-Headers'] = server.getAccessControlAllowHeadersAsString();
+
+            if (conf.CORS) {
+                logger.debug("Applying custom CORS headers");
+                for (let prop in conf.CORS) {
+                    headers[prop] = conf.CORS[prop];
+                }
+            }
+
+            res.writeHead(200, headers);
+            res.end();
         });
 
         function addRootMiddlewares() {
-			const LoggerMiddleware = require('./middlewares/logger');
-			const ReadOnly = require("./middlewares/readOnly");
-			const AuthorisationMiddleware = require('./middlewares/authorisation');
-			const Throttler = require('./middlewares/throttler');
-			const OAuth = require('./middlewares/oauth');
-			const ClientCredentialsOAuth = require('./middlewares/clientCredentialsOauth');
-      		const SimpleAuth = require('./middlewares/simpleAuth');
-			const APIKeyAuthorisation = require('./middlewares/apiKeyAuth');
-			const FixedUrls = require('./middlewares/fixedUrls');
-			const SimpleLock = require('./middlewares/SimpleLock');
-			const ResponseHeaderMiddleware = require('./middlewares/responseHeader');
-			const genericErrorMiddleware = require('./middlewares/genericErrorMiddleware');
-			const requestEnhancements = require('./middlewares/requestEnhancements');
+            const LoggerMiddleware = require('./middlewares/logger');
+            const ReadOnly = require("./middlewares/readOnly");
+            const AuthorisationMiddleware = require('./middlewares/authorisation');
+            const Throttler = require('./middlewares/throttler');
+            const OAuth = require('./middlewares/oauth');
+            const ClientCredentialsOAuth = require('./middlewares/clientCredentialsOauth');
+            const SimpleAuth = require('./middlewares/simpleAuth');
+            const APIKeyAuthorisation = require('./middlewares/apiKeyAuth');
+            const FixedUrls = require('./middlewares/fixedUrls');
+            const SimpleLock = require('./middlewares/SimpleLock');
+            const ResponseHeaderMiddleware = require('./middlewares/responseHeader');
+            const genericErrorMiddleware = require('./middlewares/genericErrorMiddleware');
+            const requestEnhancements = require('./middlewares/requestEnhancements');
 
-			server.use(function gracefulTerminationWatcher(req, res, next) {
-				const allowedUrls = [/*"/installation-details", "/ready-probe"*/];
-				if(process.shuttingDown && allowedUrls.indexOf(req.url) === -1){
-					//uncaught exception was caught so server is shutting down gracefully and not accepting any requests
-					res.statusCode = 503;
-					logger.log(0x02, `Rejecting ${req.url} with status code ${res.statusCode} because process is shutting down.`);
-					res.end();
-					return;
-				}
-				//if the url is allowed or shuttingDown flag not present, we let the request go on...
-				next();
-			});
+            server.use(function gracefulTerminationWatcher(req, res, next) {
+                const allowedUrls = [/*"/installation-details", "/ready-probe"*/];
+                if (process.shuttingDown && allowedUrls.indexOf(req.url) === -1) {
+                    //uncaught exception was caught so server is shutting down gracefully and not accepting any requests
+                    res.statusCode = 503;
+                    logger.log(0x02, `Rejecting ${req.url} with status code ${res.statusCode} because process is shutting down.`);
+                    res.end();
+                    return;
+                }
+                //if the url is allowed or shuttingDown flag not present, we let the request go on...
+                next();
+            });
 
-			if(conf.enableRequestLogger) {
-				new LoggerMiddleware(server);
-			}
+            if (conf.enableRequestLogger) {
+                new LoggerMiddleware(server);
+            }
 
-			if(conf.enableReadOnlyMechanism){
-				ReadOnly(server);
-			}
+            if (conf.enableReadOnlyMechanism) {
+                ReadOnly(server);
+            }
 
-			if(conf.enableErrorCloaking){
-				genericErrorMiddleware(server);
-			}
-			requestEnhancements(server);
-			Throttler(server);
-			FixedUrls(server);
-			SimpleLock(server);
+            if (conf.enableErrorCloaking) {
+                genericErrorMiddleware(server);
+            }
+            requestEnhancements(server);
+            Throttler(server);
+            FixedUrls(server);
+            SimpleLock(server);
 
-			if(conf.enableJWTAuthorisation) {
-				new AuthorisationMiddleware(server);
-			}
+            if (conf.enableJWTAuthorisation) {
+                new AuthorisationMiddleware(server);
+            }
 
             APIKeyAuthorisation(server);
 
-			if(conf.enableClientCredentialsOauth) {
-				ClientCredentialsOAuth(server);
-			}
+            if (conf.enableClientCredentialsOauth) {
+                ClientCredentialsOAuth(server);
+            }
 
-			if(conf.enableSimpleAuth && process.env.ENABLE_SSO !== "false") {
-				SimpleAuth(server);
-			}
+            if (conf.enableSimpleAuth && process.env.ENABLE_SSO !== "false") {
+                SimpleAuth(server);
+            }
 
-			if(conf.enableOAuth && process.env.ENABLE_SSO !== "false") {
+            if (conf.enableOAuth && process.env.ENABLE_SSO !== "false") {
                 new OAuth(server);
             }
 
-			if(conf.responseHeaders){
-				new ResponseHeaderMiddleware(server);
-			}
+            if (conf.responseHeaders) {
+                new ResponseHeaderMiddleware(server);
+            }
 
-            if(conf.enableInstallationDetails) {
+            if (conf.enableInstallationDetails) {
                 const enableInstallationDetails = require("./components/installation-details");
                 enableInstallationDetails(server);
             }
@@ -71906,71 +78959,71 @@ function HttpServer({ listeningPort, rootFolder, sslConfig, dynamicPort, restart
             logger.debug(`Preparing to register middleware from path ${componentPath}`);
 
             let middlewareImplementation;
-            try{
+            try {
                 middlewareImplementation = require(componentPath);
-            } catch(e){
-				server.registerPermanentWarning(componentName, e);
-				if(callback){
-					callback();
-				}
-				return;
+            } catch (e) {
+                server.registerPermanentWarning(componentName, e);
+                if (callback) {
+                    callback();
+                }
+                return;
             }
-			let asyncLoadingComponent = false;
-			const calledByAsyncLoadingComponent = (cb)=>{
-				asyncLoadingComponent = true;
-				//if the component calls before returning this function means that needs more time, is doing async calls etc.
-			}
+            let asyncLoadingComponent = false;
+            const calledByAsyncLoadingComponent = () => {
+                asyncLoadingComponent = true;
+                //if the component calls before returning this function means that needs more time, is doing async calls etc.
+            }
 
-			let arguments = [server];
+            let args = [server];
 
-			if(callback) {
-				arguments.push(calledByAsyncLoadingComponent);
-				arguments.push(callback);
-			}
+            if (callback) {
+                args.push(calledByAsyncLoadingComponent);
+                args.push(callback);
+            }
 
-			try{
-				if (typeof componentConfig.function !== 'undefined') {
-					middlewareImplementation[componentConfig.function](...arguments);
-				} else {
-					middlewareImplementation(...arguments);
-				}
-			}catch(err){
-				server.registerPermanentWarning(componentName, err);
-				if(callback){
-					callback();
-				}
-				return;
-			}
+            try {
+                if (typeof componentConfig.function !== 'undefined') {
+                    middlewareImplementation[componentConfig.function](...args);
+                } else {
+                    middlewareImplementation(...args);
+                }
+            } catch (err) {
+                server.registerPermanentWarning(componentName, err);
+                if (callback) {
+                    callback();
+                }
+                return;
+            }
 
-			if(!asyncLoadingComponent && callback){
-				callback();
-			}
+            if (!asyncLoadingComponent && callback) {
+                callback();
+            }
         }
 
-		function addComponents(cb) {
+        function addComponents(cb) {
             const requiredComponentNames = ["config"];
             //addComponent("config", {module: "./components/config"});
-			addComponent("activeComponents", {module: "./components/activeComponents"});
+            addComponent("activeComponents", {module: "./components/activeComponents"});
 
             // take only the components that have configurations and that are not part of the required components
-			const middlewareList = [...conf.activeComponents]
+            const middlewareList = [...conf.activeComponents]
                 .filter(activeComponentName => {
-                	let include = conf.componentsConfig[activeComponentName];
-                	if(!include){
-                		logger.debug(`Not able to find config for component called < ${activeComponentName} >. Excluding it from the active components list!`);
-					}
-                	return include;
-				})
+                    let include = conf.componentsConfig[activeComponentName];
+                    if (!include) {
+                        logger.debug(`Not able to find config for component called < ${activeComponentName} >. Excluding it from the active components list!`);
+                    }
+                    return include;
+                })
                 .filter(activeComponentName => !requiredComponentNames.includes(activeComponentName));
 
             const addRequiredComponent = (componentName) => {
-                if(!middlewareList.includes(`${componentName}`)) {
+                if (!middlewareList.includes(`${componentName}`)) {
                     logger.warn(`WARNING: ${componentName} component is not configured inside activeComponents!`)
                     logger.warn(`WARNING: temporary adding ${componentName} component to activeComponents! Please make sure to include ${componentName} component inside activeComponents!`)
 
                     const addComponentToComponentList = (list) => {
                         const indexOfStaticServer = list.indexOf("staticServer");
-                        if(indexOfStaticServer !== -1) {
+                        if (indexOfStaticServer !== -1) {
                             // staticServer needs to load last
                             list.splice(indexOfStaticServer, 0, componentName);
                         } else {
@@ -71986,78 +79039,78 @@ function HttpServer({ listeningPort, rootFolder, sslConfig, dynamicPort, restart
 
             addRequiredComponent("cloudWallet");
             addRequiredComponent("mainDSU");
-						addRequiredComponent("lightDBEnclave");
+            addRequiredComponent("lightDBEnclave");
 
-			function installNextComponent(componentList){
-				const componentName = componentList[0];
-				const componentConfig = conf.componentsConfig[componentName];
-				addComponent(componentName, componentConfig, ()=>{
-					componentList.shift();
-					if(componentList.length>0){
-						return installNextComponent(componentList);
-					}
-					if(cb){
-						cb();
-					}
-				});
-			}
+            function installNextComponent(componentList) {
+                const componentName = componentList[0];
+                const componentConfig = conf.componentsConfig[componentName];
+                addComponent(componentName, componentConfig, () => {
+                    componentList.shift();
+                    if (componentList.length > 0) {
+                        return installNextComponent(componentList);
+                    }
+                    if (cb) {
+                        cb();
+                    }
+                });
+            }
 
-			if(middlewareList.indexOf("staticServer") === -1) {
-				middlewareList.push("staticServer");
-			}
+            if (middlewareList.indexOf("staticServer") === -1) {
+                middlewareList.push("staticServer");
+            }
 
-			installNextComponent(middlewareList);
-		}
+            installNextComponent(middlewareList);
+        }
 
         addRootMiddlewares();
-		addComponents(()=>{
-			//at this point all components were installed and we need to register the fallback handler
-			logger.debug("Registering the fallback handler. Any endpoint registered after this one will have zero changes to be executed.");
-			server.use(function (req, res) {
-				logger.debug("Response handled by fallback handler.");
-				res.statusCode = 404;
-				res.end();
-			});
-			if (callback) {
-				return callback();
-			}
-		});
-	}
+        addComponents(() => {
+            //at this point all components were installed and we need to register the fallback handler
+            logger.debug("Registering the fallback handler. Any endpoint registered after this one will have zero changes to be executed.");
+            server.use(function (req, res) {
+                logger.debug("Response handled by fallback handler.");
+                res.statusCode = 404;
+                res.end();
+            });
+            if (callback) {
+                return callback();
+            }
+        });
+    }
 
-	return server;
+    return server;
 }
 
 module.exports.createInstance = function (port, folder, sslConfig, callback) {
-	if (typeof sslConfig === 'function') {
-		callback = sslConfig;
-		sslConfig = undefined;
-	}
+    if (typeof sslConfig === 'function') {
+        callback = sslConfig;
+        sslConfig = undefined;
+    }
 
-	return new HttpServer({ listeningPort: port, rootFolder: folder, sslConfig }, callback);
+    return new HttpServer({listeningPort: port, rootFolder: folder, sslConfig}, callback);
 };
 
-module.exports.start = function(options, callback){
-	return new HttpServer(options, callback);
+module.exports.start = function (options, callback) {
+    return new HttpServer(options, callback);
 }
 
 module.exports.getHttpWrapper = function () {
-	return require('./libs/http-wrapper');
+    return require('./libs/http-wrapper');
 };
 
 module.exports.getServerConfig = function () {
-	logger.debug(`apihub.getServerConfig() method is deprecated, please use server.config to retrieve necessary info.`);
-	const config = require('./config');
-	return config.getConfig();
+    logger.debug(`apihub.getServerConfig() method is deprecated, please use server.config to retrieve necessary info.`);
+    const config = require('./config');
+    return config.getConfig();
 };
 
 module.exports.getDomainConfig = function (domain, ...configKeys) {
-	logger.debug(`apihub.getServerConfig() method is deprecated, please use server.config.getDomainConfig(...) to retrieve necessary info.`);
-	const config = require('./config');
-	return config.getDomainConfig(domain, ...configKeys);
+    logger.debug(`apihub.getServerConfig() method is deprecated, please use server.config.getDomainConfig(...) to retrieve necessary info.`);
+    const config = require('./config');
+    return config.getDomainConfig(domain, ...configKeys);
 };
 
 module.exports.middlewares = {
-	ReadOnly: require("./middlewares/readOnly")
+    ReadOnly: require("./middlewares/readOnly")
 }
 
 module.exports.getSecretsServiceInstanceAsync = require("./components/secrets/SecretsService").getSecretsServiceInstanceAsync;
@@ -72133,11 +79186,6 @@ module.exports.createBrickStorageService = (archiveConfigurator, keySSI) => {
                 brick.getRawData(callback);
             }
 
-            if (refreshInProgress) {
-                return waitIfDSUIsRefreshing(() => {
-                    extractData();
-                })
-            }
             extractData();
         },
 
@@ -72724,36 +79772,36 @@ if(!PREVENT_DOUBLE_LOADING_OF_OPENDSU.INITIALISED){
     PREVENT_DOUBLE_LOADING_OF_OPENDSU.INITIALISED = true;
     function loadApi(apiSpaceName){
         switch (apiSpaceName) {
-            case "http":return require("./http"); break;
-            case "crypto":return require("./crypto"); break;
-            case "apiKey":return require("./apiKey"); break;
-            case "anchoring":return require("./anchoring"); break;
-            case "contracts":return require("./contracts"); break;
-            case "bricking":return require("./bricking"); break;
-            case "bdns":return require("./bdns"); break;
-            case "boot":return require("./boot"); break;
-            case "dc":return require("./dc"); break;
-            case "dt":return require("./dt"); break;
-            case "enclave":return require("./enclave"); break;
-            case "keyssi":return require("./keyssi"); break;
-            case "mq":return require("./mq/mqClient"); break;
-            case "notifications":return require("./notifications"); break;
-            case "oauth":return require("./oauth"); break;
-            case "resolver":return require("./resolver"); break;
-            case "sc":return require("./sc"); break;
-            case "cache":return require("./cache"); break;
-            case "config":return require("./config"); break;
-            case "system":return require("./system"); break;
-            case "utils":return require("./utils"); break;
-            case "db":return require("./db"); break;
-            case "w3cdid":return require("./w3cdid"); break;
-            case "error":return require("./error"); break;
-            case "m2dsu":return require("./m2dsu"); break;
-            case "workers":return require("./workers"); break;
-            case "storage": return require("./storage"); break;
-            case "credentials": return require("./credentials"); break;
-            case "lock": return require("./lock"); break;
-            case "svd": return require("./svd"); break;
+            case "http":return require("./http"); 
+            case "crypto":return require("./crypto"); 
+            case "apiKey":return require("./apiKey"); 
+            case "anchoring":return require("./anchoring"); 
+            case "contracts":return require("./contracts"); 
+            case "bricking":return require("./bricking"); 
+            case "bdns":return require("./bdns"); 
+            case "boot":return require("./boot"); 
+            case "dc":return require("./dc"); 
+            case "dt":return require("./dt"); 
+            case "enclave":return require("./enclave"); 
+            case "keyssi":return require("./keyssi"); 
+            case "mq":return require("./mq/mqClient"); 
+            case "notifications":return require("./notifications"); 
+            case "oauth":return require("./oauth"); 
+            case "resolver":return require("./resolver"); 
+            case "sc":return require("./sc"); 
+            case "cache":return require("./cache"); 
+            case "config":return require("./config"); 
+            case "system":return require("./system"); 
+            case "utils":return require("./utils"); 
+            case "db":return require("./db"); 
+            case "w3cdid":return require("./w3cdid"); 
+            case "error":return require("./error"); 
+            case "m2dsu":return require("./m2dsu"); 
+            case "workers":return require("./workers"); 
+            case "storage": return require("./storage"); 
+            case "credentials": return require("./credentials"); 
+            case "lock": return require("./lock"); 
+            case "svd": return require("./svd"); 
             default: throw new Error("Unknown API space " + apiSpaceName);
         }
     }
@@ -72783,7 +79831,7 @@ if(!PREVENT_DOUBLE_LOADING_OF_OPENDSU.INITIALISED){
                     reportUserRelevantError("global not defined in nodejs environment");
                 }
         }
-    };
+    }
 
     function getGlobalVariable(name){
         switch ($$.environmentType) {
@@ -72796,7 +79844,7 @@ if(!PREVENT_DOUBLE_LOADING_OF_OPENDSU.INITIALISED){
             default:
                 return global[name];
         }
-    };
+    }
 
     function globalVariableExists(name){
         switch ($$.environmentType) {
@@ -72809,7 +79857,7 @@ if(!PREVENT_DOUBLE_LOADING_OF_OPENDSU.INITIALISED){
             default:
                 return typeof global[name] != "undefined";
         }
-    };
+    }
 
     PREVENT_DOUBLE_LOADING_OF_OPENDSU.loadApi = loadApi;
     PREVENT_DOUBLE_LOADING_OF_OPENDSU.loadAPI = loadApi; //upper case version just
