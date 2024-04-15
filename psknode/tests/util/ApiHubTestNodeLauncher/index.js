@@ -1,4 +1,4 @@
-const { sleepAsync, getRandomPort, getRandomAvailablePortAsync, isPortAvailableAsync } = require("../tir-utils");
+const {sleepAsync, getRandomAvailablePortAsync, isPortAvailableAsync} = require("../tir-utils");
 
 const {
     getCompleteOptions,
@@ -15,7 +15,9 @@ const {
     storeDBNSAsync,
 } = require("./launcher-utils");
 const Logger = require("../Logger");
-const clone = (data)=>{return JSON.parse(JSON.stringify(data));}
+const clone = (data) => {
+    return JSON.parse(JSON.stringify(data));
+}
 
 const logger = new Logger("[TIR]");
 
@@ -44,7 +46,7 @@ function ApiHubTestNodeLauncher(options) {
     options = getCompleteOptions(options, clone(defaultOptions));
     logger.info("Using the following options for launcher", options);
 
-    let { maxTries, rootFolder, storageFolder, port, serverConfig, domains, lightDBStorage, lightDBPort } = options;
+    let {maxTries, rootFolder, storageFolder, port, serverConfig, domains, lightDBStorage, lightDBPort} = options;
 
     this.launch = (callback) => {
         callback = $$.makeSaneCallback(callback);
@@ -98,7 +100,7 @@ function ApiHubTestNodeLauncher(options) {
 
         try {
             let contractConstitution;
-            const { contractBuildFilePath, useWorker } = options;
+            const {contractBuildFilePath, useWorker} = options;
             if (isBricksLedgerRequired) {
                 const workerApiHubOptions = {
                     port: apiHubPort,
@@ -158,9 +160,9 @@ function ApiHubTestNodeLauncher(options) {
             }
 
             const createLightDBServerInstance = require("loki-enclave-facade").createLightDBServerInstance;
-            const lightDBServerInstance = await $$.promisify(createLightDBServerInstance)(lightDBServerOptions);
+            await $$.promisify(createLightDBServerInstance)(lightDBServerOptions);
             const apiHubNode = useWorker
-                ? await createApiHubInstanceWorkerAsync({ port: apiHubPort, rootFolder })
+                ? await createApiHubInstanceWorkerAsync({port: apiHubPort, rootFolder})
                 : await createApiHubInstanceAsync(apiHubPort, rootFolder);
 
             result.node = apiHubNode;

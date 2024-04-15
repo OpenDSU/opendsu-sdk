@@ -9,7 +9,7 @@ const config = {
     externalTarget: undefined,
     prod: true,
     quick: false,
-    only:undefined,
+    only: undefined,
     projectMap: undefined,
     jsonInput: false,
     input: path.join(process.cwd(), "builds", "tmp"),
@@ -20,7 +20,7 @@ const config = {
 try {
     argumentsParser.populateConfig(config);
 } catch (e) {
-    if(e instanceof argumentsParser.Errors.InvalidArgumentError) {
+    if (e instanceof argumentsParser.Errors.InvalidArgumentError) {
         console.warn(`Invalid argument found: ${e.argumentName}`);
         console.warn('If running with npm run, try preceding argument list with -- (ex: npm run build -- --quick=true)');
         process.exit(1);
@@ -39,18 +39,18 @@ if (typeof config.source === 'string') {
 config.isProduction = config.prod;
 config.skipShims = config.quick;
 
-if(!config.hasOwnProperty('projectMap')) {
+if (!config.hasOwnProperty('projectMap')) {
     console.log("pskbuild is used to build the runtime or the code for running a privatesky domain");
     console.log(`Usage: pskbuild --projectMap=<projectmap> [--input=<inputPath>] [--output=<outputPath>] [--quick=<boolean>] [--prod=<boolean>]`);
     console.log("projectmap is a JSON file that contains the lists of targets and their dependencies that will be built.");
     console.log("Using default configuration, normally used for building a runtime");
 }
 
-if(config.externalTarget) {
+if (config.externalTarget) {
     const isExternalTargetAccessible = fs.existsSync(config.externalTarget) && fs.lstatSync(config.externalTarget).isDirectory();
 
-    if(!isExternalTargetAccessible) {
-        console.error("ERROR", config.externalTarget, "is not accessible!" );
+    if (!isExternalTargetAccessible) {
+        console.error("ERROR", config.externalTarget, "is not accessible!");
         config.externalTarget = undefined;
     }
 }
@@ -68,14 +68,14 @@ const externals = {
 
 let projectMap = {};
 
-if(config.hasOwnProperty('projectMap')) {
-    if(typeof config.jsonInput !== "undefined" && config.jsonInput){
+if (config.hasOwnProperty('projectMap')) {
+    if (typeof config.jsonInput !== "undefined" && config.jsonInput) {
         projectMap = JSON.parse(config.projectMap);
-    }else{
+    } else {
         const projectMapAsString = fs.readFileSync(config.projectMap, 'utf8');
         if (!projectMapAsString) {
             console.log("Invalid project map file:", config.projectMap);
-        }else{
+        } else {
             console.log("Found project map", config.projectMap);
             projectMap = JSON.parse(projectMapAsString);
         }
@@ -93,22 +93,19 @@ const depsNameProp = "deps";
 //TODO: maybe we should put here all the neccessary modules and the xtras on build,json ?!
 const defaultMap = {};
 
-const defaultMapWithoutSourceMap = {
-
-}
-
 const sharedDefaultMapForDebugMode = 'source-map-support, source-map, buffer-from';
 
 const cachedExternalValues = Object.values(externals);
+
 function getDefaultMapForTarget(targetName) {
     let mapForTarget = '';
 
-    if(defaultMap.hasOwnProperty(targetName)) {
+    if (defaultMap.hasOwnProperty(targetName)) {
         mapForTarget = defaultMap[targetName];
     }
 
-    if(!config.isProduction && config.projectMap[targetName].sourceMap) {
-        if(!cachedExternalValues.includes(targetName)) {
+    if (!config.isProduction && config.projectMap[targetName].sourceMap) {
+        if (!cachedExternalValues.includes(targetName)) {
             mapForTarget = concatDependencyMaps(sharedDefaultMapForDebugMode, mapForTarget);
         }
     }
@@ -120,7 +117,7 @@ function getDefaultMapForTarget(targetName) {
 // removing dependencies duplicates in target and uniformize targets,
 // meaning tansforming targets that are strings in object with properties as needed by browserify
 for (const targetName in projectMap) {
-    if(!projectMap.hasOwnProperty(targetName)) {
+    if (!projectMap.hasOwnProperty(targetName)) {
         console.error('skipping target with name', targetName);
         continue;
     }
@@ -134,7 +131,7 @@ for (const targetName in projectMap) {
         if (target instanceof Object && !Array.isArray(target)) {
             const targetObject = {};
             for (const p in projectMap[targetName]) {
-                if(!projectMap[targetName].hasOwnProperty(p)) {
+                if (!projectMap[targetName].hasOwnProperty(p)) {
                     console.error('skipping target with name', targetName);
                     continue;
                 }
@@ -157,7 +154,7 @@ for (const targetName in projectMap) {
 
 /** Cleanup output folder if in production mode **/
 
-if(config.isProduction) {
+if (config.isProduction) {
     console.log('Cleaning output folder');
 
     try {
@@ -168,7 +165,7 @@ if(config.isProduction) {
         }
 
     } catch (err) {
-        if(err.code !== 'ENOENT') {
+        if (err.code !== 'ENOENT') {
             throw err;
         }
     }
@@ -200,13 +197,13 @@ function concatDependencyMaps(dep1, dep2) {
     return Array.from(resultingSet.values()).join(', ');
 }
 
-function detectAlias(str){
+function detectAlias(str) {
     const a = str.trim().split(/\s*:\s*/);
     const res = {};
     res.module = a[0].trim();
-    if(a[1]){
+    if (a[1]) {
         res.alias = a[1].trim();
-    } else{
+    } else {
         res.alias = res.module;
     }
     return res;
@@ -214,6 +211,7 @@ function detectAlias(str){
 
 function doBrowserify(targetName, src, dest, opt, externalModules, exportsModules) {
     expected++;
+
     function scanExports(callback) {
         const stream = require("stream");
         const writable = new stream.Writable({
@@ -231,7 +229,7 @@ function doBrowserify(targetName, src, dest, opt, externalModules, exportsModule
             mapForExpose[i.module] = i;
         })
 
-        browserifyPackage.on('file', function (file, id, parent) {
+        browserifyPackage.on('file', function (file, id) {
 
             const i = mapForExpose[id];
             //console.log(file, id, i);
@@ -243,11 +241,11 @@ function doBrowserify(targetName, src, dest, opt, externalModules, exportsModule
         });
 
         browserifyPackage.bundle()
-            .on("error", (error)=>{
+            .on("error", (error) => {
                 throw new Error(`${error.message} while processing target '${targetName}'`);
             })
             .pipe(writable)
-            .on("finish", function (err, res) {
+            .on("finish", function () {
                 //console.log(mapForExpose);
                 callback(null, mapForExpose);
             });
@@ -259,9 +257,9 @@ function doBrowserify(targetName, src, dest, opt, externalModules, exportsModule
         //options like exclude and ignore need to be translated to functions calls
         // because browserify api does not accept them as options
         // the following list can be
-        let browserifyMethods = ["ignore","exclude","external"];
-        browserifyMethods.forEach(browserifyMethod=>{
-            if(opt[browserifyMethod]){
+        let browserifyMethods = ["ignore", "exclude", "external"];
+        browserifyMethods.forEach(browserifyMethod => {
+            if (opt[browserifyMethod]) {
                 browserifyPackage[browserifyMethod](opt[browserifyMethod]);
             }
         });
@@ -425,20 +423,20 @@ function buildDependencyMap(targetName, configProperty, output) {
     fs.writeFileSync(output, result);
 }
 
-function constructOptions(targetName, opts){
+function constructOptions(targetName, opts) {
     const options = {
-        paths : modulesPath,
-        fullPaths : true,
+        paths: modulesPath,
+        fullPaths: true,
         bundleExternal: false,
         debug: true,
-        externalRequireName : targetName+"Require"
+        externalRequireName: targetName + "Require"
     };
 
-    if(typeof opts == "undefined"){
+    if (typeof opts == "undefined") {
         options.bare = true;
-    }else{
-        for(const prop in opts){
-            if(prop !== depsNameProp){
+    } else {
+        for (const prop in opts) {
+            if (prop !== depsNameProp) {
                 options[prop] = opts[prop];
             }
         }
@@ -446,8 +444,8 @@ function constructOptions(targetName, opts){
     return options;
 }
 
-function splitStrToArray(str){
-    if(!(typeof str === 'string' || str instanceof String)) {
+function splitStrToArray(str) {
+    if (!(typeof str === 'string' || str instanceof String)) {
         return [];
     }
 
@@ -458,40 +456,43 @@ function splitStrToArray(str){
 
 let counter = 0;
 let expected = 0;
-function endCallback(str){
+
+function endCallback(str) {
     counter++;
     console.log(str, "done");
-    if(counter === expected) {
+    if (counter === expected) {
         console.log("Finished rebuilding");
     }
 }
+
 let external_counter = 0;
-function  copyToExternalDirectory(src){
+
+function copyToExternalDirectory(src) {
     const filename = path.basename(src);
     const dest = path.join(config.externalTarget, filename);
     const writableStream = fs.createWriteStream(dest);
 
     fs.createReadStream(src).pipe(writableStream);
-    writableStream.on("finish",function(){
+    writableStream.on("finish", function () {
         external_counter++;
-        if(external_counter === expected){
+        if (external_counter === expected) {
             console.log("All targets were successfully copied to", config.externalTarget);
         }
     });
 
 }
 
-function buildTarget(targetName){
-    if(skipList.includes(targetName)) return;
+function buildTarget(targetName) {
+    if (skipList.includes(targetName)) return;
     console.log("Building target", targetName);
 
-    buildDependencyMap(targetName, constructOptions(targetName, targets[targetName]), path.join(config.input, targetName+"_intermediar.js"));
+    buildDependencyMap(targetName, constructOptions(targetName, targets[targetName]), path.join(config.input, targetName + "_intermediar.js"));
 
     const overrideFile = path.join(config.input, targetName + ".js");
     const overrideFileExists = fs.existsSync(overrideFile);
 
     doBrowserify(targetName,
-        path.join(config.input, targetName + (overrideFileExists ? "" : "_intermediar")+".js"),
+        path.join(config.input, targetName + (overrideFileExists ? "" : "_intermediar") + ".js"),
         path.join(config.output, targetName + ".js"),
         constructOptions(targetName, targets[targetName]),
         externals[targetName] && targets[externals[targetName]] ? splitStrToArray(targets[externals[targetName]][depsNameProp]) : null,

@@ -3,13 +3,14 @@ require("../../../../builds/output/testsRuntime");
 const Logger = require("../Logger");
 
 const logger = new Logger("[LightDBEnclaveNodeLauncherWorkerBoot]");
+
 async function boot() {
 
     try {
         const remoteEnclave = require("");
 
         let remoteEnclaveInstance;
-        const remoteEnclaveInitialised = new Promise((resolve, reject) => {
+        const remoteEnclaveInitialised = new Promise((resolve) => {
             const callback = (result) => {
                 resolve(result);
             };

@@ -20,66 +20,66 @@ if (!process.env.PSK_CONFIG_LOCATION) {
 
 let config = API_HUB.getServerConfig();
 
-const cluster  = require("cluster");
-const { cpus } = require("os");
+const cluster = require("cluster");
+const {cpus} = require("os");
 const numCPUs = config.workers || 1 || cpus().length;
 
-async function testAndExecuteMigrations(){
-    if(!cluster.isPrimary){
+async function testAndExecuteMigrations() {
+    if (!cluster.isPrimary) {
         return;
     }
 
-    try{
+    try {
         let migrationsFolder = path.join(dirname, process.env.MIGRATION_FOLDER_PATH || "migrations");
         logger.info(`Preparing to test if there are any migrations scripts to be executed before starting.`);
         logger.debug(`Reading the ${migrationsFolder} for any migrations that may be needed`);
         let migrationsFolderContent;
-        try{
+        try {
             migrationsFolderContent = fs.readdirSync(migrationsFolder, {withFileTypes: true});
-        }catch (e) {
+        } catch (e) {
             if (e.code === 'ENOENT') {
                 logger.info(`No migrations scripts found.`);
                 return;
             }
             throw e;
         }
-        if(!migrationsFolderContent.length){
+        if (!migrationsFolderContent.length) {
             logger.info(`No migrations scripts found.`);
         }
-        migrationsFolderContent = migrationsFolderContent.sort((a, b) =>{
-          return a.name.localeCompare(b.name, 'en', {numeric: true});
+        migrationsFolderContent = migrationsFolderContent.sort((a, b) => {
+            return a.name.localeCompare(b.name, 'en', {numeric: true});
         });
-        for(let entry of migrationsFolderContent){
+        for (let entry of migrationsFolderContent) {
             let name = entry.name;
-            if(entry.isDirectory()){
+            if (entry.isDirectory()) {
                 logger.info(`Skipping dir <${name}>`);
-            }else{
-                if(name.indexOf('.js') === -1){
+            } else {
+                if (name.indexOf('.js') === -1) {
                     logger.info(`Skipping file <${name}> because is not *.js`);
                     continue;
                 }
                 logger.info(`Preparing to execute the migration script <${name}>`);
-                try{
-                    let migration = path.join(migrationsFolder,name);
+                try {
+                    let migration = path.join(migrationsFolder, name);
                     migration = require(migration);
                     await migration();
                     logger.info(`Migration <${name}> executed`);
-                }catch(err){
+                } catch (err) {
                     logger.error(`Caught and error during the execution of <${name}> migration`, err);
                 }
             }
         }
-    }catch(err){
+    } catch (err) {
         logger.error(`Caught an error during migration script execution.`, err);
     }
 }
 
-function launch(){
+function launch() {
     const listeningPort = Number.parseInt(config.port);
     const rootFolder = path.resolve(config.storage);
 
-    function startLightDBInstance(callback){
-        if(!process.env.LIGHT_DB_SERVER_ADDRESS){
+    function startLightDBInstance(callback) {
+        if (!process.env.LIGHT_DB_SERVER_ADDRESS) {
             const ligthDBPort = process.env.LIGHT_DB_PORT || 8081;
             const {createLightDBServerInstance} = require("loki-enclave-facade");
             const storage = process.env.LIGHT_DB_STORAGE || config.lightDBStorage || path.join(rootFolder, "external-volume/lightDB");
@@ -90,18 +90,18 @@ function launch(){
                     logger.error(`Failed to start LightDB instance`);
                     return logger.error(err);
                 }
-                if(callback){
+                if (callback) {
                     callback();
                 }
             });
-        }else{
-            if(callback){
+        } else {
+            if (callback) {
                 callback();
             }
         }
     }
 
-    if(process.argv.indexOf("--ligthDBOnly")!==-1){
+    if (process.argv.indexOf("--ligthDBOnly") !== -1) {
         logger.info("Starting LightDB only due to --lightDBOnly flag");
         return startLightDBInstance();
     }
@@ -110,7 +110,7 @@ function launch(){
     if (cluster.isPrimary) {
         logger.log(`Primary process with PID ${process.pid} is running`);
 
-        startLightDBInstance(function(){
+        startLightDBInstance(function () {
             logger.info(`A number of ${numCPUs} workers will be forked in the following moments`);
             // Fork workers.
             for (let i = 0; i < numCPUs; i++) {
@@ -122,7 +122,7 @@ function launch(){
                 logger.log(`Worker ${worker.process.pid} died (code=${code}, signal=${signal})`);
             });
         });
-    }else{
+    } else {
         logger.info(`Worker with PID ${process.pid} is preparing to run.`)
         let sslConfig = undefined;
         try {
@@ -146,10 +146,10 @@ function launch(){
     }
 }
 
-testAndExecuteMigrations().then(()=>{
+testAndExecuteMigrations().then(() => {
     setTimeout(launch, 0);
-}).catch(err=>{
-    if(err){
+}).catch(err => {
+    if (err) {
         logger.error(err);
     }
 });

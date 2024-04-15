@@ -19,7 +19,7 @@ module.exports = {
         argv.shift();
         argv.shift();
         for (let i = 0; i < argv.length; ++i) {
-            if(argv[i] == "quick"){
+            if (argv[i] == "quick") {
                 argv[i] = '--quick=true';
             }
             if (!argv[i].startsWith('--')) {
@@ -35,7 +35,7 @@ module.exports = {
                 if (typeof argv[i + 1] === "undefined" || argv[i + 1].startsWith('--')) {
                     //if next arg in line starts with -- default value of our arg is true
                     editConfig(argument, true);
-                }else{
+                } else {
                     editConfig(argument, argv[i + 1]);
                     i += 1;
                 }

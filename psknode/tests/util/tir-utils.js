@@ -1,10 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const Logger = require("./Logger");
-const net = require("net");
-
+const pskPath = require("swarmutils").path;
 const logger = new Logger("[TIR]");
-
+const openDSU = require("opendsu");
 const mkdirAsync = $$.promisify(fs.mkdir);
 const writeFileAsync = $$.promisify(fs.writeFile);
 
@@ -225,7 +224,7 @@ async function isPortAvailableAsync(port) {
             client.end();
             resolve(false)
         });
-        client.on("error", (err) => {
+        client.on("error", () => {
             resolve(true);
         })
     });

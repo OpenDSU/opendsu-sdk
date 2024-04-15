@@ -7,7 +7,7 @@ async function createCloudEnclaveInstanceAsync(options) {
     logger.info("Starting Cloud Enclave instance...", options);
     const cloudEnclaveInstance = cloudEnclave.createInstance(options);
     cloudEnclaveInstance.start();
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         cloudEnclaveInstance.on("initialised", (result) => {
             resolve(result);
         });
@@ -16,7 +16,7 @@ async function createCloudEnclaveInstanceAsync(options) {
 
 async function createCloudEnclaveInstanceWorkerAsync(options) {
     logger.info("Starting cloud enclave worker instance...", options);
-    const { spawn } = require('node:child_process');
+    const {spawn} = require('node:child_process');
 
     return new Promise((resolve, reject) => {
         process.env.CLOUD_ENCLAVE_SECRET = options.secret;
@@ -27,10 +27,9 @@ async function createCloudEnclaveInstanceWorkerAsync(options) {
         });
         newProcess.stdout.on("data", (data) => {
             const stringifiedData = data.toString();
-            if(stringifiedData.split(":")[0]!=="DID"){
+            if (stringifiedData.split(":")[0] !== "DID") {
                 console.log(stringifiedData);
-            }
-            else{
+            } else {
                 resolve(stringifiedData.substring(4));
             }
 

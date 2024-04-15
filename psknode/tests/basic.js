@@ -1,6 +1,6 @@
 const path = require('path');
-require("../bundles/testsRuntime");
-require("../bundles/pskWebServer");
+require("../../builds/output/testsRuntime");
+require("../../builds/output/pskWebServer");
 
 const tir = require(path.resolve(path.join(__dirname, "util/tir.js")));
 const assert = require('double-check').assert;

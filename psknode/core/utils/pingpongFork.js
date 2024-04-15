@@ -1,20 +1,20 @@
 const PING = "PING";
 const PONG = "PONG";
 
-module.exports.fork = function pingPongFork(modulePath, args, options){
+module.exports.fork = function pingPongFork(modulePath, args, options) {
     const child_process = require("child_process");
     const defaultStdio = ["inherit", "inherit", "inherit", "ipc"];
 
-    if(!options){
+    if (!options) {
         options = {stdio: defaultStdio};
-    }else{
-        if(typeof options.stdio === "undefined"){
+    } else {
+        if (typeof options.stdio === "undefined") {
             options.stdio = defaultStdio;
         }
 
         let stdio = options.stdio;
-        if(stdio.length<3){
-            for(let i=stdio.length; i<4; i++){
+        if (stdio.length < 3) {
+            for (let i = stdio.length; i < 4; i++) {
                 stdio.push("inherit");
             }
             stdio.push("ipc");
@@ -23,8 +23,8 @@ module.exports.fork = function pingPongFork(modulePath, args, options){
 
     let child = child_process.fork(modulePath, args, options);
 
-    child.on("message", (message)=>{
-        if(message === PING){
+    child.on("message", (message) => {
+        if (message === PING) {
             child.send(PONG);
         }
     });
@@ -32,9 +32,9 @@ module.exports.fork = function pingPongFork(modulePath, args, options){
     return child;
 };
 
-module.exports.enableLifeLine = function(timeout){
+module.exports.enableLifeLine = function (timeout) {
 
-    if(typeof process.send === "undefined"){
+    if (typeof process.send === "undefined") {
         console.log("\"process.send\" not found. LifeLine mechanism disabled!");
         return;
     }
@@ -46,7 +46,7 @@ module.exports.enableLifeLine = function(timeout){
     // for more information see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTime
     const roundingError = 101;
 
-    function sendPing(){
+    function sendPing() {
         try {
             process.send(PING);
         } catch (e) {
@@ -55,22 +55,22 @@ module.exports.enableLifeLine = function(timeout){
         }
     }
 
-    process.on("message", function (message){
-        if(message === PONG){
+    process.on("message", function (message) {
+        if (message === PONG) {
             lastConfirmationTime = new Date().getTime();
         }
     });
 
-    function exit(code){
-        setTimeout(()=>{
+    function exit(code) {
+        setTimeout(() => {
             process.exit(code);
         }, 0);
     }
 
     const exceptionEvents = ["SIGINT", "SIGUSR1", "SIGUSR2", "SIGTERM", "SIGHUP"];
     let killingSignal = false;
-    for(let i=0; i<exceptionEvents.length; i++){
-        process.on(exceptionEvents[i], (event, code)=>{
+    for (let i = 0; i < exceptionEvents.length; i++) {
+        process.on(exceptionEvents[i], (event, code) => {
             killingSignal = true;
             clearInterval(timeoutInterval);
             console.log(`Caught event type [${exceptionEvents[i]}]. Shutting down...`, code, event);
@@ -78,12 +78,12 @@ module.exports.enableLifeLine = function(timeout){
         });
     }
 
-    const timeoutInterval = setInterval(function(){
+    const timeoutInterval = setInterval(function () {
         const currentTime = new Date().getTime();
 
-        if(typeof lastConfirmationTime === "undefined" || currentTime - lastConfirmationTime < interval + roundingError && !killingSignal){
+        if (typeof lastConfirmationTime === "undefined" || currentTime - lastConfirmationTime < interval + roundingError && !killingSignal) {
             sendPing();
-        }else{
+        } else {
             console.log("Parent process did not answer. Shutting down...", process.argv, killingSignal);
             exit(1);
         }
