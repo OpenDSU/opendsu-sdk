@@ -87,11 +87,7 @@
     },
     {
       "name": "queue",
-      "src": "https://github.com/privatesky/queue.git"
-    },
-    {
-      "name": "psk-http-client",
-      "src": "https://github.com/privatesky/psk-http-client.git"
+      "src": "https://github.com/opendsu/queue.git"
     },
     {
       "name": "loki-enclave-facade",
