@@ -1,0 +1,82 @@
+{
+  "env": {
+    "browser": true,
+    // Specify environments (browser, Node.js, etc.)
+    "node": true
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "no-empty": "off",
+    "no-useless-catch": "off",
+    "no-case-declarations": "off",
+    "no-async-promise-executor": "off",
+    "no-inner-declarations": "off",
+    "no-prototype-builtins": "off",
+    "no-fallthrough": "off",
+    "no-constant-condition": "off"
+  },
+  "parserOptions": {
+    "ecmaVersion": 13,
+    "sourceType": "module"
+  },
+  "globals": {
+    "Promise": "writable",
+    "Uint8Array": "writable",
+    "Buffer": "writable",
+    "console": "writable",
+    "$$": "writable",
+    "openDSURequire": "writable",
+    "webSkel": "writable",
+    "gtinResolver": "writable",
+    "LOADER_GLOBALS": "writable",
+    "OpenDSUSafeCallback": "writable",
+    "createOpenDSUErrorWrapper": "writable",
+    "Stepper": "writable",
+    "Proxy": "writable",
+    "showApplicationError": "writable",
+    "Map": "writable",
+    "Set": "writable",
+    "WebCardinal": "writable",
+    "JSONEditor": "writable",
+    "sharedStorageSingleton": "writable",
+    "ArrayBuffer": "writable",
+    "rawDossier": "writable",
+    "BigInt": "writable",
+    "WeakRef": "writable",
+    "setGlobalVariable": "writable",
+    "reportUserRelevantError": "writable",
+    "registerMandatoryCallback": "writable",
+    "reportUserRelevantWarning": "writable",
+    "globalVariableExists": "writable",
+    "reportDevRelevantInfo": "writable",
+    "WeakMap": "writable",
+    "PREVENT_DOUBLE_LOADING_OF_OPENDSU": "writable",
+    "setTimeout": "writable",
+    "clearTimeout": "writable",
+    "setInterval": "writable",
+    "clearInterval": "writable",
+    "setImmediate": "writable",
+    "clearImmediate": "writable",
+    "Int32Array": "writable",
+    "timeoutUntilBegin": "writable",
+    "getGlobalVariable": "writable",
+    "printOpenDSUError": "writable",
+    "global": "writable",
+    "SharedArrayBuffer": "writable",
+    "isNodeJs": "writable",
+    "globalThis": "writable",
+    "save": "writable",
+    "Symbol": "writable",
+    "WeakSet": "writable",
+    "FinalizationRegistry": "writable",
+    "FetchEvent": "writable",
+    "addCommand": "writable",
+    "DataView": "writable"
+  }
+}
