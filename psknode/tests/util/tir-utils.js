@@ -139,7 +139,7 @@ function createConstitution(prefix, describer, options, constitutionSourcesFolde
 
     const contents = buildConstitutionFromDescription(describer, options);
 
-    if (contents && contents !== "") {
+    if (contents) {
         const tempConstitutionFolder = path.join(prefix, "tmpConstitution");
         const file = path.join(tempConstitutionFolder, "index.js");
 

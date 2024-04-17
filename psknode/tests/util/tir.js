@@ -21,7 +21,6 @@ const Tir = function () {
     const domainConfigs = {};
     const rootFolder = fs.mkdtempSync(path.join(os.tmpdir(), "psk_"));
 
-    let testerNode = null;
     let virtualMQNode = null;
 
     /**
@@ -78,16 +77,6 @@ const Tir = function () {
      */
     this.tearDown = () => {
         console.info("[TIR] Tearing down...");
-        if (testerNode) {
-            console.info("[TIR] Killing node", testerNode.pid);
-            try {
-                process.kill(testerNode.pid);
-            } catch (e) {
-                console.info("[TIR] Node already killed", testerNode.pid);
-            }
-            testerNode = null;
-        }
-
         if (virtualMQNode) {
             console.log("[TIR] Killing VirtualMQ node", virtualMQNode.pid);
             try {
