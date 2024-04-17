@@ -1,13 +1,12 @@
-if (typeof(window) !== "undefined") {
-    if (typeof(global) !== "undefined") {
+if (typeof (window) !== "undefined") {
+    if (typeof (global) !== "undefined") {
         global = window;
-    }else
-    {
+    } else {
         window.global = window;
     }
 }
 
-if (typeof(global.$$) == "undefined") {
+if (typeof (global.$$) == "undefined") {
     global.$$ = {};
     $$.requireBundle = function () {
     };
@@ -15,7 +14,7 @@ if (typeof(global.$$) == "undefined") {
 const or = require('overwrite-require');
 or.enableForEnvironment(or.constants.BROWSER_ENVIRONMENT_TYPE);
 
-if (typeof($$.__runtimeModules) == "undefined") {
+if (typeof ($$.__runtimeModules) == "undefined") {
     $$.__runtimeModules = {};
 }
 require("./loaderBoot_intermediar");

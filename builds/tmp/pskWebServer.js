@@ -1,4 +1,4 @@
-if(typeof $$ === "undefined" || !$$.environmentType) {
+if (typeof $$ === "undefined" || !$$.environmentType) {
     const or = require('overwrite-require');
     or.enableForEnvironment(or.constants.NODEJS_ENVIRONMENT_TYPE);
 } else {

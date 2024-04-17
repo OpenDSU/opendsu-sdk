@@ -13,10 +13,10 @@ on:
         default: 'patch'
         type: string
       ignoreTests:
-          description: 'Ignore test success'
-          required: true
-          type: boolean
-          default: false
+        description: 'Ignore test success'
+        required: true
+        type: boolean
+        default: false
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -49,10 +49,10 @@ jobs:
           DOUBLE_CHECK_TIMEOUT_FACTOR: 5
       - name: Run build
         if: ${{ github.event.inputs.ignoreTests == 'true' }}
-        run: npm run build        
+        run: npm run build
       # Pushing results to test_reports branch
       - name: Publishing bundles to master branch
-        if: ${{ github.event.inputs.ignoreTests == 'true' || success() }} 
+        if: ${{ github.event.inputs.ignoreTests == 'true' || success() }}
         run: |
           git config user.email "psk.build.track@gmail.com"
           git config user.name "Build Tracker"

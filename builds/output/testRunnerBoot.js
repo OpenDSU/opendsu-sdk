@@ -1,8 +1,8 @@
-testRunnerBootRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testRunnerBoot.js":[function(require,module,exports){
+testRunnerBootRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/builds/tmp/testRunnerBoot.js":[function(require,module,exports){
 const or = require('overwrite-require');
 or.enableForEnvironment(or.constants.NODEJS_ENVIRONMENT_TYPE);
 require("./testRunnerBoot_intermediar");
-},{"./testRunnerBoot_intermediar":"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testRunnerBoot_intermediar.js","overwrite-require":"overwrite-require"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testRunnerBoot_intermediar.js":[function(require,module,exports){
+},{"./testRunnerBoot_intermediar":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/builds/tmp/testRunnerBoot_intermediar.js","overwrite-require":"overwrite-require"}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/builds/tmp/testRunnerBoot_intermediar.js":[function(require,module,exports){
 (function (global){(function (){
 global.testRunnerBootLoadModules = function(){ 
 
@@ -24,7 +24,7 @@ if (typeof $$ !== "undefined") {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js":[function(require,module,exports){
+},{"overwrite-require":"overwrite-require","swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/Logger.js":[function(require,module,exports){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
@@ -292,7 +292,7 @@ module.exports = {
     getLogger
 }
 
-},{"./errorTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js":[function(require,module,exports){
+},{"./errorTypes":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/errorTypes.js","./moduleConstants":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/errorTypes.js":[function(require,module,exports){
 module.exports = {
     LOG: "log",
     ERROR: "error",
@@ -303,22 +303,22 @@ module.exports = {
     CRITICAL: "critical",
     AUDIT: "audit"
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js":[function(require,module,exports){
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js":[function(require,module,exports){
 module.exports = {
-  BROWSER_ENVIRONMENT_TYPE: 'browser',
-  MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
-  WEB_WORKER_ENVIRONMENT_TYPE: 'web-worker',
-  SERVICE_WORKER_ENVIRONMENT_TYPE: 'service-worker',
-  ISOLATE_ENVIRONMENT_TYPE: 'isolate',
-  THREAD_ENVIRONMENT_TYPE: 'thread',
-  NODEJS_ENVIRONMENT_TYPE: 'nodejs'
+    BROWSER_ENVIRONMENT_TYPE: 'browser',
+    MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
+    WEB_WORKER_ENVIRONMENT_TYPE: 'web-worker',
+    SERVICE_WORKER_ENVIRONMENT_TYPE: 'service-worker',
+    ISOLATE_ENVIRONMENT_TYPE: 'isolate',
+    THREAD_ENVIRONMENT_TYPE: 'thread',
+    NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js":[function(require,module,exports){
 (function (global){(function (){
 let logger = console;
 
-if(typeof $$.Buffer === "undefined"){
+if (typeof $$.Buffer === "undefined") {
     $$.Buffer = require("buffer").Buffer;
 }
 
@@ -338,10 +338,10 @@ if (!global.process || process.env.NO_LOGS !== 'true') {
 
         console.log('Logger init successful', process.pid);
     } catch (e) {
-        if(e.message.indexOf("psklogger")!==-1 || e.message.indexOf("zeromq")!==-1){
+        if (e.message.indexOf("psklogger") !== -1 || e.message.indexOf("zeromq") !== -1) {
             console.log('Logger not available, using console');
             logger = console;
-        }else{
+        } else {
             console.log(e);
         }
     }
@@ -360,7 +360,7 @@ $$.registerGlobalSymbol = function (newSymbol, value) {
     }
 };
 
-console.warn = (...args)=>{
+console.warn = (...args) => {
     console.log(...args);
 };
 
@@ -418,7 +418,7 @@ $$.registerGlobalSymbol("fixMe", function (...args) {
  * @param {string} message
  * @param {*} type
  */
-$$.registerGlobalSymbol("exception", function (message, type) {
+$$.registerGlobalSymbol("exception", function (message) {
     throw new Error(message);
 });
 
@@ -428,7 +428,7 @@ $$.registerGlobalSymbol("exception", function (message, type) {
  * @param {string} message
  * @param {*} type
  */
-$$.registerGlobalSymbol("throw", function (message, type) {
+$$.registerGlobalSymbol("throw", function (message) {
     throw new Error(message);
 });
 
@@ -473,7 +473,7 @@ $$.registerGlobalSymbol("assert", function (value, explainWhy) {
  * @param {*} value
  */
 /* enable/disabale flags that control psk behaviour*/
-$$.registerGlobalSymbol("flags", function (flagName, value) {
+$$.registerGlobalSymbol("flags", function () {
     $$.incomplete("flags handling not implemented");
 });
 
@@ -550,9 +550,9 @@ $$.registerGlobalSymbol("warn", function (...args) {
 $$.registerGlobalSymbol("syntaxError", function (...args) {
     args.unshift("Syntax error:");
     logger.error(...args);
-    try{
+    try {
         throw new Error("Syntax error or misspelled symbol!");
-    }catch(err){
+    } catch (err) {
         console.error(...args);
         console.error(err.stack);
     }
@@ -608,7 +608,7 @@ $$.registerGlobalSymbol("event", function (event, ...args) {
     if (logger.hasOwnProperty('event')) {
         logger.event(event, ...args);
     } else {
-        if(event === "status.domains.boot"){
+        if (event === "status.domains.boot") {
             console.log("Failing to console...", event, ...args);
         }
     }
@@ -621,7 +621,7 @@ $$.registerGlobalSymbol("event", function (event, ...args) {
  * @param {...*} args
  */
 $$.registerGlobalSymbol("redirectLog", function (logType, logObject) {
-    if(logger.hasOwnProperty('redirect')) {
+    if (logger.hasOwnProperty('redirect')) {
         logger.redirect(logType, logObject);
     }
 });
@@ -637,38 +637,42 @@ $$.registerGlobalSymbol("throttlingEvent", function (...args) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"buffer":false,"psklogger":false,"swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
+},{"buffer":false,"psklogger":false,"swarmutils":"swarmutils"}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/Combos.js":[function(require,module,exports){
 function product(args) {
-    if(!args.length){
-        return [ [] ];
+    if (!args.length) {
+        return [[]];
     }
-    var prod = product(args.slice(1)), r = [];
-    args[0].forEach(function(x) {
-        prod.forEach(function(p) {
-            r.push([ x ].concat(p));
+    let prod = product(args.slice(1)), r = [];
+    args[0].forEach(function (x) {
+        prod.forEach(function (p) {
+            r.push([x].concat(p));
         });
     });
     return r;
 }
 
 function objectProduct(obj) {
-    var keys = Object.keys(obj),
-        values = keys.map(function(x) { return obj[x]; });
+    let keys = Object.keys(obj),
+        values = keys.map(function (x) {
+            return obj[x];
+        });
 
-    return product(values).map(function(p) {
-        var e = {};
-        keys.forEach(function(k, n) { e[k] = p[n]; });
+    return product(values).map(function (p) {
+        let e = {};
+        keys.forEach(function (k, n) {
+            e[k] = p[n];
+        });
         return e;
     });
 }
 
 module.exports = objectProduct;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
-var meta = "meta";
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/OwM.js":[function(require,module,exports){
+let meta = "meta";
 
-function OwM(serialized){
+function OwM(serialized) {
 
-    if(serialized){
+    if (serialized) {
         return OwM.prototype.convert(serialized);
     }
 
@@ -681,10 +685,10 @@ function OwM(serialized){
     Object.defineProperty(this, "setMeta", {
         writable: false,
         enumerable: false,
-        configurable:false,
-        value: function(prop, value){
-            if(typeof prop == "object" && typeof value == "undefined"){
-                for(var p in prop){
+        configurable: false,
+        value: function (prop, value) {
+            if (typeof prop == "object" && typeof value == "undefined") {
+                for (let p in prop) {
                     this[meta][p] = prop[p];
                 }
                 return prop;
@@ -696,41 +700,41 @@ function OwM(serialized){
 
     Object.defineProperty(this, "getMeta", {
         writable: false,
-        value: function(prop){
+        value: function (prop) {
             return this[meta][prop];
         }
     });
 }
 
-function testOwMSerialization(obj){
+function testOwMSerialization(obj) {
     let res = false;
 
-    if(obj){
+    if (obj) {
         res = typeof obj[meta] != "undefined" && !(obj instanceof OwM);
     }
 
     return res;
 }
 
-OwM.prototype.convert = function(serialized){
+OwM.prototype.convert = function (serialized) {
     const owm = new OwM();
 
-    for(var metaProp in serialized.meta){
-        if(!testOwMSerialization(serialized[metaProp])) {
+    for (let metaProp in serialized.meta) {
+        if (!testOwMSerialization(serialized[metaProp])) {
             owm.setMeta(metaProp, serialized.meta[metaProp]);
-        }else{
+        } else {
             owm.setMeta(metaProp, OwM.prototype.convert(serialized.meta[metaProp]));
         }
     }
 
-    for(var simpleProp in serialized){
-        if(simpleProp === meta) {
+    for (let simpleProp in serialized) {
+        if (simpleProp === meta) {
             continue;
         }
 
-        if(!testOwMSerialization(serialized[simpleProp])){
+        if (!testOwMSerialization(serialized[simpleProp])) {
             owm[simpleProp] = serialized[simpleProp];
-        }else{
+        } else {
             owm[simpleProp] = OwM.prototype.convert(serialized[simpleProp]);
         }
     }
@@ -738,67 +742,67 @@ OwM.prototype.convert = function(serialized){
     return owm;
 };
 
-OwM.prototype.getMetaFrom = function(obj, name){
-    var res;
-    if(!name){
+OwM.prototype.getMetaFrom = function (obj, name) {
+    let res;
+    if (!name) {
         res = obj[meta];
-    }else{
+    } else {
         res = obj[meta][name];
     }
     return res;
 };
 
-OwM.prototype.setMetaFor = function(obj, name, value){
+OwM.prototype.setMetaFor = function (obj, name, value) {
     obj[meta][name] = value;
     return obj[meta][name];
 };
 
 module.exports = OwM;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/Queue.js":[function(require,module,exports){
 function QueueElement(content) {
-	this.content = content;
-	this.next = null;
+    this.content = content;
+    this.next = null;
 }
 
 function Queue() {
-	this.head = null;
-	this.tail = null;
-	this.length = 0;
-	this.push = function (value) {
-		const newElement = new QueueElement(value);
-		if (!this.head) {
-			this.head = newElement;
-			this.tail = newElement;
-		} else {
-			this.tail.next = newElement;
-			this.tail = newElement;
-		}
-		this.length++;
-	};
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
+    this.push = function (value) {
+        const newElement = new QueueElement(value);
+        if (!this.head) {
+            this.head = newElement;
+            this.tail = newElement;
+        } else {
+            this.tail.next = newElement;
+            this.tail = newElement;
+        }
+        this.length++;
+    };
 
-	this.pop = function () {
-		if (!this.head) {
-			return null;
-		}
-		const headCopy = this.head;
-		this.head = this.head.next;
-		this.length--;
+    this.pop = function () {
+        if (!this.head) {
+            return null;
+        }
+        const headCopy = this.head;
+        this.head = this.head.next;
+        this.length--;
 
-		//fix???????
-		if(this.length === 0){
+        //fix???????
+        if (this.length === 0) {
             this.tail = null;
-		}
+        }
 
-		return headCopy.content;
-	};
+        return headCopy.content;
+    };
 
-	this.front = function () {
-		return this.head ? this.head.content : undefined;
-	};
+    this.front = function () {
+        return this.head ? this.head.content : undefined;
+    };
 
-	this.isEmpty = function () {
-		return this.head === null;
-	};
+    this.isEmpty = function () {
+        return this.head === null;
+    };
 
     this.remove = function (el) {
         if (this.length === 1 && el === this.front()) {
@@ -832,47 +836,47 @@ function Queue() {
 
     }
 
-	this[Symbol.iterator] = function* () {
-		let head = this.head;
-		while(head !== null) {
-			yield head.content;
-			head = head.next;
-		}
-	}.bind(this);
+    this[Symbol.iterator] = function* () {
+        let head = this.head;
+        while (head !== null) {
+            yield head.content;
+            head = head.next;
+        }
+    }.bind(this);
 }
 
 Queue.prototype.toString = function () {
-	let stringifiedQueue = '';
-	let iterator = this.head;
-	while (iterator) {
-		stringifiedQueue += `${JSON.stringify(iterator.content)} `;
-		iterator = iterator.next;
-	}
-	return stringifiedQueue;
+    let stringifiedQueue = '';
+    let iterator = this.head;
+    while (iterator) {
+        stringifiedQueue += `${JSON.stringify(iterator.content)} `;
+        iterator = iterator.next;
+    }
+    return stringifiedQueue;
 };
 
 Queue.prototype.inspect = Queue.prototype.toString;
 
 module.exports = Queue;
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js":[function(require,module,exports){
 const HEADER_SIZE_RESEARVED = 4;
 
-function SwarmPacker(){
+function SwarmPacker() {
 }
 
-function copyStringtoArrayBuffer(str, buffer){
-    if(typeof str !== "string"){
+function copyStringtoArrayBuffer(str, buffer) {
+    if (typeof str !== "string") {
         throw new Error("Wrong param type received");
     }
-    for(var i = 0; i < str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
         buffer[i] = str.charCodeAt(i);
     }
     return buffer;
 }
 
-function copyFromBuffer(target, source){
-    for(let i=0; i<source.length; i++){
+function copyFromBuffer(target, source) {
+    for (let i = 0; i < source.length; i++) {
         target[i] = source[i];
     }
     return target;
@@ -880,14 +884,14 @@ function copyFromBuffer(target, source){
 
 let serializers = {};
 
-SwarmPacker.registerSerializer = function(name, implementation){
-    if(serializers[name]){
+SwarmPacker.registerSerializer = function (name, implementation) {
+    if (serializers[name]) {
         throw new Error("Serializer name already exists");
     }
     serializers[name] = implementation;
 };
 
-function getSerializer(name){
+function getSerializer(name) {
     return serializers[name];
 }
 
@@ -898,27 +902,27 @@ Object.defineProperty(SwarmPacker.prototype, "MSGPACK", {value: "msgpack"});
 
 SwarmPacker.registerSerializer(SwarmPacker.prototype.JSON, {
     serialize: JSON.stringify,
-    deserialize: (serialization)=>{
-        if(typeof serialization !== "string"){
+    deserialize: (serialization) => {
+        if (typeof serialization !== "string") {
             serialization = String.fromCharCode.apply(null, serialization);
         }
         return JSON.parse(serialization);
     },
-    getType: ()=>{
+    getType: () => {
         return SwarmPacker.prototype.JSON;
     }
 });
 
-function registerMsgPackSerializer(){
+function registerMsgPackSerializer() {
     const mp = '@msgpack/msgpack';
     let msgpack;
 
-    try{
+    try {
         msgpack = require(mp);
         if (typeof msgpack === "undefined") {
             throw new Error("msgpack is unavailable.")
         }
-    }catch(err){
+    } catch (err) {
         console.log("msgpack not available. If you need msgpack serialization include msgpack in one of your bundles");
         //preventing msgPack serializer being register if msgPack dep is not found.
         return;
@@ -927,7 +931,7 @@ function registerMsgPackSerializer(){
     SwarmPacker.registerSerializer(SwarmPacker.prototype.MSGPACK, {
         serialize: msgpack.encode,
         deserialize: msgpack.decode,
-        getType: ()=>{
+        getType: () => {
             return SwarmPacker.prototype.MSGPACK;
         }
     });
@@ -935,10 +939,10 @@ function registerMsgPackSerializer(){
 
 registerMsgPackSerializer();
 
-SwarmPacker.pack = function(swarm, serializer){
+SwarmPacker.pack = function (swarm, serializer) {
 
     let jsonSerializer = getSerializer(SwarmPacker.prototype.JSON);
-    if(typeof serializer === "undefined"){
+    if (typeof serializer === "undefined") {
         serializer = jsonSerializer;
     }
 
@@ -946,7 +950,7 @@ SwarmPacker.pack = function(swarm, serializer){
 
     let header = {
         command: swarm.getMeta("command"),
-        swarmId : swarm.getMeta("swarmId"),
+        swarmId: swarm.getMeta("swarmId"),
         swarmTypeName: swarm.getMeta("swarmTypeName"),
         swarmTarget: swarm.getMeta("target"),
         serializationType: serializer.getType()
@@ -954,7 +958,7 @@ SwarmPacker.pack = function(swarm, serializer){
 
     header = serializer.serialize(header);
 
-    if(header.length >= Math.pow(2, 32)){
+    if (header.length >= Math.pow(2, 32)) {
         throw new Error("Swarm serialization too big.");
     }
 
@@ -968,149 +972,148 @@ SwarmPacker.pack = function(swarm, serializer){
     let headerView = new Uint8Array(pack, HEADER_SIZE_RESEARVED);
     copyStringtoArrayBuffer(header, headerView);
 
-    let serializationView = new Uint8Array(pack, HEADER_SIZE_RESEARVED+header.length);
-    if(typeof swarmSerialization === "string"){
+    let serializationView = new Uint8Array(pack, HEADER_SIZE_RESEARVED + header.length);
+    if (typeof swarmSerialization === "string") {
         copyStringtoArrayBuffer(swarmSerialization, serializationView);
-    }else{
+    } else {
         copyFromBuffer(serializationView, swarmSerialization);
     }
 
     return pack;
 };
 
-SwarmPacker.unpack = function(pack){
+SwarmPacker.unpack = function (pack) {
     let jsonSerialiser = SwarmPacker.getSerializer(SwarmPacker.prototype.JSON);
     let headerSerialization = getHeaderSerializationFromPack(pack);
     let header = jsonSerialiser.deserialize(headerSerialization);
 
     let serializer = SwarmPacker.getSerializer(header.serializationType);
-    let messageView = new Uint8Array(pack, HEADER_SIZE_RESEARVED+headerSerialization.length);
+    let messageView = new Uint8Array(pack, HEADER_SIZE_RESEARVED + headerSerialization.length);
 
     let swarm = serializer.deserialize(messageView);
     return swarm;
 };
 
-function getHeaderSerializationFromPack(pack){
+function getHeaderSerializationFromPack(pack) {
     let headerSize = new DataView(pack).getUint32(0);
 
     let headerView = new Uint8Array(pack, HEADER_SIZE_RESEARVED, headerSize);
     return headerView;
 }
 
-SwarmPacker.getHeader = function(pack){
+SwarmPacker.getHeader = function (pack) {
     let jsonSerialiser = SwarmPacker.getSerializer(SwarmPacker.prototype.JSON);
     let header = jsonSerialiser.deserialize(getHeaderSerializationFromPack(pack));
 
     return header;
 };
 module.exports = SwarmPacker;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
-
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js":[function(require,module,exports){
 function TaskCounter(finalCallback) {
-	let results = [];
-	let errors = [];
+    let results = [];
+    let errors = [];
 
-	let started = 0;
+    let started = 0;
 
-	function decrement(err, res) {
-		if(err) {
-			errors.push(err);
-		}
+    function decrement(err, res) {
+        if (err) {
+            errors.push(err);
+        }
 
-		if(arguments.length > 2) {
-			arguments[0] = undefined;
-			res = arguments;
-		}
+        if (arguments.length > 2) {
+            arguments[0] = undefined;
+            res = arguments;
+        }
 
-		if(typeof res !== "undefined") {
-			results.push(res);
-		}
+        if (typeof res !== "undefined") {
+            results.push(res);
+        }
 
-		if(--started <= 0) {
+        if (--started <= 0) {
             return callCallback();
-		}
-	}
-
-	function increment(amount = 1) {
-		started += amount;
-	}
-
-	function callCallback() {
-		if(errors && errors.length === 0) {
-			errors = undefined;
-		}
-
-		if(results && results.length === 0) {
-			results = undefined;
-		}
-
-		finalCallback(errors, results);
+        }
     }
 
-	return {
-		increment,
-		decrement
-	};
+    function increment(amount = 1) {
+        started += amount;
+    }
+
+    function callCallback() {
+        if (errors && errors.length === 0) {
+            errors = undefined;
+        }
+
+        if (results && results.length === 0) {
+            results = undefined;
+        }
+
+        finalCallback(errors, results);
+    }
+
+    return {
+        increment,
+        decrement
+    };
 }
 
 module.exports = TaskCounter;
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/beesHealer.js":[function(require,module,exports){
 const OwM = require("./OwM");
 
 /*
     Prepare the state of a swarm to be serialised
 */
 
-exports.asJSON = function(valueObj, phaseName, args, callback){
+exports.asJSON = function (valueObj, phaseName, args, callback) {
 
-        let valueObject = valueObj.valueOf();
-        let res = new OwM();
-        res.publicVars          = valueObject.publicVars;
-        res.privateVars         = valueObject.privateVars;
+    let valueObject = valueObj.valueOf();
+    let res = new OwM();
+    res.publicVars = valueObject.publicVars;
+    res.privateVars = valueObject.privateVars;
 
-        res.setMeta("COMMAND_ARGS",        OwM.prototype.getMetaFrom(valueObject, "COMMAND_ARGS"));
-        res.setMeta("SecurityParadigm",        OwM.prototype.getMetaFrom(valueObject, "SecurityParadigm"));
-        res.setMeta("swarmTypeName", OwM.prototype.getMetaFrom(valueObject, "swarmTypeName"));
-        res.setMeta("swarmId",       OwM.prototype.getMetaFrom(valueObject, "swarmId"));
-        res.setMeta("target",        OwM.prototype.getMetaFrom(valueObject, "target"));
-        res.setMeta("homeSecurityContext",        OwM.prototype.getMetaFrom(valueObject, "homeSecurityContext"));
-        res.setMeta("requestId",        OwM.prototype.getMetaFrom(valueObject, "requestId"));
+    res.setMeta("COMMAND_ARGS", OwM.prototype.getMetaFrom(valueObject, "COMMAND_ARGS"));
+    res.setMeta("SecurityParadigm", OwM.prototype.getMetaFrom(valueObject, "SecurityParadigm"));
+    res.setMeta("swarmTypeName", OwM.prototype.getMetaFrom(valueObject, "swarmTypeName"));
+    res.setMeta("swarmId", OwM.prototype.getMetaFrom(valueObject, "swarmId"));
+    res.setMeta("target", OwM.prototype.getMetaFrom(valueObject, "target"));
+    res.setMeta("homeSecurityContext", OwM.prototype.getMetaFrom(valueObject, "homeSecurityContext"));
+    res.setMeta("requestId", OwM.prototype.getMetaFrom(valueObject, "requestId"));
 
 
-        if(!phaseName){
-            res.setMeta("command", "stored");
-        } else {
-            res.setMeta("phaseName", phaseName);
-            res.setMeta("phaseId", $$.uidGenerator.safe_uuid());
-            res.setMeta("args", args);
-            res.setMeta("command", OwM.prototype.getMetaFrom(valueObject, "command") || "executeSwarmPhase");
-        }
+    if (!phaseName) {
+        res.setMeta("command", "stored");
+    } else {
+        res.setMeta("phaseName", phaseName);
+        res.setMeta("phaseId", $$.uidGenerator.safe_uuid());
+        res.setMeta("args", args);
+        res.setMeta("command", OwM.prototype.getMetaFrom(valueObject, "command") || "executeSwarmPhase");
+    }
 
-        res.setMeta("waitStack", valueObject.meta.waitStack); //TODO: think if is not better to be deep cloned and not referenced!!!
+    res.setMeta("waitStack", valueObject.meta.waitStack); //TODO: think if is not better to be deep cloned and not referenced!!!
 
-        if(callback){
-            return callback(null, res);
-        }
-        //console.log("asJSON:", res, valueObject);
-        return res;
+    if (callback) {
+        return callback(null, res);
+    }
+    //console.log("asJSON:", res, valueObject);
+    return res;
 };
 
-exports.jsonToNative = function(serialisedValues, result){
+exports.jsonToNative = function (serialisedValues, result) {
 
-    for(let v in serialisedValues.publicVars){
+    for (let v in serialisedValues.publicVars) {
         result.publicVars[v] = serialisedValues.publicVars[v];
 
     }
-    for(let l in serialisedValues.privateVars){
+    for (let l in serialisedValues.privateVars) {
         result.privateVars[l] = serialisedValues.privateVars[l];
     }
 
-    for(let i in OwM.prototype.getMetaFrom(serialisedValues)){
+    for (let i in OwM.prototype.getMetaFrom(serialisedValues)) {
         OwM.prototype.setMetaFor(result, i, OwM.prototype.getMetaFrom(serialisedValues, i));
     }
 
 };
-},{"./OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
+},{"./OwM":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/OwM.js"}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/path.js":[function(require,module,exports){
 function replaceAll(str, search, replacement) {
     return str.split(search).join(replacement);
 }
@@ -1273,7 +1276,7 @@ function resolve(...pathArr) {
     return __resolvePathRecursively();
 }
 
-function extname(path){
+function extname(path) {
     path = resolvePath(path);
     let ext = path.match(/\.[0-9a-z]+$/i);
     if (Array.isArray(ext)) {
@@ -1297,24 +1300,24 @@ module.exports = {
     extname
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js":[function(require,module,exports){
 const PING = "PING";
 const PONG = "PONG";
 
-module.exports.fork = function pingPongFork(modulePath, args, options){
+module.exports.fork = function pingPongFork(modulePath, args, options) {
     const child_process = require("child_process");
     const defaultStdio = ["inherit", "inherit", "inherit", "ipc"];
 
-    if(!options){
+    if (!options) {
         options = {stdio: defaultStdio};
-    }else{
-        if(typeof options.stdio === "undefined"){
+    } else {
+        if (typeof options.stdio === "undefined") {
             options.stdio = defaultStdio;
         }
 
         let stdio = options.stdio;
-        if(stdio.length<3){
-            for(let i=stdio.length; i<4; i++){
+        if (stdio.length < 3) {
+            for (let i = stdio.length; i < 4; i++) {
                 stdio.push("inherit");
             }
             stdio.push("ipc");
@@ -1323,8 +1326,8 @@ module.exports.fork = function pingPongFork(modulePath, args, options){
 
     let child = child_process.fork(modulePath, args, options);
 
-    child.on("message", (message)=>{
-        if(message === PING){
+    child.on("message", (message) => {
+        if (message === PING) {
             child.send(PONG);
         }
     });
@@ -1332,9 +1335,9 @@ module.exports.fork = function pingPongFork(modulePath, args, options){
     return child;
 };
 
-module.exports.enableLifeLine = function(timeout){
+module.exports.enableLifeLine = function (timeout) {
 
-    if(typeof process.send === "undefined"){
+    if (typeof process.send === "undefined") {
         console.log("\"process.send\" not found. LifeLine mechanism disabled!");
         return;
     }
@@ -1346,7 +1349,7 @@ module.exports.enableLifeLine = function(timeout){
     // for more information see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTime
     const roundingError = 101;
 
-    function sendPing(){
+    function sendPing() {
         try {
             process.send(PING);
         } catch (e) {
@@ -1355,22 +1358,22 @@ module.exports.enableLifeLine = function(timeout){
         }
     }
 
-    process.on("message", function (message){
-        if(message === PONG){
+    process.on("message", function (message) {
+        if (message === PONG) {
             lastConfirmationTime = new Date().getTime();
         }
     });
 
-    function exit(code){
-        setTimeout(()=>{
+    function exit(code) {
+        setTimeout(() => {
             process.exit(code);
         }, 0);
     }
 
     const exceptionEvents = ["SIGINT", "SIGUSR1", "SIGUSR2", "uncaughtException", "SIGTERM", "SIGHUP"];
     let killingSignal = false;
-    for(let i=0; i<exceptionEvents.length; i++){
-        process.on(exceptionEvents[i], (event, code)=>{
+    for (let i = 0; i < exceptionEvents.length; i++) {
+        process.on(exceptionEvents[i], (event, code) => {
             killingSignal = true;
             clearInterval(timeoutInterval);
             console.log(`Caught event type [${exceptionEvents[i]}]. Shutting down...`, code, event);
@@ -1378,43 +1381,43 @@ module.exports.enableLifeLine = function(timeout){
         });
     }
 
-    const timeoutInterval = setInterval(function(){
+    const timeoutInterval = setInterval(function () {
         const currentTime = new Date().getTime();
 
-        if(typeof lastConfirmationTime === "undefined" || currentTime - lastConfirmationTime < interval + roundingError && !killingSignal){
+        if (typeof lastConfirmationTime === "undefined" || currentTime - lastConfirmationTime < interval + roundingError && !killingSignal) {
             sendPing();
-        }else{
+        } else {
             console.log("Parent process did not answer. Shutting down...", process.argv, killingSignal);
             exit(1);
         }
     }, interval);
 };
-},{"child_process":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
-var commands = {};
-var commands_help = {};
+},{"child_process":false}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/pskconsole.js":[function(require,module,exports){
+let commands = {};
+let commands_help = {};
 
 //global function addCommand
-addCommand = function addCommand(verb, adverbe, funct, helpLine){
-    var cmdId;
-    if(!helpLine){
+addCommand = function addCommand(verb, adverbe, funct, helpLine) {
+    let cmdId;
+    if (!helpLine) {
         helpLine = " ";
     } else {
         helpLine = " " + helpLine;
     }
-    if(adverbe){
-        cmdId = verb + " " +  adverbe;
-        helpLine = verb + " " +  adverbe + helpLine;
+    if (adverbe) {
+        cmdId = verb + " " + adverbe;
+        helpLine = verb + " " + adverbe + helpLine;
     } else {
         cmdId = verb;
         helpLine = verb + helpLine;
     }
     commands[cmdId] = funct;
-        commands_help[cmdId] = helpLine;
+    commands_help[cmdId] = helpLine;
 };
 
-function doHelp(){
+function doHelp() {
     console.log("List of commands:");
-    for(var l in commands_help){
+    for (let l in commands_help) {
         console.log("\t", commands_help[l]);
     }
 }
@@ -1424,34 +1427,34 @@ addCommand("/?", null, doHelp, "\t\t\t\t\t\t |just print the help");
 addCommand("help", null, doHelp, "\t\t\t\t\t\t |just print the help");
 
 
-function runCommand(){
-  var argv = Object.assign([], process.argv);
-  var cmdId = null;
-  var cmd = null;
-  argv.shift();
-  argv.shift();
+function runCommand() {
+    let argv = Object.assign([], process.argv);
+    let cmdId = null;
+    let cmd = null;
+    argv.shift();
+    argv.shift();
 
-  if(argv.length >=1){
-      cmdId = argv[0];
-      cmd = commands[cmdId];
-      argv.shift();
-  }
-
-
-  if(!cmd && argv.length >=1){
-      cmdId = cmdId + " " + argv[0];
-      cmd = commands[cmdId];
-      argv.shift();
-  }
-
-  if(!cmd){
-    if(cmdId){
-        console.log("Unknown command: ", cmdId);
+    if (argv.length >= 1) {
+        cmdId = argv[0];
+        cmd = commands[cmdId];
+        argv.shift();
     }
-    cmd = doHelp;
-  }
 
-  cmd.apply(null,argv);
+
+    if (!cmd && argv.length >= 1) {
+        cmdId = cmdId + " " + argv[0];
+        cmd = commands[cmdId];
+        argv.shift();
+    }
+
+    if (!cmd) {
+        if (cmdId) {
+            console.log("Unknown command: ", cmdId);
+        }
+        cmd = doHelp;
+    }
+
+    cmd.apply(null, argv);
 
 }
 
@@ -1460,7 +1463,7 @@ module.exports = {
 };
 
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/removeDir.js":[function(require,module,exports){
 const removeDir = (...args) => {
     const fs = require("fs");
     if (typeof fs.rm !== "function") {
@@ -1481,8 +1484,7 @@ module.exports = {
     removeDirSync,
     removeDir
 }
-},{"fs":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
-
+},{"fs":false}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js":[function(require,module,exports){
 function encode(buffer) {
     return buffer.toString('base64')
         .replace(/\+/g, '')
@@ -1490,19 +1492,19 @@ function encode(buffer) {
         .replace(/=+$/, '');
 }
 
-function stampWithTime(buf, salt, msalt){
-    if(!salt){
+function stampWithTime(buf, salt, msalt) {
+    if (!salt) {
         salt = 1;
     }
-    if(!msalt){
+    if (!msalt) {
         msalt = 1;
     }
     var date = new Date;
     var ct = Math.floor(date.getTime() / salt);
     var counter = 0;
-    while(ct > 0 ){
+    while (ct > 0) {
         //console.log("Counter", counter, ct);
-        buf[counter*msalt] = Math.floor(ct % 256);
+        buf[counter * msalt] = Math.floor(ct % 256);
         ct = Math.floor(ct / 256);
         counter++;
     }
@@ -1519,17 +1521,16 @@ function stampWithTime(buf, salt, msalt){
 
 var generateUid = null;
 
-exports.init = function(externalGenerator){
+exports.init = function (externalGenerator) {
     generateUid = externalGenerator.generateUid;
     return module.exports;
 };
 
-exports.safe_uuid = function() {
+exports.safe_uuid = function () {
     var buf = generateUid(32);
     stampWithTime(buf, 1000, 3);
     return encode(buf);
 };
-
 
 
 /*
@@ -1538,29 +1539,30 @@ exports.safe_uuid = function() {
     This method is safe on a single computer but should be used with care otherwise
     This UUID is not cryptographically safe (can be guessed)
  */
-exports.short_uuid = function(callback) {
+exports.short_uuid = function (callback) {
     require('crypto').randomBytes(12, function (err, buf) {
         if (err) {
             callback(err);
             return;
         }
-        stampWithTime(buf,1,2);
+        stampWithTime(buf, 1, 2);
         callback(null, encode(buf));
     });
 };
-},{"crypto":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
+},{"crypto":false}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js":[function(require,module,exports){
 function UidGenerator(minBuffers, buffersSize) {
     const Queue = require("./Queue");
-    var PSKBuffer = typeof $$ !== "undefined" && $$.PSKBuffer ? $$.PSKBuffer : $$.Buffer;
+    let PSKBuffer = typeof $$ !== "undefined" && $$.PSKBuffer ? $$.PSKBuffer : $$.Buffer;
+    let observer;
 
-    var buffers = new Queue();
-    var lowLimit = .2;
+    let buffers = new Queue();
+    let lowLimit = .2;
 
     function fillBuffers(size) {
         //notifyObserver();
         const sz = size || minBuffers;
         if (buffers.length < Math.floor(minBuffers * lowLimit)) {
-            for (var i = buffers.length; i < sz; i++) {
+            for (let i = buffers.length; i < sz; i++) {
                 generateOneBuffer(null);
             }
         }
@@ -1582,18 +1584,18 @@ function UidGenerator(minBuffers, buffersSize) {
     }
 
     function extractN(n) {
-        var sz = Math.floor(n / buffersSize);
-        var ret = [];
+        let sz = Math.floor(n / buffersSize);
+        let ret = [];
 
-        for (var i = 0; i < sz; i++) {
+        for (let i = 0; i < sz; i++) {
             ret.push(buffers.pop());
             setTimeout(generateOneBuffer, 1);
         }
 
 
-        var remainder = n % buffersSize;
+        let remainder = n % buffersSize;
         if (remainder > 0) {
-            var front = buffers.pop();
+            let front = buffers.pop();
             ret.push(front.slice(0, remainder));
             //generateOneBuffer(front.slice(remainder));
             setTimeout(function () {
@@ -1606,10 +1608,10 @@ function UidGenerator(minBuffers, buffersSize) {
         return $$.Buffer.concat(ret);
     }
 
-    var fillInProgress = false;
+    let fillInProgress = false;
 
     this.generateUid = function (n) {
-        var totalSize = buffers.length * buffersSize;
+        let totalSize = buffers.length * buffersSize;
         if (n <= totalSize) {
             return extractN(n);
         } else {
@@ -1624,7 +1626,6 @@ function UidGenerator(minBuffers, buffersSize) {
         }
     };
 
-    var observer;
     this.registerObserver = function (obs) {
         if (observer) {
             console.error(new Error("One observer allowed!"));
@@ -1638,7 +1639,7 @@ function UidGenerator(minBuffers, buffersSize) {
 
     function notifyObserver() {
         if (observer) {
-            var valueToReport = buffers.length * buffersSize;
+            let valueToReport = buffers.length * buffersSize;
             setTimeout(function () {
                 observer(null, {"size": valueToReport});
             }, 10);
@@ -1650,7 +1651,7 @@ module.exports.createUidGenerator = function (minBuffers, bufferSize) {
     return new UidGenerator(minBuffers, bufferSize);
 };
 
-},{"./Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":false}],"overwrite-require":[function(require,module,exports){
+},{"./Queue":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/Queue.js","crypto":false}],"overwrite-require":[function(require,module,exports){
 (function (global){(function (){
 /*
  require and $$.require are overwriting the node.js defaults in loading modules for increasing security, speed and making it work to the privatesky runtime build with browserify.
@@ -1854,7 +1855,8 @@ function enableForEnvironment(envType) {
         const sandboxRequire = global.require;
         const cryptoModuleName = 'crypto';
         global.crypto = require(cryptoModuleName);
-
+        const pathModuleName = 'path';
+        const path = require(pathModuleName);
         function newLoader(request) {
             // console.log("newLoader:", request);
             //preventRecursiveRequire(request);
@@ -1975,7 +1977,7 @@ function enableForEnvironment(envType) {
                     console.log("Global handler for unknown http errors was called", res.status, res);
                     if (res.status && possibleRedirects.indexOf(res.status) !== -1) {
                         window.location = "/";
-                        return;
+
                     }
                 };
                 break;
@@ -2077,8 +2079,8 @@ function enableForEnvironment(envType) {
 
         this.reset = function () {
             debugEnabled = true;
-            let debugEvents = [];
-            let eventsStack = [];
+            debugEvents = [];
+            eventsStack = [];
         }
 
         this.stop = function () {
@@ -2167,28 +2169,27 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./src/Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js","./src/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","./src/standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js"}],"swarmutils":[function(require,module,exports){
-
+},{"./src/Logger":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/Logger.js","./src/moduleConstants":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","./src/standardGlobalSymbols.js":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js"}],"swarmutils":[function(require,module,exports){
 let cachedUIDGenerator = undefined;
 let cachedSafeUid = undefined;
 
-function initCache(){
-    if(cachedUIDGenerator === undefined){
+function initCache() {
+    if (cachedUIDGenerator === undefined) {
         cachedUIDGenerator = require("./lib/uidGenerator").createUidGenerator(200, 32);
-        let  sfuid = require("./lib/safe-uuid");
+        let sfuid = require("./lib/safe-uuid");
         sfuid.init(cachedUIDGenerator);
         cachedSafeUid = sfuid.safe_uuid;
     }
 }
 
 module.exports = {
-    get generateUid(){
+    get generateUid() {
         initCache();
         return cachedUIDGenerator.generateUid;
     },
-     safe_uuid: function(){
-         initCache();
-         return cachedSafeUid();
+    safe_uuid: function () {
+        initCache();
+        return cachedSafeUid();
     }
 };
 
@@ -2222,7 +2223,7 @@ module.exports.ensureIsBuffer = function (data) {
 module.exports.removeDir = require("./lib/removeDir").removeDir;
 module.exports.removeDirSync = require("./lib/removeDir").removeDirSync;
 
-},{"./lib/Combos":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}]},{},["/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/testRunnerBoot.js"])
+},{"./lib/Combos":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/Combos.js","./lib/OwM":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/OwM.js","./lib/Queue":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/Queue.js","./lib/SwarmPacker":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/SwarmPacker.js","./lib/TaskCounter":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/TaskCounter.js","./lib/beesHealer":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/beesHealer.js","./lib/path":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/path.js","./lib/pingpongFork":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/pingpongFork.js","./lib/pskconsole":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/pskconsole.js","./lib/removeDir":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/removeDir.js","./lib/safe-uuid":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/safe-uuid.js","./lib/uidGenerator":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/swarmutils/lib/uidGenerator.js"}]},{},["/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/builds/tmp/testRunnerBoot.js"])
                     ;(function(global) {
                         global.bundlePaths = {"pskWebServer":"builds/output/pskWebServer.js","openDSU":"builds/output/openDSU.js","nodeBoot":"builds/output/nodeBoot.js","loaderBoot":"builds/output/loaderBoot.js","testsRuntime":"builds/output/testsRuntime.js","bindableModel":"builds/output/bindableModel.js","iframeBoot":"builds/output/iframeBoot.js","versionLessBoot":"builds/output/versionLessBoot.js","testRunnerBoot":"builds/output/testRunnerBoot.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});

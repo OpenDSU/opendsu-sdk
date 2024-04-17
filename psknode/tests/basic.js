@@ -15,7 +15,7 @@ assert.callback('Basic Test', (finished) => {
     tir.addDomain(domain, agents, constitutionFolder);
 
     tir.launch(6000, () => {
-        $$.interactions.startSwarmAs(`${domain}/agent/${agent}`, "basicTestEcho", "say", "Hello").onReturn(function(err, result){
+        $$.interactions.startSwarmAs(`${domain}/agent/${agent}`, "basicTestEcho", "say", "Hello").onReturn(function (err, result) {
             assert.equal("Echo Hello", result);
             finished();
         });

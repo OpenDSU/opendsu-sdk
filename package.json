@@ -1,41 +1,41 @@
 {
-    "name": "opendsu-sdk",
-    "version": "2.0.7",
-    "description": "This repo is meant to be used for opendsu sdk development.",
-    "scripts": {
-        "dev-install": "node ./bin/scripts/mkDevEnv.js && npm install",
-        "postinstall": "node ./node_modules/octopus/scripts/run dependencies devmode",
-        "update": "git pull && npm install",
-        "build": "node ./bin/scripts/pskbuild.js --projectMap=./builds/build.json --output=./builds/output/ && node ./node_modules/octopus/scripts/run postBuild devmode",
-        "start": "node ./psknode/bin/scripts/apiHubLauncher.js",
-        "cloud-enclave": "node ./psknode/bin/scripts/enclaveLauncher.js",
-        "remote-enclave": "npm run cloud-enclave",
-        "tests": "npm run smoke-tests",
-        "freeze": "node ./node_modules/octopus/scripts/freeze",
-        "tag-freeze": "node ./node_modules/octopus/scripts/tagFreeze.js",
-        "smoke-tests": "npm run build && node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./psknode/bin/scripts/testrunner.js --config=./smoke-test-suites.json\""
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/OpenDSU/opendsu-sdk.git"
-    },
-    "keywords": [
-        "opendsu",
-        "ssapps",
-        "dsu"
-    ],
-    "author": "",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/OpenDSU/opendsu-sdk/issues"
-    },
-    "homepage": "https://github.com/OpenDSU/opendsu-sdk#readme",
-    "devDependencies": {
-        "@msgpack/msgpack": "^1.8.0",
-        "browserify": "^17.0.0",
-        "common-shakeify": "^1.1.1"
-    },
-    "dependencies": {
-        "octopus": "git+http://git@github.com/opendsu/octopus.git"
-    }
+  "name": "opendsu-sdk",
+  "version": "2.0.7",
+  "description": "This repo is meant to be used for opendsu sdk development.",
+  "scripts": {
+    "dev-install": "node ./bin/scripts/mkDevEnv.js && npm install",
+    "postinstall": "node ./node_modules/octopus/scripts/run dependencies devmode",
+    "update": "git pull && npm install",
+    "build": "node ./bin/scripts/pskbuild.js --projectMap=./builds/build.json --output=./builds/output/ && node ./node_modules/octopus/scripts/run postBuild devmode",
+    "start": "node ./psknode/bin/scripts/apiHubLauncher.js",
+    "cloud-enclave": "node ./psknode/bin/scripts/enclaveLauncher.js",
+    "remote-enclave": "npm run cloud-enclave",
+    "tests": "npm run smoke-tests",
+    "freeze": "node ./node_modules/octopus/scripts/freeze",
+    "tag-freeze": "node ./node_modules/octopus/scripts/tagFreeze.js",
+    "smoke-tests": "npm run build && node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./psknode/bin/scripts/testrunner.js --config=./smoke-test-suites.json\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenDSU/opendsu-sdk.git"
+  },
+  "keywords": [
+    "opendsu",
+    "ssapps",
+    "dsu"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OpenDSU/opendsu-sdk/issues"
+  },
+  "homepage": "https://github.com/OpenDSU/opendsu-sdk#readme",
+  "devDependencies": {
+    "@msgpack/msgpack": "^1.8.0",
+    "browserify": "^17.0.0",
+    "common-shakeify": "^1.1.1"
+  },
+  "dependencies": {
+    "octopus": "git+http://git@github.com/opendsu/octopus.git"
+  }
 }

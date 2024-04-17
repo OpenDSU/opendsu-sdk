@@ -1,4 +1,4 @@
-bindableModelRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel.js":[function(require,module,exports){
+bindableModelRequire=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/builds/tmp/bindableModel.js":[function(require,module,exports){
 (function (global){(function (){
 if (typeof window !== "undefined" && typeof window.process === "undefined") {
 	window.process = {};
@@ -12,7 +12,7 @@ require("./bindableModel_intermediar");
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./bindableModel_intermediar":"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel_intermediar.js"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel_intermediar.js":[function(require,module,exports){
+},{"./bindableModel_intermediar":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/builds/tmp/bindableModel_intermediar.js"}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/builds/tmp/bindableModel_intermediar.js":[function(require,module,exports){
 (function (global){(function (){
 global.bindableModelLoadModules = function(){ 
 
@@ -42,7 +42,7 @@ if (typeof $$ !== "undefined") {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"overwrite-require":"overwrite-require","psk-bindable-model":"psk-bindable-model","queue":"queue","soundpubsub":"soundpubsub"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js":[function(require,module,exports){
+},{"overwrite-require":"overwrite-require","psk-bindable-model":"psk-bindable-model","queue":"queue","soundpubsub":"soundpubsub"}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/Logger.js":[function(require,module,exports){
 const envTypes = require("./moduleConstants");
 const originalConsole = Object.assign({}, console);
 const IS_DEV_MODE = process.env.DEV === "true" || typeof process.env.DEV === "undefined";
@@ -310,7 +310,7 @@ module.exports = {
     getLogger
 }
 
-},{"./errorTypes":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js","./moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/errorTypes.js":[function(require,module,exports){
+},{"./errorTypes":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/errorTypes.js","./moduleConstants":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","fs":false,"os":false,"path":false}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/errorTypes.js":[function(require,module,exports){
 module.exports = {
     LOG: "log",
     ERROR: "error",
@@ -321,22 +321,22 @@ module.exports = {
     CRITICAL: "critical",
     AUDIT: "audit"
 }
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js":[function(require,module,exports){
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js":[function(require,module,exports){
 module.exports = {
-  BROWSER_ENVIRONMENT_TYPE: 'browser',
-  MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
-  WEB_WORKER_ENVIRONMENT_TYPE: 'web-worker',
-  SERVICE_WORKER_ENVIRONMENT_TYPE: 'service-worker',
-  ISOLATE_ENVIRONMENT_TYPE: 'isolate',
-  THREAD_ENVIRONMENT_TYPE: 'thread',
-  NODEJS_ENVIRONMENT_TYPE: 'nodejs'
+    BROWSER_ENVIRONMENT_TYPE: 'browser',
+    MOBILE_BROWSER_ENVIRONMENT_TYPE: 'mobile-browser',
+    WEB_WORKER_ENVIRONMENT_TYPE: 'web-worker',
+    SERVICE_WORKER_ENVIRONMENT_TYPE: 'service-worker',
+    ISOLATE_ENVIRONMENT_TYPE: 'isolate',
+    THREAD_ENVIRONMENT_TYPE: 'thread',
+    NODEJS_ENVIRONMENT_TYPE: 'nodejs'
 };
 
-},{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js":[function(require,module,exports){
+},{}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js":[function(require,module,exports){
 (function (global){(function (){
 let logger = console;
 
-if(typeof $$.Buffer === "undefined"){
+if (typeof $$.Buffer === "undefined") {
     $$.Buffer = require("buffer").Buffer;
 }
 
@@ -356,10 +356,10 @@ if (!global.process || process.env.NO_LOGS !== 'true') {
 
         console.log('Logger init successful', process.pid);
     } catch (e) {
-        if(e.message.indexOf("psklogger")!==-1 || e.message.indexOf("zeromq")!==-1){
+        if (e.message.indexOf("psklogger") !== -1 || e.message.indexOf("zeromq") !== -1) {
             console.log('Logger not available, using console');
             logger = console;
-        }else{
+        } else {
             console.log(e);
         }
     }
@@ -378,7 +378,7 @@ $$.registerGlobalSymbol = function (newSymbol, value) {
     }
 };
 
-console.warn = (...args)=>{
+console.warn = (...args) => {
     console.log(...args);
 };
 
@@ -436,7 +436,7 @@ $$.registerGlobalSymbol("fixMe", function (...args) {
  * @param {string} message
  * @param {*} type
  */
-$$.registerGlobalSymbol("exception", function (message, type) {
+$$.registerGlobalSymbol("exception", function (message) {
     throw new Error(message);
 });
 
@@ -446,7 +446,7 @@ $$.registerGlobalSymbol("exception", function (message, type) {
  * @param {string} message
  * @param {*} type
  */
-$$.registerGlobalSymbol("throw", function (message, type) {
+$$.registerGlobalSymbol("throw", function (message) {
     throw new Error(message);
 });
 
@@ -491,7 +491,7 @@ $$.registerGlobalSymbol("assert", function (value, explainWhy) {
  * @param {*} value
  */
 /* enable/disabale flags that control psk behaviour*/
-$$.registerGlobalSymbol("flags", function (flagName, value) {
+$$.registerGlobalSymbol("flags", function () {
     $$.incomplete("flags handling not implemented");
 });
 
@@ -568,9 +568,9 @@ $$.registerGlobalSymbol("warn", function (...args) {
 $$.registerGlobalSymbol("syntaxError", function (...args) {
     args.unshift("Syntax error:");
     logger.error(...args);
-    try{
+    try {
         throw new Error("Syntax error or misspelled symbol!");
-    }catch(err){
+    } catch (err) {
         console.error(...args);
         console.error(err.stack);
     }
@@ -626,7 +626,7 @@ $$.registerGlobalSymbol("event", function (event, ...args) {
     if (logger.hasOwnProperty('event')) {
         logger.event(event, ...args);
     } else {
-        if(event === "status.domains.boot"){
+        if (event === "status.domains.boot") {
             console.log("Failing to console...", event, ...args);
         }
     }
@@ -639,7 +639,7 @@ $$.registerGlobalSymbol("event", function (event, ...args) {
  * @param {...*} args
  */
 $$.registerGlobalSymbol("redirectLog", function (logType, logObject) {
-    if(logger.hasOwnProperty('redirect')) {
+    if (logger.hasOwnProperty('redirect')) {
         logger.redirect(logType, logObject);
     }
 });
@@ -655,14 +655,14 @@ $$.registerGlobalSymbol("throttlingEvent", function (...args) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"buffer":false,"psklogger":false,"swarmutils":false}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js":[function(require,module,exports){
+},{"buffer":false,"psklogger":false,"swarmutils":false}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js":[function(require,module,exports){
 const SoundPubSub = require("soundpubsub").soundPubSub;
 const CHAIN_CHANGED = 'chainChanged';
 const WILDCARD = "*";
 const CHAIN_SEPARATOR = ".";
 const MODEL_PREFIX = "Model";
 const ARRAY_CHANGE_METHODS = ['copyWithin', 'fill', 'pop', 'push', 'reverse', 'shift', 'slice', 'sort', 'splice', 'unshift'];
-const compactor = function(message, channel) {
+const compactor = function (message, channel) {
     if (message.type === CHAIN_CHANGED) {
         return channel;
     }
@@ -691,7 +691,7 @@ class PskBindableModel {
         }
 
         function makeSetter(parentChain) {
-            return function(obj, prop, value) {
+            return function (obj, prop, value) {
                 let chain = extendChain(parentChain, prop);
                 if (value && typeof value === "object") {
                     obj[prop] = proxify(value, chain);
@@ -704,7 +704,7 @@ class PskBindableModel {
         }
 
         function pushHandler(target, parentChain) {
-            return function(...args) {
+            return function (...args) {
                 try {
                     let arrayLength = Array.prototype.push.apply(target, args);
 
@@ -724,14 +724,14 @@ class PskBindableModel {
         }
 
         function arrayFnHandler(fn, target, parentChain) {
-            return function(...args) {
+            return function (...args) {
                 try {
                     const isArrayChangingMethod = ARRAY_CHANGE_METHODS.indexOf(fn) !== -1;
 
-                    if(isArrayChangingMethod) {
+                    if (isArrayChangingMethod) {
                         // we need to convert each proxified element of the array, since the elements can have their position changed
                         target.forEach((element, index) => {
-                            if(typeof target[index] === "object") {
+                            if (typeof target[index] === "object") {
                                 target[index] = root.toObject(extendChain(parentChain, index.toString()));
                             }
                         });
@@ -739,7 +739,7 @@ class PskBindableModel {
 
                     let returnedValue = Array.prototype[fn].apply(target, args);
 
-                    if(isArrayChangingMethod) {
+                    if (isArrayChangingMethod) {
                         // we need to proxify all the elements again
                         for (let index = 0; index < target.length; index++) {
                             target[index] = proxify(target[index], extendChain(parentChain, index.toString()));
@@ -765,9 +765,9 @@ class PskBindableModel {
             }
 
             let isRoot = !parentChain;
-            let notify, onChange,offChange, getChainValue, setChainValue, cleanReferencedChangeCallbacks;
+            let notify, onChange, offChange, getChainValue, setChainValue, cleanReferencedChangeCallbacks;
             if (isRoot) {
-                notify = function(changedChain) {
+                notify = function (changedChain) {
 
                     function getRelatedChains(changedChain) {
                         if (typeof changedChain !== 'string') {
@@ -807,7 +807,7 @@ class PskBindableModel {
                     })
                 };
 
-                getChainValue = function(chain) {
+                getChainValue = function (chain) {
 
                     if (!chain) {
                         return root;
@@ -823,7 +823,7 @@ class PskBindableModel {
                     return chainSequence.reduce(reducer, root);
                 };
 
-                setChainValue = function(chain, value) {
+                setChainValue = function (chain, value) {
                     let chainSequence = chain.split(CHAIN_SEPARATOR).map(el => el.trim());
 
                     let reducer = (accumulator, currentValue, index, array) => {
@@ -840,13 +840,13 @@ class PskBindableModel {
                     return chainSequence.reduce(reducer, root);
                 };
 
-                onChange = function(chain, callback) {
+                onChange = function (chain, callback) {
                     observedChains.add(chain);
                     SoundPubSub.subscribe(createChannelName(chain), callback);
-                    referencedChangeCallbacks.push({chain:chain, callback:callback});
+                    referencedChangeCallbacks.push({chain: chain, callback: callback});
                 }
 
-                offChange = function (chain, callback){
+                offChange = function (chain, callback) {
                     if (observedChains.has(chain)) {
                         let index = referencedChangeCallbacks.findIndex(referenceChangeCallback => {
                             return referenceChangeCallback.callback === callback
@@ -874,7 +874,7 @@ class PskBindableModel {
                     "onChangeExpressionChain",
                     "offChangeExpressionChain"
                 ];
-                return function(target, prop) {
+                return function (target, prop) {
                     if (isRoot) {
                         switch (prop) {
                             case "onChange":
@@ -890,7 +890,7 @@ class PskBindableModel {
                             case "cleanReferencedChangeCallbacks":
                                 return cleanReferencedChangeCallbacks;
                             default:
-                                if(PROXY_ROOT_METHODS.includes(prop)) {
+                                if (PROXY_ROOT_METHODS.includes(prop)) {
                                     return target[prop];
                                 }
                         }
@@ -916,19 +916,19 @@ class PskBindableModel {
             let setter = makeSetter(parentChain);
 
             let handler = {
-                apply: function(target, prop, argumentsList) {
+                apply: function (target, prop, argumentsList) {
                     throw new Error("A function call was not expected inside proxy!");
                 },
-                constructor: function(target, args) {
+                constructor: function (target, args) {
                     throw new Error("A constructor call was not expected inside proxy!");
                 },
-                isExtensible: function(target) {
+                isExtensible: function (target) {
                     return Reflect.isExtensible(target);
                 },
-                preventExtensions: function(target) {
+                preventExtensions: function (target) {
                     return Reflect.preventExtensions(target);
                 },
-                get: function(obj, prop) {
+                get: function (obj, prop) {
                     if (isRoot) {
                         switch (prop) {
                             case "onChange":
@@ -950,7 +950,7 @@ class PskBindableModel {
                         return true;
                     }
 
-                    if(obj instanceof Promise && typeof obj[prop] === "function") {
+                    if (obj instanceof Promise && typeof obj[prop] === "function") {
                         return obj[prop].bind(obj);
                     }
 
@@ -958,23 +958,23 @@ class PskBindableModel {
                 },
                 set: makeSetter(parentChain),
 
-                deleteProperty: function(oTarget, sKey) {
-                    if (sKey in oTarget){
+                deleteProperty: function (oTarget, sKey) {
+                    if (sKey in oTarget) {
                         delete oTarget[sKey]
                         return true;
                     }
                     return false
                 },
 
-                ownKeys: function(oTarget) {
+                ownKeys: function (oTarget) {
                     return Reflect.ownKeys(oTarget);
                 },
-                has: function(oTarget, sKey) {
+                has: function (oTarget, sKey) {
                     return sKey in oTarget
                 },
-                defineProperty: function(oTarget, sKey, oDesc) {
+                defineProperty: function (oTarget, sKey, oDesc) {
                     let oDescClone = Object.assign({}, oDesc);
-                    oDescClone.set = function(obj, prop, value) {
+                    oDescClone.set = function (obj, prop, value) {
                         if (oDesc.hasOwnProperty("set")) {
                             oDesc.set(obj, prop, value);
                         }
@@ -982,13 +982,13 @@ class PskBindableModel {
                     };
                     return Object.defineProperty(oTarget, sKey, oDescClone);
                 },
-                getOwnPropertyDescriptor: function(oTarget, sKey) {
+                getOwnPropertyDescriptor: function (oTarget, sKey) {
                     return Object.getOwnPropertyDescriptor(oTarget, sKey)
                 },
-                getPrototypeOf: function(target) {
+                getPrototypeOf: function (target) {
                     return Reflect.getPrototypeOf(target)
                 },
-                setPrototypeOf: function(target, newProto) {
+                setPrototypeOf: function (target, newProto) {
                     Reflect.setPrototypeOf(target, newProto);
                 }
             };
@@ -1004,7 +1004,7 @@ class PskBindableModel {
                 }
             });
 
-            if(obj.__isProxy) {
+            if (obj.__isProxy) {
                 return obj;
             }
 
@@ -1021,7 +1021,7 @@ class PskBindableModel {
          * @param {string | null} chain - (Optional) The chain inside the root model.
          * @returns {Object} - The object representanion of the proxified model
          */
-        root.toObject = function(chain) {
+        root.toObject = function (chain) {
             let source = {};
 
             if (!chain) {
@@ -1046,7 +1046,7 @@ class PskBindableModel {
          * @param {...string} var_args Variable number of chains to watch. First argument can be an array of chains
          * @throws {Error}
          */
-        root.addExpression = function(expressionName, callback, ...args) {
+        root.addExpression = function (expressionName, callback, ...args) {
             if (typeof expressionName !== 'string' || !expressionName.length) {
                 throw new Error("Expression name must be a valid string");
             }
@@ -1070,7 +1070,7 @@ class PskBindableModel {
 
             expressions[expressionName] = {
                 watchChain,
-                callback: function() {
+                callback: function () {
                     return callback.call(root);
                 }
             }
@@ -1081,7 +1081,7 @@ class PskBindableModel {
          * @return {mixed}
          * @throws {Error}
          */
-        root.evaluateExpression = function(expressionName) {
+        root.evaluateExpression = function (expressionName) {
             if (!this.hasExpression(expressionName)) {
                 throw new Error(`Expression "${expressionName}" is not defined`);
             }
@@ -1093,7 +1093,7 @@ class PskBindableModel {
          * @param {string} expressionName
          * @return {boolean}
          */
-        root.hasExpression = function(expressionName) {
+        root.hasExpression = function (expressionName) {
             if (typeof expressions[expressionName] === 'object' &&
                 typeof expressions[expressionName].callback === 'function') {
                 return true;
@@ -1107,7 +1107,7 @@ class PskBindableModel {
          * @param {string} expressionName
          * @param {callback} callback
          */
-        root.onChangeExpressionChain = function(expressionName, callback) {
+        root.onChangeExpressionChain = function (expressionName, callback) {
             if (!this.hasExpression(expressionName)) {
                 throw new Error(`Expression "${expressionName}" is not defined`);
             }
@@ -1122,7 +1122,7 @@ class PskBindableModel {
                 this.onChange(expr.watchChain[i], callback);
             }
         }
-        root.offChangeExpressionChain = function(expressionName, callback) {
+        root.offChangeExpressionChain = function (expressionName, callback) {
             if (!this.hasExpression(expressionName)) {
                 return;
             }
@@ -1142,7 +1142,7 @@ class PskBindableModel {
 
 module.exports = PskBindableModel;
 
-},{"soundpubsub":"soundpubsub"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js":[function(require,module,exports){
+},{"soundpubsub":"soundpubsub"}],"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js":[function(require,module,exports){
 /*
 Initial License: (c) Axiologic Research & Alboaie Sînică.
 Contributors: Axiologic Research , PrivateSky project
@@ -1197,370 +1197,370 @@ Code License: LGPL or MIT.
 
 const Queue = require('queue');
 
-function SoundPubSub(){
+function SoundPubSub() {
 
-	let subscriberCbkRefHandler = new SubscriberCallbackReferenceHandler();
+    let subscriberCbkRefHandler = new SubscriberCallbackReferenceHandler();
 
-	/**
-	 * publish
-	 *      Publish a message {Object} to a list of subscribers on a specific topic
-	 *
-	 * @params {String|Number} target,  {Object} message
-	 * @return number of channel subscribers that will be notified
-	 */
-	this.publish = function(target, message){
-		if(!invalidChannelName(target) && !invalidMessageType(message) && (typeof channelSubscribers[target] != 'undefined')){
-			compactAndStore(target, message);
-			setTimeout(dispatchNext, 0);
-			return channelSubscribers[target].length;
-		} else{
-			return null;
-		}
-	};
+    /**
+     * publish
+     *      Publish a message {Object} to a list of subscribers on a specific topic
+     *
+     * @params {String|Number} target,  {Object} message
+     * @return number of channel subscribers that will be notified
+     */
+    this.publish = function (target, message) {
+        if (!invalidChannelName(target) && !invalidMessageType(message) && (typeof channelSubscribers[target] != 'undefined')) {
+            compactAndStore(target, message);
+            setTimeout(dispatchNext, 0);
+            return channelSubscribers[target].length;
+        } else {
+            return null;
+        }
+    };
 
-	/**
-	 * subscribe
-	 *      Subscribe / add a {Function} callBack on a {String|Number}target channel subscribers list in order to receive
-	 *      messages published if the conditions defined by {Function}waitForMore and {Function}filter are passed.
-	 *
-	 * @params {String|Number}target, {Function}callBack, {Function}waitForMore, {Function}filter
-	 *
-	 *          target      - channel name to subscribe
-	 *          callback    - function to be called when a message was published on the channel
-	 *          waitForMore - a intermediary function that will be called after a successfuly message delivery in order
-	 *                          to decide if a new messages is expected...
-	 *          filter      - a function that receives the message before invocation of callback function in order to allow
-	 *                          relevant message before entering in normal callback flow
-	 * @return
-	 */
-	this.subscribe = function(target, callBack, waitForMore, filter){
-		if(!invalidChannelName(target) && !invalidFunction(callBack)){
-			let subscriber = {"waitForMore": waitForMore, "filter": filter};
-			if(typeof channelSubscribers[target] === 'undefined'){
-				channelSubscribers[target] = [];
-			}
-			subscriberCbkRefHandler.setSubscriberCallback(subscriber, target, callBack);
-			channelSubscribers[target].push(subscriber);
-		}
-	};
+    /**
+     * subscribe
+     *      Subscribe / add a {Function} callBack on a {String|Number}target channel subscribers list in order to receive
+     *      messages published if the conditions defined by {Function}waitForMore and {Function}filter are passed.
+     *
+     * @params {String|Number}target, {Function}callBack, {Function}waitForMore, {Function}filter
+     *
+     *          target      - channel name to subscribe
+     *          callback    - function to be called when a message was published on the channel
+     *          waitForMore - a intermediary function that will be called after a successfuly message delivery in order
+     *                          to decide if a new messages is expected...
+     *          filter      - a function that receives the message before invocation of callback function in order to allow
+     *                          relevant message before entering in normal callback flow
+     * @return
+     */
+    this.subscribe = function (target, callBack, waitForMore, filter) {
+        if (!invalidChannelName(target) && !invalidFunction(callBack)) {
+            let subscriber = {"waitForMore": waitForMore, "filter": filter};
+            if (typeof channelSubscribers[target] === 'undefined') {
+                channelSubscribers[target] = [];
+            }
+            subscriberCbkRefHandler.setSubscriberCallback(subscriber, target, callBack);
+            channelSubscribers[target].push(subscriber);
+        }
+    };
 
-	/**
-	 * unsubscribe
-	 *      Unsubscribe/remove {Function} callBack from the list of subscribers of the {String|Number} target channel
-	 *
-	 * @params {String|Number} target, {Function} callBack, {Function} filter
-	 *
-	 *          target      - channel name to unsubscribe
-	 *          callback    - reference of the original function that was used as subscribe
-	 *          filter      - reference of the original filter function
-	 * @return
-	 */
-	this.unsubscribe = function(target, callBack, filter){
-		if(!invalidFunction(callBack)){
-			//let gotIt = false;
-			if(channelSubscribers[target]){
-				for(let i = 0; i < channelSubscribers[target].length;i++){
-					let subscriber =  channelSubscribers[target][i];
-					let callback = subscriberCbkRefHandler.getSubscriberCallback(subscriber);
+    /**
+     * unsubscribe
+     *      Unsubscribe/remove {Function} callBack from the list of subscribers of the {String|Number} target channel
+     *
+     * @params {String|Number} target, {Function} callBack, {Function} filter
+     *
+     *          target      - channel name to unsubscribe
+     *          callback    - reference of the original function that was used as subscribe
+     *          filter      - reference of the original filter function
+     * @return
+     */
+    this.unsubscribe = function (target, callBack, filter) {
+        if (!invalidFunction(callBack)) {
+            //let gotIt = false;
+            if (channelSubscribers[target]) {
+                for (let i = 0; i < channelSubscribers[target].length; i++) {
+                    let subscriber = channelSubscribers[target][i];
+                    let callback = subscriberCbkRefHandler.getSubscriberCallback(subscriber);
 
-					if(callback === callBack && ( typeof filter === 'undefined' || subscriber.filter === filter )){
-						//gotIt = true;
-						subscriber.forDelete = true;
-						subscriber.callBack = undefined;
-						subscriber.filter = undefined;
-					}
-				}
-			}
-			//not valid always since we introduced WeakRef. A subscriber callback could not exists
-			// if(!gotIt){
-			// 	console.log("Unable to unsubscribe a callback that was not subscribed!");
-			// }
-		}
-	};
+                    if (callback === callBack && (typeof filter === 'undefined' || subscriber.filter === filter)) {
+                        //gotIt = true;
+                        subscriber.forDelete = true;
+                        subscriber.callBack = undefined;
+                        subscriber.filter = undefined;
+                    }
+                }
+            }
+            //not valid always since we introduced WeakRef. A subscriber callback could not exists
+            // if(!gotIt){
+            // 	console.log("Unable to unsubscribe a callback that was not subscribed!");
+            // }
+        }
+    };
 
-	/**
-	 * blockCallBacks
-	 *
-	 * @params
-	 * @return
-	 */
-	this.blockCallBacks = function(){
-		level++;
-	};
+    /**
+     * blockCallBacks
+     *
+     * @params
+     * @return
+     */
+    this.blockCallBacks = function () {
+        level++;
+    };
 
-	/**
-	 * releaseCallBacks
-	 *
-	 * @params
-	 * @return
-	 */
-	this.releaseCallBacks = function(){
-		level--;
-		//hack/optimisation to not fill the stack in extreme cases (many events caused by loops in collections,etc)
-		while(level === 0 && dispatchNext(true)){
-			//nothing
-		}
-
-		while(level === 0 && callAfterAllEvents()){
+    /**
+     * releaseCallBacks
+     *
+     * @params
+     * @return
+     */
+    this.releaseCallBacks = function () {
+        level--;
+        //hack/optimisation to not fill the stack in extreme cases (many events caused by loops in collections,etc)
+        while (level === 0 && dispatchNext(true)) {
             //nothing
-		}
-	};
+        }
 
-	/**
-	 * afterAllEvents
-	 *
-	 * @params {Function} callback
-	 *
-	 *          callback - function that needs to be invoked once all events are delivered
-	 * @return
-	 */
-	this.afterAllEvents = function(callBack){
-		if(!invalidFunction(callBack)){
-			afterEventsCalls.push(callBack);
-		}
-		this.blockCallBacks();
-		this.releaseCallBacks();
-	};
+        while (level === 0 && callAfterAllEvents()) {
+            //nothing
+        }
+    };
 
-	/**
-	 * hasChannel
-	 *
-	 * @params {String|Number} channel
-	 *
-	 *          channel - name of the channel that need to be tested if present
-	 * @return
-	 */
-	this.hasChannel = function(channel){
-		return !invalidChannelName(channel) && (typeof channelSubscribers[channel] != 'undefined') ? true : false;
-	};
+    /**
+     * afterAllEvents
+     *
+     * @params {Function} callback
+     *
+     *          callback - function that needs to be invoked once all events are delivered
+     * @return
+     */
+    this.afterAllEvents = function (callBack) {
+        if (!invalidFunction(callBack)) {
+            afterEventsCalls.push(callBack);
+        }
+        this.blockCallBacks();
+        this.releaseCallBacks();
+    };
 
-	/**
-	 * addChannel
-	 *
-	 * @params {String} channel
-	 *
-	 *          channel - name of a channel that needs to be created and added to soundpubsub repository
-	 * @return
-	 */
-	this.addChannel = function(channel){
-		if(!invalidChannelName(channel) && !this.hasChannel(channel)){
-			channelSubscribers[channel] = [];
-		}
-	};
+    /**
+     * hasChannel
+     *
+     * @params {String|Number} channel
+     *
+     *          channel - name of the channel that need to be tested if present
+     * @return
+     */
+    this.hasChannel = function (channel) {
+        return !invalidChannelName(channel) && (typeof channelSubscribers[channel] != 'undefined') ? true : false;
+    };
 
-	/* ---------------------------------------- protected stuff ---------------------------------------- */
-	var self = this;
-	// map channelName (object local id) -> array with subscribers
-	var channelSubscribers = {};
+    /**
+     * addChannel
+     *
+     * @params {String} channel
+     *
+     *          channel - name of a channel that needs to be created and added to soundpubsub repository
+     * @return
+     */
+    this.addChannel = function (channel) {
+        if (!invalidChannelName(channel) && !this.hasChannel(channel)) {
+            channelSubscribers[channel] = [];
+        }
+    };
 
-	// map channelName (object local id) -> queue with waiting messages
-	var channelsStorage = {};
+    /* ---------------------------------------- protected stuff ---------------------------------------- */
+    let self = this;
+    // map channelName (object local id) -> array with subscribers
+    let channelSubscribers = {};
 
-	// object
-	var typeCompactor = {};
+    // map channelName (object local id) -> queue with waiting messages
+    let channelsStorage = {};
 
-	// channel names
-	var executionQueue = new Queue();
-	var level = 0;
+    // object
+    let typeCompactor = {};
 
-
-
-	/**
-	 * registerCompactor
-	 *
-	 *       An compactor takes a newEvent and and oldEvent and return the one that survives (oldEvent if
-	 *  it can compact the new one or the newEvent if can't be compacted)
-	 *
-	 * @params {String} type, {Function} callBack
-	 *
-	 *          type        - channel name to unsubscribe
-	 *          callBack    - handler function for that specific event type
-	 * @return
-	 */
-	this.registerCompactor = function(type, callBack) {
-		if(!invalidFunction(callBack)){
-			typeCompactor[type] = callBack;
-		}
-	};
-
-	/**
-	 * dispatchNext
-	 *
-	 * @param fromReleaseCallBacks: hack to prevent too many recursive calls on releaseCallBacks
-	 * @return {Boolean}
-	 */
-	function dispatchNext(fromReleaseCallBacks){
-		if(level > 0) {
-			return false;
-		}
-		const channelName = executionQueue.front();
-		if(typeof channelName != 'undefined'){
-			self.blockCallBacks();
-			try{
-				let message;
-				if(!channelsStorage[channelName].isEmpty()) {
-					message = channelsStorage[channelName].front();
-				}
-				if(typeof message == 'undefined'){
-					if(!channelsStorage[channelName].isEmpty()){
-						console.log("Can't use as message in a pub/sub channel this object: " + message);
-					}
-					executionQueue.pop();
-				} else {
-					if(typeof message.__transmisionIndex == 'undefined'){
-						message.__transmisionIndex = 0;
-						for(var i = channelSubscribers[channelName].length-1; i >= 0 ; i--){
-							var subscriber =  channelSubscribers[channelName][i];
-							if(subscriber.forDelete === true){
-								channelSubscribers[channelName].splice(i,1);
-							}
-						}
-					} else{
-						message.__transmisionIndex++;
-					}
-					//TODO: for immutable objects it will not work also, fix for shape models
-					if(typeof message.__transmisionIndex == 'undefined'){
-						console.log("Can't use as message in a pub/sub channel this object: " + message);
-					}
-					subscriber = channelSubscribers[channelName][message.__transmisionIndex];
-					if(typeof subscriber == 'undefined'){
-						delete message.__transmisionIndex;
-						channelsStorage[channelName].pop();
-					} else{
-						if(subscriber.filter === null || typeof subscriber.filter === "undefined" || (!invalidFunction(subscriber.filter) && subscriber.filter(message))){
-							if (!subscriber.forDelete) {
-								let callback = subscriberCbkRefHandler.getSubscriberCallback(subscriber);
-								if (typeof callback === "undefined") {
-									subscriber.forDelete = true;
-								} else {
-									callback(message);
-									if (subscriber.waitForMore && !invalidFunction(subscriber.waitForMore) && !subscriber.waitForMore(message)) {
-										subscriber.forDelete = true;
-									}
-								}
-							}
-						}
-					}
-				}
-			} catch(err){
-				console.log("Event callback failed: "+ subscriber.callBack +"error: " + err.stack);
-			}
-			//
-			if(fromReleaseCallBacks){
-				level--;
-			} else{
-				self.releaseCallBacks();
-			}
-			return true;
-		} else{
-			return false;
-		}
-	}
-
-	function compactAndStore(target, message){
-		var gotCompacted = false;
-		var arr = channelsStorage[target];
-		if(typeof arr == 'undefined'){
-			arr = new Queue();
-			channelsStorage[target] = arr;
-		}
-
-		if(message && typeof message.type != 'undefined'){
-			var typeCompactorCallBack = typeCompactor[message.type];
-
-			if(typeof typeCompactorCallBack != 'undefined'){
-				for(let channel of arr) {
-					if(typeCompactorCallBack(message, channel) === channel) {
-						if(typeof channel.__transmisionIndex == 'undefined') {
-							gotCompacted = true;
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		if(!gotCompacted && message){
-			arr.push(message);
-			executionQueue.push(target);
-		}
-	}
-
-	var afterEventsCalls = new Queue();
-	function callAfterAllEvents (){
-		if(!afterEventsCalls.isEmpty()){
-			var callBack = afterEventsCalls.pop();
-			//do not catch exceptions here..
-			callBack();
-		}
-		return !afterEventsCalls.isEmpty();
-	}
-
-	function invalidChannelName(name){
-		var result = false;
-		if(!name || (typeof name != "string" && typeof name != "number")){
-			result = true;
-			console.log("Invalid channel name: " + name);
-		}
-
-		return result;
-	}
-
-	function invalidMessageType(message){
-		var result = false;
-		if(!message || typeof message != "object"){
-			result = true;
-			console.log("Invalid messages types: " + message);
-		}
-		return result;
-	}
-
-	function invalidFunction(callback){
-		var result = false;
-		if(!callback || typeof callback != "function"){
-			result = true;
-			console.log("Expected to be function but is: " + callback);
-		}
-		return result;
-	}
-
-	//weak references are not supported by all browsers
-	function SubscriberCallbackReferenceHandler(){
-		let finalizationRegistry;
-		let hasWeakReferenceSupport = weakReferencesAreSupported();
+    // channel names
+    let executionQueue = new Queue();
+    let level = 0;
 
 
-		if (hasWeakReferenceSupport) {
-			finalizationRegistry = new FinalizationRegistry((heldValue) => {
-		   		//console.log(`Cleanup ${heldValue}`);
-			});
-		}
+    /**
+     * registerCompactor
+     *
+     *       An compactor takes a newEvent and and oldEvent and return the one that survives (oldEvent if
+     *  it can compact the new one or the newEvent if can't be compacted)
+     *
+     * @params {String} type, {Function} callBack
+     *
+     *          type        - channel name to unsubscribe
+     *          callBack    - handler function for that specific event type
+     * @return
+     */
+    this.registerCompactor = function (type, callBack) {
+        if (!invalidFunction(callBack)) {
+            typeCompactor[type] = callBack;
+        }
+    };
 
-		this.setSubscriberCallback  = function (subscriber, target, callback){
-			if(hasWeakReferenceSupport){
-				subscriber.callBack = new WeakRef(callback);
-				finalizationRegistry.register(subscriber.callBack, target);
-			}
-			else{
-				subscriber.callBack = callback;
-			}
-		}
+    /**
+     * dispatchNext
+     *
+     * @param fromReleaseCallBacks: hack to prevent too many recursive calls on releaseCallBacks
+     * @return {Boolean}
+     */
+    function dispatchNext(fromReleaseCallBacks) {
+        if (level > 0) {
+            return false;
+        }
+        const channelName = executionQueue.front();
+        let subscriber;
+        if (typeof channelName != 'undefined') {
+            self.blockCallBacks();
+            try {
+                let message;
+                if (!channelsStorage[channelName].isEmpty()) {
+                    message = channelsStorage[channelName].front();
+                }
+                if (typeof message == 'undefined') {
+                    if (!channelsStorage[channelName].isEmpty()) {
+                        console.log("Can't use as message in a pub/sub channel this object: " + message);
+                    }
+                    executionQueue.pop();
+                } else {
+                    if (typeof message.__transmisionIndex == 'undefined') {
+                        message.__transmisionIndex = 0;
+                        for (let i = channelSubscribers[channelName].length - 1; i >= 0; i--) {
+                            subscriber = channelSubscribers[channelName][i];
+                            if (subscriber.forDelete === true) {
+                                channelSubscribers[channelName].splice(i, 1);
+                            }
+                        }
+                    } else {
+                        message.__transmisionIndex++;
+                    }
+                    //TODO: for immutable objects it will not work also, fix for shape models
+                    if (typeof message.__transmisionIndex == 'undefined') {
+                        console.log("Can't use as message in a pub/sub channel this object: " + message);
+                    }
+                    subscriber = channelSubscribers[channelName][message.__transmisionIndex];
+                    if (typeof subscriber == 'undefined') {
+                        delete message.__transmisionIndex;
+                        channelsStorage[channelName].pop();
+                    } else {
+                        if (subscriber.filter === null || typeof subscriber.filter === "undefined" || (!invalidFunction(subscriber.filter) && subscriber.filter(message))) {
+                            if (!subscriber.forDelete) {
+                                let callback = subscriberCbkRefHandler.getSubscriberCallback(subscriber);
+                                if (typeof callback === "undefined") {
+                                    subscriber.forDelete = true;
+                                } else {
+                                    callback(message);
+                                    if (subscriber.waitForMore && !invalidFunction(subscriber.waitForMore) && !subscriber.waitForMore(message)) {
+                                        subscriber.forDelete = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.log("Event callback failed: " + subscriber.callBack + "error: " + err.stack);
+            }
+            //
+            if (fromReleaseCallBacks) {
+                level--;
+            } else {
+                self.releaseCallBacks();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-		this.getSubscriberCallback = function (subscriber){
-			if(hasWeakReferenceSupport){
-				if(subscriber.callBack){
-					return subscriber.callBack.deref();
-				}
-				return undefined;
+    function compactAndStore(target, message) {
+        let gotCompacted = false;
+        let arr = channelsStorage[target];
+        if (typeof arr == 'undefined') {
+            arr = new Queue();
+            channelsStorage[target] = arr;
+        }
 
-			}
-			return subscriber.callBack;
-		}
+        if (message && typeof message.type != 'undefined') {
+            let typeCompactorCallBack = typeCompactor[message.type];
 
-		function weakReferencesAreSupported() {
-			return typeof FinalizationRegistry === "function" && typeof WeakRef === "function";
-		}
-	}
+            if (typeof typeCompactorCallBack != 'undefined') {
+                for (let channel of arr) {
+                    if (typeCompactorCallBack(message, channel) === channel) {
+                        if (typeof channel.__transmisionIndex == 'undefined') {
+                            gotCompacted = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!gotCompacted && message) {
+            arr.push(message);
+            executionQueue.push(target);
+        }
+    }
+
+    let afterEventsCalls = new Queue();
+
+    function callAfterAllEvents() {
+        if (!afterEventsCalls.isEmpty()) {
+            let callBack = afterEventsCalls.pop();
+            //do not catch exceptions here..
+            callBack();
+        }
+        return !afterEventsCalls.isEmpty();
+    }
+
+    function invalidChannelName(name) {
+        let result = false;
+        if (!name || (typeof name != "string" && typeof name != "number")) {
+            result = true;
+            console.log("Invalid channel name: " + name);
+        }
+
+        return result;
+    }
+
+    function invalidMessageType(message) {
+        let result = false;
+        if (!message || typeof message != "object") {
+            result = true;
+            console.log("Invalid messages types: " + message);
+        }
+        return result;
+    }
+
+    function invalidFunction(callback) {
+        let result = false;
+        if (!callback || typeof callback != "function") {
+            result = true;
+            console.log("Expected to be function but is: " + callback);
+        }
+        return result;
+    }
+
+    //weak references are not supported by all browsers
+    function SubscriberCallbackReferenceHandler() {
+        let finalizationRegistry;
+        let hasWeakReferenceSupport = weakReferencesAreSupported();
+
+
+        if (hasWeakReferenceSupport) {
+            finalizationRegistry = new FinalizationRegistry(() => {
+                //console.log(`Cleanup ${heldValue}`);
+            });
+        }
+
+        this.setSubscriberCallback = function (subscriber, target, callback) {
+            if (hasWeakReferenceSupport) {
+                subscriber.callBack = new WeakRef(callback);
+                finalizationRegistry.register(subscriber.callBack, target);
+            } else {
+                subscriber.callBack = callback;
+            }
+        }
+
+        this.getSubscriberCallback = function (subscriber) {
+            if (hasWeakReferenceSupport) {
+                if (subscriber.callBack) {
+                    return subscriber.callBack.deref();
+                }
+                return undefined;
+
+            }
+            return subscriber.callBack;
+        }
+
+        function weakReferencesAreSupported() {
+            return typeof FinalizationRegistry === "function" && typeof WeakRef === "function";
+        }
+    }
 
 
 }
@@ -1771,7 +1771,8 @@ function enableForEnvironment(envType) {
         const sandboxRequire = global.require;
         const cryptoModuleName = 'crypto';
         global.crypto = require(cryptoModuleName);
-
+        const pathModuleName = 'path';
+        const path = require(pathModuleName);
         function newLoader(request) {
             // console.log("newLoader:", request);
             //preventRecursiveRequire(request);
@@ -1892,7 +1893,7 @@ function enableForEnvironment(envType) {
                     console.log("Global handler for unknown http errors was called", res.status, res);
                     if (res.status && possibleRedirects.indexOf(res.status) !== -1) {
                         window.location = "/";
-                        return;
+
                     }
                 };
                 break;
@@ -1994,8 +1995,8 @@ function enableForEnvironment(envType) {
 
         this.reset = function () {
             debugEnabled = true;
-            let debugEvents = [];
-            let eventsStack = [];
+            debugEvents = [];
+            eventsStack = [];
         }
 
         this.stop = function () {
@@ -2084,71 +2085,71 @@ module.exports = {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./src/Logger":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/Logger.js","./src/moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","./src/standardGlobalSymbols.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js"}],"psk-bindable-model":[function(require,module,exports){
+},{"./src/Logger":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/Logger.js","./src/moduleConstants":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/moduleConstants.js","./src/standardGlobalSymbols.js":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/overwrite-require/src/standardGlobalSymbols.js"}],"psk-bindable-model":[function(require,module,exports){
 module.exports = require("./lib/PskBindableModel");
-},{"./lib/PskBindableModel":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js"}],"queue":[function(require,module,exports){
+},{"./lib/PskBindableModel":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/psk-bindable-model/lib/PskBindableModel.js"}],"queue":[function(require,module,exports){
 function QueueElement(content) {
-	this.content = content;
-	this.next = null;
+    this.content = content;
+    this.next = null;
 }
 
 function Queue() {
-	this.head = null;
-	this.tail = null;
-	this.length = 0;
-	this.push = function (value) {
-		const newElement = new QueueElement(value);
-		if (!this.head) {
-			this.head = newElement;
-			this.tail = newElement;
-		} else {
-			this.tail.next = newElement;
-			this.tail = newElement;
-		}
-		this.length++;
-	};
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
+    this.push = function (value) {
+        const newElement = new QueueElement(value);
+        if (!this.head) {
+            this.head = newElement;
+            this.tail = newElement;
+        } else {
+            this.tail.next = newElement;
+            this.tail = newElement;
+        }
+        this.length++;
+    };
 
-	this.pop = function () {
-		if (!this.head) {
-			return null;
-		}
-		const headCopy = this.head;
-		this.head = this.head.next;
-		this.length--;
+    this.pop = function () {
+        if (!this.head) {
+            return null;
+        }
+        const headCopy = this.head;
+        this.head = this.head.next;
+        this.length--;
 
-		//fix???????
-		if(this.length === 0){
+        //fix???????
+        if (this.length === 0) {
             this.tail = null;
-		}
+        }
 
-		return headCopy.content;
-	};
+        return headCopy.content;
+    };
 
-	this.front = function () {
-		return this.head ? this.head.content : undefined;
-	};
+    this.front = function () {
+        return this.head ? this.head.content : undefined;
+    };
 
-	this.isEmpty = function () {
-		return this.head === null;
-	};
+    this.isEmpty = function () {
+        return this.head === null;
+    };
 
-	this[Symbol.iterator] = function* () {
-		let head = this.head;
-		while(head !== null) {
-			yield head.content;
-			head = head.next;
-		}
-	}.bind(this);
+    this[Symbol.iterator] = function* () {
+        let head = this.head;
+        while (head !== null) {
+            yield head.content;
+            head = head.next;
+        }
+    }.bind(this);
 }
 
 Queue.prototype.toString = function () {
-	let stringifiedQueue = '';
-	let iterator = this.head;
-	while (iterator) {
-		stringifiedQueue += `${JSON.stringify(iterator.content)} `;
-		iterator = iterator.next;
-	}
-	return stringifiedQueue;
+    let stringifiedQueue = '';
+    let iterator = this.head;
+    while (iterator) {
+        stringifiedQueue += `${JSON.stringify(iterator.content)} `;
+        iterator = iterator.next;
+    }
+    return stringifiedQueue;
 };
 
 Queue.prototype.inspect = Queue.prototype.toString;
@@ -2157,9 +2158,9 @@ module.exports = Queue;
 
 },{}],"soundpubsub":[function(require,module,exports){
 module.exports = {
-					soundPubSub: require("./lib/soundPubSub").soundPubSub
+    soundPubSub: require("./lib/soundPubSub").soundPubSub
 };
-},{"./lib/soundPubSub":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js"}]},{},["/home/runner/work/opendsu-sdk/opendsu-sdk/builds/tmp/bindableModel.js"])
+},{"./lib/soundPubSub":"/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/modules/soundpubsub/lib/soundPubSub.js"}]},{},["/home/skutner/WebstormProjects/work/epi-08-04/opendsu-sdk/builds/tmp/bindableModel.js"])
                     ;(function(global) {
                         global.bundlePaths = {"pskWebServer":"builds/output/pskWebServer.js","openDSU":"builds/output/openDSU.js","nodeBoot":"builds/output/nodeBoot.js","loaderBoot":"builds/output/loaderBoot.js","testsRuntime":"builds/output/testsRuntime.js","bindableModel":"builds/output/bindableModel.js","iframeBoot":"builds/output/iframeBoot.js","versionLessBoot":"builds/output/versionLessBoot.js","testRunnerBoot":"builds/output/testRunnerBoot.js"};
                     })(typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});

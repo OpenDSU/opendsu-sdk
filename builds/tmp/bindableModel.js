@@ -1,9 +1,10 @@
 if (typeof window !== "undefined" && typeof window.process === "undefined") {
-	window.process = {};
+    window.process = {};
 }
 
 if (typeof File === "undefined") {
-	global.File = function (){}
+    global.File = function () {
+    }
 }
 
 require("./bindableModel_intermediar");

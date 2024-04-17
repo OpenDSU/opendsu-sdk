@@ -1,3 +1,6 @@
 {
-    "testDirs": ["./tests", "./modules/opendsu/tests"]
+  "testDirs": [
+    "./tests",
+    "./modules/opendsu/tests"
+  ]
 }
