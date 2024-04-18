@@ -78,6 +78,8 @@
     "FinalizationRegistry": "writable",
     "FetchEvent": "writable",
     "addCommand": "writable",
-    "DataView": "writable"
+    "DataView": "writable",
+    "wprint": "writable",
+    "define": "writable"
   }
 }
