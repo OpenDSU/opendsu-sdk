@@ -7818,14 +7818,14 @@ module.exports = function (server) {
             lightDBEnclaveClient.getRecord($$.SYSTEM_IDENTIFIER, TASKS_TABLE, newRecord.pk, function (err, record) {
                 if (err || !record) {
                     return lightDBEnclaveClient.insertRecord($$.SYSTEM_IDENTIFIER, TASKS_TABLE, newRecord.pk, newRecord, (insertError)=>{
-                        //if we fail... could be that the task is ready register by another request due to concurency
-                        //we do another getrecord and if fails we return the original insert record error
+                        //if we fail... could be that the task is ready register by another request due to concurrency
+                        //we do another getRecord and if fails we return the original insert record error
                         if(insertError){
                             //we set the counter to 2 just in case there is a task with a counter value that we don't know,
                             // and we hope to have enough invalidation of the task to don't have garbage
                             newRecord.counter = 2;
                             newRecord.__fallbackToInsert = true;
-                            return lightDBEnclaveClient.updateRecord($$.SYSTEM_IDENTIFIER, TASKS_TABLE, record.pk, record, callback);
+                            return lightDBEnclaveClient.updateRecord($$.SYSTEM_IDENTIFIER, TASKS_TABLE, newRecord.pk, newRecord, callback);
                         }
                         callback(undefined);
                     });
@@ -8625,6 +8625,23 @@ function OAuthMiddleware(server) {
     const path = require("path");
     const ENCRYPTION_KEYS_LOCATION = oauthConfig.encryptionKeysLocation || path.join(server.rootFolder, "external-volume", "encryption-keys");
     let urlsToSkip = util.getUrlsToSkip();
+    let skippedUrlsForSessionTimeout = ["/mq/"]
+
+    server.whitelistUrlForSessionTimeout = (url) => {
+        if(url.startsWith("/")){
+            skippedUrlsForSessionTimeout.push(url);
+        } else {
+            throw new Error(`Whitelisting invalid URL for session timeout: ${url}. It should start with /`);
+        }
+    };
+
+    server.whitelistUrl = (url) => {
+        if(url.startsWith("/")){
+            urlsToSkip.push(url);
+        } else {
+            throw new Error(`Whitelisting invalid URL: ${url}. It should start with /`);
+        }
+    };
 
     const WebClient = require("./WebClient");
     const webClient = new WebClient(oauthConfig);
@@ -8959,7 +8976,8 @@ function OAuthMiddleware(server) {
 
                 util.printDebugLog("SSODetectedId", SSODetectedId);
                 req.headers["user-id"] = SSODetectedId;
-                if (url.includes("/mq/")) {
+                const canSkipUrlForSessionTimeout = skippedUrlsForSessionTimeout.some((urlToSkip) => url.includes(urlToSkip));
+                if (canSkipUrlForSessionTimeout) {
                     return next();
                 }
                 util.updateAccessTokenExpiration(accessTokenCookie, (err, encryptedAccessToken) => {
