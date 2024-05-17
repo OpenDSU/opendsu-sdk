@@ -1,6 +1,6 @@
 {
     "name": "opendsu-sdk",
-    "version": "2.0.8",
+    "version": "2.0.9",
     "description": "This repo is meant to be used for opendsu sdk development.",
     "scripts": {
         "dev-install": "node ./bin/scripts/mkDevEnv.js && npm install",
