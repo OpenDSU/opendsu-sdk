@@ -23820,7 +23820,7 @@ function SeedSSI(enclave, identifier) {
             hint = undefined;
         }
 
-        if (typeof privateKey === "undefined") {
+        if (!privateKey) {
             cryptoRegistry.getKeyPairGenerator(self)().generateKeyPair((err, publicKey, privateKey) => {
                 if (err) {
                     return OpenDSUSafeCallback(callback)(createOpenDSUErrorWrapper(`Failed generate private/public key pair`, err));
@@ -48406,6 +48406,7 @@ module.exports = {
 
 },{"../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","./impl/CloudEnclaveClient":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/CloudEnclaveClient.js","./impl/LightDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/LightDBEnclave.js","./impl/MemoryEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/MemoryEnclave.js","./impl/VersionlessDSUEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/VersionlessDSUEnclave.js","./impl/WalletDBEnclave":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/impl/WalletDBEnclave.js","./mixins/Enclave_Mixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js","./mixins/ProxyMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/ProxyMixin.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/Enclave_Mixin.js":[function(require,module,exports){
 const constants = require("../constants/constants");
+const {createOpenDSUErrorWrapper} = require("../../error");
 
 function Enclave_Mixin(target, did) {
     const openDSU = require("opendsu");
@@ -48425,14 +48426,19 @@ function Enclave_Mixin(target, did) {
                 return callback(err);
             }
 
-            const privateKeysAsBuff = record.privateKeys.map(privateKey => {
+            let privateKeysAsBuffArr = record.privateKeys.map(privateKey => {
                 if (privateKey) {
                     return $$.Buffer.from(privateKey)
                 }
 
                 return privateKey;
             });
-            callback(undefined, privateKeysAsBuff);
+            privateKeysAsBuffArr = privateKeysAsBuffArr.filter(privateKey => privateKey);
+            if (privateKeysAsBuffArr.length === 0) {
+                return callback(Error(`No private keys found for DID ${did}`));
+            }
+
+            callback(undefined, privateKeysAsBuffArr);
         });
     };
 
@@ -48551,7 +48557,7 @@ function Enclave_Mixin(target, did) {
             callback = encryptedRecord;
             encryptedRecord = plainRecord;
         }
-        if(!encryptedRecord){
+        if (!encryptedRecord) {
             encryptedRecord = plainRecord;
         }
         target.storageDB.insertRecord(table, pk, encryptedRecord, callback);
@@ -48776,7 +48782,7 @@ function Enclave_Mixin(target, did) {
                 }
                 target.storageDB.insertRecord(constants.TABLE_NAMES.KEY_SSIS, keySSIIdentifier, {keySSI: keySSIIdentifier}, (err) => {
                     if (err) {
-                        return target.storageDB.cancelBatch(batchId,(err) => {
+                        return target.storageDB.cancelBatch(batchId, (err) => {
                             if (err) {
                                 return callback(err);
                             }
@@ -48875,7 +48881,11 @@ function Enclave_Mixin(target, did) {
             storedDID = forDID;
         }
         if (!Array.isArray(privateKeys)) {
-            privateKeys = [privateKeys];
+            return callback(Error("Private keys should be an array"));
+        }
+        // if array contains null or undefined, throw error
+        if (privateKeys.some(key => !key)) {
+            return callback(Error("Private key cannot be null or undefined"));
         }
 
         target.storageDB.getRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, storedDID.getIdentifier(), (err, res) => {
@@ -48899,9 +48909,11 @@ function Enclave_Mixin(target, did) {
                 })
             }
 
+            // if array contains null or undefined, remove them
             privateKeys.forEach(privateKey => {
                 res.privateKeys.push(privateKey);
             })
+            res.privateKeys = res.privateKeys.filter(key => key);
             target.storageDB.startOrAttachBatch((err, batchId) => {
                 if (err) {
                     return callback(err);
@@ -48923,7 +48935,10 @@ function Enclave_Mixin(target, did) {
     }
 
     target.addPrivateKeyForDID = (forDid, didDocument, privateKey, callback) => {
-        const privateKeyObj = {privateKeys: [privateKey]}
+        if (!privateKey) {
+            return callback(Error("No private key provided"));
+        }
+        const privateKeyObj = {privateKeys: [privateKey]};
         target.storageDB.getRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, didDocument.getIdentifier(), (err, res) => {
             if (err || !res) {
                 return target.storageDB.startOrAttachBatch((err, batchId) => {
@@ -48943,15 +48958,17 @@ function Enclave_Mixin(target, did) {
                 })
             }
 
+            // remove null or undefined from the array
             res.privateKeys.push(privateKey);
+            res.privateKeys = res.privateKeys.filter(key => key);
             target.storageDB.startOrAttachBatch((err, batchId) => {
                 if (err) {
                     return callback(err);
                 }
                 target.storageDB.updateRecord(constants.TABLE_NAMES.DIDS_PRIVATE_KEYS, didDocument.getIdentifier(), res, (err) => {
                     if (err) {
-                        return target.storageDB.cancelBatch(batchId,(e) => {
-                            if(e){
+                        return target.storageDB.cancelBatch(batchId, (e) => {
+                            if (e) {
                                 //this error is not that relevant... the updateRecord is more important...
                                 console.log(e);
                             }
@@ -49058,18 +49075,27 @@ function Enclave_Mixin(target, did) {
             hash = didThatIsSigning;
             didThatIsSigning = forDID;
         }
+        if (!didThatIsSigning || typeof didThatIsSigning === "string") {
+            return callback(Error(`Invalid DID provided: ${didThatIsSigning}`));
+        }
 
-        const privateKeys = didThatIsSigning.getPrivateKeys();
-        if (typeof privateKeys[privateKeys.length - 1] === "undefined") {
+        let privateKeys;
+        try {
+            privateKeys = didThatIsSigning.getPrivateKeys();
+        } catch (e) {
+            // ignored and handled below
+        }
+
+        if (!privateKeys) {
             return getPrivateInfoForDID(didThatIsSigning.getIdentifier(), async (err, privateKeys) => {
                 if (err) {
                     return callback(createOpenDSUErrorWrapper(`Failed to get private info for did ${didThatIsSigning.getIdentifier()}`, err));
                 }
 
                 let signature;
-                try{
+                try {
                     signature = CryptoSkills.applySkill(didThatIsSigning.getMethodName(), CryptoSkills.NAMES.SIGN, hash, privateKeys[privateKeys.length - 1]);
-                }catch(err){
+                } catch (err) {
                     return callback(err);
                 }
                 callback(undefined, signature);
@@ -49077,9 +49103,9 @@ function Enclave_Mixin(target, did) {
         }
 
         let signature;
-        try{
+        try {
             signature = CryptoSkills.applySkill(didThatIsSigning.getMethodName(), CryptoSkills.NAMES.SIGN, hash, privateKeys[privateKeys.length - 1]);
-        }catch(err){
+        } catch (err) {
             return callback(err);
         }
         callback(undefined, signature);
@@ -49100,7 +49126,7 @@ function Enclave_Mixin(target, did) {
             const verificationResult = CryptoSkills.applySkill(didThatIsVerifying.getMethodName(), CryptoSkills.NAMES.VERIFY, hash, publicKey, signature);
             callback(undefined, verificationResult);
         });
-    }
+    };
 
     target.signForKeySSI = (forDID, keySSI, hash, callback) => {
         const __signHashForKeySSI = (keySSI, hash) => {
@@ -49128,7 +49154,7 @@ function Enclave_Mixin(target, did) {
                 capableOfSigningKeySSI.sign(hash, callback);
             })
         })
-    }
+    };
 
     target.encryptAES = (forDID, secretKeyAlias, message, AESParams, callback) => {
 
@@ -49148,11 +49174,9 @@ function Enclave_Mixin(target, did) {
             const encryptedMessage = pskEncryption.encrypt(message, keyRecord.secretKey, AESParams);
             callback(undefined, encryptedMessage);
         })
-
-    }
+    };
 
     target.decryptAES = (forDID, secretKeyAlias, encryptedMessage, AESParams, callback) => {
-
         if (typeof AESParams == "function") {
             callback = AESParams;
             AESParams = undefined;
@@ -49170,7 +49194,7 @@ function Enclave_Mixin(target, did) {
             callback(undefined, decryptedMessage);
         })
 
-    }
+    };
 
     target.encryptMessage = (forDID, didFrom, didTo, message, callback) => {
         if (typeof message === "function") {
@@ -49179,8 +49203,13 @@ function Enclave_Mixin(target, did) {
             didTo = didFrom;
             didFrom = forDID;
         }
-        const privateKeys = didFrom.getPrivateKeys();
-        if (typeof privateKeys[privateKeys.length - 1] === "undefined") {
+        let privateKeys;
+        try{
+            privateKeys = didFrom.getPrivateKeys();
+        }catch (e) {
+            // ignored and handled below
+        }
+        if (!privateKeys) {
             getPrivateInfoForDID(didFrom.getIdentifier(), (err, privateKeys) => {
                 if (err) {
                     return callback(createOpenDSUErrorWrapper(`Failed to get private info for did ${didFrom.getIdentifier()}`, err));
@@ -49191,7 +49220,7 @@ function Enclave_Mixin(target, did) {
         } else {
             CryptoSkills.applySkill(didFrom.getMethodName(), CryptoSkills.NAMES.ENCRYPT_MESSAGE, privateKeys, didFrom, didTo, message, callback);
         }
-    }
+    };
 
     target.decryptMessage = (forDID, didTo, encryptedMessage, callback) => {
         if (typeof encryptedMessage === "function") {
@@ -49200,8 +49229,13 @@ function Enclave_Mixin(target, did) {
             didTo = forDID;
         }
 
-        const privateKeys = didTo.getPrivateKeys();
-        if (typeof privateKeys[privateKeys.length - 1] === "undefined") {
+        let privateKeys;
+        try{
+            privateKeys = didTo.getPrivateKeys();
+        }catch (e) {
+            // ignored and handled below
+        }
+        if (!privateKeys) {
             getPrivateInfoForDID(didTo.getIdentifier(), (err, privateKeys) => {
                 if (err) {
                     return callback(createOpenDSUErrorWrapper(`Failed to get private info for did ${didTo.getIdentifier()}`, err));
@@ -49230,7 +49264,7 @@ function Enclave_Mixin(target, did) {
                 return keySSISpace[fnName](...args);
             }
         }
-    })
+    });
 
     // expose w3cdid APIs
     Object.keys(w3cDID).forEach(fnName => {
@@ -49242,7 +49276,7 @@ function Enclave_Mixin(target, did) {
                 w3cDID[fnName](...args);
             }
         }
-    })
+    });
 
     const resolverAPI = openDSU.loadAPI("resolver");
 
@@ -49297,7 +49331,7 @@ function Enclave_Mixin(target, did) {
                 resolverAPI.createDSU(keySSI, options, callback);
             })
         }
-    }
+    };
 
     target.loadDSU = (forDID, keySSI, options, callback) => {
         if (typeof options === "function") {
@@ -49326,10 +49360,10 @@ function Enclave_Mixin(target, did) {
 
             callback(undefined, dsu);
         })
-    }
+    };
 
     target.loadDSUVersionBasedOnVersionNumber = (forDID, keySSI, versionNumber, callback) => {
-        if(typeof versionNumber === "function"){
+        if (typeof versionNumber === "function") {
             callback = versionNumber;
             versionNumber = keySSI;
             keySSI = forDID;
@@ -49342,10 +49376,10 @@ function Enclave_Mixin(target, did) {
 
             target.loadDSUVersion(forDID, keySSI, versionHashLink, callback);
         })
-    }
+    };
 
     target.loadDSUVersion = (forDID, keySSI, versionHashlink, options, callback) => {
-        if(typeof versionHashlink === "function"){
+        if (typeof versionHashlink === "function") {
             callback = versionHashlink;
             versionHashlink = keySSI;
             keySSI = forDID;
@@ -49367,7 +49401,7 @@ function Enclave_Mixin(target, did) {
 
         options.versionHashlink = versionHashlink;
         target.loadDSU(forDID, keySSI, options, callback);
-    }
+    };
 
     target.loadDSURecoveryMode = (forDID, ssi, contentRecoveryFnc, callback) => {
         const defaultOptions = {recoveryMode: true};
@@ -49378,12 +49412,12 @@ function Enclave_Mixin(target, did) {
 
         options = Object.assign(defaultOptions, options);
         target.loadDSU(forDID, ssi, options, callback);
-    }
+    };
 }
 
 module.exports = Enclave_Mixin;
 
-},{"../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../KeySSIMappings/PathKeySSIMapping/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/PathKeySSIMapping/PathKeyMapping.js","../KeySSIMappings/PathKeySSIMapping/WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/PathKeySSIMapping/WalletDBEnclaveHandler.js","../constants/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/constants.js","opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/ProxyMixin.js":[function(require,module,exports){
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","../KeySSIMappings/PathKeySSIMapping/PathKeyMapping":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/PathKeySSIMapping/PathKeyMapping.js","../KeySSIMappings/PathKeySSIMapping/WalletDBEnclaveHandler":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/KeySSIMappings/PathKeySSIMapping/WalletDBEnclaveHandler.js","../constants/constants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/constants.js","opendsu":"opendsu","pskcrypto":"pskcrypto","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/mixins/ProxyMixin.js":[function(require,module,exports){
 (function (Buffer){(function (){
 const {createOpenDSUErrorWrapper} = require("../../error");
 
@@ -54690,6 +54724,7 @@ module.exports = {
 
 },{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/getURLForSsappContext":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/getURLForSsappContext.js","./InMemoryMainDSU":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/InMemoryMainDSU.js","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/sc/lib/SecurityContext.js":[function(require,module,exports){
 const constants = require("../../moduleConstants");
+const {createOpenDSUErrorWrapper} = require("../../error");
 
 function SecurityContext(target, PIN) {
     target = target || this;
@@ -54735,8 +54770,7 @@ function SecurityContext(target, PIN) {
                 keySSIApi.parse(sharedEnclaveKeySSI);
                 sharedEnclave = enclaveAPI.createEnclave(sharedEnclaveType, sharedEnclaveKeySSI);
                 return sharedEnclave;
-            }
-            catch (err) {
+            } catch (err) {
                 pinNeeded = true;
                 sharedEnclave = new Promise((res) => {
                     target.on("pinSet", async () => {
@@ -54753,8 +54787,7 @@ function SecurityContext(target, PIN) {
             const keySSI = crypto.encodeBase58(decryptedKey);
             try {
                 sharedEnclave = enclaveAPI.createEnclave(sharedEnclaveType, keySSI);
-            }
-            catch (e) {
+            } catch (e) {
                 throw Error(e);
             }
         }
@@ -54820,7 +54853,12 @@ function SecurityContext(target, PIN) {
     }
 
     target.registerDID = (didDocument, callback) => {
-        let privateKeys = didDocument.getPrivateKeys();
+        let privateKeys;
+        try {
+            privateKeys = didDocument.getPrivateKeys();
+        } catch (e) {
+            return callback(createOpenDSUErrorWrapper(`Failed to save new private key and public key in security context`, e));
+        }
         if (!Array.isArray(privateKeys)) {
             privateKeys = [privateKeys]
         }
@@ -54996,8 +55034,7 @@ function SecurityContext(target, PIN) {
         return new Promise((res) => {
             if (initialised) {
                 res(pinNeeded);
-            }
-            else {
+            } else {
                 target.on("initialised", async () => {
                     res(pinNeeded)
                 })
@@ -55029,7 +55066,7 @@ function SecurityContext(target, PIN) {
 
 module.exports = SecurityContext;
 
-},{"../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/DSUStorage.js":[function(require,module,exports){
+},{"../../error":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/error/index.js","../../moduleConstants":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/moduleConstants.js","../../utils/BindAutoPendingFunctions":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/BindAutoPendingFunctions.js","../../utils/ObservableMixin":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/utils/ObservableMixin.js","opendsu":"opendsu","swarmutils":"swarmutils"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/storage/DSUStorage.js":[function(require,module,exports){
 const { fetch } = require("./utils");
 
 // helpers
@@ -56097,7 +56134,11 @@ function CryptographicSkillsMixin(target) {
 
     target.encryptMessage = (privateKeys, didFrom, didTo, message, callback) => {
         const senderSeedSSI = keySSISpace.createTemplateSeedSSI(didFrom.getDomain());
-        senderSeedSSI.initialize(didFrom.getDomain(), privateKeys[0]);
+        try {
+            senderSeedSSI.initialize(didFrom.getDomain(), privateKeys[privateKeys.length - 1]);
+        } catch (e) {
+            return callback(createOpenDSUErrorWrapper(`Failed to initialize seedSSI`, e));
+        }
 
         didTo.getPublicKey("raw", async (err, receiverPublicKey) => {
             if (err) {
@@ -56117,19 +56158,6 @@ function CryptographicSkillsMixin(target) {
                 callback(undefined, encryptedMessage);
             };
 
-            // let compatibleSSI;
-            // try {
-            //     compatibleSSI = await $$.promisify(publicKeySSI.generateCompatiblePowerfulKeySSI)();
-            // } catch (e) {
-            //     return callback(createOpenDSUErrorWrapper(`Failed to create compatible seed ssi`, e));
-            // }
-            //
-            // try {
-            //     await saveNewKeyPairInSC(didFrom, compatibleSSI);
-            // } catch (e) {
-            //     return callback(createOpenDSUErrorWrapper(`Failed to save compatible seed ssi`, e));
-            // }
-
             __encryptMessage(senderSeedSSI);
         });
     };
@@ -56137,13 +56165,21 @@ function CryptographicSkillsMixin(target) {
     target.decryptMessage = (privateKeys, didTo, encryptedMessage, callback) => {
         let decryptedMessageObj;
         const decryptMessageRecursively = (privateKeyIndex) => {
+            if(privateKeyIndex >= privateKeys.length){
+                return callback(createOpenDSUErrorWrapper(`Failed to decrypt message`, new Error("No private key available")));
+            }
             const privateKey = privateKeys[privateKeyIndex];
-            if (typeof privateKey === "undefined") {
-                return callback(createOpenDSUErrorWrapper(`Failed to decrypt message`, Error(`Private key is undefined`)));
+
+            if (!privateKey) {
+                return decryptMessageRecursively(privateKeyIndex + 1);
             }
 
             const receiverSeedSSI = keySSISpace.createTemplateSeedSSI(didTo.getDomain());
-            receiverSeedSSI.initialize(didTo.getDomain(), privateKey);
+            try {
+                receiverSeedSSI.initialize(didTo.getDomain(), privateKey);
+            } catch (e) {
+                return callback(createOpenDSUErrorWrapper(`Failed to initialize seedSSI`, e));
+            }
             try {
                 decryptedMessageObj = cryptoSpace.ecies_decrypt_ds(receiverSeedSSI, encryptedMessage);
             } catch (e) {
@@ -56587,7 +56623,7 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
 
     const WRITABLE_DSU_PATH = "writableDSU";
     const PUB_KEYS_PATH = "publicKeys";
-
+    let initialised = false;
     const generatePublicKey = async () => {
         let seedSSI;
         try {
@@ -56653,6 +56689,7 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
 
         target.finishInitialisation();
         target.dispatchEvent("initialised");
+        initialised = true;
     };
 
     let init = async () => {
@@ -56694,6 +56731,9 @@ function ConstDID_Document_Mixin(target, enclave, domain, name, isInitialisation
     }
 
     target.getPrivateKeys = () => {
+        if (!target.privateKey) {
+            throw Error(`Private key not available. DID init status: ${initialised}`);
+        }
         return [target.privateKey];
     };
 
@@ -57018,7 +57058,7 @@ function NameDID_Document(enclave, domain, name, isInitialisation, desiredPrivat
         return name;
     };
 
-    bindAutoPendingFunctions(this, ["init", "getIdentifier", "getName", "on", "off", "dispatchEvent", "removeAllObservers", "addPublicKey", "readMessage", "getDomain", "getHash"]);
+    bindAutoPendingFunctions(this, ["getPrivateKeys", "init", "getIdentifier", "getName", "on", "off", "dispatchEvent", "removeAllObservers", "addPublicKey", "readMessage", "getDomain", "getHash"]);
     this.init();
     return this;
 }
@@ -57773,7 +57813,13 @@ function we_createIdentity(enclave, didMethod, ...args) {
                 return callback(err);
             }
 
-            enclave.storeDID(didDocument, didDocument.getPrivateKeys(), err => callback(err, didDocument));
+            let privateKeys;
+            try {
+                privateKeys = didDocument.getPrivateKeys();
+            } catch (e) {
+                return callback(e);
+            }
+            enclave.storeDID(didDocument, privateKeys, err => callback(err, didDocument));
         });
     }
     if (typeof enclave === "undefined") {
@@ -57836,7 +57882,7 @@ function registerDIDMethod(method, implementation) {
 
 function generateSystemDIDFromSecret(secret) {
     getKeyDIDFromSecret(secret, (err, didDocument) => {
-        if(err){
+        if (err) {
             console.error("Failed to create the system DID", err);
             throw err;
         }
@@ -57844,6 +57890,7 @@ function generateSystemDIDFromSecret(secret) {
         $$.SYSTEM_IDENTIFIER = didDocument.getIdentifier();
     });
 }
+
 function initSystemDID() {
     if (process.env.SSO_SECRETS_ENCRYPTION_KEY) {
         generateSystemDIDFromSecret(process.env.SSO_SECRETS_ENCRYPTION_KEY);
