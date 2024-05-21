@@ -4439,7 +4439,7 @@ function SecretsService(serverRootFolder) {
         const filePath = getSecretFilePath(secretsContainerName);
         fs.readFile(filePath, async (err, secrets) => {
             if (err || !secrets) {
-                logger.error(`Failed to read file ${filePath}`);
+                logger.log(`Failed to read file ${filePath}`);
                 return callback(createError(404, `Failed to read file ${filePath}`));
             }
 
@@ -49082,6 +49082,9 @@ function Enclave_Mixin(target, did) {
         let privateKeys;
         try {
             privateKeys = didThatIsSigning.getPrivateKeys();
+            if(!Array.isArray(privateKeys) || !privateKeys.length){
+                privateKeys = undefined;
+            }
         } catch (e) {
             // ignored and handled below
         }
@@ -57261,7 +57264,7 @@ function SSIKeyDID_Document(enclave, isInitialisation, seedSSI) {
 
     this.getPrivateKeys = () => {
         if(typeof seedSSI === "undefined"){
-            return [];
+           throw Error("SeedSSI is not defined");
         }
         return [seedSSI.getPrivateKey()];
     };

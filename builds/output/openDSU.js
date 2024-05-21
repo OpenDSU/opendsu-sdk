@@ -28142,6 +28142,9 @@ function Enclave_Mixin(target, did) {
         let privateKeys;
         try {
             privateKeys = didThatIsSigning.getPrivateKeys();
+            if(!Array.isArray(privateKeys) || !privateKeys.length){
+                privateKeys = undefined;
+            }
         } catch (e) {
             // ignored and handled below
         }
@@ -36321,7 +36324,7 @@ function SSIKeyDID_Document(enclave, isInitialisation, seedSSI) {
 
     this.getPrivateKeys = () => {
         if(typeof seedSSI === "undefined"){
-            return [];
+           throw Error("SeedSSI is not defined");
         }
         return [seedSSI.getPrivateKey()];
     };
