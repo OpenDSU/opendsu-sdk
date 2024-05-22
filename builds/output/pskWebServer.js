@@ -27741,19 +27741,20 @@ let filterOperationsMap = {
 }
 
 function LokiDb(rootFolder, autosaveInterval, adaptorConstructorFunction) {
+    const logger = $$.getLogger("LokiDb", "lokiDb");
     const openDSU = require("opendsu");
     const aclAPI = require("acl-magic");
     const keySSISpace = openDSU.loadAPI("keyssi")
     const w3cDID = openDSU.loadAPI("w3cdid")
     const utils = openDSU.loadAPI("utils");
     const CryptoSkills = w3cDID.CryptographicSkills;
-    const logger = $$.getLogger("LokiEnclaveFacade", "lokiEnclaveFacade");
     const KEY_SSIS_TABLE = "keyssis";
     const SEED_SSIS_TABLE = "seedssis";
     const DIDS_PRIVATE_KEYS = "dids_private";
-    const AUTOSAVE_INTERVAL = 10000;
+    const AUTOSAVE_INTERVAL = 5000;
     const adapter = adaptorConstructorFunction === undefined ? new Adaptors.STRUCTURED() : new adaptorConstructorFunction();
 
+    logger.info(`Initializing Loki database ${rootFolder}`);
     autosaveInterval = autosaveInterval || AUTOSAVE_INTERVAL;
     if (typeof rootFolder === "undefined") {
         throw Error("Root folder was not specified for LokiEnclaveFacade");
@@ -27768,6 +27769,7 @@ function LokiDb(rootFolder, autosaveInterval, adaptorConstructorFunction) {
             if (err) {
                 logger.error(`Failed to save db on disk.`, err)
             }
+            logger.info(`Loki database ${rootFolder} saved on disk.`);
         }
     });
 
@@ -27783,8 +27785,20 @@ function LokiDb(rootFolder, autosaveInterval, adaptorConstructorFunction) {
     }
 
     this.refresh = function (callback) {
+        logger.info(`Refreshing database ${rootFolder}`);
         db.loadDatabaseInternal(undefined, callback);
     }
+
+    this.saveDatabase = function (callback) {
+        logger.info(`Saving Loki database ${rootFolder}`);
+        db.saveDatabase((err)=>{
+            if(err){
+                return callback(err);
+            }
+            callback(undefined, {message: `Database ${rootFolder} saved`});
+        });
+    }
+
     const WRITE_ACCESS = "write";
     const READ_ACCESS = "read";
     const WILDCARD = "*";
@@ -27900,7 +27914,7 @@ function LokiDb(rootFolder, autosaveInterval, adaptorConstructorFunction) {
 
         if (foundRecord) {
             let error = `A record with pk ${pk} already exists in ${tableName}`
-            console.log(error);
+            logger.log(error);
             return callback(createOpenDSUErrorWrapper(error));
         }
         let result;
@@ -27910,7 +27924,7 @@ function LokiDb(rootFolder, autosaveInterval, adaptorConstructorFunction) {
                 "__timestamp": record.__timestamp || Date.now()
             });
         } catch (err) {
-            console.log(`Failed to insert ${pk} into table ${tableName}`, err);
+            logger.log(`Failed to insert ${pk} into table ${tableName}`, err);
             return callback(createOpenDSUErrorWrapper(` Could not insert record in table ${tableName} `, err))
         }
 
@@ -28398,11 +28412,12 @@ module.exports = LokiDb;
 
 },{"../../node_modules/is-buffer/index.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/node_modules/is-buffer/index.js","./adaptors.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/loki-enclave-facade/adaptors.js","./lib/lokijs/src/lokijs.js":"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/loki-enclave-facade/lib/lokijs/src/lokijs.js","acl-magic":"acl-magic","opendsu":"opendsu"}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/loki-enclave-facade/LokiEnclaveFacade.js":[function(require,module,exports){
 function LokiEnclaveFacade(rootFolder, autosaveInterval, adaptorConstructorFunction) {
+    const logger = $$.getLogger("LokiEnclaveFacade", "LokiEnclaveFacade.js");
     const LokiDb = require("./LokiDb");
     const openDSU = require("opendsu");
     const aclAPI = require("acl-magic");
     const utils = openDSU.loadAPI("utils");
-
+    logger.info("Creating LokiEnclaveFacade instance");
     const EnclaveMixin = openDSU.loadAPI("enclave").EnclaveMixin;
     EnclaveMixin(this);
 
@@ -28410,8 +28425,12 @@ function LokiEnclaveFacade(rootFolder, autosaveInterval, adaptorConstructorFunct
         return await this.storageDB.close();
     }
 
-    this.refresh = function (callback) {
+    this.refresh =  (callback) => {
         this.storageDB.refresh(callback);
+    }
+
+    this.saveDatabase =  (forDID, callback) => {
+        this.storageDB.saveDatabase(callback);
     }
 
     this.refreshAsync =  () => {
@@ -47499,7 +47518,8 @@ module.exports = {
     ENCRYPT_MESSAGE: "encryptMessage",
     DECRYPT_MESSAGE: "decryptMessage",
     GET_PRIVATE_INFO_FOR_DID:"getPrivateInfoForDID",
-    GET_COLLECTIONS: "getCollections"
+    GET_COLLECTIONS: "getCollections",
+    SAVE_DATABASE: "saveDatabase"
 }
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/constants.js":[function(require,module,exports){
 module.exports = {
@@ -49459,8 +49479,12 @@ function ProxyMixin(target) {
         target.__putCommandObject(commandNames.HAS_EXECUTION_ACCESS, forDID, callback);
     }
 
-    target.getCollections = (callback) => {
-        target.__putCommandObject(commandNames.GET_COLLECTIONS, callback);
+    target.getCollections = (forDID, callback) => {
+        target.__putCommandObject(commandNames.GET_COLLECTIONS, forDID, callback);
+    }
+
+    target.saveDatabase = (forDID, callback) => {
+        target.__putCommandObject(commandNames.SAVE_DATABASE, forDID, callback);
     }
 
     target.insertRecord = (forDID, table, pk, plainRecord, encryptedRecord, callback) => {

@@ -26681,7 +26681,8 @@ module.exports = {
     ENCRYPT_MESSAGE: "encryptMessage",
     DECRYPT_MESSAGE: "decryptMessage",
     GET_PRIVATE_INFO_FOR_DID:"getPrivateInfoForDID",
-    GET_COLLECTIONS: "getCollections"
+    GET_COLLECTIONS: "getCollections",
+    SAVE_DATABASE: "saveDatabase"
 }
 },{}],"/home/runner/work/opendsu-sdk/opendsu-sdk/modules/opendsu/enclave/constants/constants.js":[function(require,module,exports){
 module.exports = {
@@ -28644,8 +28645,12 @@ function ProxyMixin(target) {
         target.__putCommandObject(commandNames.HAS_EXECUTION_ACCESS, forDID, callback);
     }
 
-    target.getCollections = (callback) => {
-        target.__putCommandObject(commandNames.GET_COLLECTIONS, callback);
+    target.getCollections = (forDID, callback) => {
+        target.__putCommandObject(commandNames.GET_COLLECTIONS, forDID, callback);
+    }
+
+    target.saveDatabase = (forDID, callback) => {
+        target.__putCommandObject(commandNames.SAVE_DATABASE, forDID, callback);
     }
 
     target.insertRecord = (forDID, table, pk, plainRecord, encryptedRecord, callback) => {
