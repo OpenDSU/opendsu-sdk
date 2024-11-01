@@ -7,6 +7,29 @@ require(path.join(__dirname, '../../../builds/output/pskWebServer.js'));
 const logger = $$.getLogger("Launcher", "logger");
 
 const fs = require('fs');
+
+const cluster = require("cluster");
+
+if (cluster.isPrimary) {
+    function logMemoryUsage() {
+        setInterval(() => {
+            const memoryUsage = process.memoryUsage();
+            const formattedMemoryUsage = {
+                timestamp: new Date().toISOString(),
+                rss: (memoryUsage.rss / (1024 * 1024)).toFixed(2) + ' MB',
+                heapTotal: (memoryUsage.heapTotal / (1024 * 1024)).toFixed(2) + ' MB',
+                heapUsed: (memoryUsage.heapUsed / (1024 * 1024)).toFixed(2) + ' MB',
+                external: (memoryUsage.external / (1024 * 1024)).toFixed(2) + ' MB',
+                arrayBuffers: (memoryUsage.arrayBuffers / (1024 * 1024)).toFixed(2) + ' MB'
+            };
+
+            console.info(0x666, formattedMemoryUsage);
+        }, 60000);
+    }
+
+    logMemoryUsage();
+}
+
 path = require("swarmutils").path;
 const API_HUB = require('apihub');
 
@@ -20,7 +43,6 @@ if (!process.env.PSK_CONFIG_LOCATION) {
 
 let config = API_HUB.getServerConfig();
 
-const cluster = require("cluster");
 const {cpus} = require("os");
 const numCPUs = config.workers || 1 || cpus().length;
 
