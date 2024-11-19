@@ -82,6 +82,10 @@
       "src": "https://github.com/opendsu/apihub.git"
     },
     {
+      "name": "apihub/http-wrapper",
+      "src": "https://github.com/opendsu/http-wrapper.git"
+    },
+    {
       "name": "psk-dbf",
       "src": "https://github.com/opendsu/psk-dbf.git"
     },
