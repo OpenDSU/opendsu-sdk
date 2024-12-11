@@ -98,6 +98,10 @@
       "src": "https://github.com/OpenDSU/LokiEnclaveFacade.git"
     },
     {
+      "name": "lightDB-sql-adapter",
+      "src": "https://github.com/OpenDSU/lightDB-sql-adapter.git"
+    },
+    {
       "name": "ssapp-middleware",
       "src": "https://github.com/opendsu/ssapp-middleware.git"
     },
