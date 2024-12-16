@@ -18,7 +18,7 @@
     "autoLoad": true,
     "bundleExternal": true
   },
-  "testsRuntime": "overwrite-require, opendsu,  acl-magic, cloud-enclave, fast-svd, pskcrypto, psk-cache, double-check, swarmutils, queue, soundpubsub, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, syndicate, apihub, loki-enclave-facade",
+  "testsRuntime": "overwrite-require, opendsu, lightDB-sql-adapter, acl-magic, cloud-enclave, fast-svd, pskcrypto, psk-cache, double-check, swarmutils, queue, soundpubsub, key-ssi-resolver, buffer-crc32, bar, bar-fs-adapter, syndicate, apihub, loki-enclave-facade",
   "bindableModel": {
     "deps": "overwrite-require, queue, soundpubsub, psk-bindable-model",
     "exportedEsModule": "psk-bindable-model"
