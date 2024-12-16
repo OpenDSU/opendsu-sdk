@@ -5,13 +5,6 @@
     "bundleExternal": false,
     "sourceMap": false
   },
-  "nodeBoot": {
-    "deps": "opendsu/bootScripts/NodeThreadWorkerBootScript:NodeThreadWorkerBootScript, opendsu, overwrite-require, key-ssi-resolver, psk-cache, fast-svd, pskcrypto, bar, swarmutils, bar-fs-adapter",
-    "autoLoad": true,
-    "bundleExternal": false,
-    "exclude": "psklogger",
-    "bare": true
-  },
   "loaderBoot": {
     "deps": "overwrite-require, opendsu",
     "bare": false,
@@ -22,12 +15,6 @@
   "bindableModel": {
     "deps": "overwrite-require, queue, soundpubsub, psk-bindable-model",
     "exportedEsModule": "psk-bindable-model"
-  },
-  "iframeBoot": {
-    "deps": "opendsu/bootScripts/browser/iframeBoot:iframeBoot, opendsu, swarmutils, pskcrypto, pskcrypto:crypto",
-    "autoLoad": true,
-    "bundleExternal": true,
-    "exclude": "psklogger"
   },
   "versionLessBoot": {
     "deps": "opendsu/bootScripts/browser/versionless:versionLessBoot, opendsu, fast-svd, pskcrypto, pskcrypto:crypto",
