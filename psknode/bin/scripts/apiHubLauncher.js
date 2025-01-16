@@ -107,6 +107,7 @@ function launch() {
             const storage = process.env.LIGHT_DB_STORAGE || config.lightDBStorage || path.join(rootFolder, "external-volume/lightDB");
             config.lightDBStorage = storage;
             config.lightDBPort = ligthDBPort;
+            config.sqlConfig = process.env.SQL_CONFIG;
             createLightDBServerInstance(config, (err) => {
                 if (err) {
                     logger.error(`Failed to start LightDB instance`);
