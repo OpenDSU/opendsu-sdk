@@ -135,6 +135,32 @@ const Tir = function () {
         return rest;
     };
 
+    this.launchConfigurableApiHubTestNodeAsync = async (config) => {
+        if (config && typeof config !== "object") {
+            throw new Error("Invalid config specified");
+        }
+        config = config || {};
+
+        await this.launchConfigurableLightDBServerTestNodeAsync(config);
+        const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
+        const {node, ...rest} = await apiHubTestNodeLauncher.launchAsync();
+        virtualMQNode = node;
+        return rest;
+    };
+
+    this.launchApiHubTestNodeAsync = async (config) => {
+        if (config && typeof config !== "object") {
+            throw new Error("Invalid config specified");
+        }
+        config = config || {};
+
+        await this.launchConfigurableLightDBServerTestNodeAsync(config);
+        const apiHubTestNodeLauncher = new ApiHubTestNodeLauncher(config);
+        let res = await apiHubTestNodeLauncher.launchAsync();
+        virtualMQNode = res.node;
+        return res;
+    };
+
     this.launchCloudEnclaveAsync = async (rootFolder) => {
         return await this.launchConfigurableCloudEnclaveTestNodeAsync({rootFolder});
     }

@@ -120,7 +120,7 @@ function getBDNSEntries(options, nodeUrl, validators) {
 async function createApiHubInstanceAsync(...args) {
     const pskApiHub = require("apihub");
     logger.info("Starting apihub instance...", args);
-    return $$.promisify(pskApiHub.createInstance)(...args);
+    return pskApiHub.createInstance(...args);
 }
 
 async function createApiHubInstanceWorkerAsync(apiHubOptions) {
