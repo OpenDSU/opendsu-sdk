@@ -86,6 +86,10 @@
       "src": "https://github.com/opendsu/http-wrapper.git"
     },
     {
+      "name": "apihub/serverlessAPI",
+      "src": "https://github.com/opendsu/serverlessAPI.git"
+    },
+    {
       "name": "psk-dbf",
       "src": "https://github.com/opendsu/psk-dbf.git"
     },
@@ -115,6 +119,15 @@
         {
           "type": "remove",
           "target": "latest-change-set.txt"
+        }
+      ]
+    },
+    {
+      "name": "install serverlessAPI dependencies",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd modules/apihub/serverlessAPI && npm install"
         }
       ]
     },
