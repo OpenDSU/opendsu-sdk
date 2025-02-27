@@ -44,8 +44,8 @@ if (!process.env.PSK_CONFIG_LOCATION) {
 let config = API_HUB.getServerConfig();
 
 const {cpus} = require("os");
-const numCPUs = config.workers || 1 || cpus().length;
-
+const numCPUs = config.workers || cpus().length;
+logger.info("Starting in cluster mode with", numCPUs, "workers");
 async function testAndExecuteMigrations() {
     if (!cluster.isPrimary) {
         return;
