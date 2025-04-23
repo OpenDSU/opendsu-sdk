@@ -1,6 +1,7 @@
 {
   "testDirs": [
     "./tests",
-    "./modules/opendsu/tests"
+    "./modules/opendsu/tests",
+    "./modules/apihub/tests/serverlessAPI"
   ]
 }
