@@ -7,7 +7,10 @@ require(path.join(__dirname, '../../../builds/output/pskWebServer.js'));
 const logger = $$.getLogger("Launcher", "logger");
 
 const fs = require('fs');
-
+const crypto = require("crypto");
+if (!process.env.SSO_SECRETS_ENCRYPTION_KEY || process.env.SSO_SECRETS_ENCRYPTION_KEY === "") {
+    process.env.SSO_SECRETS_ENCRYPTION_KEY = crypto.randomBytes(32).toString("base64");
+}
 const cluster = require("cluster");
 
 if (cluster.isPrimary) {
@@ -43,7 +46,7 @@ if (!process.env.PSK_CONFIG_LOCATION) {
 
 let config = API_HUB.getServerConfig();
 
-const {cpus} = require("os");
+const { cpus } = require("os");
 const numCPUs = config.workers || cpus().length;
 logger.info("Starting in cluster mode with", numCPUs, "workers");
 async function testAndExecuteMigrations() {
@@ -57,7 +60,7 @@ async function testAndExecuteMigrations() {
         logger.debug(`Reading the ${migrationsFolder} for any migrations that may be needed`);
         let migrationsFolderContent;
         try {
-            migrationsFolderContent = fs.readdirSync(migrationsFolder, {withFileTypes: true});
+            migrationsFolderContent = fs.readdirSync(migrationsFolder, { withFileTypes: true });
         } catch (e) {
             if (e.code === 'ENOENT') {
                 logger.info(`No migrations scripts found.`);
@@ -69,7 +72,7 @@ async function testAndExecuteMigrations() {
             logger.info(`No migrations scripts found.`);
         }
         migrationsFolderContent = migrationsFolderContent.sort((a, b) => {
-            return a.name.localeCompare(b.name, 'en', {numeric: true});
+            return a.name.localeCompare(b.name, 'en', { numeric: true });
         });
         for (let entry of migrationsFolderContent) {
             let name = entry.name;
@@ -103,7 +106,7 @@ function launch() {
     function startLightDBInstance(callback) {
         if (!process.env.LIGHT_DB_SERVER_ADDRESS) {
             const ligthDBPort = process.env.LIGHT_DB_PORT || 8081;
-            const {createLightDBServerInstance} = require("loki-enclave-facade");
+            const { createLightDBServerInstance } = require("loki-enclave-facade");
             const storage = process.env.LIGHT_DB_STORAGE || config.lightDBStorage || path.join(rootFolder, "external-volume/lightDB");
             config.lightDBStorage = storage;
             config.lightDBPort = ligthDBPort;
