@@ -9,6 +9,7 @@ const logger = $$.getLogger("Launcher", "logger");
 const fs = require('fs');
 const crypto = require("crypto");
 if (!process.env.SSO_SECRETS_ENCRYPTION_KEY || process.env.SSO_SECRETS_ENCRYPTION_KEY === "") {
+    console.warn("SSO_SECRETS_ENCRYPTION_KEY is not set, generating a random one");
     process.env.SSO_SECRETS_ENCRYPTION_KEY = crypto.randomBytes(32).toString("base64");
 }
 const cluster = require("cluster");
