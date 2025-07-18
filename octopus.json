@@ -30,6 +30,10 @@
       "src": "https://github.com/opendsu/opendsu-core.git"
     },
     {
+      "name": "opendsu/serverless",
+      "src": "https://github.com/opendsu/serverlessClient.git"
+    },
+    {
       "name": "cloud-enclave",
       "src": "https://github.com/opendsu/remoteEnclaveServer.git"
     },
