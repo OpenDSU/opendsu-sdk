@@ -183,58 +183,39 @@ jobs:
           git push origin "${{ github.event.inputs.tag_name }}"
       
       - name: Create GitHub Release in releases repo
-        id: create_release
-        uses: actions/create-release@v1
+        working-directory: opendsu-releases
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        with:
-          owner: OpenDSU
-          repo: opendsu-releases
-          tag_name: ${{ github.event.inputs.tag_name }}
-          release_name: ${{ github.event.inputs.release_name || github.event.inputs.tag_name }}
-          body: |
-            ${{ github.event.inputs.release_notes }}
-            
-            ## Contents
-            This release contains:
-            - Pre-built browserify bundles from `builds/output/`
-            - Launcher scripts for `npm run start`
-            - Minimal package.json with start scripts
-            - Configuration files (if applicable)
-            
-            ## Usage
-            
-            ### Clone and run
-            ```bash
-            git clone https://github.com/OpenDSU/opendsu-releases.git
-            cd opendsu-releases/latest
-            npm run start
-            ```
-            
-            ### Download archive
-            Download one of the archives below and extract to use the bundles.
-            
-            ## Source
-            Built from [OpenDSU/opendsu-sdk](https://github.com/OpenDSU/opendsu-sdk) commit: ${{ github.sha }}
-          draft: false
-          prerelease: false
-      
-      - name: Upload tar.gz archive to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: opendsu-releases/releases/${{ github.event.inputs.tag_name }}/opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.tar.gz
-          asset_name: opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.tar.gz
-          asset_content_type: application/gzip
-      
-      - name: Upload zip archive to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: opendsu-releases/releases/${{ github.event.inputs.tag_name }}/opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.zip
-          asset_name: opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.zip
-          asset_content_type: application/zip
+        run: |
+          # Create release using GitHub CLI
+          gh release create "${{ github.event.inputs.tag_name }}" \
+            --repo "OpenDSU/opendsu-releases" \
+            --title "${{ github.event.inputs.release_name || github.event.inputs.tag_name }}" \
+            --notes "$(cat <<'EOF'
+          ${{ github.event.inputs.release_notes }}
+          
+          ## Contents
+          This release contains:
+          - Pre-built browserify bundles from \`builds/output/\`
+          - Launcher scripts for \`npm run start\`
+          - Minimal package.json with start scripts
+          - Configuration files (if applicable)
+          
+          ## Usage
+          
+          ### Clone and run
+          \`\`\`bash
+          git clone https://github.com/OpenDSU/opendsu-releases.git
+          cd opendsu-releases/latest
+          npm run start
+          \`\`\`
+          
+          ### Download archive
+          Download one of the archives below and extract to use the bundles.
+          
+          ## Source
+          Built from [OpenDSU/opendsu-sdk](https://github.com/OpenDSU/opendsu-sdk) commit: ${{ github.sha }}
+          EOF
+          )" \
+            "releases/${{ github.event.inputs.tag_name }}/opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.tar.gz" \
+            "releases/${{ github.event.inputs.tag_name }}/opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.zip"
