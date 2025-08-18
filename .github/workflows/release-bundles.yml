@@ -53,18 +53,21 @@ jobs:
           find opendsu-releases -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
           
           # Create directories for the new release
-          mkdir -p opendsu-releases/builds/output
-          mkdir -p opendsu-releases/psknode/bin/scripts
+          mkdir -p opendsu-releases/bundles
           mkdir -p opendsu-releases/conf
       
       - name: Copy bundle files to releases repo
         run: |
-          # Copy all browserify bundles
-          cp -r opendsu-sdk/builds/output/* opendsu-releases/builds/output/
+          # Copy all browserify bundles to bundles directory
+          cp -r opendsu-sdk/builds/output/* opendsu-releases/bundles/
           
-          # Copy launcher scripts
-          cp opendsu-sdk/psknode/bin/scripts/apiHubLauncher.js opendsu-releases/psknode/bin/scripts/
-          cp opendsu-sdk/psknode/bin/scripts/enclaveLauncher.js opendsu-releases/psknode/bin/scripts/
+          # Copy launcher scripts directly to root
+          cp opendsu-sdk/psknode/bin/scripts/apiHubLauncher.js opendsu-releases/
+          cp opendsu-sdk/psknode/bin/scripts/enclaveLauncher.js opendsu-releases/
+          
+          # Update launcher scripts to use correct bundle paths
+          sed -i "s|builds/output/pskWebServer.js|bundles/pskWebServer.js|g" opendsu-releases/apiHubLauncher.js
+          sed -i "s|../../../builds/output/pskWebServer.js|bundles/pskWebServer.js|g" opendsu-releases/apiHubLauncher.js
           
           # Create minimal package.json for release
           cat > opendsu-releases/package.json << 'EOF'
@@ -73,8 +76,8 @@ jobs:
             "version": "${{ github.event.inputs.tag_name }}",
             "description": "OpenDSU SDK Bundle Release",
             "scripts": {
-              "start": "node ./psknode/bin/scripts/apiHubLauncher.js",
-              "cloud-enclave": "node ./psknode/bin/scripts/enclaveLauncher.js",
+              "start": "node apiHubLauncher.js",
+              "cloud-enclave": "node enclaveLauncher.js",
               "remote-enclave": "npm run cloud-enclave"
             },
             "dependencies": {}
@@ -128,8 +131,8 @@ jobs:
           ## Contents
           
           This repository contains:
-          - Pre-built browserify bundles in `builds/output/`
-          - Launcher scripts in `psknode/bin/scripts/`
+          - Pre-built browserify bundles in `bundles/`
+          - Launcher scripts in root directory
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
           
@@ -192,8 +195,8 @@ jobs:
           
           ## Contents
           This release contains:
-          - Pre-built browserify bundles from \`builds/output/\`
-          - Launcher scripts for \`npm run start\`
+          - Pre-built browserify bundles in \`bundles/\`
+          - Launcher scripts in root directory for \`npm run start\`
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
           
