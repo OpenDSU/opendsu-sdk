@@ -66,8 +66,21 @@ jobs:
           cp opendsu-sdk/psknode/bin/scripts/enclaveLauncher.js opendsu-releases/
           
           # Update launcher scripts to use correct bundle paths
-          sed -i "s|builds/output/pskWebServer.js|bundles/pskWebServer.js|g" opendsu-releases/apiHubLauncher.js
-          sed -i "s|../../../builds/output/pskWebServer.js|bundles/pskWebServer.js|g" opendsu-releases/apiHubLauncher.js
+          # Update apiHubLauncher.js
+          sed -i "s|'../../../builds/output/pskWebServer.js'|'./bundles/pskWebServer.js'|g" opendsu-releases/apiHubLauncher.js
+          sed -i "s|'./builds/output/pskWebServer.js'|'./bundles/pskWebServer.js'|g" opendsu-releases/apiHubLauncher.js
+          sed -i "s|\"../../../builds/output/pskWebServer.js\"|\"./bundles/pskWebServer.js\"|g" opendsu-releases/apiHubLauncher.js
+          sed -i "s|\"./builds/output/pskWebServer.js\"|\"./bundles/pskWebServer.js\"|g" opendsu-releases/apiHubLauncher.js
+          
+          # Update enclaveLauncher.js  
+          sed -i "s|'../../../builds/output/pskWebServer.js'|'./bundles/pskWebServer.js'|g" opendsu-releases/enclaveLauncher.js
+          sed -i "s|'./builds/output/pskWebServer.js'|'./bundles/pskWebServer.js'|g" opendsu-releases/enclaveLauncher.js
+          sed -i "s|\"../../../builds/output/pskWebServer.js\"|\"./bundles/pskWebServer.js\"|g" opendsu-releases/enclaveLauncher.js
+          sed -i "s|\"./builds/output/pskWebServer.js\"|\"./bundles/pskWebServer.js\"|g" opendsu-releases/enclaveLauncher.js
+          
+          # Also update PSK_ROOT_INSTALATION_FOLDER paths to point to current directory
+          sed -i "s|path.resolve(path.join(__dirname, \"../../../\"))|path.resolve(path.join(__dirname, \"../\"))|g" opendsu-releases/apiHubLauncher.js
+          sed -i "s|path.resolve(path.join(__dirname, \"../../../\"))|path.resolve(path.join(__dirname, \"../\"))|g" opendsu-releases/enclaveLauncher.js
           
           # Create minimal package.json for release
           cat > opendsu-releases/package.json << 'EOF'
