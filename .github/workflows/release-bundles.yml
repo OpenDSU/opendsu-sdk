@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: OpenDSU/opendsu-releases
-          token: ${{ secrets.RELEASES_REPO_TOKEN }}
+          token: ${{ secrets.GIT_TOKEN }}
           path: opendsu-releases
       
       - name: Create release structure
@@ -169,7 +169,7 @@ jobs:
       - name: Create GitHub Release in releases repo
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         with:
           owner: OpenDSU
           repo: opendsu-releases
