@@ -154,6 +154,9 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           
+          # Determine the default branch
+          DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+          
           # Add all changes
           git add -A
           
@@ -164,7 +167,7 @@ jobs:
           Release notes: ${{ github.event.inputs.release_notes }}"
           
           # Push to the releases repository
-          git push origin main
+          git push origin HEAD:${DEFAULT_BRANCH}
       
       - name: Create GitHub Release in releases repo
         uses: actions/create-release@v1
