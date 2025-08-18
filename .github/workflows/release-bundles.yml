@@ -1,0 +1,203 @@
+name: Release Bundles
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name for the release (e.g., v1.0.0)'
+        required: true
+        type: string
+      release_name:
+        description: 'Release name'
+        required: false
+        type: string
+      release_notes:
+        description: 'Release notes'
+        required: false
+        type: string
+        default: 'OpenDSU SDK bundle release'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout SDK code
+        uses: actions/checkout@v3
+        with:
+          path: opendsu-sdk
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        working-directory: opendsu-sdk
+        run: npm run dev-install
+      
+      - name: Build bundles
+        working-directory: opendsu-sdk
+        run: npm run build
+      
+      - name: Checkout releases repository
+        uses: actions/checkout@v3
+        with:
+          repository: OpenDSU/opendsu-releases
+          token: ${{ secrets.RELEASES_REPO_TOKEN }}
+          path: opendsu-releases
+      
+      - name: Create release structure
+        run: |
+          # Clean up existing latest directory if it exists
+          rm -rf opendsu-releases/latest
+          
+          # Create directories for the new release
+          mkdir -p opendsu-releases/latest/builds/output
+          mkdir -p opendsu-releases/latest/psknode/bin/scripts
+          mkdir -p opendsu-releases/latest/conf
+          
+          # Create versioned release directory
+          mkdir -p "opendsu-releases/releases/${{ github.event.inputs.tag_name }}"
+      
+      - name: Copy bundle files to releases repo
+        run: |
+          # Copy all browserify bundles
+          cp -r opendsu-sdk/builds/output/* opendsu-releases/latest/builds/output/
+          
+          # Copy launcher scripts
+          cp opendsu-sdk/psknode/bin/scripts/apiHubLauncher.js opendsu-releases/latest/psknode/bin/scripts/
+          cp opendsu-sdk/psknode/bin/scripts/enclaveLauncher.js opendsu-releases/latest/psknode/bin/scripts/
+          
+          # Create minimal package.json for release
+          cat > opendsu-releases/latest/package.json << 'EOF'
+          {
+            "name": "opendsu-sdk-release",
+            "version": "${{ github.event.inputs.tag_name }}",
+            "description": "OpenDSU SDK Bundle Release",
+            "scripts": {
+              "start": "node ./psknode/bin/scripts/apiHubLauncher.js",
+              "cloud-enclave": "node ./psknode/bin/scripts/enclaveLauncher.js",
+              "remote-enclave": "npm run cloud-enclave"
+            },
+            "dependencies": {}
+          }
+          EOF
+          
+          # Copy default conf directory if exists
+          if [ -d "opendsu-sdk/conf" ]; then
+            cp -r opendsu-sdk/conf/* opendsu-releases/latest/conf/ 2>/dev/null || true
+          fi
+          
+          # Create version info file
+          echo "${{ github.event.inputs.tag_name }}" > opendsu-releases/latest/VERSION
+          echo "Built on: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> opendsu-releases/latest/VERSION
+          echo "Source commit: ${{ github.sha }}" >> opendsu-releases/latest/VERSION
+      
+      - name: Create archives
+        run: |
+          cd opendsu-releases/latest
+          tar -czf "../releases/${{ github.event.inputs.tag_name }}/opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.tar.gz" .
+          zip -r "../releases/${{ github.event.inputs.tag_name }}/opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.zip" .
+          cd ../..
+      
+      - name: Create README for releases repo
+        run: |
+          cat > opendsu-releases/README.md << 'EOF'
+          # OpenDSU Releases
+          
+          This repository contains pre-built bundles for the OpenDSU SDK.
+          
+          ## Latest Release
+          
+          The `latest/` directory contains the most recent build of the OpenDSU SDK bundles.
+          
+          - Version: ${{ github.event.inputs.tag_name }}
+          - Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          ## Usage
+          
+          ### Using the latest bundles directly
+          
+          ```bash
+          git clone https://github.com/OpenDSU/opendsu-releases.git
+          cd opendsu-releases/latest
+          npm run start
+          ```
+          
+          ### Downloading a specific release
+          
+          Archives for each release are available in the `releases/` directory.
+          
+          ## Contents
+          
+          Each release contains:
+          - Pre-built browserify bundles in `builds/output/`
+          - Launcher scripts in `psknode/bin/scripts/`
+          - Minimal package.json with start scripts
+          - Configuration files (if applicable)
+          
+          ## Available Scripts
+          
+          - `npm run start` - Launch the API Hub
+          - `npm run cloud-enclave` - Launch cloud enclave
+          - `npm run remote-enclave` - Launch remote enclave
+          
+          ## Source
+          
+          These bundles are built from [OpenDSU/opendsu-sdk](https://github.com/OpenDSU/opendsu-sdk)
+          EOF
+      
+      - name: Commit and push to releases repo
+        working-directory: opendsu-releases
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          # Add all changes
+          git add -A
+          
+          # Commit with release information
+          git commit -m "Release ${{ github.event.inputs.tag_name }}
+          
+          Built from opendsu-sdk commit: ${{ github.sha }}
+          Release notes: ${{ github.event.inputs.release_notes }}"
+          
+          # Push to the releases repository
+          git push origin main
+      
+      - name: Create GitHub Release in releases repo
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+        with:
+          owner: OpenDSU
+          repo: opendsu-releases
+          tag_name: ${{ github.event.inputs.tag_name }}
+          release_name: ${{ github.event.inputs.release_name || github.event.inputs.tag_name }}
+          body: |
+            ${{ github.event.inputs.release_notes }}
+            
+            ## Contents
+            This release contains:
+            - Pre-built browserify bundles from `builds/output/`
+            - Launcher scripts for `npm run start`
+            - Minimal package.json with start scripts
+            - Configuration files (if applicable)
+            
+            ## Usage
+            
+            ### Clone and run
+            ```bash
+            git clone https://github.com/OpenDSU/opendsu-releases.git
+            cd opendsu-releases/latest
+            npm run start
+            ```
+            
+            ### Download archive
+            Download one of the archives below and extract to use the bundles.
+            
+            ## Source
+            Built from [OpenDSU/opendsu-sdk](https://github.com/OpenDSU/opendsu-sdk) commit: ${{ github.sha }}
+          draft: false
+          prerelease: false
