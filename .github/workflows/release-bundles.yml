@@ -154,8 +154,17 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           
-          # Determine the default branch
-          DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+          # Determine the default branch (try multiple methods)
+          if git show-ref --verify --quiet refs/remotes/origin/master; then
+            DEFAULT_BRANCH="master"
+          elif git show-ref --verify --quiet refs/remotes/origin/main; then
+            DEFAULT_BRANCH="main"
+          else
+            # Fallback: get the current branch
+            DEFAULT_BRANCH=$(git branch --show-current)
+          fi
+          
+          echo "Detected default branch: ${DEFAULT_BRANCH}"
           
           # Add all changes
           git add -A
