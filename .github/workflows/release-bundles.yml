@@ -175,10 +175,15 @@ jobs:
           Built from opendsu-sdk commit: ${{ github.sha }}
           Release notes: ${{ github.event.inputs.release_notes }}"
           
-          # Push to the releases repository
+          # Create and push tag
+          git tag -a "${{ github.event.inputs.tag_name }}" -m "Release ${{ github.event.inputs.tag_name }}"
+          
+          # Push commits and tags to the releases repository
           git push origin HEAD:${DEFAULT_BRANCH}
+          git push origin "${{ github.event.inputs.tag_name }}"
       
       - name: Create GitHub Release in releases repo
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
@@ -213,3 +218,23 @@ jobs:
             Built from [OpenDSU/opendsu-sdk](https://github.com/OpenDSU/opendsu-sdk) commit: ${{ github.sha }}
           draft: false
           prerelease: false
+      
+      - name: Upload tar.gz archive to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: opendsu-releases/releases/${{ github.event.inputs.tag_name }}/opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.tar.gz
+          asset_name: opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.tar.gz
+          asset_content_type: application/gzip
+      
+      - name: Upload zip archive to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: opendsu-releases/releases/${{ github.event.inputs.tag_name }}/opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.zip
+          asset_name: opendsu-sdk-bundles-${{ github.event.inputs.tag_name }}.zip
+          asset_content_type: application/zip
