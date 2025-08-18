@@ -54,7 +54,7 @@ jobs:
           
           # Create directories for the new release
           mkdir -p opendsu-releases/builds/output
-          mkdir -p opendsu-releases/psknode/scripts
+          mkdir -p opendsu-releases/psknode/bin/scripts
           mkdir -p opendsu-releases/conf
       
       - name: Copy bundle files to releases repo
@@ -62,18 +62,11 @@ jobs:
           # Copy all browserify bundles to builds/output directory
           cp -r opendsu-sdk/builds/output/* opendsu-releases/builds/output/
           
-          # Copy launcher scripts to psknode/scripts directory
-          cp opendsu-sdk/psknode/bin/scripts/apiHubLauncher.js opendsu-releases/psknode/scripts/
-          cp opendsu-sdk/psknode/bin/scripts/enclaveLauncher.js opendsu-releases/psknode/scripts/
+          # Copy launcher scripts to psknode/bin/scripts directory
+          cp opendsu-sdk/psknode/bin/scripts/apiHubLauncher.js opendsu-releases/psknode/bin/scripts/
+          cp opendsu-sdk/psknode/bin/scripts/enclaveLauncher.js opendsu-releases/psknode/bin/scripts/
           
-          # Update launcher scripts to use correct relative paths
-          # The scripts expect to be in psknode/scripts, so update path to builds
-          sed -i "s|../../../builds/output/pskWebServer.js|../../builds/output/pskWebServer.js|g" opendsu-releases/psknode/scripts/apiHubLauncher.js
-          sed -i "s|../../../builds/output/pskWebServer.js|../../builds/output/pskWebServer.js|g" opendsu-releases/psknode/scripts/enclaveLauncher.js
-          
-          # Update PSK_ROOT_INSTALATION_FOLDER to point to repository root
-          sed -i "s|path.resolve(path.join(__dirname, \"../../../\"))|path.resolve(path.join(__dirname, \"../../\"))|g" opendsu-releases/psknode/scripts/apiHubLauncher.js
-          sed -i "s|path.resolve(path.join(__dirname, \"../../../\"))|path.resolve(path.join(__dirname, \"../../\"))|g" opendsu-releases/psknode/scripts/enclaveLauncher.js
+          # No need to update paths - keeping the same structure as original
           
           # Create minimal package.json for release
           cat > opendsu-releases/package.json << 'EOF'
@@ -82,8 +75,8 @@ jobs:
             "version": "${{ github.event.inputs.tag_name }}",
             "description": "OpenDSU SDK Bundle Release",
             "scripts": {
-              "start": "node ./psknode/scripts/apiHubLauncher.js",
-              "cloud-enclave": "node ./psknode/scripts/enclaveLauncher.js",
+              "start": "node ./psknode/bin/scripts/apiHubLauncher.js",
+              "cloud-enclave": "node ./psknode/bin/scripts/enclaveLauncher.js",
               "remote-enclave": "npm run cloud-enclave"
             },
             "dependencies": {}
@@ -138,7 +131,7 @@ jobs:
           
           This repository contains:
           - Pre-built browserify bundles in `builds/output/`
-          - Launcher scripts in `psknode/scripts/`
+          - Launcher scripts in `psknode/bin/scripts/`
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
           
@@ -202,7 +195,7 @@ jobs:
           ## Contents
           This release contains:
           - Pre-built browserify bundles in \`builds/output/\`
-          - Launcher scripts in \`psknode/scripts/\` for \`npm run start\`
+          - Launcher scripts in \`psknode/bin/scripts/\` for \`npm run start\`
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
           
