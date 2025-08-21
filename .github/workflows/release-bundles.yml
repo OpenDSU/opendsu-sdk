@@ -37,40 +37,55 @@ jobs:
           else
             # Auto-increment patch version
             echo "No version provided, auto-incrementing patch version..."
+            echo "Checking existing tags in https://github.com/OpenDSU/opendsu-releases..."
             
-            # Clone the releases repository to check existing tags
-            git clone https://github.com/OpenDSU/opendsu-releases.git temp-releases 2>/dev/null || true
+            # Use GitHub API to check tags in the releases repository
+            # This is more reliable than cloning
+            LATEST_TAG=$(curl -s https://api.github.com/repos/OpenDSU/opendsu-releases/tags | \
+              grep '"name":' | \
+              grep -o '"v[0-9]*\.[0-9]*\.[0-9]*"' | \
+              tr -d '"' | \
+              sort -V | \
+              tail -n 1)
             
-            if [ -d "temp-releases" ]; then
-              cd temp-releases
-              git fetch --tags
-              LATEST_TAG=$(git tag -l 'v*' | sort -V | tail -n 1)
-              cd ..
-              rm -rf temp-releases
-            else
-              # Fallback to checking SDK tags
-              cd opendsu-sdk
-              git fetch --tags
-              LATEST_TAG=$(git tag -l 'v*' | sort -V | tail -n 1)
-              cd ..
+            if [ -z "$LATEST_TAG" ]; then
+              echo "No tags found via API, trying git clone as fallback..."
+              # Fallback to cloning the releases repository
+              git clone --depth 1 https://github.com/OpenDSU/opendsu-releases.git temp-releases 2>/dev/null || true
+              
+              if [ -d "temp-releases" ]; then
+                cd temp-releases
+                git fetch --tags --depth=1
+                LATEST_TAG=$(git tag -l 'v*' | sort -V | tail -n 1)
+                cd ..
+                rm -rf temp-releases
+              fi
             fi
             
             if [ -z "$LATEST_TAG" ]; then
               # No previous tags, start with v1.0.0
               VERSION="v1.0.0"
-              echo "No previous tags found, starting with $VERSION"
+              echo "No previous tags found in opendsu-releases repository"
+              echo "Starting with $VERSION"
             else
-              echo "Latest tag: $LATEST_TAG"
+              echo "Found latest tag in opendsu-releases: $LATEST_TAG"
               
               # Extract version numbers
               # Remove 'v' prefix and split into components
               VERSION_WITHOUT_V=${LATEST_TAG#v}
               IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_WITHOUT_V"
               
-              # Increment patch version
-              PATCH=$((PATCH + 1))
-              VERSION="v${MAJOR}.${MINOR}.${PATCH}"
-              echo "New version: $VERSION"
+              # Validate version components
+              if [ -z "$MAJOR" ] || [ -z "$MINOR" ] || [ -z "$PATCH" ]; then
+                echo "Error: Invalid version format in tag $LATEST_TAG"
+                echo "Using default version v1.0.0"
+                VERSION="v1.0.0"
+              else
+                # Increment patch version
+                PATCH=$((PATCH + 1))
+                VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+                echo "Auto-incremented version: $VERSION"
+              fi
             fi
           fi
           
