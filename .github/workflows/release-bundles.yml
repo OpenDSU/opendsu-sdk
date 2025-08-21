@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Tag name for the release (e.g., v1.0.0)'
-        required: true
+        description: 'Tag name for the release (e.g., v1.0.0). If not provided, will auto-increment patch version'
+        required: false
         type: string
       release_name:
         description: 'Release name'
@@ -26,6 +26,46 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: opendsu-sdk
+      
+      - name: Determine release version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            # Use provided version
+            VERSION="${{ github.event.inputs.tag_name }}"
+            echo "Using provided version: $VERSION"
+          else
+            # Auto-increment patch version
+            echo "No version provided, auto-incrementing patch version..."
+            
+            # Get the latest tag from the releases repository
+            cd opendsu-sdk
+            git fetch --tags
+            LATEST_TAG=$(git tag -l 'v*' | sort -V | tail -n 1)
+            
+            if [ -z "$LATEST_TAG" ]; then
+              # No previous tags, start with v1.0.0
+              VERSION="v1.0.0"
+              echo "No previous tags found, starting with $VERSION"
+            else
+              echo "Latest tag: $LATEST_TAG"
+              
+              # Extract version numbers
+              # Remove 'v' prefix and split into components
+              VERSION_WITHOUT_V=${LATEST_TAG#v}
+              IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_WITHOUT_V"
+              
+              # Increment patch version
+              PATCH=$((PATCH + 1))
+              VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+              echo "New version: $VERSION"
+            fi
+            cd ..
+          fi
+          
+          # Output the version for use in subsequent steps
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "::notice::Release version will be: $VERSION"
       
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -91,10 +131,10 @@ jobs:
           # No need to update paths - keeping the same structure as original
           
           # Create minimal package.json for release
-          cat > opendsu-releases/package.json << 'EOF'
+          cat > opendsu-releases/package.json << EOF
           {
             "name": "opendsu-sdk-release",
-            "version": "${{ github.event.inputs.tag_name }}",
+            "version": "${{ steps.version.outputs.version }}",
             "description": "OpenDSU SDK Bundle Release",
             "scripts": {
               "start": "node ./psknode/bin/scripts/apiHubLauncher.js",
@@ -120,7 +160,7 @@ jobs:
           fi
           
           # Create version info file
-          echo "${{ github.event.inputs.tag_name }}" > opendsu-releases/VERSION
+          echo "${{ steps.version.outputs.version }}" > opendsu-releases/VERSION
           echo "Built on: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> opendsu-releases/VERSION
           echo "Source commit: ${{ github.sha }}" >> opendsu-releases/VERSION
       
@@ -133,7 +173,7 @@ jobs:
           
           ## Current Release
           
-          - Version: ${{ github.event.inputs.tag_name }}
+          - Version: ${{ steps.version.outputs.version }}
           - Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           - Source: [OpenDSU/opendsu-sdk](https://github.com/OpenDSU/opendsu-sdk) commit ${{ github.sha }}
           
@@ -200,17 +240,17 @@ jobs:
           git add -A
           
           # Commit with release information
-          git commit -m "Release ${{ github.event.inputs.tag_name }}
+          git commit -m "Release ${{ steps.version.outputs.version }}
           
           Built from opendsu-sdk commit: ${{ github.sha }}
           Release notes: ${{ github.event.inputs.release_notes }}"
           
           # Create and push tag
-          git tag -a "${{ github.event.inputs.tag_name }}" -m "Release ${{ github.event.inputs.tag_name }}"
+          git tag -a "${{ steps.version.outputs.version }}" -m "Release ${{ steps.version.outputs.version }}"
           
           # Push commits and tags to the releases repository
           git push origin HEAD:${DEFAULT_BRANCH}
-          git push origin "${{ github.event.inputs.tag_name }}"
+          git push origin "${{ steps.version.outputs.version }}"
       
       - name: Create GitHub Release in releases repo
         working-directory: opendsu-releases
@@ -218,9 +258,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
           # Create release using GitHub CLI
-          gh release create "${{ github.event.inputs.tag_name }}" \
+          gh release create "${{ steps.version.outputs.version }}" \
             --repo "OpenDSU/opendsu-releases" \
-            --title "${{ github.event.inputs.release_name || github.event.inputs.tag_name }}" \
+            --title "${{ github.event.inputs.release_name || steps.version.outputs.version }}" \
             --notes "$(cat <<'EOF'
           ${{ github.event.inputs.release_notes }}
           
@@ -236,7 +276,7 @@ jobs:
           
           ### Clone and run this version
           \`\`\`bash
-          git clone https://github.com/OpenDSU/opendsu-releases.git --branch ${{ github.event.inputs.tag_name }}
+          git clone https://github.com/OpenDSU/opendsu-releases.git --branch ${{ steps.version.outputs.version }}
           cd opendsu-releases
           npm run start
           \`\`\`
@@ -245,7 +285,7 @@ jobs:
           \`\`\`bash
           git clone https://github.com/OpenDSU/opendsu-releases.git
           cd opendsu-releases
-          git checkout ${{ github.event.inputs.tag_name }}
+          git checkout ${{ steps.version.outputs.version }}
           npm run start
           \`\`\`
           
