@@ -123,6 +123,7 @@ jobs:
           mkdir -p opendsu-releases/psknode/bin/scripts
           mkdir -p opendsu-releases/conf
           mkdir -p opendsu-releases/modules/apihub/serverlessAPI
+          mkdir -p opendsu-releases/modules/apihub/http-wrapper
       
       - name: Copy bundle files to releases repo
         run: |
@@ -169,6 +170,24 @@ jobs:
             "description": "ServerlessAPI module for fork execution"
           }
           EOF
+          
+          # Copy http-wrapper module (required by serverlessAPI)
+          if [ -d "opendsu-sdk/modules/apihub/http-wrapper" ]; then
+            echo "Copying http-wrapper module..."
+            cp -r opendsu-sdk/modules/apihub/http-wrapper/* opendsu-releases/modules/apihub/http-wrapper/
+            echo "✅ Copied http-wrapper module"
+          else
+            echo "ERROR: http-wrapper module not found in modules/apihub/"
+            echo "Checking for alternative locations..."
+            
+            # Try to find http-wrapper in other locations
+            if [ -d "opendsu-sdk/modules/http-wrapper" ]; then
+              cp -r opendsu-sdk/modules/http-wrapper/* opendsu-releases/modules/apihub/http-wrapper/
+              echo "✅ Copied http-wrapper from modules/http-wrapper"
+            else
+              echo "⚠️  Warning: http-wrapper module not found. ServerlessAPI may not work properly."
+            fi
+          fi
           
           # No need to update paths - keeping the same structure as original
           
@@ -246,6 +265,7 @@ jobs:
           - Pre-built browserify bundles in `builds/output/`
           - Launcher scripts in `psknode/bin/scripts/` (apiHubLauncher.js, enclaveLauncher.js, pskbuild.js, argumentsParserUtil.js)
           - ServerlessAPI module in `modules/apihub/serverlessAPI/` (required for fork execution)
+          - HTTP wrapper module in `modules/apihub/http-wrapper/` (dependency of serverlessAPI)
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
           
@@ -325,6 +345,7 @@ jobs:
           - Pre-built browserify bundles in \`builds/output/\`
           - Launcher scripts in \`psknode/bin/scripts/\` (apiHubLauncher.js, enclaveLauncher.js, pskbuild.js, argumentsParserUtil.js)
           - ServerlessAPI module in \`modules/apihub/serverlessAPI/\` (required for fork execution)
+          - HTTP wrapper module in \`modules/apihub/http-wrapper/\` (dependency of serverlessAPI)
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
           
