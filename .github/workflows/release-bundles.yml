@@ -141,6 +141,14 @@ jobs:
             echo "⚠️  Warning: pskbuild.js not found in psknode/bin/scripts/"
           fi
           
+          # Copy argumentParserUtil.js (dependency for launcher scripts)
+          if [ -f "opendsu-sdk/psknode/bin/scripts/argumentParserUtil.js" ]; then
+            cp opendsu-sdk/psknode/bin/scripts/argumentParserUtil.js opendsu-releases/psknode/bin/scripts/
+            echo "✅ Copied argumentParserUtil.js"
+          else
+            echo "⚠️  Warning: argumentParserUtil.js not found in psknode/bin/scripts/"
+          fi
+          
           # Copy serverlessAPI module (required for fork)
           if [ -f "opendsu-sdk/modules/apihub/serverlessAPI/index.js" ]; then
             echo "Copying serverlessAPI from modules..."
@@ -236,7 +244,7 @@ jobs:
           
           This repository contains:
           - Pre-built browserify bundles in `builds/output/`
-          - Launcher scripts in `psknode/bin/scripts/` (including pskbuild.js)
+          - Launcher scripts in `psknode/bin/scripts/` (apiHubLauncher.js, enclaveLauncher.js, pskbuild.js, argumentParserUtil.js)
           - ServerlessAPI module in `modules/apihub/serverlessAPI/` (required for fork execution)
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
@@ -315,7 +323,7 @@ jobs:
           ## Contents
           This release contains:
           - Pre-built browserify bundles in \`builds/output/\`
-          - Launcher scripts in \`psknode/bin/scripts/\` (apiHubLauncher.js, enclaveLauncher.js, pskbuild.js)
+          - Launcher scripts in \`psknode/bin/scripts/\` (apiHubLauncher.js, enclaveLauncher.js, pskbuild.js, argumentParserUtil.js)
           - ServerlessAPI module in \`modules/apihub/serverlessAPI/\` (required for fork execution)
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
