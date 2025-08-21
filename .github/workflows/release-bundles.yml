@@ -154,6 +154,15 @@ jobs:
           if [ -f "opendsu-sdk/modules/apihub/serverlessAPI/index.js" ]; then
             echo "Copying serverlessAPI from modules..."
             cp opendsu-sdk/modules/apihub/serverlessAPI/index.js opendsu-releases/modules/apihub/serverlessAPI/
+            
+            # Copy lib directory if it exists (required for PluginManager and other dependencies)
+            if [ -d "opendsu-sdk/modules/apihub/serverlessAPI/lib" ]; then
+              echo "Copying serverlessAPI/lib directory..."
+              cp -r opendsu-sdk/modules/apihub/serverlessAPI/lib opendsu-releases/modules/apihub/serverlessAPI/
+              echo "✅ Copied serverlessAPI/lib directory"
+            else
+              echo "⚠️  Warning: serverlessAPI/lib directory not found"
+            fi
           else
             echo "ERROR: serverlessAPI/index.js not found in modules/apihub/serverlessAPI/"
             echo "Available files in modules directory:"
@@ -218,6 +227,18 @@ jobs:
           else
             echo "❌ ERROR: serverlessAPI/index.js not found in release structure"
             exit 1
+          fi
+          
+          # Verify the lib directory was copied (contains PluginManager and other required files)
+          if [ -f "opendsu-releases/modules/apihub/serverlessAPI/lib/PluginManager.js" ]; then
+            echo "✅ serverlessAPI/lib/PluginManager.js successfully copied"
+            echo "File size: $(wc -c < opendsu-releases/modules/apihub/serverlessAPI/lib/PluginManager.js) bytes"
+            
+            # Count total files in lib directory
+            LIB_FILES=$(find opendsu-releases/modules/apihub/serverlessAPI/lib -type f -name "*.js" | wc -l)
+            echo "Total JS files in lib directory: $LIB_FILES"
+          else
+            echo "⚠️  Warning: serverlessAPI/lib/PluginManager.js not found - ServerlessAPI functionality may be limited"
           fi
           
           # Create version info file
