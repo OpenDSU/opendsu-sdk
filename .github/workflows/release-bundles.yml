@@ -141,12 +141,12 @@ jobs:
             echo "⚠️  Warning: pskbuild.js not found in psknode/bin/scripts/"
           fi
           
-          # Copy argumentParserUtil.js (dependency for launcher scripts)
-          if [ -f "opendsu-sdk/psknode/bin/scripts/argumentParserUtil.js" ]; then
-            cp opendsu-sdk/psknode/bin/scripts/argumentParserUtil.js opendsu-releases/psknode/bin/scripts/
-            echo "✅ Copied argumentParserUtil.js"
+          # Copy argumentsParserUtil.js (dependency for launcher scripts)
+          if [ -f "opendsu-sdk/psknode/bin/scripts/argumentsParserUtil.js" ]; then
+            cp opendsu-sdk/psknode/bin/scripts/argumentsParserUtil.js opendsu-releases/psknode/bin/scripts/
+            echo "✅ Copied argumentsParserUtil.js"
           else
-            echo "⚠️  Warning: argumentParserUtil.js not found in psknode/bin/scripts/"
+            echo "⚠️  Warning: argumentsParserUtil.js not found in psknode/bin/scripts/"
           fi
           
           # Copy serverlessAPI module (required for fork)
@@ -244,7 +244,7 @@ jobs:
           
           This repository contains:
           - Pre-built browserify bundles in `builds/output/`
-          - Launcher scripts in `psknode/bin/scripts/` (apiHubLauncher.js, enclaveLauncher.js, pskbuild.js, argumentParserUtil.js)
+          - Launcher scripts in `psknode/bin/scripts/` (apiHubLauncher.js, enclaveLauncher.js, pskbuild.js, argumentsParserUtil.js)
           - ServerlessAPI module in `modules/apihub/serverlessAPI/` (required for fork execution)
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
@@ -323,7 +323,7 @@ jobs:
           ## Contents
           This release contains:
           - Pre-built browserify bundles in \`builds/output/\`
-          - Launcher scripts in \`psknode/bin/scripts/\` (apiHubLauncher.js, enclaveLauncher.js, pskbuild.js, argumentParserUtil.js)
+          - Launcher scripts in \`psknode/bin/scripts/\` (apiHubLauncher.js, enclaveLauncher.js, pskbuild.js, argumentsParserUtil.js)
           - ServerlessAPI module in \`modules/apihub/serverlessAPI/\` (required for fork execution)
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
