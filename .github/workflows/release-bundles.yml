@@ -56,6 +56,7 @@ jobs:
           mkdir -p opendsu-releases/builds/output
           mkdir -p opendsu-releases/psknode/bin/scripts
           mkdir -p opendsu-releases/conf
+          mkdir -p opendsu-releases/modules/apihub/serverlessAPI
       
       - name: Copy bundle files to releases repo
         run: |
@@ -65,6 +66,27 @@ jobs:
           # Copy launcher scripts to psknode/bin/scripts directory
           cp opendsu-sdk/psknode/bin/scripts/apiHubLauncher.js opendsu-releases/psknode/bin/scripts/
           cp opendsu-sdk/psknode/bin/scripts/enclaveLauncher.js opendsu-releases/psknode/bin/scripts/
+          
+          # Copy serverlessAPI module (required for fork)
+          if [ -f "opendsu-sdk/modules/apihub/serverlessAPI/index.js" ]; then
+            echo "Copying serverlessAPI from modules..."
+            cp opendsu-sdk/modules/apihub/serverlessAPI/index.js opendsu-releases/modules/apihub/serverlessAPI/
+          else
+            echo "ERROR: serverlessAPI/index.js not found in modules/apihub/serverlessAPI/"
+            echo "Available files in modules directory:"
+            find opendsu-sdk/modules -type f -name "*.js" 2>/dev/null | head -20 || echo "No modules directory found"
+            exit 1
+          fi
+          
+          # Create a minimal package.json for serverlessAPI
+          cat > opendsu-releases/modules/apihub/serverlessAPI/package.json << 'EOF'
+          {
+            "name": "serverless-api",
+            "version": "1.0.0",
+            "main": "index.js",
+            "description": "ServerlessAPI module for fork execution"
+          }
+          EOF
           
           # No need to update paths - keeping the same structure as original
           
@@ -86,6 +108,15 @@ jobs:
           # Copy default conf directory if exists
           if [ -d "opendsu-sdk/conf" ]; then
             cp -r opendsu-sdk/conf/* opendsu-releases/conf/ 2>/dev/null || true
+          fi
+          
+          # Verify the serverlessAPI module was copied
+          if [ -f "opendsu-releases/modules/apihub/serverlessAPI/index.js" ]; then
+            echo "✅ serverlessAPI/index.js successfully copied"
+            echo "File size: $(wc -c < opendsu-releases/modules/apihub/serverlessAPI/index.js) bytes"
+          else
+            echo "❌ ERROR: serverlessAPI/index.js not found in release structure"
+            exit 1
           fi
           
           # Create version info file
@@ -132,6 +163,7 @@ jobs:
           This repository contains:
           - Pre-built browserify bundles in `builds/output/`
           - Launcher scripts in `psknode/bin/scripts/`
+          - ServerlessAPI module in `modules/apihub/serverlessAPI/` (required for fork execution)
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
           
@@ -196,6 +228,7 @@ jobs:
           This release contains:
           - Pre-built browserify bundles in \`builds/output/\`
           - Launcher scripts in \`psknode/bin/scripts/\` for \`npm run start\`
+          - ServerlessAPI module in \`modules/apihub/serverlessAPI/\` (required for fork execution)
           - Minimal package.json with start scripts
           - Configuration files (if applicable)
           
