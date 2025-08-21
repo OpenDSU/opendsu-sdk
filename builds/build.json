@@ -1,5 +1,5 @@
 {
-  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, lightDB-sql-adapter, acl-magic, cloud-enclave, fast-svd, bar, bar-fs-adapter, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, swarmutils, queue, soundpubsub, loki-enclave-facade",
+  "pskWebServer": "overwrite-require, pskcrypto, psk-cache, opendsu, lightDB-sql-adapter, acl-magic, cloud-enclave, fast-svd, bar, bar-fs-adapter, key-ssi-resolver, apihub, syndicate, buffer-crc32, node-fd-slicer, swarmutils, queue, soundpubsub, loki-enclave-facade, http-wrapper",
   "openDSU": {
     "deps": "overwrite-require, opendsu, swarmutils, pskcrypto, key-ssi-resolver, fast-svd, bar, bar-fs-adapter, psk-cache, syndicate",
     "bundleExternal": false,

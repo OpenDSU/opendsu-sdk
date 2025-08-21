@@ -86,7 +86,7 @@
       "src": "https://github.com/opendsu/apihub.git"
     },
     {
-      "name": "apihub/http-wrapper",
+      "name": "http-wrapper",
       "src": "https://github.com/opendsu/http-wrapper.git"
     },
     {
